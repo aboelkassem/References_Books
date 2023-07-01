@@ -3,7 +3,7 @@ This is my book references. A collection of reference books on various subjects.
 
 ## How to Use
 
-You can browse the repository and download books directly from the corresponding directories. To access a specific book, navigate to the relevant directory and click on the book's title to view its details. From there, you can choose to download the book in a format that suits your needs, such as PDF or EPUB.
+You can browse the repository and download books directly from the corresponding directories. To access a specific book, navigate to the relevant directory and click on the book's title to view its details.
 
 Alternatively, you can clone the entire repository to your local machine using the following command:
 
