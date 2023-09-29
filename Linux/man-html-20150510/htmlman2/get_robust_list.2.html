@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>get_robust_list(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="get_robust_list(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="get-robust-list.2" name="get-robust-list.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>get_robust_list, set_robust_list — get/set list of
+      robust futexes</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;linux/futex.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;syscall.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">long
+            <strong>get_robust_list</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">pid</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">struct robust_list_head **<var class="pdparam">head_ptr</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">size_t *<var class="pdparam">len_ptr</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">long
+            <strong>set_robust_list</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">struct robust_list_head *<var class="pdparam">head</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">size_t <var class="pdparam">len</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">There are no glibc
+            wrappers for these system calls; see NOTES.</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="get-robust-list-2_sect1" name="get-robust-list-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The robust futex implementation needs to maintain
+      per-thread lists of robust futexes which are unlocked when
+      the thread exits. These lists are managed in user space; the
+      kernel is notified about only the location of the head of the
+      list.</p>
+
+      <p>The <code class="function">get_robust_list</code>() system
+      call returns the head of the robust futex list of the thread
+      whose thread ID is specified in <em class="parameter"><code>pid</code></em>. If <em class="parameter"><code>pid</code></em> is 0, the head of the list
+      for the calling thread is returned. The list head is stored
+      in the location pointed to by <em class="parameter"><code>head_ptr</code></em>. The size of the
+      object pointed to by **<em class="parameter"><code>head_ptr</code></em> is stored in
+      <em class="parameter"><code>len_ptr</code></em>.</p>
+
+      <p>The <code class="function">set_robust_list</code>() system
+      call requests the kernel to record the head of the list of
+      robust futexes owned by the calling thread. The <em class="parameter"><code>head</code></em> argument is the list head
+      to record. The <em class="parameter"><code>len</code></em>
+      argument should be <em class="replaceable"><code>sizeof(*head)</code></em>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="get-robust-list-2_sect2" name="get-robust-list-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>The <code class="function">set_robust_list</code>() and
+      <code class="function">get_robust_list</code>() system calls
+      return zero when the operation is successful, an error code
+      otherwise.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="get-robust-list-2_sect3" name="get-robust-list-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <p>The <code class="function">set_robust_list</code>() system
+      call can fail with the following error:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>len</code></em> does not
+            match the size of structure <span class="emphasis"><em>struct robust_list_head</em></span>
+            expected by kernel.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>The <code class="function">get_robust_list</code>() system
+      call can fail with the following errors:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The calling process does not have permission to see
+            the robust futex list of the thread with the thread ID
+            <em class="parameter"><code>pid</code></em>, and does
+            not have the <code class="constant">CAP_SYS_PTRACE</code> capability.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ESRCH</span></span></dt>
+
+          <dd>
+            <p>No thread with the thread ID <em class="parameter"><code>pid</code></em> could be found.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p>The head of the robust futex list can't be stored at
+            the location <em class="parameter"><code>head</code></em>.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="get-robust-list-2_sect4" name="get-robust-list-2_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p>These system calls were added in Linux 2.6.17.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="get-robust-list-2_sect5" name="get-robust-list-2_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>These system calls are not needed by normal applications.
+      No support for them is provided in glibc. In the unlikely
+      event that you want to call them directly, use <a class="link" href="../htmlman2/syscall.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">syscall</span>(2)</span></a>.</p>
+
+      <p>A thread can have only one robust futex list; therefore
+      applications that wish to use this functionality should use
+      the robust mutexes provided by glibc.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="get-robust-list-2_sect6" name="get-robust-list-2_sect6" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/futex.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">futex</span>(2)</span></a></p>
+
+      <p><code class="filename">Documentation/robust-futexes.txt</code> and
+      <code class="filename">Documentation/robust-futex-ABI.txt</code> in the
+      Linux kernel source tree</p>
+    </div>
+
+    <div class="colophon">
+      <a id="get-robust-list-2_sect7" name="get-robust-list-2_sect7" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2006 Red Hat, Inc. All Rights Reserved.<br />
+
+                  Written by Ivana Varekova &lt;varekova<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>redhat.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  FIXME Something could be added to this page (or exit(2))<br />
+
+                        about exit_robust_list processing<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

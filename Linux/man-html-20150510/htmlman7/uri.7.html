@@ -1,0 +1,877 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>uri(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="uri(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="uri.7" name="uri.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>uri, url, urn — uniform resource identifier (URI),
+      including a URL or URN</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+URI = [ absoluteURI | relativeURI ] [ "#" fragment ]
+absoluteURI = scheme ":" ( hierarchical_part | opaque_part )
+relativeURI = ( net_path | absolute_path | relative_path ) [ "?" query ]
+scheme = "http" | "ftp" | "gopher" | "mailto" | "news" | "telnet" |
+         "file" | "man" | "info" | "whatis" | "ldap" | "wais" | ...
+hierarchical_part = ( net_path | absolute_path ) [ "?" query ]
+net_path = "//" authority [ absolute_path ]
+absolute_path = "/"  path_segments
+relative_path = relative_segment [ absolute_path ]
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="uri-7_sect1" name="uri-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>A Uniform Resource Identifier (URI) is a short string of
+      characters identifying an abstract or physical resource (for
+      example, a web page). A Uniform Resource Locator (URL) is a
+      URI that identifies a resource through its primary access
+      mechanism (e.g., its network "location"), rather than by name
+      or some other attribute of that resource. A Uniform Resource
+      Name (URN) is a URI that must remain globally unique and
+      persistent even when the resource ceases to exist or becomes
+      unavailable.</p>
+
+      <p>URIs are the standard way to name hypertext link
+      destinations for tools such as web browsers. The string
+      "http://www.kernelnotes.org" is a URL (and thus it is also a
+      URI). Many people use the term URL loosely as a synonym for
+      URI (though technically URLs are a subset of URIs).</p>
+
+      <p>URIs can be absolute or relative. An absolute identifier
+      refers to a resource independent of context, while a relative
+      identifier refers to a resource by describing the difference
+      from the current context. Within a relative path reference,
+      the complete path segments "." and ".." have special
+      meanings: "the current hierarchy level" and "the level above
+      this hierarchy level", respectively, just like they do in
+      UNIX-like systems. A path segment which contains a colon
+      character can't be used as the first segment of a relative
+      URI path (e.g., "this:that"), because it would be mistaken
+      for a scheme name; precede such segments with ./ (e.g.,
+      "./this:that"). Note that descendants of MS-DOS (e.g.,
+      Microsoft Windows) replace devicename colons with the
+      vertical bar ("|") in URIs, so "C:" becomes "C|".</p>
+
+      <p>A fragment identifier, if included, refers to a particular
+      named portion (fragment) of a resource; text after a '#'
+      identifies the fragment. A URI beginning with '#' refers to
+      that fragment in the current resource.</p>
+
+      <div class="refsect2">
+        <a id="uri-7_sect2" name="uri-7_sect2" shape="rect"> </a>
+
+        <h3>Usage</h3>
+
+        <p>There are many different URI schemes, each with specific
+        additional rules and meanings, but they are intentionally
+        made to be as similar as possible. For example, many URL
+        schemes permit the authority to be the following format,
+        called here an <em class="replaceable"><code>ip_server</code></em> (square brackets
+        show what's optional):</p>
+
+        <p><span class="emphasis"><em>ip_server
+        =</em></span>[<em class="replaceable"><code>user</code></em> [ : <em class="replaceable"><code>password</code></em> ] @ ] <em class="replaceable"><code>host</code></em> [ : <em class="replaceable"><code>port</code></em>]</p>
+
+        <p>This format allows you to optionally insert a username,
+        a user plus password, and/or a port number. The <em class="replaceable"><code>host</code></em> is the name of the
+        host computer, either its name as determined by DNS or an
+        IP address (numbers separated by periods). Thus the URI
+        &lt;<a class="literalurl" href="http://fred:fredpassword@xyz.com:8080/" target="_top" shape="rect">http://fred:fredpassword@xyz.com:8080/</a>&gt; logs
+        into a web server on host xyz.com as fred (using
+        fredpassword) using port 8080. Avoid including a password
+        in a URI if possible because of the many security risks of
+        having a password written down. If the URL supplies a
+        username but no password, and the remote server requests a
+        password, the program interpreting the URL should request
+        one from the user.</p>
+
+        <p>Here are some of the most common schemes in use on
+        UNIX-like systems that are understood by many tools. Note
+        that many tools using URIs also have internal schemes or
+        specialized schemes; see those tools' documentation for
+        information on those schemes.</p>
+
+        <p><span class="emphasis"><em>http − Web (HTTP)
+        server</em></span></p>
+
+        <p>http://<em class="replaceable"><code>ip_server</code></em>/<em class="replaceable"><code>path</code></em></p>
+
+        <p>http://<em class="replaceable"><code>ip_server</code></em>/<em class="replaceable"><code>path</code></em>?<em class="replaceable"><code>query</code></em></p>
+
+        <p>This is a URL accessing a web (HTTP) server. The default
+        port is 80. If the path refers to a directory, the web
+        server will choose what to return; usually if there is a
+        file named "index.html" or "index.htm" its content is
+        returned, otherwise, a list of the files in the current
+        directory (with appropriate links) is generated and
+        returned. An example is &lt;<a class="literalurl" href="http://lwn.net" target="_top" shape="rect">http://lwn.net</a>&gt;.</p>
+
+        <p>A query can be given in the archaic "isindex" format,
+        consisting of a word or phrase and not including an equal
+        sign (=). A query can also be in the longer "GET" format,
+        which has one or more query entries of the form <em class="replaceable"><code>key</code></em>=<em class="replaceable"><code>value</code></em> separated by the
+        ampersand character (&amp;). Note that <em class="replaceable"><code>key</code></em> can be repeated more
+        than once, though it's up to the web server and its
+        application programs to determine if there's any meaning to
+        that. There is an unfortunate interaction with
+        HTML/XML/SGML and the GET query format; when such URIs with
+        more than one key are embedded in SGML/XML documents
+        (including HTML), the ampersand (&amp;) has to be rewritten
+        as &amp;amp;. Note that not all queries use this format;
+        larger forms may be too long to store as a URI, so they use
+        a different interaction mechanism (called POST) which does
+        not include the data in the URI. See the Common Gateway
+        Interface specification at <a class="literalurl" href="http://www.w3.org/CGI" target="_top" shape="rect">http://www.w3.org/CGI</a> for more information.</p>
+
+        <p><span class="emphasis"><em>ftp − File Transfer
+        Protocol (FTP)</em></span></p>
+
+        <p>ftp://<em class="replaceable"><code>ip_server</code></em>/<em class="replaceable"><code>path</code></em></p>
+
+        <p>This is a URL accessing a file through the file transfer
+        protocol (FTP). The default port (for control) is 21. If no
+        username is included, the username "anonymous" is supplied,
+        and in that case many clients provide as the password the
+        requestor's Internet email address. An example is
+        &lt;<a class="literalurl" href="ftp://ftp.is.co.za/rfc/rfc1808.txt" target="_top" shape="rect">ftp://ftp.is.co.za/rfc/rfc1808.txt</a>&gt;.</p>
+
+        <p><span class="emphasis"><em>gopher − Gopher
+        server</em></span></p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+gopher://<em class="replaceable"><code>ip_server</code></em>/<span class="emphasis"><em>gophertype selector</em></span>
+gopher://<em class="replaceable"><code>ip_server</code></em>/<span class="emphasis"><em>gophertype selector</em></span>%09<em class="replaceable"><code>search</code></em>
+gopher://<em class="replaceable"><code>ip_server</code></em>/<span class="emphasis"><em>gophertype selector</em></span>%09<em class="replaceable"><code>search</code></em>%09<em class="replaceable"><code>gopher+_string</code></em>
+</pre>
+        </div>
+
+        <p>The default gopher port is 70. <em class="replaceable"><code>gophertype</code></em> is a
+        single-character field to denote the Gopher type of the
+        resource to which the URL refers. The entire path may also
+        be empty, in which case the delimiting "/" is also optional
+        and the gophertype defaults to "1".</p>
+
+        <p><em class="replaceable"><code>selector</code></em> is
+        the Gopher selector string. In the Gopher protocol, Gopher
+        selector strings are a sequence of octets which may contain
+        any octets except 09 hexadecimal (US-ASCII HT or tab), 0A
+        hexadecimal (US-ASCII character LF), and 0D (US-ASCII
+        character CR).</p>
+
+        <p><span class="emphasis"><em>mailto − Email
+        address</em></span></p>
+
+        <p>mailto:<em class="replaceable"><code>email-address</code></em></p>
+
+        <p>This is an email address, usually of the form <em class="replaceable"><code>name</code></em>@<em class="replaceable"><code>hostname</code></em>. See <a class="link" href="../htmlman7/mailaddr.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mailaddr</span>(7)</span></a> for more
+        information on the correct format of an email address. Note
+        that any % character must be rewritten as %25. An example
+        is &lt;mailto:dwheeler@dwheeler.com&gt;.</p>
+
+        <p><span class="emphasis"><em>news − Newsgroup or
+        News message</em></span></p>
+
+        <p>news:<em class="replaceable"><code>newsgroup-name</code></em></p>
+
+        <p>news:<em class="replaceable"><code>message-id</code></em></p>
+
+        <p>A <em class="replaceable"><code>newsgroup-name</code></em> is a
+        period-delimited hierarchical name, such as
+        "comp.infosystems.www.misc". If &lt;newsgroup-name&gt; is
+        "*" (as in &lt;news:*&gt;), it is used to refer to "all
+        available news groups". An example is
+        &lt;news:comp.lang.ada&gt;.</p>
+
+        <p>A <em class="replaceable"><code>message-id</code></em>
+        corresponds to the Message-ID of <a class="literalurl" href="http://www.ietf.org/rfc/rfc1036.txt" target="_top" shape="rect">IETF RFC 1036,</a> without the enclosing "&lt;" and
+        "&gt;"; it takes the form <em class="replaceable"><code>unique</code></em>@<em class="replaceable"><code>full_domain_name</code></em>. A message
+        identifier may be distinguished from a news group name by
+        the presence of the "@" character.</p>
+
+        <p><span class="emphasis"><em>telnet − Telnet
+        login</em></span></p>
+
+        <p>telnet://<em class="replaceable"><code>ip_server</code></em>/</p>
+
+        <p>The Telnet URL scheme is used to designate interactive
+        text services that may be accessed by the Telnet protocol.
+        The final "/" character may be omitted. The default port is
+        23. An example is &lt;telnet://melvyl.ucop.edu/&gt;.</p>
+
+        <p><span class="emphasis"><em>file − Normal
+        file</em></span></p>
+
+        <p>file://<em class="replaceable"><code>ip_server</code></em>/<em class="replaceable"><code>path_segments</code></em></p>
+
+        <p>file:<em class="replaceable"><code>path_segments</code></em></p>
+
+        <p>This represents a file or directory accessible locally.
+        As a special case, <em class="replaceable"><code>ip_server</code></em> can be the string
+        "localhost" or the empty string; this is interpreted as
+        "the machine from which the URL is being interpreted". If
+        the path is to a directory, the viewer should display the
+        directory's contents with links to each containee; not all
+        viewers currently do this. KDE supports generated files
+        through the URL &lt;file:/cgi-bin&gt;. If the given file
+        isn't found, browser writers may want to try to expand the
+        filename via filename globbing (see <a class="link" href="../htmlman7/glob.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">glob</span>(7)</span></a> and <a class="link" href="../htmlman3/glob.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">glob</span>(3)</span></a>).</p>
+
+        <p>The second format (e.g., &lt;file:/etc/passwd&gt;) is a
+        correct format for referring to a local file. However,
+        older standards did not permit this format, and some
+        programs don't recognize this as a URI. A more portable
+        syntax is to use an empty string as the server name, for
+        example, &lt;file:///etc/passwd&gt;; this form does the
+        same thing and is easily recognized by pattern matchers and
+        older programs as a URI. Note that if you really mean to
+        say "start from the current location," don't specify the
+        scheme at all; use a relative address like
+        &lt;../test.txt&gt;, which has the side-effect of being
+        scheme-independent. An example of this scheme is
+        &lt;file:///etc/passwd&gt;.</p>
+
+        <p><span class="emphasis"><em>man − Man page
+        documentation</em></span></p>
+
+        <p>man:<em class="replaceable"><code>command-name</code></em></p>
+
+        <p>man:<em class="replaceable"><code>command-name</code></em>(<em class="replaceable"><code>section</code></em>)</p>
+
+        <p>This refers to local online manual (man) reference
+        pages. The command name can optionally be followed by a
+        parenthesis and section number; see <a class="link" href="../htmlman7/man.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">man</span>(7)</span></a> for more
+        information on the meaning of the section numbers. This URI
+        scheme is unique to UNIX-like systems (such as Linux) and
+        is not currently registered by the IETF. An example is
+        &lt;man:ls(1)&gt;.</p>
+
+        <p><span class="emphasis"><em>info − Info page
+        documentation</em></span></p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+info:<em class="replaceable"><code>virtual-filename</code></em>
+info:<em class="replaceable"><code>virtual-filename</code></em>#<em class="replaceable"><code>nodename</code></em>
+info:(<em class="replaceable"><code>virtual-filename</code></em>)
+</pre>
+        </div>
+
+        <p>info:(<em class="replaceable"><code>virtual-filename</code></em>)<em class="replaceable"><code>nodename</code></em></p>
+
+        <p>This scheme refers to online info reference pages
+        (generated from texinfo files), a documentation format used
+        by programs such as the GNU tools. This URI scheme is
+        unique to UNIX-like systems (such as Linux) and is not
+        currently registered by the IETF. As of this writing, GNOME
+        and KDE differ in their URI syntax and do not accept the
+        other's syntax. The first two formats are the GNOME format;
+        in nodenames all spaces are written as underscores. The
+        second two formats are the KDE format; spaces in nodenames
+        must be written as spaces, even though this is forbidden by
+        the URI standards. It's hoped that in the future most tools
+        will understand all of these formats and will always accept
+        underscores for spaces in nodenames. In both GNOME and KDE,
+        if the form without the nodename is used the nodename is
+        assumed to be "Top". Examples of the GNOME format are
+        &lt;info:gcc&gt; and &lt;info:gcc#G++_and_GCC&gt;. Examples
+        of the KDE format are &lt;info:(gcc)&gt; and
+        &lt;info:(gcc)G++ and GCC&gt;.</p>
+
+        <p><span class="emphasis"><em>whatis − Documentation
+        search</em></span></p>
+
+        <p>whatis:<em class="replaceable"><code>string</code></em></p>
+
+        <p>This scheme searches the database of short (one-line)
+        descriptions of commands and returns a list of descriptions
+        containing that string. Only complete word matches are
+        returned. See <span class="citerefentry"><span class="refentrytitle">whatis</span>(1)</span>. This URI scheme is
+        unique to UNIX-like systems (such as Linux) and is not
+        currently registered by the IETF.</p>
+
+        <p><span class="emphasis"><em>ghelp − GNOME help
+        documentation</em></span></p>
+
+        <p>ghelp:<em class="replaceable"><code>name-of-application</code></em></p>
+
+        <p>This loads GNOME help for the given application. Note
+        that not much documentation currently exists in this
+        format.</p>
+
+        <p><span class="emphasis"><em>ldap − Lightweight
+        Directory Access Protocol</em></span></p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+ldap://<em class="replaceable"><code>hostport</code></em>
+ldap://<em class="replaceable"><code>hostport</code></em>/
+ldap://<em class="replaceable"><code>hostport</code></em>/<em class="replaceable"><code>dn</code></em>
+ldap://<em class="replaceable"><code>hostport</code></em>/<em class="replaceable"><code>dn</code></em>?<em class="replaceable"><code>attributes</code></em>
+ldap://<em class="replaceable"><code>hostport</code></em>/<em class="replaceable"><code>dn</code></em>?<em class="replaceable"><code>attributes</code></em>?<em class="replaceable"><code>scope</code></em>
+ldap://<em class="replaceable"><code>hostport</code></em>/<em class="replaceable"><code>dn</code></em>?<em class="replaceable"><code>attributes</code></em>?<em class="replaceable"><code>scope</code></em>?<em class="replaceable"><code>filter</code></em>
+</pre>
+        </div>
+
+        <p>ldap://<em class="replaceable"><code>hostport</code></em>/<em class="replaceable"><code>dn</code></em>?<em class="replaceable"><code>attributes</code></em>?<em class="replaceable"><code>scope</code></em>?<em class="replaceable"><code>filter</code></em>?<em class="replaceable"><code>extensions</code></em></p>
+
+        <p>This scheme supports queries to the Lightweight
+        Directory Access Protocol (LDAP), a protocol for querying a
+        set of servers for hierarchically organized information
+        (such as people and computing resources). See <a class="literalurl" href="http://www.ietf.org/rfc/rfc2255.txt" target="_top" shape="rect">RFC 2255</a> for more information on the LDAP
+        URL scheme. The components of this URL are:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><em class="replaceable"><code>hostport</code></em></span></dt>
+
+            <dd>
+              <p>the LDAP server to query, written as a hostname
+              optionally followed by a colon and the port number.
+              The default LDAP port is TCP port 389. If empty, the
+              client determines which the LDAP server to use.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>dn</code></em></span></dt>
+
+            <dd>
+              <p>the LDAP Distinguished Name, which identifies the
+              base object of the LDAP search (see <a class="literalurl" href="http://www.ietf.org/rfc/rfc2253.txt" target="_top" shape="rect">RFC 2253</a> section 3).</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>attributes</code></em></span></dt>
+
+            <dd>
+              <p>a comma-separated list of attributes to be
+              returned; see RFC 2251 section 4.1.5. If omitted, all
+              attributes should be returned.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>scope</code></em></span></dt>
+
+            <dd>
+              <p>specifies the scope of the search, which can be
+              one of "base" (for a base object search), "one" (for
+              a one-level search), or "sub" (for a subtree search).
+              If scope is omitted, "base" is assumed.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>filter</code></em></span></dt>
+
+            <dd>
+              <p>specifies the search filter (subset of entries to
+              return). If omitted, all entries should be returned.
+              See <a class="literalurl" href="http://www.ietf.org/rfc/rfc2254.txt" target="_top" shape="rect">RFC 2254</a> section 4.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>extensions</code></em></span></dt>
+
+            <dd>
+              <p>a comma-separated list of type=value pairs, where
+              the =value portion may be omitted for options not
+              requiring it. An extension prefixed with a '!' is
+              critical (must be supported to be valid), otherwise
+              it is noncritical (optional).</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>LDAP queries are easiest to explain by example. Here's a
+        query that asks ldap.itd.umich.edu for information about
+        the University of Michigan in the U.S.:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+ldap://ldap.itd.umich.edu/o=University%20of%20Michigan,c=US
+</pre>
+        </div>
+
+        <p>To just get its postal address attribute, request:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+ldap://ldap.itd.umich.edu/o=University%20of%20Michigan,c=US?postalAddress
+</pre>
+        </div>
+
+        <p>To ask a host.com at port 6666 for information about the
+        person with common name (cn) "Babs Jensen" at University of
+        Michigan, request:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+ldap://host.com:6666/o=University%20of%20Michigan,c=US??sub?(cn=Babs%20Jensen)
+</pre>
+        </div>
+
+        <p><span class="emphasis"><em>wais − Wide Area
+        Information Servers</em></span></p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+wais://<em class="replaceable"><code>hostport</code></em>/<em class="replaceable"><code>database</code></em>
+wais://<em class="replaceable"><code>hostport</code></em>/<em class="replaceable"><code>database</code></em>?<em class="replaceable"><code>search</code></em>
+</pre>
+        </div>
+
+        <p>wais://<em class="replaceable"><code>hostport</code></em>/<em class="replaceable"><code>database</code></em>/<em class="replaceable"><code>wtype</code></em>/<em class="replaceable"><code>wpath</code></em></p>
+
+        <p>This scheme designates a WAIS database, search, or
+        document (see <a class="literalurl" href="http://www.ietf.org/rfc/rfc1625.txt" target="_top" shape="rect">IETF
+        RFC 1625</a> for more information on WAIS). Hostport is the
+        hostname, optionally followed by a colon and port number
+        (the default port number is 210).</p>
+
+        <p>The first form designates a WAIS database for searching.
+        The second form designates a particular search of the WAIS
+        database <em class="replaceable"><code>database</code></em>. The third form
+        designates a particular document within a WAIS database to
+        be retrieved. <em class="replaceable"><code>wtype</code></em> is the WAIS
+        designation of the type of the object and <em class="replaceable"><code>wpath</code></em> is the WAIS
+        document-id.</p>
+
+        <p><span class="emphasis"><em>other schemes</em></span></p>
+
+        <p>There are many other URI schemes. Most tools that accept
+        URIs support a set of internal URIs (e.g., Mozilla has the
+        about: scheme for internal information, and the GNOME help
+        browser has the toc: scheme for various starting
+        locations). There are many schemes that have been defined
+        but are not as widely used at the current time (e.g.,
+        prospero). The nntp: scheme is deprecated in favor of the
+        news: scheme. URNs are to be supported by the urn: scheme,
+        with a hierarchical name space (e.g., urn:ietf:... would
+        identify IETF documents); at this time URNs are not widely
+        implemented. Not all tools support all schemes.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="uri-7_sect3" name="uri-7_sect3" shape="rect"> </a>
+
+        <h3>Character encoding</h3>
+
+        <p>URIs use a limited number of characters so that they can
+        be typed in and used in a variety of situations.</p>
+
+        <p>The following characters are reserved, that is, they may
+        appear in a URI but their use is limited to their reserved
+        purpose (conflicting data must be escaped before forming
+        the URI):</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>; / ? : @ &amp; = + $ ,</p>
+            </li>
+          </ul>
+        </div>
+
+        <p>Unreserved characters may be included in a URI.
+        Unreserved characters include uppercase and lowercase
+        English letters, decimal digits, and the following limited
+        set of punctuation marks and symbols:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>− _ . ! ~ * ' ( )</p>
+            </li>
+          </ul>
+        </div>
+
+        <p>All other characters must be escaped. An escaped octet
+        is encoded as a character triplet, consisting of the
+        percent character "%" followed by the two hexadecimal
+        digits representing the octet code (you can use uppercase
+        or lowercase letters for the hexadecimal digits). For
+        example, a blank space must be escaped as "%20", a tab
+        character as "%09", and the "&amp;" as "%26". Because the
+        percent "%" character always has the reserved purpose of
+        being the escape indicator, it must be escaped as "%25". It
+        is common practice to escape space characters as the plus
+        symbol (+) in query text; this practice isn't uniformly
+        defined in the relevant RFCs (which recommend %20 instead)
+        but any tool accepting URIs with query text should be
+        prepared for them. A URI is always shown in its "escaped"
+        form.</p>
+
+        <p>Unreserved characters can be escaped without changing
+        the semantics of the URI, but this should not be done
+        unless the URI is being used in a context that does not
+        allow the unescaped character to appear. For example, "%7e"
+        is sometimes used instead of "~" in an HTTP URL path, but
+        the two are equivalent for an HTTP URL.</p>
+
+        <p>For URIs which must handle characters outside the US
+        ASCII character set, the HTML 4.01 specification (section
+        B.2) and IETF RFC 2718 (section 2.2.5) recommend the
+        following approach:</p>
+
+        <div class="orderedlist">
+          <ol class="orderedlist" type="1">
+            <li class="listitem">
+              <p>translate the character sequences into UTF-8 (IETF
+              RFC 2279)—see <a class="link" href="../htmlman7/utf-8.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">utf-8</span>(7)</span></a>\(emand
+              then</p>
+            </li>
+
+            <li class="listitem">
+              <p>use the URI escaping mechanism, that is, use the
+              %HH encoding for unsafe octets.</p>
+            </li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="uri-7_sect4" name="uri-7_sect4" shape="rect"> </a>
+
+        <h3>Writing a URI</h3>
+
+        <p>When written, URIs should be placed inside double quotes
+        (e.g., "http://www.kernelnotes.org"), enclosed in angle
+        brackets (e.g., &lt;<a class="literalurl" href="http://lwn.net" target="_top" shape="rect">http://lwn.net</a>&gt;), or
+        placed on a line by themselves. A warning for those who use
+        double-quotes: <em class="replaceable"><code>never</code></em> move extraneous
+        punctuation (such as the period ending a sentence or the
+        comma in a list) inside a URI, since this will change the
+        value of the URI. Instead, use angle brackets instead, or
+        switch to a quoting system that never includes extraneous
+        characters inside quotation marks. This latter system,
+        called the 'new' or 'logical' quoting system by "Hart's
+        Rules" and the "Oxford Dictionary for Writers and Editors",
+        is preferred practice in Great Britain and hackers
+        worldwide (see the Jargon File's section on Hacker Writing
+        Style, <a class="literalurl" href="http://www.fwi.uva.nl/~mes/jargon/h/HackerWritingStyle.html" target="_top" shape="rect">http://www.fwi.uva.nl/~mes/jargon/h/HackerWritingStyle.html</a>
+        for more information). Older documents suggested inserting
+        the prefix "URL:" just before the URI, but this form has
+        never caught on.</p>
+
+        <p>The URI syntax was designed to be unambiguous. However,
+        as URIs have become commonplace, traditional media
+        (television, radio, newspapers, billboards, etc.) have
+        increasingly used abbreviated URI references consisting of
+        only the authority and path portions of the identified
+        resource (e.g., &lt;www.w3.org/Addressing&gt;). Such
+        references are primarily intended for human interpretation
+        rather than machine, with the assumption that context-based
+        heuristics are sufficient to complete the URI (e.g.,
+        hostnames beginning with "www" are likely to have a URI
+        prefix of "http://" and hostnames beginning with "ftp"
+        likely to have a prefix of "ftp://"). Many client
+        implementations heuristically resolve these references.
+        Such heuristics may change over time, particularly when new
+        schemes are introduced. Since an abbreviated URI has the
+        same syntax as a relative URL path, abbreviated URI
+        references cannot be used where relative URIs are
+        permitted, and can be used only when there is no defined
+        base (such as in dialog boxes). Don't use abbreviated URIs
+        as hypertext links inside a document; use the standard
+        format as described here.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="uri-7_sect5" name="uri-7_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p><a class="literalurl" href="http://www.ietf.org/rfc/rfc2396.txt" target="_top" shape="rect">(IETF RFC
+      2396)</a> <a class="literalurl" href="http://www.w3.org/TR/REC-html40" target="_top" shape="rect">(HTML
+      4.0)</a></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="uri-7_sect6" name="uri-7_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Any tool accepting URIs (e.g., a web browser) on a Linux
+      system should be able to handle (directly or indirectly) all
+      of the schemes described here, including the man: and info:
+      schemes. Handling them by invoking some other program is fine
+      and in fact encouraged.</p>
+
+      <p>Technically the fragment isn't part of the URI.</p>
+
+      <p>For information on how to embed URIs (including URLs) in a
+      data format, see documentation on that format. HTML uses the
+      format &lt;A HREF="<em class="replaceable"><code>uri</code></em>"&gt; <em class="replaceable"><code>text</code></em> &lt;/A&gt;. Texinfo
+      files use the format @uref{<em class="replaceable"><code>uri</code></em>}. Man and mdoc have the
+      recently added UR macro, or just include the URI in the text
+      (viewers should be able to detect :// as part of a URI).</p>
+
+      <p>The GNOME and KDE desktop environments currently vary in
+      the URIs they accept, in particular in their respective help
+      browsers. To list man pages, GNOME uses &lt;toc:man&gt; while
+      KDE uses &lt;man:(index)&gt;, and to list info pages, GNOME
+      uses &lt;toc:info&gt; while KDE uses &lt;info:(dir)&gt; (the
+      author of this man page prefers the KDE approach here, though
+      a more regular format would be even better). In general, KDE
+      uses &lt;file:/cgi-bin/&gt; as a prefix to a set of generated
+      files. KDE prefers documentation in HTML, accessed via the
+      &lt;file:/cgi-bin/helpindex&gt;. GNOME prefers the ghelp
+      scheme to store and find documentation. Neither browser
+      handles file: references to directories at the time of this
+      writing, making it difficult to refer to an entire directory
+      with a browsable URI. As noted above, these environments
+      differ in how they handle the info: scheme, probably the most
+      important variation. It is expected that GNOME and KDE will
+      converge to common URI formats, and a future version of this
+      man page will describe the converged result. Efforts to aid
+      this convergence are encouraged.</p>
+
+      <div class="refsect2">
+        <a id="uri-7_sect7" name="uri-7_sect7" shape="rect"> </a>
+
+        <h3>Security</h3>
+
+        <p>A URI does not in itself pose a security threat. There
+        is no general guarantee that a URL, which at one time
+        located a given resource, will continue to do so. Nor is
+        there any guarantee that a URL will not locate a different
+        resource at some later point in time; such a guarantee can
+        be obtained only from the person(s) controlling that
+        namespace and the resource in question.</p>
+
+        <p>It is sometimes possible to construct a URL such that an
+        attempt to perform a seemingly harmless operation, such as
+        the retrieval of an entity associated with the resource,
+        will in fact cause a possibly damaging remote operation to
+        occur. The unsafe URL is typically constructed by
+        specifying a port number other than that reserved for the
+        network protocol in question. The client unwittingly
+        contacts a site that is in fact running a different
+        protocol. The content of the URL contains instructions
+        that, when interpreted according to this other protocol,
+        cause an unexpected operation. An example has been the use
+        of a gopher URL to cause an unintended or impersonating
+        message to be sent via a SMTP server.</p>
+
+        <p>Caution should be used when using any URL that specifies
+        a port number other than the default for the protocol,
+        especially when it is a number within the reserved
+        space.</p>
+
+        <p>Care should be taken when a URI contains escaped
+        delimiters for a given protocol (for example, CR and LF
+        characters for telnet protocols) that these are not
+        unescaped before transmission. This might violate the
+        protocol, but avoids the potential for such characters to
+        be used to simulate an extra operation or parameter in that
+        protocol, which might lead to an unexpected and possibly
+        harmful remote operation to be performed.</p>
+
+        <p>It is clearly unwise to use a URI that contains a
+        password which is intended to be secret. In particular, the
+        use of a password within the "userinfo" component of a URI
+        is strongly recommended against except in those rare cases
+        where the "password" parameter is intended to be
+        public.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="uri-7_sect8" name="uri-7_sect8" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>Documentation may be placed in a variety of locations, so
+      there currently isn't a good URI scheme for general online
+      documentation in arbitrary formats. References of the form
+      &lt;file:///usr/doc/ZZZ&gt; don't work because different
+      distributions and local installation requirements may place
+      the files in different directories (it may be in /usr/doc, or
+      /usr/local/doc, or /usr/share, or somewhere else). Also, the
+      directory ZZZ usually changes when a version changes (though
+      filename globbing could partially overcome this). Finally,
+      using the file: scheme doesn't easily support people who
+      dynamically load documentation from the Internet (instead of
+      loading the files onto a local filesystem). A future URI
+      scheme may be added (e.g., "userdoc:") to permit programs to
+      include cross-references to more detailed documentation
+      without having to know the exact location of that
+      documentation. Alternatively, a future version of the
+      filesystem specification may specify file locations
+      sufficiently so that the file: scheme will be able to locate
+      documentation.</p>
+
+      <p>Many programs and file formats don't include a way to
+      incorporate or implement links using URIs.</p>
+
+      <p>Many programs can't handle all of these different URI
+      formats; there should be a standard mechanism to load an
+      arbitrary URI that automatically detects the users'
+      environment (e.g., text or graphics, desktop environment,
+      local user preferences, and currently executing tools) and
+      invokes the right tool for any URI.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="uri-7_sect9" name="uri-7_sect9" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><span class="citerefentry"><span class="refentrytitle">lynx</span>(1)</span>, <span class="citerefentry"><span class="refentrytitle">man2html</span>(1)</span>, <a class="link" href="../htmlman7/mailaddr.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mailaddr</span>(7)</span></a>, <a class="link" href="../htmlman7/utf-8.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">utf-8</span>(7)</span></a></p>
+
+      <p><a class="literalurl" href="http://www.ietf.org/rfc/rfc2255.txt" target="_top" shape="rect">IETF RFC
+      2255</a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="uri-7_sect10" name="uri-7_sect10" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    (C) Copyright 1999-2000 David A. Wheeler (dwheeler<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>dwheeler.com)<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Fragments of this document are directly derived from IETF standards.<br />
+
+                  For those fragments which are directly derived from such standards,<br />
+
+                  the following notice applies, which is the standard copyright and<br />
+
+                  rights announcement of The Internet Society:<br />
+
+                  <br />
+                  Copyright (C) The Internet Society (1998).  All Rights Reserved.<br />
+
+                  This document and translations of it may be copied and furnished to<br />
+
+                  others, and derivative works that comment on or otherwise explain it<br />
+
+                  or assist in its implementation may be prepared, copied, published<br />
+
+                  and distributed, in whole or in part, without restriction of any<br />
+
+                  kind, provided that the above copyright notice and this paragraph are<br />
+
+                  included on all such copies and derivative works.  However, this<br />
+
+                  document itself may not be modified in any way, such as by removing<br />
+
+                  the copyright notice or references to the Internet Society or other<br />
+
+                  Internet organizations, except as needed for the purpose of<br />
+
+                  developing Internet standards in which case the procedures for<br />
+
+                  copyrights defined in the Internet Standards process must be<br />
+
+                  followed, or as required to translate it into languages other than English.<br />
+
+                  <br />
+                  Modified Fri Jul 25 23:00:00 1999 by David A. Wheeler (dwheeler<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>dwheeler.com)<br />
+
+                  Modified Fri Aug 21 23:00:00 1999 by David A. Wheeler (dwheeler<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>dwheeler.com)<br />
+
+                  Modified Tue Mar 14 2000 by David A. Wheeler (dwheeler<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>dwheeler.com)<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

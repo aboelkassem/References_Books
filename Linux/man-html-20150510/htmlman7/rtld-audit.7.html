@@ -1,0 +1,763 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>rtld-audit(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="rtld-audit(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="rtld-audit.7" name="rtld-audit.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>rtld-audit — auditing API for the dynamic linker</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#define _GNU_SOURCE              /* See feature_test_macros(7) */
+
+#include &lt;link.h&gt;
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="rtld-audit-7_sect1" name="rtld-audit-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The GNU dynamic linker (run-time linker) provides an
+      auditing API that allows an application to be notified when
+      various dynamic linking events occur. This API is very
+      similar to the auditing interface provided by the Solaris
+      run-time linker. The necessary constants and prototypes are
+      defined by including <code class="literal">&lt;</code><code class="filename">link.h</code><code class="literal">&gt;</code></p>
+
+      <p>To use this interface, the programmer creates a shared
+      library that implements a standard set of function names. Not
+      all of the functions need to be implemented: in most cases,
+      if the programmer is not interested in a particular class of
+      auditing event, then no implementation needs to be provided
+      for the corresponding auditing function.</p>
+
+      <p>To employ the auditing interface, the environment variable
+      <code class="constant">LD_AUDIT</code> must be defined to
+      contain a colon-separated list of shared libraries, each of
+      which can implement (parts of) the auditing API. When an
+      auditable event occurs, the corresponding function is invoked
+      in each library, in the order that the libraries are
+      listed.</p>
+
+      <div class="refsect2">
+        <a id="rtld-audit-7_sect2" name="rtld-audit-7_sect2" shape="rect"> </a>
+
+        <h3>la_version()</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+  <code class="function">unsigned int la_version</code>(<em class="parameter"><code>unsigned int version</code></em>);
+</pre>
+        </div>
+
+        <p>This is the only function that <em class="replaceable"><code>must</code></em> be defined by an
+        auditing library: it performs the initial handshake between
+        the dynamic linker and the auditing library. When invoking
+        this function, the dynamic linker passes, in <em class="replaceable"><code>version</code></em>, the highest
+        version of the auditing interface that the linker supports.
+        If necessary, the auditing library can check that this
+        version is sufficient for its requirements.</p>
+
+        <p>As its function result, this function should return the
+        version of the auditing interface that this auditing
+        library expects to use (returning <em class="replaceable"><code>version</code></em> is acceptable). If
+        the returned value is 0, or a version that is greater than
+        that supported by the dynamic linker, then the audit
+        library is ignored.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="rtld-audit-7_sect3" name="rtld-audit-7_sect3" shape="rect"> </a>
+
+        <h3>la_objsearch()</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+  <code class="function">char *la_objsearch</code>(<em class="parameter"><code>const char *name</code></em>, <em class="parameter"><code>uintptr_t *cookie</code></em>, <em class="parameter"><code>unsigned int flag</code></em>);
+</pre>
+        </div>
+
+        <p>The dynamic linker invokes this function to inform the
+        auditing library that it is about to search for a shared
+        object. The <em class="replaceable"><code>name</code></em>
+        argument is the filename or pathname that is to be searched
+        for. <em class="replaceable"><code>cookie</code></em>
+        identifies the shared object that initiated the search.
+        <em class="replaceable"><code>flag</code></em> is set to
+        one of the following values:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">LA_SER_ORIG</code></span></dt>
+
+            <dd>
+              <p>This is the original name that is being searched
+              for. Typically, this name comes from an ELF
+              <code class="constant">DT_NEEDED</code> entry, or is
+              the <em class="replaceable"><code>filename</code></em> argument
+              given to <a class="link" href="../htmlman3/dlopen.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">dlopen</span>(3)</span></a>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">LA_SER_LIBPATH</code></span></dt>
+
+            <dd>
+              <p><em class="replaceable"><code>name</code></em> was
+              created using a directory specified in <code class="constant">LD_LIBRARY_PATH</code>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">LA_SER_RUNPATH</code></span></dt>
+
+            <dd>
+              <p><em class="replaceable"><code>name</code></em> was
+              created using a directory specified in an ELF
+              <code class="constant">DT_RPATH</code> or
+              <code class="constant">DT_RUNPATH</code> list.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">LA_SER_CONFIG</code></span></dt>
+
+            <dd>
+              <p><em class="replaceable"><code>name</code></em> was
+              found via the <a class="link" href="../htmlman8/ldconfig.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldconfig</span>(8)</span></a> cache
+              (<code class="filename">/etc/ld.so.cache</code>).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">LA_SER_DEFAULT</code></span></dt>
+
+            <dd>
+              <p><em class="replaceable"><code>name</code></em> was
+              found via a search of one of the default
+              directories.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">LA_SER_SECURE</code></span></dt>
+
+            <dd>
+              <p><em class="replaceable"><code>name</code></em> is
+              specific to a secure object (unused on Linux).</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>As its function result, <code class="function">la_objsearch</code>() returns the pathname that
+        the dynamic linker should use for further processing. If
+        NULL is returned, then this pathname is ignored for further
+        processing. If this audit library simply intends to monitor
+        search paths, then <em class="replaceable"><code>name</code></em> should be
+        returned.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="rtld-audit-7_sect4" name="rtld-audit-7_sect4" shape="rect"> </a>
+
+        <h3>la_activity()</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+  <code class="function">void la_activity</code>(<em class="parameter"><code> uintptr_t *cookie</code></em>, <em class="parameter"><code>unsigned int flag</code></em>);
+</pre>
+        </div>
+
+        <p>The dynamic linker calls this function to inform the
+        auditing library that link-map activity is occurring.
+        <em class="replaceable"><code>cookie</code></em> identifies
+        the object at the head of the link map. When the dynamic
+        linker invokes this function, <em class="replaceable"><code>flag</code></em> is set to one of the
+        following values:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">LA_ACT_ADD</code></span></dt>
+
+            <dd>
+              <p>New objects are being added to the link map.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">LA_ACT_DELETE</code></span></dt>
+
+            <dd>
+              <p>Objects are being removed from the link map.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">LA_ACT_CONSISTENT</code></span></dt>
+
+            <dd>
+              <p>Link-map activity has been completed: the map is
+              once again consistent.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="rtld-audit-7_sect5" name="rtld-audit-7_sect5" shape="rect"> </a>
+
+        <h3>la_objopen()</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+  <code class="function">unsigned int la_objopen</code>(<em class="parameter"><code>struct link_map *map</code></em>, <em class="parameter"><code>Lmid_t lmid</code></em>, <em class="parameter"><code>uintptr_t *cookie</code></em>);
+</pre>
+        </div>
+
+        <p>The dynamic linker calls this function when a new shared
+        object is loaded. The <em class="replaceable"><code>map</code></em> argument is a pointer
+        to a link-map structure that describes the object. The
+        <em class="replaceable"><code>lmid</code></em> field has
+        one of the following values</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">LM_ID_BASE</code></span></dt>
+
+            <dd>
+              <p>Link map is part of the initial namespace.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">LM_ID_NEWLM</code></span></dt>
+
+            <dd>
+              <p>Link map is part of a new namespace requested via
+              <span class="citerefentry"><span class="refentrytitle">dlmopen</span>(3)</span>.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p><em class="replaceable"><code>cookie</code></em> is a
+        pointer to an identifier for this object. The identifier is
+        provided to later calls to functions in the auditing
+        library in order to identify this object. This identifier
+        is initialized to point to object's link map, but the audit
+        library can change the identifier to some other value that
+        it may prefer to use to identify the object.</p>
+
+        <p>As its return value, <code class="function">la_objopen</code>() returns a bit mask created
+        by ORing zero or more of the following constants, which
+        allow the auditing library to select the objects to be
+        monitored by <code class="function">la_symbind*</code>():</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">LA_FLG_BINDTO</code></span></dt>
+
+            <dd>
+              <p>Audit symbol bindings to this object.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">LA_FLG_BINDFROM</code></span></dt>
+
+            <dd>
+              <p>Audit symbol bindings from this object.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>A return value of 0 from <code class="function">la_objopen</code>() indicates that no symbol
+        bindings should be audited for this object.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="rtld-audit-7_sect6" name="rtld-audit-7_sect6" shape="rect"> </a>
+
+        <h3>la_objclose()</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+  <code class="function">unsigned int la_objclose</code>(<em class="parameter"><code>uintptr_t *cookie</code></em>);
+</pre>
+        </div>
+
+        <p>The dynamic linker invokes this function after any
+        finalization code for the object has been executed, before
+        the object is unloaded. The <em class="replaceable"><code>cookie</code></em> argument is the
+        identifier obtained from a previous invocation of
+        <code class="function">la_objopen</code>().</p>
+
+        <p>In the current implementation, the value returned by
+        <code class="function">la_objclose</code>() is ignored.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="rtld-audit-7_sect7" name="rtld-audit-7_sect7" shape="rect"> </a>
+
+        <h3>la_preinit()</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+  <code class="function">void la_preinit</code>(<em class="parameter"><code>uintptr_t *cookie</code></em>);
+</pre>
+        </div>
+
+        <p>The dynamic linker invokes this function after all
+        shared objects have been loaded, before control is passed
+        to the application (i.e., before calling <code class="function">main</code>()). Note that <code class="function">main</code>() may still later dynamically load
+        objects using <a class="link" href="../htmlman3/dlopen.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">dlopen</span>(3)</span></a>.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="rtld-audit-7_sect8" name="rtld-audit-7_sect8" shape="rect"> </a>
+
+        <h3>la_symbind*()</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+  <code class="function">uintptr_t la_symbind32</code>(<em class="parameter"><code>Elf32_Sym *sym</code></em>, <em class="parameter"><code>unsigned int ndx</code></em>, <em class="parameter"><code>uintptr_t *refcook</code></em>, <em class="parameter"><code>uintptr_t *defcook</code></em>, <em class="parameter"><code>unsigned int *flags</code></em>, <em class="parameter"><code>const char *symname</code></em>);
+  <code class="function">uintptr_t la_symbind64</code>(<em class="parameter"><code>Elf64_Sym *sym</code></em>, <em class="parameter"><code>unsigned int ndx</code></em>, <em class="parameter"><code>uintptr_t *refcook</code></em>, <em class="parameter"><code>uintptr_t *defcook</code></em>, <em class="parameter"><code>unsigned int *flags</code></em>, <em class="parameter"><code>const char *symname</code></em>);
+</pre>
+        </div>
+
+        <p>The dynamic linker invokes one of these functions when a
+        symbol binding occurs between two shared objects that have
+        been marked for auditing notification by <code class="function">la_objopen</code>(). The <code class="function">la_symbind32</code>() function is employed on
+        32-bit platforms; the <code class="function">la_symbind64</code>() function is employed on
+        64-bit platforms.</p>
+
+        <p>The <em class="replaceable"><code>sym</code></em>
+        argument is a pointer to a structure that provides
+        information about the symbol being bound. The structure
+        definition is shown in <code class="literal">&lt;</code><code class="filename">elf.h</code><code class="literal">&gt;</code>
+        Among the fields of this structure, <em class="replaceable"><code>st_value</code></em> indicates the
+        address to which the symbol is bound.</p>
+
+        <p>The <em class="replaceable"><code>ndx</code></em>
+        argument gives the index of the symbol in the symbol table
+        of the bound shared object.</p>
+
+        <p>The <em class="replaceable"><code>refcook</code></em>
+        argument identifies the shared object that is making the
+        symbol reference; this is the same identifier that is
+        provided to the <code class="function">la_objopen</code>()
+        function that returned <code class="constant">LA_FLG_BINDFROM</code>. The <em class="replaceable"><code>defcook</code></em> argument identifies
+        the shared object that defines the referenced symbol; this
+        is the same identifier that is provided to the <code class="function">la_objopen</code>() function that returned
+        <code class="constant">LA_FLG_BINDTO</code>.</p>
+
+        <p>The <em class="replaceable"><code>symname</code></em>
+        argument points a string containing the name of the
+        symbol.</p>
+
+        <p>The <em class="replaceable"><code>flags</code></em>
+        argument is a bit mask that both provides information about
+        the symbol and can be used to modify further auditing of
+        this PLT (Procedure Linkage Table) entry. The dynamic
+        linker may supply the following bit values in this
+        argument:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">LA_SYMB_DLSYM</code></span></dt>
+
+            <dd>
+              <p>The binding resulted from a call to <a class="link" href="../htmlman3/dlopen.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">dlsym</span>(3)</span></a>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">LA_SYMB_ALTVALUE</code></span></dt>
+
+            <dd>
+              <p>A previous <code class="function">la_symbind*</code>() call returned an
+              alternate value for this symbol.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>By default, if the auditing library implements
+        <code class="function">la_pltenter</code>() and
+        <code class="function">la_pltexit</code>() functions (see
+        below), then these functions are invoked, after
+        <code class="function">la_symbind</code>(), for PLT
+        entries, each time the symbol is referenced. The following
+        flags can be ORed into <em class="replaceable"><code>*flags</code></em> to change this
+        default behavior:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">LA_SYMB_NOPLTENTER</code></span></dt>
+
+            <dd>
+              <p>Don't call <code class="function">la_pltenter</code>() for this symbol.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">LA_SYMB_NOPLTEXIT</code></span></dt>
+
+            <dd>
+              <p>Don't call <code class="function">la_pltexit</code>() for this symbol.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>The return value of <code class="function">la_symbind32</code>() and <code class="function">la_symbind64</code>() is the address to which
+        control should be passed after the function returns. If the
+        auditing library is simply monitoring symbol bindings, then
+        it should return <em class="replaceable"><code>sym−&gt;st_value</code></em>. A
+        different value may be returned if the library wishes to
+        direct control to an alternate location.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="rtld-audit-7_sect9" name="rtld-audit-7_sect9" shape="rect"> </a>
+
+        <h3>la_pltenter()</h3>
+
+        <p>The precise name and argument types for this function
+        depend on the hardware platform. (The appropriate
+        definition is supplied by <code class="literal">&lt;</code><code class="filename">link.h</code><code class="literal">&gt;</code>
+        Here is the definition for x86-32:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+  <code class="function">Elf32_Addr la_i86_gnu_pltenter</code>(<em class="parameter"><code>Elf32_Sym *sym</code></em>, <em class="parameter"><code>unsigned int ndx</code></em>, <em class="parameter"><code>uintptr_t *refcook</code></em>, <em class="parameter"><code>uintptr_t *defcook</code></em>, <em class="parameter"><code>La_i86_regs *regs</code></em>, <em class="parameter"><code>unsigned int *flags</code></em>, <em class="parameter"><code>const char *symname</code></em>, <em class="parameter"><code>long int *framesizep</code></em>);
+</pre>
+        </div>
+
+        <p>This function is invoked just before a PLT entry is
+        called, between two shared objects that have been marked
+        for binding notification.</p>
+
+        <p>The <em class="replaceable"><code>sym</code></em>,
+        <em class="replaceable"><code>ndx</code></em>, <em class="replaceable"><code>refcook</code></em>, <em class="replaceable"><code>defcook</code></em>, and <em class="replaceable"><code>symname</code></em> are as for
+        <code class="function">la_symbind*</code>().</p>
+
+        <p>The <em class="replaceable"><code>regs</code></em>
+        argument points to a structure (defined in <code class="literal">&lt;</code><code class="filename">link.h</code><code class="literal">&gt;</code>
+        containing the values of registers to be used for the call
+        to this PLT entry.</p>
+
+        <p>The <em class="replaceable"><code>flags</code></em>
+        argument points to a bit mask that conveys information
+        about, and can be used to modify subsequent auditing of,
+        this PLT entry, as for <code class="function">la_symbind*</code>().</p>
+
+        <p>The <em class="replaceable"><code>framesizep</code></em>
+        argument points to a <span class="emphasis"><em>long
+        int</em></span> buffer that can be used to explicitly set
+        the frame size used for the call to this PLT entry. If
+        different <code class="function">la_pltenter</code>()
+        invocations for this symbol return different values, then
+        the maximum returned value is used. The <code class="function">la_pltenter</code>() function is called only if
+        this buffer is explicitly set to a suitable value.</p>
+
+        <p>The return value of <code class="function">la_pltenter</code>() is as for <code class="function">la_symbind*</code>().</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="rtld-audit-7_sect10" name="rtld-audit-7_sect10" shape="rect"> </a>
+
+        <h3>la_pltexit()</h3>
+
+        <p>The precise name and argument types for this function
+        depend on the hardware platform. (The appropriate
+        definition is supplied by <code class="literal">&lt;</code><code class="filename">link.h</code><code class="literal">&gt;</code>
+        Here is the definition for x86-32:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+  <code class="function">unsigned int la_i86_gnu_pltexit</code>(<em class="parameter"><code>Elf32_Sym *sym</code></em>, <em class="parameter"><code>unsigned int ndx</code></em>, <em class="parameter"><code>uintptr_t *refcook</code></em>, <em class="parameter"><code>uintptr_t *defcook</code></em>, <em class="parameter"><code>const La_i86_regs *inregs</code></em>, <em class="parameter"><code>La_i86_retval *outregs</code></em>, <em class="parameter"><code>const char *symname</code></em>);
+</pre>
+        </div>
+
+        <p>This function is called when a PLT entry, made between
+        two shared objects that have been marked for binding
+        notification, returns. The function is called just before
+        control returns to the caller of the PLT entry.</p>
+
+        <p>The <em class="replaceable"><code>sym</code></em>,
+        <em class="replaceable"><code>ndx</code></em>, <em class="replaceable"><code>refcook</code></em>, <em class="replaceable"><code>defcook</code></em>, and <em class="replaceable"><code>symname</code></em> are as for
+        <code class="function">la_symbind*</code>().</p>
+
+        <p>The <em class="replaceable"><code>inregs</code></em>
+        argument points to a structure (defined in <code class="literal">&lt;</code><code class="filename">link.h</code><code class="literal">&gt;</code>
+        containing the values of registers used for the call to
+        this PLT entry. The <em class="replaceable"><code>outregs</code></em> argument points to
+        a structure (defined in <code class="literal">&lt;</code><code class="filename">link.h</code><code class="literal">&gt;</code>
+        containing return values for the call to this PLT entry.
+        These values can be modified by the caller, and the changes
+        will be visible to the caller of the PLT entry.</p>
+
+        <p>In the current GNU implementation, the return value of
+        <code class="function">la_pltexit</code>() is ignored.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="rtld-audit-7_sect11" name="rtld-audit-7_sect11" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>This API is nonstandard, but very similar to the Solaris
+      API, described in the Solaris <span class="emphasis"><em>Linker and Libraries Guide</em></span>, in the
+      chapter <span class="emphasis"><em>Runtime Linker Auditing
+      Interface</em></span>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="rtld-audit-7_sect12" name="rtld-audit-7_sect12" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Note the following differences from the Solaris dynamic
+      linker auditing API:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p>The Solaris <code class="function">la_objfilter</code>() interface is not
+            supported by the GNU implementation.</p>
+          </li>
+
+          <li class="listitem">
+            <p>The Solaris <code class="function">la_symbind32</code>() and <code class="function">la_pltexit</code>() functions do not provide
+            a <em class="replaceable"><code>symname</code></em>
+            argument.</p>
+          </li>
+
+          <li class="listitem">
+            <p>The Solaris <code class="function">la_pltexit</code>() function does not
+            provide <em class="replaceable"><code>inregs</code></em> and <em class="replaceable"><code>outregs</code></em> arguments (but
+            does provide a <em class="replaceable"><code>retval</code></em> argument with
+            the function return value).</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="rtld-audit-7_sect13" name="rtld-audit-7_sect13" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>In glibc versions up to and include 2.9, specifying more
+      than one audit library in <code class="constant">LD_AUDIT</code> results in a run-time crash. This
+      is reportedly fixed in glibc 2.10.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="rtld-audit-7_sect14" name="rtld-audit-7_sect14" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;link.h&gt;
+#include &lt;stdio.h&gt;
+
+unsigned int
+la_version(unsigned int version)
+{
+    printf("la_version(): %d\n", version);
+
+    return version;
+}
+
+char *
+la_objsearch(const char *name, uintptr_t *cookie, unsigned int flag)
+{
+    printf("la_objsearch(): name = %s; cookie = %x", name, cookie);
+    printf("; flag = %s\n",
+            (flag == LA_SER_ORIG) ?    "LA_SER_ORIG" :
+            (flag == LA_SER_LIBPATH) ? "LA_SER_LIBPATH" :
+            (flag == LA_SER_RUNPATH) ? "LA_SER_RUNPATH" :
+            (flag == LA_SER_DEFAULT) ? "LA_SER_DEFAULT" :
+            (flag == LA_SER_CONFIG) ?  "LA_SER_CONFIG" :
+            (flag == LA_SER_SECURE) ?  "LA_SER_SECURE" :
+            "???");
+
+    return name;
+}
+
+void
+la_activity (uintptr_t *cookie, unsigned int flag)
+{
+    printf("la_activity(): cookie = %x; flag = %s\n", cookie,
+            (flag == LA_ACT_CONSISTENT) ? "LA_ACT_CONSISTENT" :
+            (flag == LA_ACT_ADD) ?        "LA_ACT_ADD" :
+            (flag == LA_ACT_DELETE) ?     "LA_ACT_DELETE" :
+            "???");
+}
+
+unsigned int
+la_objopen(struct link_map *map, Lmid_t lmid, uintptr_t *cookie)
+{
+    printf("la_objopen(): loading \"%s\"; lmid = %s; cookie=%x\n",
+            map−&gt;l_name,
+            (lmid == LM_ID_BASE) ?  "LM_ID_BASE" :
+            (lmid == LM_ID_NEWLM) ? "LM_ID_NEWLM" :
+            "???",
+            cookie);
+
+    return LA_FLG_BINDTO | LA_FLG_BINDFROM;
+}
+
+unsigned int
+la_objclose (uintptr_t *cookie)
+{
+    printf("la_objclose(): %x\n", cookie);
+
+    return 0;
+}
+
+void
+la_preinit(uintptr_t *cookie)
+{
+    printf("la_preinit(): %x\n", cookie);
+}
+
+uintptr_t
+la_symbind32(Elf32_Sym *sym, unsigned int ndx, uintptr_t *refcook,
+        uintptr_t *defcook, unsigned int *flags, const char *symname)
+{
+    printf("la_symbind32(): symname = %s; sym−&gt;st_value = %p\n",
+            symname, sym−&gt;st_value);
+    printf("        ndx = %d; flags = 0x%x", ndx, *flags);
+    printf("; refcook = %x; defcook = %x\n", refcook, defcook);
+
+    return sym−&gt;st_value;
+}
+
+uintptr_t
+la_symbind64(Elf64_Sym *sym, unsigned int ndx, uintptr_t *refcook,
+        uintptr_t *defcook, unsigned int *flags, const char *symname)
+{
+    printf("la_symbind64(): symname = %s; sym−&gt;st_value = %p\n",
+            symname, sym−&gt;st_value);
+    printf("        ndx = %d; flags = 0x%x", ndx, *flags);
+    printf("; refcook = %x; defcook = %x\n", refcook, defcook);
+
+    return sym−&gt;st_value;
+}
+
+Elf32_Addr
+la_i86_gnu_pltenter(Elf32_Sym *sym, unsigned int ndx,
+        uintptr_t *refcook, uintptr_t *defcook, La_i86_regs *regs,
+        unsigned int *flags, const char *symname, long int *framesizep)
+{
+    printf("la_i86_gnu_pltenter(): %s (%p)\n", symname, sym−&gt;st_value);
+
+    return sym−&gt;st_value;
+}
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="rtld-audit-7_sect15" name="rtld-audit-7_sect15" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><span class="citerefentry"><span class="refentrytitle">ldd</span>(1)</span>, <a class="link" href="../htmlman3/dlopen.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">dlopen</span>(3)</span></a>, <a class="link" href="../htmlman8/ld.so.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ld.so</span>(8)</span></a>, <a class="link" href="../htmlman8/ldconfig.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldconfig</span>(8)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="rtld-audit-7_sect16" name="rtld-audit-7_sect16" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 2009 Linux Foundation, written by Michael Kerrisk<br />
+
+                      &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  2009-01-12, mtk, Created<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>tunelp(8) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="tunelp(8) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index8.html" shape="rect">Section 8</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="tunelp.8" name="tunelp.8" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>tunelp — set various parameters for the lp
+      device</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">tunelp</code> [options] device</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="tunelp-8_sect1" name="tunelp-8_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><span class="command"><strong>tunelp</strong></span> sets
+      several parameters for the /dev/lp<code class="literal">?</code> devices, for better performance (or for
+      any performance at all, if your printer won't work without
+      it...) Without parameters, it tells whether the device is
+      using interrupts, and if so, which one. With parameters, it
+      sets the device characteristics accordingly.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="tunelp-8_sect2" name="tunelp-8_sect2" shape="rect"> </a>
+
+      <h2>OPTIONS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="option">−i</code>, <code class="option">−−irq</code> <span class="command"><strong>argument</strong></span></span></dt>
+
+          <dd>
+            <p>specifies the IRQ to use for the parallel port in
+            question. If this is set to something non-zero,
+            −t and −c have no effect. If your port does
+            not use interrupts, this option will make printing
+            stop. The command <span class="emphasis"><em>tunelp -i
+            0</em></span> restores non-interrupt driven (polling)
+            action, and your printer should work again. If your
+            parallel port does support interrupts, interrupt-driven
+            printing should be somewhat faster and efficient, and
+            will probably be desirable.</p>
+
+            <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+              <table border="0" summary="Note">
+                <tr>
+                  <td rowspan="2" align="center" valign="top" width="25" colspan="1"><img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+                  <th align="left" rowspan="1" colspan="1">Note</th>
+                </tr>
+
+                <tr>
+                  <td align="left" valign="top" rowspan="1" colspan="1">
+                    <p>This option will have no effect with kernel
+                    2.1.131 or later since the irq is handled by
+                    the parport driver. You can change the parport
+                    irq for example via <code class="filename">/proc/parport/*/irq</code>. Read
+                    <code class="filename">/usr/src/linux/Documentation/parport.txt</code>
+                    for more details on parport.</p>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </dd>
+
+          <dt><span class="term"><code class="option">−t</code>, <code class="option">−−time</code> <span class="command"><strong>milliseconds</strong></span></span></dt>
+
+          <dd>
+            <p>is the amount of time in jiffies that the driver
+            waits if the printer doesn't take a character for the
+            number of tries dictated by the −c parameter. 10
+            is the default value. If you want fastest possible
+            printing, and don't care about system load, you may set
+            this to 0. If you don't care how fast your printer
+            goes, or are printing text on a slow printer with a
+            buffer, then 500 (5 seconds) should be fine, and will
+            give you very low system load. This value generally
+            should be lower for printing graphics than text, by a
+            factor of approximately 10, for best performance.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−c</code>, <code class="option">−−chars</code> <span class="command"><strong>characters</strong></span></span></dt>
+
+          <dd>
+            <p>is the number of times to try to output a character
+            to the printer before sleeping for −t
+            <code class="constant">TIME</code>. It is the number of
+            times around a loop that tries to send a character to
+            the printer. 120 appears to be a good value for most
+            printers in polling mode. 1000 is the default, because
+            there are some printers that become jerky otherwise,
+            but you <span class="emphasis"><em>must</em></span> set
+            this to `1' to handle the maximal CPU efficiency if you
+            are using interrupts. If you have a very fast printer,
+            a value of 10 might make more sense even if in polling
+            mode. If you have a <span class="emphasis"><em>really</em></span> old printer, you can
+            increase this further.</p>
+
+            <p>Setting −t <code class="constant">TIME</code>
+            to 0 is equivalent to setting −c <code class="constant">CHARS</code> to infinity.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−w</code>, <code class="option">−−wait</code> <span class="command"><strong>milliseconds</strong></span></span></dt>
+
+          <dd>
+            <p>is the number of usec we wait while playing with the
+            strobe signal. While most printers appear to be able to
+            deal with an extremely short strobe, some printers
+            demand a longer one. Increasing this from the default 1
+            may make it possible to print with those printers. This
+            may also make it possible to use longer cables. It's
+            also possible to decrease this value to 0 if your
+            printer is fast enough or your machine is slow
+            enough.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−a</code>, <code class="option">−−abort</code> <em class="replaceable"><code>&lt;on|off&gt;</code></em></span></dt>
+
+          <dd>
+            <p>This is whether to abort on printer error - the
+            default is not to. If you are sitting at your computer,
+            you probably want to be able to see an error and fix
+            it, and have the printer go on printing. On the other
+            hand, if you aren't, you might rather that your printer
+            spooler find out that the printer isn't ready, quit
+            trying, and send you mail about it. The choice is
+            yours.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−o</code>, <code class="option">−−check−status</code>
+          <em class="replaceable"><code>&lt;on|off&gt;</code></em></span></dt>
+
+          <dd>
+            <p>This option is much like −a. It makes any
+            <code class="function">open</code>() of this device
+            check to see that the device is on-line and not
+            reporting any out of paper or other errors. This is the
+            correct setting for most versions of lpd.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−C</code>, <code class="option">−−careful</code> <em class="replaceable"><code>&lt;on|off&gt;</code></em></span></dt>
+
+          <dd>
+            <p>This option adds extra ("careful") error checking.
+            When this option is on, the printer driver will ensure
+            that the printer is on-line and not reporting any out
+            of paper or other errors before sending data. This is
+            particularly useful for printers that normally appear
+            to accept data when turned off.</p>
+
+            <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+              <table border="0" summary="Note">
+                <tr>
+                  <td rowspan="2" align="center" valign="top" width="25" colspan="1"><img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+                  <th align="left" rowspan="1" colspan="1">Note</th>
+                </tr>
+
+                <tr>
+                  <td align="left" valign="top" rowspan="1" colspan="1">
+                    <p>This option is obsolete because it's the
+                    default in 2.1.131 kernel or later.</p>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </dd>
+
+          <dt><span class="term"><code class="option">−s</code>, <code class="option">−−status</code></span></dt>
+
+          <dd>
+            <p>This option returns the current printer status, both
+            as a decimal number from 0..255, and as a list of
+            active flags. When this option is specified, −q
+            off, turning off the display of the current IRQ, is
+            implied.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−T</code>, <code class="option">−−trust−irq</code> <em class="replaceable"><code>&lt;on|off&gt;</code></em></span></dt>
+
+          <dd>
+            <p>This option is obsolete. It was added in Linux
+            2.1.131, and removed again in Linux 2.3.10. The below
+            is for these old kernels only.</p>
+
+            <p>This option tells the lp driver to trust or not the
+            IRQ. This option makes sense only if you are using
+            interrupts. If you tell the lp driver to trust the irq,
+            then, when the lp driver will get an irq, it will send
+            the next pending character to the printer
+            unconditionally, even if the printer still claims to be
+            BUSY. This is the only way to sleep on interrupt (and
+            so the handle the irq printing efficiently) at least on
+            Epson Stylus Color Printers. The lp driver
+            automagically detects if you could get improved
+            performance by setting this flag, and in such case it
+            will warn you with a kernel message.</p>
+
+            <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+              <table border="0" summary="Note">
+                <tr>
+                  <td rowspan="2" align="center" valign="top" width="25" colspan="1"><img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+                  <th align="left" rowspan="1" colspan="1">Note</th>
+                </tr>
+
+                <tr>
+                  <td align="left" valign="top" rowspan="1" colspan="1">
+                    <p>Trusting the irq is reported to corrupt the
+                    printing on some hardware, you must try to know
+                    if your printer will work or not...</p>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </dd>
+
+          <dt><span class="term"><code class="option">−r</code>, <code class="option">−−reset</code></span></dt>
+
+          <dd>
+            <p>This option resets the port. It requires a Linux
+            kernel version of 1.1.80 or later.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−q</code>, <code class="option">−−print−irq</code> <em class="replaceable"><code>&lt;on|off&gt;</code></em></span></dt>
+
+          <dd>
+            <p>This option sets printing the display of the current
+            IRQ setting.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="tunelp-8_sect3" name="tunelp-8_sect3" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p><code class="option">−o</code>, <code class="option">−C</code>, and <code class="option">−s</code> all require a Linux kernel version
+      of 1.1.76 or later.</p>
+
+      <p><code class="option">−C</code> requires a Linux
+      version prior to 2.1.131.</p>
+
+      <p><code class="option">−T</code> requires a Linux
+      version of 2.1.131 or later.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="tunelp-8_sect4" name="tunelp-8_sect4" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>By some unfortunate coincidence the ioctl LPSTRICT of
+      2.0.36 has the same number as the ioctl LPTRUSTIRQ introduced
+      in 2.1.131. So, use of the −T option on a 2.0.36 kernel
+      with an tunelp compiled under 2.1.131 or later may have
+      unexpected effects.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="tunelp-8_sect5" name="tunelp-8_sect5" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <p><code class="filename">/dev/lp?</code></p>
+
+      <p><code class="filename">/proc/parport/*/*</code></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="tunelp-8_sect6" name="tunelp-8_sect6" shape="rect"> </a>
+
+      <h2>AVAILABILITY</h2>
+
+      <p>The tunelp command is part of the util-linux package and
+      is available from <a class="literalurl" href="ftp://ftp.kernel.org/pub/linux/utils/util-linux/" target="_top" shape="rect">Linux Kernel Archive</a></p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 1992-1997 Michael K. Johnson &lt;johnsonm<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>redhat.com&gt;<br />
+
+                  Copyright (C) 1998      Andrea Arcangeli   &lt;andrea<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>e-mind.com&gt;<br />
+
+                  It may be distributed under the terms of the GNU General Public License,<br />
+
+                  version 2, or any higher version.  See section COPYING of the GNU General<br />
+
+                  Public license for conditions under which this file may be redistributed.<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

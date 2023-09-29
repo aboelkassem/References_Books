@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>read(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="read(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="read.2" name="read.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>read — read from a file descriptor</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;unistd.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">ssize_t
+            <strong>read</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">fd</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">void *<var class="pdparam">buf</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">size_t <var class="pdparam">count</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="read-2_sect1" name="read-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">read</code>() attempts to read up
+      to <em class="parameter"><code>count</code></em> bytes from
+      file descriptor <em class="parameter"><code>fd</code></em>
+      into the buffer starting at <em class="parameter"><code>buf</code></em>.</p>
+
+      <p>On files that support seeking, the read operation
+      commences at the current file offset, and the file offset is
+      incremented by the number of bytes read. If the current file
+      offset is at or past the end of file, no bytes are read, and
+      <code class="function">read</code>() returns zero.</p>
+
+      <p>If <em class="parameter"><code>count</code></em> is zero,
+      <code class="function">read</code>() <em class="replaceable"><code>may</code></em> detect the errors
+      described below. In the absence of any errors, or if
+      <code class="function">read</code>() does not check for
+      errors, a <code class="function">read</code>() with a
+      <em class="parameter"><code>count</code></em> of 0 returns
+      zero and has no other effects.</p>
+
+      <p>If <em class="parameter"><code>count</code></em> is
+      greater than <code class="constant">SSIZE_MAX</code>, the
+      result is unspecified.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="read-2_sect2" name="read-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, the number of bytes read is returned (zero
+      indicates end of file), and the file position is advanced by
+      this number. It is not an error if this number is smaller
+      than the number of bytes requested; this may happen for
+      example because fewer bytes are actually available right now
+      (maybe because we were close to end-of-file, or because we
+      are reading from a pipe, or from a terminal), or because
+      <code class="function">read</code>() was interrupted by a
+      signal. On error, −1 is returned, and <code class="varname">errno</code> is set appropriately. In this case, it
+      is left unspecified whether the file position (if any)
+      changes.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="read-2_sect3" name="read-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EAGAIN</span></span></dt>
+
+          <dd>
+            <p>The file descriptor <em class="parameter"><code>fd</code></em> refers to a file other
+            than a socket and has been marked nonblocking
+            (<code class="constant">O_NONBLOCK</code>), and the
+            read would block.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EAGAIN</span> or <span class="errorname">EWOULDBLOCK</span></span></dt>
+
+          <dd>
+            <p>The file descriptor <em class="parameter"><code>fd</code></em> refers to a socket and
+            has been marked nonblocking (<code class="constant">O_NONBLOCK</code>), and the read would
+            block. POSIX.1-2001 allows either error to be returned
+            for this case, and does not require these constants to
+            have the same value, so a portable application should
+            check for both possibilities.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EBADF</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>fd</code></em> is not a
+            valid file descriptor or is not open for reading.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>buf</code></em> is
+            outside your accessible address space.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINTR</span></span></dt>
+
+          <dd>
+            <p>The call was interrupted by a signal before any data
+            was read; see <a class="link" href="../htmlman7/signal.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(7)</span></a>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>fd</code></em> is
+            attached to an object which is unsuitable for reading;
+            or the file was opened with the <code class="constant">O_DIRECT</code> flag, and either the address
+            specified in <em class="parameter"><code>buf</code></em>, the value specified
+            in <em class="parameter"><code>count</code></em>, or
+            the current file offset is not suitably aligned.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>fd</code></em> was
+            created via a call to <a class="link" href="../htmlman2/timerfd_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">timerfd_create</span>(2)</span></a> and
+            the wrong size buffer was given to <code class="function">read</code>(); see <a class="link" href="../htmlman2/timerfd_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">timerfd_create</span>(2)</span></a> for
+            further information.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EIO</span></span></dt>
+
+          <dd>
+            <p>I/O error. This will happen for example when the
+            process is in a background process group, tries to read
+            from its controlling terminal, and either it is
+            ignoring or blocking <code class="constant">SIGTTIN</code> or its process group is
+            orphaned. It may also occur when there is a low-level
+            I/O error while reading from a disk or tape.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EISDIR</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>fd</code></em> refers to
+            a directory.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>Other errors may occur, depending on the object connected
+      to <em class="parameter"><code>fd</code></em>. POSIX allows a
+      <code class="function">read</code>() that is interrupted
+      after reading some data to return −1 (with <code class="varname">errno</code> set to <span class="errorname">EINTR</span>) or to return the number of bytes
+      already read.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="read-2_sect4" name="read-2_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>SVr4, 4.3BSD, POSIX.1-2001.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="read-2_sect5" name="read-2_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>On NFS filesystems, reading small amounts of data will
+      update the timestamp only the first time, subsequent calls
+      may not do so. This is caused by client side attribute
+      caching, because most if not all NFS clients leave st_atime
+      (last file access time) updates to the server and client side
+      reads satisfied from the client's cache will not cause
+      st_atime updates on the server as there are no server side
+      reads. UNIX semantics can be obtained by disabling client
+      side attribute caching, but in most situations this will
+      substantially increase server load and decrease
+      performance.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="read-2_sect6" name="read-2_sect6" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>According to POSIX.1-2008/SUSv4 Section XSI 2.9.7 ("Thread
+      Interactions with Regular File Operations"):</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>All of the following functions shall be atomic with
+          respect to each other in the effects specified in
+          POSIX.1-2008 when they operate on regular files or
+          symbolic links: ...</p>
+        </blockquote>
+      </div>
+
+      <p>Among the APIs subsequently listed are <code class="function">read</code>() and <a class="link" href="../htmlman2/readv.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">readv</span>(2)</span></a>. And among the
+      effects that should be atomic across threads (and processes)
+      are updates of the file offset. However, on Linux before
+      version 3.14, this was not the case: if two processes that
+      share an open file description (see <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>) perform a
+      <code class="function">read</code>() (or <a class="link" href="../htmlman2/readv.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">readv</span>(2)</span></a>) at the same time,
+      then the I/O operations were not atomic with respect updating
+      the file offset, with the result that the reads in the two
+      processes might (incorrectly) overlap in the blocks of data
+      that they obtained. This problem was fixed in Linux 3.14.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="read-2_sect7" name="read-2_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/close.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">close</span>(2)</span></a>, <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a>, <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a>, <a class="link" href="../htmlman2/lseek.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">lseek</span>(2)</span></a>, <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>, <a class="link" href="../htmlman2/pread.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pread</span>(2)</span></a>, <a class="link" href="../htmlman2/readdir.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">readdir</span>(2)</span></a>, <a class="link" href="../htmlman2/readlink.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">readlink</span>(2)</span></a>, <a class="link" href="../htmlman2/readv.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">readv</span>(2)</span></a>, <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a>, <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a>, <a class="link" href="../htmlman3/fread.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fread</span>(3)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="read-2_sect8" name="read-2_sect8" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    This manpage is Copyright (C) 1992 Drew Eckhardt;<br />
+
+                              and Copyright (C) 1993 Michael Haardt, Ian Jackson.<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Modified Sat Jul 24 00:06:00 1993 by Rik Faith &lt;faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu&gt;<br />
+
+                  Modified Wed Jan 17 16:02:32 1996 by Michael Haardt<br />
+
+                    &lt;michael<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cantor.informatik.rwth-aachen.de&gt;<br />
+
+                  Modified Thu Apr 11 19:26:35 1996 by Andries Brouwer &lt;aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl&gt;<br />
+
+                  Modified Sun Jul 21 18:59:33 1996 by Andries Brouwer &lt;aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl&gt;<br />
+
+                  Modified Fri Jan 31 16:47:33 1997 by Eric S. Raymond &lt;esr<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>thyrsus.com&gt;<br />
+
+                  Modified Sat Jul 12 20:45:39 1997 by Michael Haardt<br />
+
+                    &lt;michael<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cantor.informatik.rwth-aachen.de&gt;<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

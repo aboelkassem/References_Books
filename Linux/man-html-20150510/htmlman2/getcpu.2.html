@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>getcpu(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="getcpu(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="getcpu.2" name="getcpu.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>getcpu — determine CPU and NUMA node on which the
+      calling thread is running</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;linux/getcpu.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>getcpu</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">unsigned *<var class="pdparam">cpu</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">unsigned *<var class="pdparam">node</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">struct getcpu_cache *<var class="pdparam">tcache</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">There is no glibc wrapper
+            for this system call; see NOTES.</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="getcpu-2_sect1" name="getcpu-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">getcpu</code>() system call
+      identifies the processor and node on which the calling thread
+      or process is currently running and writes them into the
+      integers pointed to by the <em class="parameter"><code>cpu</code></em> and <em class="parameter"><code>node</code></em> arguments. The processor
+      is a unique small integer identifying a CPU. The node is a
+      unique small identifier identifying a NUMA node. When either
+      <em class="parameter"><code>cpu</code></em> or <em class="parameter"><code>node</code></em> is NULL nothing is written
+      to the respective pointer.</p>
+
+      <p>The third argument to this system call is nowadays unused,
+      and should be specified as NULL unless portability to Linux
+      2.6.23 or earlier is required (see NOTES).</p>
+
+      <p>The information placed in <em class="parameter"><code>cpu</code></em> is guaranteed to be current
+      only at the time of the call: unless the CPU affinity has
+      been fixed using <a class="link" href="../htmlman2/sched_setaffinity.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_setaffinity</span>(2)</span></a>, the
+      kernel might change the CPU at any time. (Normally this does
+      not happen because the scheduler tries to minimize movements
+      between CPUs to keep caches hot, but it is possible.) The
+      caller must allow for the possibility that the information
+      returned in <em class="parameter"><code>cpu</code></em> and
+      <em class="parameter"><code>node</code></em> is no longer
+      current by the time the call returns.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="getcpu-2_sect2" name="getcpu-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, 0 is returned. On error, −1 is returned,
+      and <code class="varname">errno</code> is set
+      appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="getcpu-2_sect3" name="getcpu-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p>Arguments point outside the calling process's
+            address space.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="getcpu-2_sect4" name="getcpu-2_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p><code class="function">getcpu</code>() was added in kernel
+      2.6.19 for x86_64 and i386.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="getcpu-2_sect5" name="getcpu-2_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p><code class="function">getcpu</code>() is
+      Linux-specific.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="getcpu-2_sect6" name="getcpu-2_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Linux makes a best effort to make this call as fast as
+      possible. The intention of <code class="function">getcpu</code>() is to allow programs to make
+      optimizations with per-CPU data or for NUMA optimization.</p>
+
+      <p>Glibc does not provide a wrapper for this system call;
+      call it using <a class="link" href="../htmlman2/syscall.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">syscall</span>(2)</span></a>; or use
+      <a class="link" href="../htmlman3/sched_getcpu.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_getcpu</span>(3)</span></a>
+      instead.</p>
+
+      <p>The <em class="parameter"><code>tcache</code></em>
+      argument is unused since Linux 2.6.24. In earlier kernels, if
+      this argument was non-NULL, then it specified a pointer to a
+      caller-allocated buffer in thread-local storage that was used
+      to provide a caching mechanism for <code class="function">getcpu</code>(). Use of the cache could speed
+      <code class="function">getcpu</code>() calls, at the cost
+      that there was a very small chance that the returned
+      information would be out of date. The caching mechanism was
+      considered to cause problems when migrating threads between
+      CPUs, and so the argument is now ignored.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="getcpu-2_sect7" name="getcpu-2_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/mbind.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mbind</span>(2)</span></a>, <a class="link" href="../htmlman2/sched_setaffinity.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_setaffinity</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/set_mempolicy.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">set_mempolicy</span>(2)</span></a>, <a class="link" href="../htmlman3/sched_getcpu.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_getcpu</span>(3)</span></a>, <a class="link" href="../htmlman7/cpuset.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">cpuset</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="getcpu-2_sect8" name="getcpu-2_sect8" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    This man page is Copyright (C) 2006 Andi Kleen &lt;ak<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>muc.de&gt;.<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM_ONE_PARA)<br />
+                  Permission is granted to distribute possibly modified copies<br />
+
+                  of this page provided the header is included verbatim,<br />
+
+                  and in case of nontrivial modification author and date<br />
+
+                  of the modification is added to the header.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  2008, mtk, various edits<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

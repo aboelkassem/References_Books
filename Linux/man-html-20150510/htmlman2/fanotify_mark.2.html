@@ -1,0 +1,540 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>fanotify_mark(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="fanotify_mark(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="fanotify-mark.2" name="fanotify-mark.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>fanotify_mark — add, remove, or modify an fanotify
+      mark on a filesystem object</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;sys/fanotify.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>fanotify_mark</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">fanotify_fd</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">unsigned int <var class="pdparam">flags</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">uint64_t <var class="pdparam">mask</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">dirfd</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">pathname</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fanotify-mark-2_sect1" name="fanotify-mark-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>For an overview of the fanotify API, see <a class="link" href="../htmlman7/fanotify.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fanotify</span>(7)</span></a>.</p>
+
+      <p><a class="link" href="../htmlman2/fanotify_mark.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fanotify_mark</span>(2)</span></a> adds,
+      removes, or modifies an fanotify mark on a filesystem object.
+      The caller must have read permission on the filesystem object
+      that is to be marked.</p>
+
+      <p>The <em class="parameter"><code>fanotify_fd</code></em>
+      argument is a file descriptor returned by <a class="link" href="../htmlman2/fanotify_init.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fanotify_init</span>(2)</span></a>.</p>
+
+      <p><em class="parameter"><code>flags</code></em> is a bit
+      mask describing the modification to perform. It must include
+      exactly one of the following values:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">FAN_MARK_ADD</code></span></dt>
+
+          <dd>
+            <p>The events in <em class="parameter"><code>mask</code></em> will be added to the
+            mark mask (or to the ignore mask). <em class="parameter"><code>mask</code></em> must be nonempty or
+            the error <span class="errorname">EINVAL</span> will
+            occur.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FAN_MARK_REMOVE</code></span></dt>
+
+          <dd>
+            <p>The events in argument <em class="parameter"><code>mask</code></em> will be removed from
+            the mark mask (or from the ignore mask). <em class="parameter"><code>mask</code></em> must be nonempty or
+            the error <span class="errorname">EINVAL</span> will
+            occur.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FAN_MARK_FLUSH</code></span></dt>
+
+          <dd>
+            <p>Remove either all mount or all non-mount marks from
+            the fanotify group. If <em class="parameter"><code>flags</code></em> contains
+            <code class="constant">FAN_MARK_MOUNT</code>, all marks
+            for mounts are removed from the group. Otherwise, all
+            marks for directories and files are removed. No flag
+            other than <code class="constant">FAN_MARK_MOUNT</code>
+            can be used in conjunction with <code class="constant">FAN_MARK_FLUSH</code>. <em class="parameter"><code>mask</code></em> is ignored.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>If none of the values above is specified, or more than one
+      is specified, the call fails with the error <span class="errorname">EINVAL</span>.</p>
+
+      <p>In addition, zero or more of the following values may be
+      ORed into <em class="parameter"><code>flags</code></em>:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">FAN_MARK_DONT_FOLLOW</code></span></dt>
+
+          <dd>
+            <p>If <em class="parameter"><code>pathname</code></em>
+            is a symbolic link, mark the link itself, rather than
+            the file to which it refers. (By default, <code class="function">fanotify_mark</code>() dereferences
+            <em class="parameter"><code>pathname</code></em> if it
+            is a symbolic link.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FAN_MARK_ONLYDIR</code></span></dt>
+
+          <dd>
+            <p>If the filesystem object to be marked is not a
+            directory, the error <span class="errorname">ENOTDIR</span> shall be raised.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FAN_MARK_MOUNT</code></span></dt>
+
+          <dd>
+            <p>Mark the mount point specified by <em class="parameter"><code>pathname</code></em>. If <em class="parameter"><code>pathname</code></em> is not itself a
+            mount point, the mount point containing <em class="parameter"><code>pathname</code></em> will be marked.
+            All directories, subdirectories, and the contained
+            files of the mount point will be monitored.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FAN_MARK_IGNORED_MASK</code></span></dt>
+
+          <dd>
+            <p>The events in <em class="parameter"><code>mask</code></em> shall be added to or
+            removed from the ignore mask.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FAN_MARK_IGNORED_SURV_MODIFY</code></span></dt>
+
+          <dd>
+            <p>The ignore mask shall survive modify events. If this
+            flag is not set, the ignore mask is cleared when a
+            modify event occurs for the ignored file or
+            directory.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p><em class="parameter"><code>mask</code></em> defines which
+      events shall be listened for (or which shall be ignored). It
+      is a bit mask composed of the following values:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">FAN_ACCESS</code></span></dt>
+
+          <dd>
+            <p>Create an event when a file or directory (but see
+            BUGS) is accessed (read).</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FAN_MODIFY</code></span></dt>
+
+          <dd>
+            <p>Create an event when a file is modified (write).</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FAN_CLOSE_WRITE</code></span></dt>
+
+          <dd>
+            <p>Create an event when a writable file is closed.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FAN_CLOSE_NOWRITE</code></span></dt>
+
+          <dd>
+            <p>Create an event when a read-only file or directory
+            is closed.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FAN_OPEN</code></span></dt>
+
+          <dd>
+            <p>Create an event when a file or directory is
+            opened.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FAN_OPEN_PERM</code></span></dt>
+
+          <dd>
+            <p>Create an event when a permission to open a file or
+            directory is requested. An fanotify file descriptor
+            created with <code class="constant">FAN_CLASS_PRE_CONTENT</code> or <code class="constant">FAN_CLASS_CONTENT</code> is required.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FAN_ACCESS_PERM</code></span></dt>
+
+          <dd>
+            <p>Create an event when a permission to read a file or
+            directory is requested. An fanotify file descriptor
+            created with <code class="constant">FAN_CLASS_PRE_CONTENT</code> or <code class="constant">FAN_CLASS_CONTENT</code> is required.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FAN_ONDIR</code></span></dt>
+
+          <dd>
+            <p>Create events for directories—for example,
+            when <a class="link" href="../htmlman3/opendir.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">opendir</span>(3)</span></a>, <a class="link" href="../htmlman3/readdir.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">readdir</span>(3)</span></a> (but see
+            BUGS), and <a class="link" href="../htmlman3/closedir.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">closedir</span>(3)</span></a> are
+            called. Without this flag, only events for files are
+            created.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FAN_EVENT_ON_CHILD</code></span></dt>
+
+          <dd>
+            <p>Events for the immediate children of marked
+            directories shall be created. The flag has no effect
+            when marking mounts. Note that events are not generated
+            for children of the subdirectories of marked
+            directories. To monitor complete directory trees it is
+            necessary to mark the relevant mount.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>The following composed value is defined:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">FAN_CLOSE</code></span></dt>
+
+          <dd>
+            <p>A file is closed (<code class="constant">FAN_CLOSE_WRITE</code>|<code class="constant">FAN_CLOSE_NOWRITE</code>).</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>The filesystem object to be marked is determined by the
+      file descriptor <em class="parameter"><code>dirfd</code></em>
+      and the pathname specified in <em class="parameter"><code>pathname</code></em>:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p>If <em class="parameter"><code>pathname</code></em>
+            is NULL, <em class="parameter"><code>dirfd</code></em>
+            defines the filesystem object to be marked.</p>
+          </li>
+
+          <li class="listitem">
+            <p>If <em class="parameter"><code>pathname</code></em>
+            is NULL, and <em class="parameter"><code>dirfd</code></em> takes the special
+            value <code class="constant">AT_FDCWD</code>, the
+            current working directory is to be marked.</p>
+          </li>
+
+          <li class="listitem">
+            <p>If <em class="parameter"><code>pathname</code></em>
+            is absolute, it defines the filesystem object to be
+            marked, and <em class="parameter"><code>dirfd</code></em> is ignored.</p>
+          </li>
+
+          <li class="listitem">
+            <p>If <em class="parameter"><code>pathname</code></em>
+            is relative, and <em class="parameter"><code>dirfd</code></em> does not have the
+            value <code class="constant">AT_FDCWD</code>, then the
+            filesystem object to be marked is determined by
+            interpreting <em class="parameter"><code>pathname</code></em> relative the
+            directory referred to by <em class="parameter"><code>dirfd</code></em>.</p>
+          </li>
+
+          <li class="listitem">
+            <p>If <em class="parameter"><code>pathname</code></em>
+            is relative, and <em class="parameter"><code>dirfd</code></em> has the value
+            <code class="constant">AT_FDCWD</code>, then the
+            filesystem object to be marked is determined by
+            interpreting <em class="parameter"><code>pathname</code></em> relative the
+            current working directory.</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fanotify-mark-2_sect2" name="fanotify-mark-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">fanotify_mark</code>()
+      returns 0. On error, −1 is returned, and <code class="varname">errno</code> is set to indicate the error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="fanotify-mark-2_sect3" name="fanotify-mark-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EBADF</span></span></dt>
+
+          <dd>
+            <p>An invalid file descriptor was passed in <em class="parameter"><code>fanotify_fd</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>An invalid value was passed in <em class="parameter"><code>flags</code></em> or <em class="parameter"><code>mask</code></em>, or <em class="parameter"><code>fanotify_fd</code></em> was not an
+            fanotify file descriptor.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>The fanotify file descriptor was opened with
+            <code class="constant">FAN_CLASS_NOTIF</code> and mask
+            contains a flag for permission events (<code class="constant">FAN_OPEN_PERM</code> or <code class="constant">FAN_ACCESS_PERM</code>).</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOENT</span></span></dt>
+
+          <dd>
+            <p>The filesystem object indicated by <em class="parameter"><code>dirfd</code></em> and <em class="parameter"><code>pathname</code></em> does not exist.
+            This error also occurs when trying to remove a mark
+            from an object which is not marked.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>The necessary memory could not be allocated.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOSPC</span></span></dt>
+
+          <dd>
+            <p>The number of marks exceeds the limit of 8192 and
+            the <code class="constant">FAN_UNLIMITED_MARKS</code>
+            flag was not specified when the fanotify file
+            descriptor was created with <a class="link" href="../htmlman2/fanotify_init.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fanotify_init</span>(2)</span></a>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOSYS</span></span></dt>
+
+          <dd>
+            <p>This kernel does not implement <code class="function">fanotify_mark</code>(). The fanotify API is
+            available only if the kernel was configured with
+            <code class="constant">CONFIG_FANOTIFY</code>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOTDIR</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>flags</code></em>
+            contains <code class="constant">FAN_MARK_ONLYDIR</code>, and <em class="parameter"><code>dirfd</code></em> and <em class="parameter"><code>pathname</code></em> do not specify a
+            directory.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fanotify-mark-2_sect4" name="fanotify-mark-2_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p><code class="function">fanotify_mark</code>() was
+      introduced in version 2.6.36 of the Linux kernel and enabled
+      in version 2.6.37.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="fanotify-mark-2_sect5" name="fanotify-mark-2_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>This system call is Linux-specific.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="fanotify-mark-2_sect6" name="fanotify-mark-2_sect6" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>The following bugs were present in Linux kernels before
+      version 3.16:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p>If <em class="parameter"><code>flags</code></em>
+            contains <code class="constant">FAN_MARK_FLUSH</code>,
+            <em class="parameter"><code>dirfd</code></em> and
+            <em class="parameter"><code>pathname</code></em> must
+            specify a valid filesystem object, even though this
+            object is not used.</p>
+          </li>
+
+          <li class="listitem">
+            <p><a class="link" href="../htmlman2/readdir.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">readdir</span>(2)</span></a> does not
+            generate a <code class="constant">FAN_ACCESS</code>
+            event.</p>
+          </li>
+
+          <li class="listitem">
+            <p>If <a class="link" href="../htmlman2/fanotify_mark.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fanotify_mark</span>(2)</span></a> is
+            called with <code class="constant">FAN_MARK_FLUSH</code>, <em class="parameter"><code>flags</code></em> is not checked for
+            invalid values.</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fanotify-mark-2_sect7" name="fanotify-mark-2_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/fanotify_init.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fanotify_init</span>(2)</span></a>, <a class="link" href="../htmlman7/fanotify.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fanotify</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="fanotify-mark-2_sect8" name="fanotify-mark-2_sect8" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2013,  Heinrich Schuchardt &lt;xypron.glpk<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmx.de&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of<br />
+
+                  this manual under the conditions for verbatim copying, provided that<br />
+
+                  the entire resulting derived work is distributed under the terms of<br />
+
+                  a permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume.<br />
+
+                  no responsibility for errors or omissions, or for damages resulting.<br />
+
+                  from the use of the information contained herein.  The author(s) may.<br />
+
+                  not have taken the same level of care in the production of this.<br />
+
+                  manual, which is licensed free of charge, as they might when working.<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

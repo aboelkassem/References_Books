@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>slapo-unique(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="slapo-unique(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="slapo-unique.5" name="slapo-unique.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>slapo−unique — Attribute Uniqueness overlay to
+      slapd</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ETCDIR/slapd.conf
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-unique-5_sect1" name="slapo-unique-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The Attribute Uniqueness overlay can be used with a
+      backend database such as <a class="link" href="../htmlman5/slapd-bdb.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-bdb</span>(5)</span></a> to enforce the
+      uniqueness of some or all attributes within a scope. This
+      subtree defaults to all objects within the subtree of the
+      database for which the Uniqueness overlay is configured.</p>
+
+      <p>Uniqueness is enforced by searching the subtree to ensure
+      that the values of all attributes presented with an
+      <em class="replaceable"><code>add</code></em>, <em class="replaceable"><code>modify</code></em> or <em class="replaceable"><code>modrdn</code></em> operation are unique
+      within the scope. For example, if uniqueness were enforced
+      for the <em class="replaceable"><code>uid</code></em>
+      attribute, the subtree would be searched for any other
+      records which also have a <em class="replaceable"><code>uid</code></em> attribute containing the
+      same value. If any are found, the request is rejected.</p>
+
+      <p>The search is performed using the rootdn of the database,
+      to avoid issues with ACLs preventing the overlay from seeing
+      all of the relevant data. As such, the database must have a
+      rootdn configured.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-unique-5_sect2" name="slapo-unique-5_sect2" shape="rect"> </a>
+
+      <h2>CONFIGURATION</h2>
+
+      <p>These <em class="replaceable"><code>slapd.conf</code></em>
+      options apply to the Attribute Uniqueness overlay. They
+      should appear after the <em class="replaceable"><code>overlay</code></em> directive.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>unique_uri &lt;[strict ][ignore
+          ]URI[URI...]...&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Configure the base, attributes, scope, and filter
+            for uniqueness checking. Multiple URIs may be specified
+            within a domain, allowing complex selections of
+            objects. Multiple <em class="replaceable"><code>unique_uri</code></em> statements
+            or <em class="replaceable"><code>olcUniqueURI</code></em> attributes
+            will create independent domains, each with their own
+            independent lists of URIs and ignore/strict
+            settings.</p>
+
+            <p>Keywords <em class="replaceable"><code>strict</code></em> and <em class="replaceable"><code>ignore</code></em> have to be
+            enclosed in quotes (") together with the URI.</p>
+
+            <p>The LDAP URI syntax is a subset of <em class="replaceable"><code>RFC-4516,</code></em> and takes the
+            form:</p>
+
+            <p>ldap:///[base dn]?[attributes...]?scope[?filter]</p>
+
+            <p>The <span class="emphasis"><em>base dn</em></span>
+            defaults to that of the back-end database. Specified
+            base dns must be within the subtree of the back-end
+            database.</p>
+
+            <p>If no <em class="replaceable"><code>attributes</code></em> are
+            specified, the URI applies to all non-operational
+            attributes.</p>
+
+            <p>The <em class="replaceable"><code>scope</code></em>
+            component is effectively mandatory, because LDAP URIs
+            default to <em class="replaceable"><code>base</code></em> scope, which is
+            not valid for uniqueness, because groups of one object
+            are always unique. Scopes of <em class="replaceable"><code>sub</code></em> (for subtree) and
+            <em class="replaceable"><code>one</code></em> for
+            one-level are valid.</p>
+
+            <p>The <em class="replaceable"><code>filter</code></em>
+            component causes the domain to apply uniqueness
+            constraints only to matching objects. e.g. <em class="replaceable"><code>ldap:///?cn?sub?(sn=e*)</code></em>
+            would require unique <em class="replaceable"><code>cn</code></em> attributes for all
+            objects in the subtree of the back-end database whose
+            <em class="replaceable"><code>sn</code></em> starts
+            with an e.</p>
+
+            <p>It is possible to assert uniqueness upon all
+            non-operational attributes except those listed by
+            prepending the keyword <em class="replaceable"><code>ignore</code></em> If not
+            configured, all non-operational (e.g., system)
+            attributes must be unique. Note that the <em class="replaceable"><code>attributes</code></em> list of an
+            <em class="replaceable"><code>ignore</code></em> URI
+            should generally contain the <em class="replaceable"><code>objectClass</code></em>, <em class="replaceable"><code>dc</code></em>, <em class="replaceable"><code>ou</code></em> and <code class="literal">o</code> attributes, as these will generally
+            not be unique, nor are they operational attributes.</p>
+
+            <p>It is possible to set strict checking for the
+            uniqueness domain by prepending the keyword <em class="replaceable"><code>strict.</code></em> By default,
+            uniqueness is not enforced for null values. Enabling
+            <em class="replaceable"><code>strict</code></em> mode
+            extends the concept of uniqueness to include null
+            values, such that only one attribute within a subtree
+            will be allowed to have a null value. Strictness
+            applies to all URIs within a uniqueness domain, but
+            some domains may be strict while others are not.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>It is not possible to set both URIs and legacy
+      slapo−unique configuration parameters simultaneously.
+      In general, the legacy configuration options control pieces
+      of a single unfiltered subtree domain.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>unique_base
+          &lt;basedn&gt;</em></span></span></dt>
+
+          <dd>
+            <p>This legacy configuration parameter should be
+            converted to the <span class="emphasis"><em>base
+            dn</em></span> component of the above <em class="replaceable"><code>unique_uri</code></em> style of
+            parameter.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>unique_ignore
+          &lt;attribute...&gt;</em></span></span></dt>
+
+          <dd>
+            <p>This legacy configuration parameter should be
+            converted to a <em class="replaceable"><code>unique_uri</code></em> parameter
+            with <em class="replaceable"><code>ignore</code></em>
+            keyword as described above.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>unique_attributes
+          &lt;attribute...&gt;</em></span></span></dt>
+
+          <dd>
+            <p>This legacy configuration parameter should be
+            converted to a <em class="replaceable"><code>unique_uri</code></em> parameter,
+            as described above.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>unique_strict
+          &lt;attribute...&gt;</em></span></span></dt>
+
+          <dd>
+            <p>This legacy configuration parameter should be
+            converted to a <em class="replaceable"><code>strict</code></em> keyword
+            prepended to a <em class="replaceable"><code>unique_uri</code></em> parameter,
+            as described above.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-unique-5_sect3" name="slapo-unique-5_sect3" shape="rect"> </a>
+
+      <h2>CAVEATS</h2>
+
+      <p><em class="replaceable"><code>unique_uri</code></em>
+      cannot be used with the old-style of configuration, and vice
+      versa. <em class="replaceable"><code>unique_uri</code></em>
+      can implement everything the older system can do,
+      however.</p>
+
+      <p>Typical attributes for the <span class="emphasis"><em>ignore ldap:///...</em></span> URIs are
+      intentionally not hardcoded into the overlay to allow for
+      maximum flexibility in meeting site-specific
+      requirements.</p>
+
+      <p>Replication and operations with <em class="replaceable"><code>manageDsaIt</code></em> control are
+      allowed to bypass this enforcement. It is therefore important
+      that all servers accepting writes have this overlay
+      configured in order to maintain uniqueness in a replicated
+      DIT.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-unique-5_sect4" name="slapo-unique-5_sect4" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">ETCDIR/slapd.conf</span></dt>
+
+          <dd>
+            <p>default slapd configuration file</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-unique-5_sect5" name="slapo-unique-5_sect5" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a>, <a class="link" href="../htmlman5/slapd-config.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-config</span>(5)</span></a>.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                  See the following documents: <a class="ulink" href="../openldap-COPYRIGHT.html" target="_top" shape="rect">COPYRIGHT</a>, <a class="ulink" href="../openldap-LICENSE.html" target="_top" shape="rect">LICENSE</a><br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

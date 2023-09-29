@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>pcre2callout(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="pcre2callout(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="pcre2callout.3" name="pcre2callout.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>PCRE2 — Perl-compatible regular expressions (revised
+      API)</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+
+
+#include &lt;pcre2.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef"><strong>int</strong>(</code></td>
+
+            <td rowspan="1" colspan="1"><var class="pdparam">*pcre2_callout)(pcre2_callout_block
+            *</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1"><var class="pdparam">void
+            *</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2callout-3_sect1" name="pcre2callout-3_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>PCRE2 provides a feature called "callout", which is a
+      means of temporarily passing control to the caller of PCRE2
+      in the middle of pattern matching. The caller of PCRE2
+      provides an external function by putting its entry point in a
+      match context (see <code class="function">pcre2_set_callout</code>()) in the <a class="link" href="../htmlman3/pcre2api.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2api</span>(3)</span></a>
+      documentation).</p>
+
+      <p>Within a regular expression, (?C) indicates the points at
+      which the external function is to be called. Different
+      callout points can be identified by putting a number less
+      than 256 after the letter C. The default value is zero. For
+      example, this pattern has two callout points:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+(?C1)abc(?C2)def
+</pre>
+      </div>
+
+      <p>If the PCRE2_AUTO_CALLOUT option bit is set when a pattern
+      is compiled, PCRE2 automatically inserts callouts, all with
+      number 255, before each item in the pattern. For example, if
+      PCRE2_AUTO_CALLOUT is used with the pattern</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+A(\d{2}|--)
+</pre>
+      </div>
+
+      <p>it is processed as if it were</p>
+
+      <p>
+      (?C255)A(?C255)((?C255)\d{2}(?C255)|(?C255)-(?C255)-(?C255))(?C255)</p>
+
+      <p>Notice that there is a callout before and after each
+      parenthesis and alternation bar. If the pattern contains a
+      conditional group whose condition is an assertion, an
+      automatic callout is inserted immediately before the
+      condition. Such a callout may also be inserted explicitly,
+      for example:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+(?(?C9)(?=a)ab|de)
+</pre>
+      </div>
+
+      <p>This applies only to assertion conditions (because they
+      are themselves independent groups).</p>
+
+      <p>Automatic callouts can be used for tracking the progress
+      of pattern matching. The <span class="citerefentry"><span class="refentrytitle">pcre2test</span>(3)</span> program has a
+      pattern qualifier (/auto_callout) that sets automatic
+      callouts; when it is used, the output indicates how the
+      pattern is being matched. This is useful information when you
+      are trying to optimize the performance of a particular
+      pattern.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2callout-3_sect2" name="pcre2callout-3_sect2" shape="rect"> </a>
+
+      <h2>MISSING CALLOUTS</h2>
+
+      <p>You should be aware that, because of optimizations in the
+      way PCRE2 compiles and matches patterns, callouts sometimes
+      do not happen exactly as you might expect.</p>
+
+      <div class="refsect2">
+        <a id="pcre2callout-3_sect3" name="pcre2callout-3_sect3" shape="rect"> </a>
+
+        <h3>Auto-possessification</h3>
+
+        <p>At compile time, PCRE2 "auto-possessifies" repeated
+        items when it knows that what follows cannot be part of the
+        repeat. For example, a+[bc] is compiled as if it were
+        a++[bc]. The <code class="function">pcre2test</code> output
+        when this pattern is compiled with PCRE2_ANCHORED and
+        PCRE2_AUTO_CALLOUT and then applied to the string "aaaa"
+        is:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+ ---&gt;aaaa
+  +0 ^        a+
+  +2 ^   ^    [bc]
+ No match
+</pre>
+        </div>
+
+        <p>This indicates that when matching [bc] fails, there is
+        no backtracking into a+ and therefore the callouts that
+        would be taken for the backtracks do not occur. You can
+        disable the auto-possessify feature by passing
+        PCRE2_NO_AUTO_POSSESS to <code class="function">pcre2_compile</code>(), or starting the pattern
+        with (*NO_AUTO_POSSESS). In this case, the output changes
+        to this:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+ ---&gt;aaaa
+  +0 ^        a+
+  +2 ^   ^    [bc]
+  +2 ^  ^     [bc]
+  +2 ^ ^      [bc]
+  +2 ^^       [bc]
+ No match
+</pre>
+        </div>
+
+        <p>This time, when matching [bc] fails, the matcher
+        backtracks into a+ and tries again, repeatedly, until a+
+        itself fails.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2callout-3_sect4" name="pcre2callout-3_sect4" shape="rect"> </a>
+
+        <h3>Automatic .* anchoring</h3>
+
+        <p>By default, an optimization is applied when .* is the
+        first significant item in a pattern. If PCRE2_DOTALL is
+        set, so that the dot can match any character, the pattern
+        is automatically anchored. If PCRE2_DOTALL is not set, a
+        match can start only after an internal newline or at the
+        beginning of the subject, and <code class="function">pcre2_compile</code>() remembers this. This
+        optimization is disabled, however, if .* is in an atomic
+        group or if there is a back reference to the capturing
+        group in which it appears. It is also disabled if the
+        pattern contains (*PRUNE) or (*SKIP). However, the presence
+        of callouts does not affect it.</p>
+
+        <p>For example, if the pattern .*\d is compiled with
+        PCRE2_AUTO_CALLOUT and applied to the string "aa", the
+        <code class="function">pcre2test</code> output is:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+ ---&gt;aa
+  +0 ^      .*
+  +2 ^ ^    \d
+  +2 ^^     \d
+  +2 ^      \d
+ No match
+</pre>
+        </div>
+
+        <p>This shows that all match attempts start at the
+        beginning of the subject. In other words, the pattern is
+        anchored. You can disable this optimization by passing
+        PCRE2_NO_DOTSTAR_ANCHOR to <code class="function">pcre2_compile</code>(), or starting the pattern
+        with (*NO_DOTSTAR_ANCHOR). In this case, the output changes
+        to:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+ ---&gt;aa
+  +0 ^      .*
+  +2 ^ ^    \d
+  +2 ^^     \d
+  +2 ^      \d
+  +0  ^     .*
+  +2  ^^    \d
+  +2  ^     \d
+ No match
+</pre>
+        </div>
+
+        <p>This shows more match attempts, starting at the second
+        subject character. Another optimization, described in the
+        next section, means that there is no subsequent attempt to
+        match with an empty subject.</p>
+
+        <p>If a pattern has more than one top-level branch,
+        automatic anchoring occurs if all branches are
+        anchorable.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2callout-3_sect5" name="pcre2callout-3_sect5" shape="rect"> </a>
+
+        <h3>Other optimizations</h3>
+
+        <p>Other optimizations that provide fast "no match" results
+        also affect callouts. For example, if the pattern is</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+ab(?C4)cd
+</pre>
+        </div>
+
+        <p>PCRE2 knows that any matching string must contain the
+        letter "d". If the subject string is "abyz", the lack of
+        "d" means that matching doesn't ever start, and the callout
+        is never reached. However, with "abyd", though the result
+        is still no match, the callout is obeyed.</p>
+
+        <p>PCRE2 also knows the minimum length of a matching
+        string, and will immediately give a "no match" return
+        without actually running a match if the subject is not long
+        enough, or, for unanchored patterns, if it has been scanned
+        far enough.</p>
+
+        <p>You can disable these optimizations by passing the
+        PCRE2_NO_START_OPTIMIZE option to <code class="function">pcre2_compile</code>(), or by starting the
+        pattern with (*NO_START_OPT). This slows down the matching
+        process, but does ensure that callouts such as the example
+        above are obeyed.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2callout-3_sect6" name="pcre2callout-3_sect6" shape="rect"> </a>
+
+      <h2>THE CALLOUT INTERFACE</h2>
+
+      <p>During matching, when PCRE2 reaches a callout point, if an
+      external function is set in the match context, it is called.
+      This applies to both normal and DFA matching. The first
+      argument to the callout function is a pointer to a
+      <code class="function">pcre2_callout</code> block. The second
+      argument is the void * callout data that was supplied when
+      the callout was set up by calling <code class="function">pcre2_set_callout</code>() (see the <a class="link" href="../htmlman3/pcre2api.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2api</span>(3)</span></a> documentation).
+      The callout block structure contains the following
+      fields:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ uint32_t      <code class="function">version</code>;
+ uint32_t      <code class="function">callout_number</code>;
+ uint32_t      <code class="function">capture_top</code>;
+ uint32_t      <code class="function">capture_last</code>;
+ PCRE2_SIZE   *<code class="function">offset_vector</code>;
+ PCRE2_SPTR    <code class="function">mark</code>;
+ PCRE2_SPTR    <code class="function">subject</code>;
+ PCRE2_SIZE    <code class="function">subject_length</code>;
+ PCRE2_SIZE    <code class="function">start_match</code>;
+ PCRE2_SIZE    <code class="function">current_position</code>;
+ PCRE2_SIZE    <code class="function">pattern_position</code>;
+ PCRE2_SIZE    <code class="function">next_item_length</code>;
+</pre>
+      </div>
+
+      <p>The <code class="function">version</code> field contains
+      the version number of the block format. The current version
+      is 0. The version number will change in future if additional
+      fields are added, but the intention is never to remove any of
+      the existing fields.</p>
+
+      <p>The <code class="function">callout_number</code> field
+      contains the number of the callout, as compiled into the
+      pattern (that is, the number after ?C for manual callouts,
+      and 255 for automatically generated callouts).</p>
+
+      <p>The <code class="function">offset_vector</code> field is a
+      pointer to the vector of capturing offsets (the "ovector")
+      that was passed to the matching function in the match data
+      block. When <code class="function">pcre2_match</code>() is
+      used, the contents can be inspected in order to extract
+      substrings that have been matched so far, in the same way as
+      for extracting substrings after a match has completed. For
+      the DFA matching function, this field is not useful.</p>
+
+      <p>The <code class="function">subject</code> and <code class="function">subject_length</code> fields contain copies of the
+      values that were passed to the matching function.</p>
+
+      <p>The <code class="function">start_match</code> field
+      normally contains the offset within the subject at which the
+      current match attempt started. However, if the escape
+      sequence \K has been encountered, this value is changed to
+      reflect the modified starting point. If the pattern is not
+      anchored, the callout function may be called several times
+      from the same point in the pattern for different starting
+      points in the subject.</p>
+
+      <p>The <code class="function">current_position</code> field
+      contains the offset within the subject of the current match
+      pointer.</p>
+
+      <p>When the <code class="function">pcre2_match</code>() is
+      used, the <code class="function">capture_top</code> field
+      contains one more than the number of the highest numbered
+      captured substring so far. If no substrings have been
+      captured, the value of <code class="function">capture_top</code> is one. This is always the case
+      when the DFA functions are used, because they do not support
+      captured substrings.</p>
+
+      <p>The <code class="function">capture_last</code> field
+      contains the number of the most recently captured substring.
+      However, when a recursion exits, the value reverts to what it
+      was outside the recursion, as do the values of all captured
+      substrings. If no substrings have been captured, the value of
+      <code class="function">capture_last</code> is 0. This is
+      always the case for the DFA matching functions.</p>
+
+      <p>The <code class="function">pattern_position</code> field
+      contains the offset to the next item to be matched in the
+      pattern string.</p>
+
+      <p>The <code class="function">next_item_length</code> field
+      contains the length of the next item to be matched in the
+      pattern string. When the callout immediately precedes an
+      alternation bar, a closing parenthesis, or the end of the
+      pattern, the length is zero. When the callout precedes an
+      opening parenthesis, the length is that of the entire
+      subpattern.</p>
+
+      <p>The <code class="function">pattern_position</code> and
+      <code class="function">next_item_length</code> fields are
+      intended to help in distinguishing between different
+      automatic callouts, which all have the same callout number.
+      However, they are set for all callouts.</p>
+
+      <p>In callouts from <code class="function">pcre2_match</code>() the <code class="function">mark</code> field contains a pointer to the
+      zero-terminated name of the most recently passed (*MARK),
+      (*PRUNE), or (*THEN) item in the match, or NULL if no such
+      items have been passed. Instances of (*PRUNE) or (*THEN)
+      without a name do not obliterate a previous (*MARK). In
+      callouts from the DFA matching function this field always
+      contains NULL.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2callout-3_sect7" name="pcre2callout-3_sect7" shape="rect"> </a>
+
+      <h2>RETURN VALUES</h2>
+
+      <p>The external callout function returns an integer to PCRE2.
+      If the value is zero, matching proceeds as normal. If the
+      value is greater than zero, matching fails at the current
+      point, but the testing of other matching possibilities goes
+      ahead, just as if a lookahead assertion had failed. If the
+      value is less than zero, the match is abandoned, and the
+      matching function returns the negative value.</p>
+
+      <p>Negative values should normally be chosen from the set of
+      PCRE2_ERROR_xxx values. In particular, PCRE2_ERROR_NOMATCH
+      forces a standard "no match" failure. The error number
+      PCRE2_ERROR_CALLOUT is reserved for use by callout functions;
+      it will never be used by PCRE2 itself.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2callout-3_sect8" name="pcre2callout-3_sect8" shape="rect"> </a>
+
+      <h2>AUTHOR</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+Philip Hazel
+University Computing Service
+Cambridge, England.
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2callout-3_sect9" name="pcre2callout-3_sect9" shape="rect"> </a>
+
+      <h2>REVISION</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+Last updated: 02 January 2015
+Copyright (c) 1997-2015 University of Cambridge.
+</pre>
+      </div>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <thead>
+            <tr>
+              <th style="" rowspan="1" colspan="1">COPYRIGHT</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <p>This manual page is taken from the <a class="ulink" href="http://www.PCRE.org/" target="_top" shape="rect">PCRE library</a>, which is distributed under
+                the BSD license.</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,560 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>initrd(4) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="initrd(4) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index4.html" shape="rect">Section 4</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="initrd.4" name="initrd.4" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>initrd — boot loader initialized RAM disk</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="initrd-4_sect1" name="initrd-4_sect1" shape="rect"> </a>
+
+      <h2>CONFIGURATION</h2>
+
+      <p>The <code class="filename">/dev/initrd</code> is a
+      read-only block device assigned major number 1 and minor
+      number 250. Typically <code class="filename">/dev/initrd</code> is owned by <code class="literal">root.disk</code> with mode 0400 (read access by
+      root only). If the Linux system does not have <code class="filename">/dev/initrd</code> already created, it can be
+      created with the following commands:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        mknod −m 400 /dev/initrd b 1 250
+        chown root:disk /dev/initrd
+</pre>
+      </div>
+
+      <p>Also, support for both "RAM disk" and "Initial RAM disk"
+      (e.g., <code class="literal">CONFIG_BLK_DEV_RAM=y</code> and
+      <code class="literal">CONFIG_BLK_DEV_INITRD=y</code>) must be
+      compiled directly into the Linux kernel to use <code class="filename">/dev/initrd</code>. When using <code class="filename">/dev/initrd</code>, the RAM disk driver cannot be
+      loaded as a module.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="initrd-4_sect2" name="initrd-4_sect2" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The special file <code class="filename">/dev/initrd</code>
+      is a read-only block device. This device is a RAM disk that
+      is initialized (e.g., loaded) by the boot loader before the
+      kernel is started. The kernel then can use <code class="filename">/dev/initrd</code>'s contents for a two-phase
+      system boot-up.</p>
+
+      <p>In the first boot-up phase, the kernel starts up and
+      mounts an initial root filesystem from the contents of
+      <code class="filename">/dev/initrd</code> (e.g., RAM disk
+      initialized by the boot loader). In the second phase,
+      additional drivers or other modules are loaded from the
+      initial root device's contents. After loading the additional
+      modules, a new root filesystem (i.e., the normal root
+      filesystem) is mounted from a different device.</p>
+
+      <div class="refsect2">
+        <a id="initrd-4_sect3" name="initrd-4_sect3" shape="rect"> </a>
+
+        <h3>Boot-up operation</h3>
+
+        <p>When booting up with <code class="function">initrd</code>, the system boots as follows:</p>
+
+        <div class="orderedlist">
+          <ol class="orderedlist" type="1">
+            <li class="listitem">
+              <p>The boot loader loads the kernel program and
+              <code class="filename">/dev/initrd</code>'s contents
+              into memory.</p>
+            </li>
+
+            <li class="listitem">
+              <p>On kernel startup, the kernel uncompresses and
+              copies the contents of the device <code class="filename">/dev/initrd</code> onto device
+              <code class="filename">/dev/ram0</code> and then
+              frees the memory used by <code class="filename">/dev/initrd</code>.</p>
+            </li>
+
+            <li class="listitem">
+              <p>The kernel then read-write mounts the device
+              <code class="filename">/dev/ram0</code> as the
+              initial root filesystem.</p>
+            </li>
+
+            <li class="listitem">
+              <p>If the indicated normal root filesystem is also
+              the initial root filesystem (e.g., <code class="filename">/dev/ram0</code>) then the kernel skips to
+              the last step for the usual boot sequence.</p>
+            </li>
+
+            <li class="listitem">
+              <p>If the executable file <code class="filename">/linuxrc</code> is present in the initial
+              root filesystem, <code class="filename">/linuxrc</code> is executed with UID 0.
+              (The file <code class="filename">/linuxrc</code> must
+              have executable permission. The file <code class="filename">/linuxrc</code> can be any valid
+              executable, including a shell script.)</p>
+            </li>
+
+            <li class="listitem">
+              <p>If <code class="filename">/linuxrc</code> is not
+              executed or when <code class="filename">/linuxrc</code> terminates, the normal
+              root filesystem is mounted. (If <code class="filename">/linuxrc</code> exits with any filesystems
+              mounted on the initial root filesystem, then the
+              behavior of the kernel is <code class="constant">UNSPECIFIED</code>. See the NOTES section
+              for the current kernel behavior.)</p>
+            </li>
+
+            <li class="listitem">
+              <p>If the normal root filesystem has a directory
+              <code class="filename">/initrd</code>, the device
+              <code class="filename">/dev/ram0</code> is moved from
+              <code class="filename">/</code> to <code class="filename">/initrd</code>. Otherwise, if the
+              directory <code class="filename">/initrd</code> does
+              not exist, the device <code class="filename">/dev/ram0</code> is unmounted. (When moved
+              from <code class="filename">/</code> to <code class="filename">/initrd</code>, <code class="filename">/dev/ram0</code> is not unmounted and
+              therefore processes can remain running from
+              <code class="filename">/dev/ram0</code>. If directory
+              <code class="filename">/initrd</code> does not exist
+              on the normal root filesystem and any processes
+              remain running from <code class="filename">/dev/ram0</code> when <code class="filename">/linuxrc</code> exits, the behavior of the
+              kernel is <code class="constant">UNSPECIFIED</code>.
+              See the NOTES section for the current kernel
+              behavior.)</p>
+            </li>
+
+            <li class="listitem">
+              <p>The usual boot sequence (e.g., invocation of
+              <code class="filename">/sbin/init</code>) is
+              performed on the normal root filesystem.</p>
+            </li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="initrd-4_sect4" name="initrd-4_sect4" shape="rect"> </a>
+
+        <h3>Options</h3>
+
+        <p>The following boot loader options, when used with
+        <code class="function">initrd</code>, affect the kernel's
+        boot-up operation:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><em class="replaceable"><code>initrd=</code></em><code class="function">filename</code></span></dt>
+
+            <dd>
+              <p>Specifies the file to load as the contents of
+              <code class="filename">/dev/initrd</code>. For
+              <code class="constant">LOADLIN</code> this is a
+              command-line option. For <code class="constant">LILO</code> you have to use this command
+              in the <code class="constant">LILO</code>
+              configuration file <code class="filename">/etc/lilo.config</code>. The filename
+              specified with this option will typically be a
+              gzipped filesystem image.</p>
+            </dd>
+
+            <dt><span class="term"><code class="function">noinitrd</code></span></dt>
+
+            <dd>
+              <p>This boot option disables the two-phase boot-up
+              operation. The kernel performs the usual boot
+              sequence as if <code class="filename">/dev/initrd</code> was not initialized.
+              With this option, any contents of <code class="filename">/dev/initrd</code> loaded into memory by
+              the boot loader contents are preserved. This option
+              permits the contents of <code class="filename">/dev/initrd</code> to be any data and need
+              not be limited to a filesystem image. However, device
+              <code class="filename">/dev/initrd</code> is
+              read-only and can be read only one time after system
+              startup.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>root=</code></em><em class="replaceable"><code>device-name</code></em></span></dt>
+
+            <dd>
+              <p>Specifies the device to be used as the normal root
+              filesystem. For <code class="constant">LOADLIN</code>
+              this is a command-line option. For <code class="constant">LILO</code> this is a boot time option or
+              can be used as an option line in the <code class="constant">LILO</code> configuration file
+              <code class="filename">/etc/lilo.config</code>. The
+              device specified by the this option must be a
+              mountable device having a suitable root
+              filesystem.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="initrd-4_sect5" name="initrd-4_sect5" shape="rect"> </a>
+
+        <h3>Changing the normal root filesystem</h3>
+
+        <p>By default, the kernel's settings (e.g., set in the
+        kernel file with <span class="citerefentry"><span class="refentrytitle">rdev</span>(8)</span> or compiled into the
+        kernel file), or the boot loader option setting is used for
+        the normal root filesystems. For an NFS-mounted normal root
+        filesystem, one has to use the <code class="function">nfs_root_name</code> and <code class="function">nfs_root_addrs</code> boot options to give the
+        NFS settings. For more information on NFS-mounted root see
+        the kernel documentation file <code class="filename">Documentation/filesystems/nfsroot.txt</code>.
+        For more information on setting the root filesystem see
+        also the <code class="constant">LILO</code> and
+        <code class="constant">LOADLIN</code> documentation.</p>
+
+        <p>It is also possible for the <code class="filename">/linuxrc</code> executable to change the normal
+        root device. For <code class="filename">/linuxrc</code> to
+        change the normal root device, <code class="filename">/proc</code> must be mounted. After mounting
+        <code class="filename">/proc</code>, <code class="filename">/linuxrc</code> changes the normal root device
+        by writing into the proc files <code class="filename">/proc/sys/kernel/real-root-dev</code>,
+        <code class="filename">/proc/sys/kernel/nfs-root-name</code>, and
+        <code class="filename">/proc/sys/kernel/nfs-root-addrs</code>. For a
+        physical root device, the root device is changed by having
+        <code class="filename">/linuxrc</code> write the new root
+        filesystem device number into <code class="filename">/proc/sys/kernel/real-root-dev</code>. For an
+        NFS root filesystem, the root device is changed by having
+        <code class="filename">/linuxrc</code> write the NFS
+        setting into files <code class="filename">/proc/sys/kernel/nfs-root-name</code> and
+        <code class="filename">/proc/sys/kernel/nfs-root-addrs</code> and then
+        writing 0xff (e.g., the pseudo-NFS-device number) into file
+        <code class="filename">/proc/sys/kernel/real-root-dev</code>. For
+        example, the following shell command line would change the
+        normal root device to <code class="filename">/dev/hdb1<code class="literal">:</code></code></p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+    echo 0x365 &gt;/proc/sys/kernel/real-root-dev
+</pre>
+        </div>
+
+        <p>For an NFS example, the following shell command lines
+        would change the normal root device to the NFS directory
+        <code class="filename">/var/nfsroot</code> on a local
+        networked NFS server with IP number 193.8.232.7 for a
+        system with IP number 193.8.232.2 and named "idefix":</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+    echo /var/nfsroot &gt;/proc/sys/kernel/nfs-root-name
+    echo 193.8.232.2:193.8.232.7::255.255.255.0:idefix \
+        &gt;/proc/sys/kernel/nfs-root-addrs
+    echo 255 &gt;/proc/sys/kernel/real-root-dev
+</pre>
+        </div>
+
+        <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+          <table border="0" summary="Note">
+            <tr>
+              <td rowspan="2" align="center" valign="top" width="25" colspan="1"><img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+              <th align="left" rowspan="1" colspan="1">Note</th>
+            </tr>
+
+            <tr>
+              <td align="left" valign="top" rowspan="1" colspan="1">
+                <p>The use of <code class="filename">/proc/sys/kernel/real-root-dev</code> to
+                change the root filesystem is obsolete. See the
+                Linux kernel source file <code class="filename">Documentation/initrd.txt</code> as well
+                as <a class="link" href="../htmlman2/pivot_root.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pivot_root</span>(2)</span></a> and
+                <a class="link" href="../htmlman8/pivot_root.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pivot_root</span>(8)</span></a> for
+                information on the modern method of changing the
+                root filesystem.</p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="initrd-4_sect6" name="initrd-4_sect6" shape="rect"> </a>
+
+        <h3>Usage</h3>
+
+        <p>The main motivation for implementing <code class="function">initrd</code> was to allow for modular kernel
+        configuration at system installation.</p>
+
+        <p>A possible system installation scenario is as
+        follows:</p>
+
+        <div class="orderedlist">
+          <ol class="orderedlist" type="1">
+            <li class="listitem">
+              <p>The loader program boots from floppy or other
+              media with a minimal kernel (e.g., support for
+              <code class="filename">/dev/ram</code>, <code class="filename">/dev/initrd</code>, and the ext2
+              filesystem) and loads <code class="filename">/dev/initrd</code> with a gzipped version
+              of the initial filesystem.</p>
+            </li>
+
+            <li class="listitem">
+              <p>The executable <code class="filename">/linuxrc</code> determines what is needed
+              to (1) mount the normal root filesystem (i.e., device
+              type, device drivers, filesystem) and (2) the
+              distribution media (e.g., CD-ROM, network, tape,
+              ...). This can be done by asking the user, by
+              auto-probing, or by using a hybrid approach.</p>
+            </li>
+
+            <li class="listitem">
+              <p>The executable <code class="filename">/linuxrc</code> loads the necessary
+              modules from the initial root filesystem.</p>
+            </li>
+
+            <li class="listitem">
+              <p>The executable <code class="filename">/linuxrc</code> creates and populates the
+              root filesystem. (At this stage the normal root
+              filesystem does not have to be a completed system
+              yet.)</p>
+            </li>
+
+            <li class="listitem">
+              <p>The executable <code class="filename">/linuxrc</code> sets <code class="filename">/proc/sys/kernel/real-root-dev</code>,
+              unmount <code class="filename">/proc</code>, the
+              normal root filesystem and any other filesystems it
+              has mounted, and then terminates.</p>
+            </li>
+
+            <li class="listitem">
+              <p>The kernel then mounts the normal root
+              filesystem.</p>
+            </li>
+
+            <li class="listitem">
+              <p>Now that the filesystem is accessible and intact,
+              the boot loader can be installed.</p>
+            </li>
+
+            <li class="listitem">
+              <p>The boot loader is configured to load into
+              <code class="filename">/dev/initrd</code> a
+              filesystem with the set of modules that was used to
+              bring up the system. (e.g., Device <code class="filename">/dev/ram0</code> can be modified, then
+              unmounted, and finally, the image is written from
+              <code class="filename">/dev/ram0</code> to a
+              file.)</p>
+            </li>
+
+            <li class="listitem">
+              <p>The system is now bootable and additional
+              installation tasks can be performed.</p>
+            </li>
+          </ol>
+        </div>
+
+        <p>The key role of <code class="filename">/dev/initrd</code> in the above is to reuse the
+        configuration data during normal system operation without
+        requiring initial kernel selection, a large generic kernel
+        or, recompiling the kernel.</p>
+
+        <p>A second scenario is for installations where Linux runs
+        on systems with different hardware configurations in a
+        single administrative network. In such cases, it may be
+        desirable to use only a small set of kernels (ideally only
+        one) and to keep the system-specific part of configuration
+        information as small as possible. In this case, create a
+        common file with all needed modules. Then, only the
+        <code class="filename">/linuxrc</code> file or a file
+        executed by <code class="filename">/linuxrc</code> would be
+        different.</p>
+
+        <p>A third scenario is more convenient recovery disks.
+        Because information like the location of the root
+        filesystem partition is not needed at boot time, the system
+        loaded from <code class="filename">/dev/initrd</code> can
+        use a dialog and/or auto-detection followed by a possible
+        sanity check.</p>
+
+        <p>Last but not least, Linux distributions on CD-ROM may
+        use <code class="function">initrd</code> for easy
+        installation from the CD-ROM. The distribution can use
+        <code class="constant">LOADLIN</code> to directly load
+        <code class="filename">/dev/initrd</code> from CD-ROM
+        without the need of any floppies. The distribution could
+        also use a <code class="constant">LILO</code> boot floppy
+        and then bootstrap a bigger RAM disk via <code class="filename">/dev/initrd</code> from the CD-ROM.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="initrd-4_sect7" name="initrd-4_sect7" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+<code class="filename">/dev/initrd</code>
+<code class="filename">/dev/ram0</code>
+<code class="filename">/linuxrc</code>
+</pre>
+      </div>
+
+      <p><code class="filename">/initrd</code></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="initrd-4_sect8" name="initrd-4_sect8" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <div class="orderedlist">
+        <ol class="orderedlist" type="1">
+          <li class="listitem">
+            <p>With the current kernel, any filesystems that remain
+            mounted when <code class="filename">/dev/ram0</code> is
+            moved from <code class="filename">/</code> to
+            <code class="filename">/initrd</code> continue to be
+            accessible. However, the <code class="filename">/proc/mounts</code> entries are not
+            updated.</p>
+          </li>
+
+          <li class="listitem">
+            <p>With the current kernel, if directory <code class="filename">/initrd</code> does not exist, then
+            <code class="filename">/dev/ram0</code> will
+            <span class="emphasis"><em>not</em></span> be fully
+            unmounted if <code class="filename">/dev/ram0</code> is
+            used by any process or has any filesystem mounted on
+            it. If <code class="filename">/dev/ram0</code> is
+            <span class="emphasis"><em>not</em></span> fully
+            unmounted, then <code class="filename">/dev/ram0</code>
+            will remain in memory.</p>
+          </li>
+
+          <li class="listitem">
+            <p>Users of <code class="filename">/dev/initrd</code>
+            should not depend on the behavior give in the above
+            notes. The behavior may change in future versions of
+            the Linux kernel.</p>
+          </li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="initrd-4_sect9" name="initrd-4_sect9" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman1/chown.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chown</span>(1)</span></a>, <a class="link" href="../htmlman1/mknod.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mknod</span>(1)</span></a>, <a class="link" href="../htmlman4/ram.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ram</span>(4)</span></a>, <span class="citerefentry"><span class="refentrytitle">freeramdisk</span>(8)</span>, <span class="citerefentry"><span class="refentrytitle">rdev</span>(8)</span></p>
+
+      <p><code class="filename">Documentation/initrd.txt</code> in
+      the Linux kernel source tree, the LILO documentation, the
+      LOADLIN documentation, the SYSLINUX documentation</p>
+    </div>
+
+    <div class="colophon">
+      <a id="initrd-4_sect10" name="initrd-4_sect10" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    This man-page is Copyright (C) 1997 John S. Kallal<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and author(s) of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  If the you wish to distribute versions of this work under other<br />
+
+                  conditions than the above, please contact the author(s) at the following<br />
+
+                  for permission:<br />
+                  <br />
+                   John S. Kallal -<br />
+                  email: &lt;kallal<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>voicenet.com&gt;<br />
+                  mail: 518 Kerfoot Farm RD, Wilmington, DE 19803-2444, USA<br />
+
+                  phone: (302)654-5478<br />
+                  <br />
+                  $Id: initrd.4,v 0.9 1997/11/07 05:05:32 kallal Exp kallal $<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

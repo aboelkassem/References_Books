@@ -1,0 +1,510 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>fallocate(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="fallocate(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="fallocate.2" name="fallocate.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>fallocate — manipulate file space</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#define _GNU_SOURCE              /* See feature_test_macros(7) */
+#include &lt;fcntl.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>fallocate</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">fd</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">mode</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">off_t <var class="pdparam">offset</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">off_t <var class="pdparam">len</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fallocate-2_sect1" name="fallocate-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>This is a nonportable, Linux-specific system call. For the
+      portable, POSIX.1-specified method of ensuring that space is
+      allocated for a file, see <a class="link" href="../htmlman3/posix_fallocate.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">posix_fallocate</span>(3)</span></a>.</p>
+
+      <p><code class="function">fallocate</code>() allows the
+      caller to directly manipulate the allocated disk space for
+      the file referred to by <em class="parameter"><code>fd</code></em> for the byte range starting
+      at <em class="parameter"><code>offset</code></em> and
+      continuing for <em class="parameter"><code>len</code></em>
+      bytes.</p>
+
+      <p>The <em class="parameter"><code>mode</code></em> argument
+      determines the operation to be performed on the given range.
+      Details of the supported operations are given in the
+      subsections below.</p>
+
+      <div class="refsect2">
+        <a id="fallocate-2_sect2" name="fallocate-2_sect2" shape="rect"> </a>
+
+        <h3>Allocating disk space</h3>
+
+        <p>The default operation (i.e., <em class="parameter"><code>mode</code></em> is zero) of <code class="function">fallocate</code>() allocates the disk space
+        within the range specified by <em class="parameter"><code>offset</code></em> and <em class="parameter"><code>len</code></em>. The file size (as
+        reported by <a class="link" href="../htmlman2/stat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">stat</span>(2)</span></a>) will be changed
+        if <em class="parameter"><code>offset</code></em>+<em class="parameter"><code>len</code></em>
+        is greater than the file size. Any subregion within the
+        range specified by <em class="parameter"><code>offset</code></em> and <em class="parameter"><code>len</code></em> that did not contain data
+        before the call will be initialized to zero. This default
+        behavior closely resembles the behavior of the <a class="link" href="../htmlman3/posix_fallocate.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">posix_fallocate</span>(3)</span></a>
+        library function, and is intended as a method of optimally
+        implementing that function.</p>
+
+        <p>After a successful call, subsequent writes into the
+        range specified by <em class="parameter"><code>offset</code></em> and <em class="parameter"><code>len</code></em> are guaranteed not to
+        fail because of lack of disk space.</p>
+
+        <p>If the <code class="constant">FALLOC_FL_KEEP_SIZE</code>
+        flag is specified in <em class="parameter"><code>mode</code></em>, the behavior of the
+        call is similar, but the file size will not be changed even
+        if <em class="parameter"><code>offset</code></em>+<em class="parameter"><code>len</code></em>
+        is greater than the file size. Preallocating zeroed blocks
+        beyond the end of the file in this manner is useful for
+        optimizing append workloads.</p>
+
+        <p>Because allocation is done in block size chunks,
+        <code class="function">fallocate</code>() may allocate a
+        larger range of disk space than was specified.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="fallocate-2_sect3" name="fallocate-2_sect3" shape="rect"> </a>
+
+        <h3>Deallocating file space</h3>
+
+        <p>Specifying the <code class="constant">FALLOC_FL_PUNCH_HOLE</code> flag (available
+        since Linux 2.6.38) in <em class="parameter"><code>mode</code></em> deallocates space (i.e.,
+        creates a hole) in the byte range starting at <em class="parameter"><code>offset</code></em> and continuing for
+        <em class="parameter"><code>len</code></em> bytes. Within
+        the specified range, partial filesystem blocks are zeroed,
+        and whole filesystem blocks are removed from the file.
+        After a successful call, subsequent reads from this range
+        will return zeroes.</p>
+
+        <p>The <code class="constant">FALLOC_FL_PUNCH_HOLE</code>
+        flag must be ORed with <code class="constant">FALLOC_FL_KEEP_SIZE</code> in <em class="parameter"><code>mode</code></em>; in other words, even
+        when punching off the end of the file, the file size (as
+        reported by <a class="link" href="../htmlman2/stat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">stat</span>(2)</span></a>) does not
+        change.</p>
+
+        <p>Not all filesystems support <code class="constant">FALLOC_FL_PUNCH_HOLE</code>; if a filesystem
+        doesn't support the operation, an error is returned. The
+        operation is supported on at least the following
+        filesystems:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>XFS (since Linux 2.6.38)</p>
+            </li>
+
+            <li class="listitem">
+              <p>ext4 (since Linux 3.0)</p>
+            </li>
+
+            <li class="listitem">
+              <p>Btrfs (since Linux 3.7)</p>
+            </li>
+
+            <li class="listitem">
+              <p>tmpfs (since Linux 3.5)</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="fallocate-2_sect4" name="fallocate-2_sect4" shape="rect"> </a>
+
+        <h3>Collapsing file space</h3>
+
+        <p>Specifying the <code class="constant">FALLOC_FL_COLLAPSE_RANGE</code> flag (available
+        since Linux 3.15) in <em class="parameter"><code>mode</code></em> removes a byte range
+        from a file, without leaving a hole. The byte range to be
+        collapsed starts at <em class="parameter"><code>offset</code></em> and continues for
+        <em class="parameter"><code>len</code></em> bytes. At the
+        completion of the operation, the contents of the file
+        starting at the location <em class="replaceable"><code>offset+len</code></em> will be appended
+        at the location <em class="parameter"><code>offset</code></em>, and the file will be
+        <em class="parameter"><code>len</code></em> bytes
+        smaller.</p>
+
+        <p>A filesystem may place limitations on the granularity of
+        the operation, in order to ensure efficient implementation.
+        Typically, <em class="parameter"><code>offset</code></em>
+        and <em class="parameter"><code>len</code></em> must be a
+        multiple of the filesystem logical block size, which varies
+        according to the filesystem type and configuration. If a
+        filesystem has such a requirement, <code class="function">fallocate</code>() will fail with the error
+        <span class="errorname">EINVAL</span> if this requirement
+        is violated.</p>
+
+        <p>If the region specified by <em class="parameter"><code>offset</code></em> plus <em class="parameter"><code>len</code></em> reaches or passes the end
+        of file, an error is returned; instead, use <a class="link" href="../htmlman2/truncate.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ftruncate</span>(2)</span></a> to truncate
+        a file.</p>
+
+        <p>No other flags may be specified in <em class="parameter"><code>mode</code></em> in conjunction with
+        <code class="constant">FALLOC_FL_COLLAPSE_RANGE</code>.</p>
+
+        <p>As at Linux 3.15, <code class="constant">FALLOC_FL_COLLAPSE_RANGE</code> is supported by
+        ext4 (only for extent-based files) and XFS.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="fallocate-2_sect5" name="fallocate-2_sect5" shape="rect"> </a>
+
+        <h3>Zeroing file space</h3>
+
+        <p>Specifying the <code class="constant">FALLOC_FL_ZERO_RANGE</code> flag (available
+        since Linux 3.15) in <em class="parameter"><code>mode</code></em> zeroes space in the byte
+        range starting at <em class="parameter"><code>offset</code></em> and continuing for
+        <em class="parameter"><code>len</code></em> bytes. Within
+        the specified range, blocks are preallocated for the
+        regions that span the holes in the file. After a successful
+        call, subsequent reads from this range will return
+        zeroes.</p>
+
+        <p>Zeroing is done within the filesystem preferably by
+        converting the range into unwritten extents. This approach
+        means that the specified range will not be physically
+        zeroed out on the device (except for partial blocks at the
+        either end of the range), and I/O is (otherwise) required
+        only to update metadata.</p>
+
+        <p>If the <code class="constant">FALLOC_FL_KEEP_SIZE</code>
+        flag is additionally specified in <em class="parameter"><code>mode</code></em>, the behavior of the
+        call is similar, but the file size will not be changed even
+        if <em class="parameter"><code>offset</code></em>+<em class="parameter"><code>len</code></em>
+        is greater than the file size. This behavior is the same as
+        when preallocating space with <code class="constant">FALLOC_FL_KEEP_SIZE</code> specified.</p>
+
+        <p>Not all filesystems support <code class="constant">FALLOC_FL_ZERO_RANGE</code>; if a filesystem
+        doesn't support the operation, an error is returned. The
+        operation is supported on at least the following
+        filesystems:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>XFS (since Linux 3.15)</p>
+            </li>
+
+            <li class="listitem">
+              <p>ext4, for extent-based files (since Linux
+              3.15)</p>
+            </li>
+
+            <li class="listitem">
+              <p>SMB3 (since Linux 3.17)</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fallocate-2_sect6" name="fallocate-2_sect6" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">fallocate</code>()
+      returns zero. On error, −1 is returned and <code class="varname">errno</code> is set to indicate the error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="fallocate-2_sect7" name="fallocate-2_sect7" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EBADF</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>fd</code></em> is not a
+            valid file descriptor, or is not opened for
+            writing.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EFBIG</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>offset</code></em>+<em class="parameter"><code>len</code></em> exceeds the maximum
+            file size.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINTR</span></span></dt>
+
+          <dd>
+            <p>A signal was caught during execution.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>offset</code></em> was
+            less than 0, or <em class="parameter"><code>len</code></em> was less than or
+            equal to 0.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>mode</code></em> is
+            <code class="constant">FALLOC_FL_COLLAPSE_RANGE</code>
+            and the range specified by <em class="parameter"><code>offset</code></em> plus <em class="parameter"><code>len</code></em> reaches or passes the
+            end of the file.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>mode</code></em> is
+            <code class="constant">FALLOC_FL_COLLAPSE_RANGE</code>,
+            but either <em class="parameter"><code>offset</code></em> or <em class="parameter"><code>len</code></em> is not a multiple of
+            the filesystem block size.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>mode</code></em>
+            contains both <code class="constant">FALLOC_FL_COLLAPSE_RANGE</code> and other
+            flags; no other flags are permitted with <code class="constant">FALLOC_FL_COLLAPSE_RANGE</code>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>mode</code></em> is
+            <code class="constant">FALLOC_FL_COLLAPSE_RANGE</code>
+            or <code class="constant">FALLOC_FL_ZERO_RANGE</code>,
+            but the file referred to by <em class="parameter"><code>fd</code></em> is not a regular
+            file.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EIO</span></span></dt>
+
+          <dd>
+            <p>An I/O error occurred while reading from or writing
+            to a filesystem.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENODEV</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>fd</code></em> does not
+            refer to a regular file or a directory. (If <em class="parameter"><code>fd</code></em> is a pipe or FIFO, a
+            different error results.)</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOSPC</span></span></dt>
+
+          <dd>
+            <p>There is not enough space left on the device
+            containing the file referred to by <em class="parameter"><code>fd</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOSYS</span></span></dt>
+
+          <dd>
+            <p>This kernel does not implement <code class="function">fallocate</code>().</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EOPNOTSUPP</span></span></dt>
+
+          <dd>
+            <p>The filesystem containing the file referred to by
+            <em class="parameter"><code>fd</code></em> does not
+            support this operation; or the <em class="parameter"><code>mode</code></em> is not supported by
+            the filesystem containing the file referred to by
+            <em class="parameter"><code>fd</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The file referred to by <em class="parameter"><code>fd</code></em> is marked immutable
+            (see <span class="citerefentry"><span class="refentrytitle">chattr</span>(1)</span>).</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>mode</code></em>
+            specifies <code class="constant">FALLOC_FL_PUNCH_HOLE</code> or <code class="constant">FALLOC_FL_COLLAPSE_RANGE</code> and the file
+            referred to by <em class="parameter"><code>fd</code></em> is marked append-only
+            (see <span class="citerefentry"><span class="refentrytitle">chattr</span>(1)</span>).</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The operation was prevented by a file seal; see
+            <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ESPIPE</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>fd</code></em> refers to
+            a pipe or FIFO.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ETXTBSY</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>mode</code></em>
+            specifies <code class="constant">FALLOC_FL_COLLAPSE_RANGE</code>, but the
+            file referred to by <em class="parameter"><code>fd</code></em> is currently being
+            executed.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fallocate-2_sect8" name="fallocate-2_sect8" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p><code class="function">fallocate</code>() is available on
+      Linux since kernel 2.6.23. Support is provided by glibc since
+      version 2.10. The <em class="replaceable"><code>FALLOC_FL_*</code></em> flags are defined
+      in glibc headers only since version 2.18.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="fallocate-2_sect9" name="fallocate-2_sect9" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p><code class="function">fallocate</code>() is
+      Linux-specific.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="fallocate-2_sect10" name="fallocate-2_sect10" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman1/fallocate.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fallocate</span>(1)</span></a>, <a class="link" href="../htmlman2/truncate.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ftruncate</span>(2)</span></a>, <span class="citerefentry"><span class="refentrytitle">posix_fadvise</span>(3)</span>, <a class="link" href="../htmlman3/posix_fallocate.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">posix_fallocate</span>(3)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="fallocate-2_sect11" name="fallocate-2_sect11" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 2007 Silicon Graphics, Inc. All Rights Reserved<br />
+
+                  Written by Dave Chinner &lt;dgc<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>sgi.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2_ONELINE)<br />
+                  May be distributed as per GNU General Public License version 2.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  2011-09-19: Added FALLOC_FL_PUNCH_HOLE<br />
+
+                  2011-09-19: Substantial restructuring of the page<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

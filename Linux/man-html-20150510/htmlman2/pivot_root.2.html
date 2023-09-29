@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>pivot_root(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="pivot_root(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="pivot-root.2" name="pivot-root.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>pivot_root — change the root filesystem</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>pivot_root</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">new_root</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">put_old</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">There is no glibc wrapper
+            for this system call; see NOTES.</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pivot-root-2_sect1" name="pivot-root-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">pivot_root</code>() moves the root
+      filesystem of the calling process to the directory <em class="parameter"><code>put_old</code></em> and makes <em class="parameter"><code>new_root</code></em> the new root
+      filesystem of the calling process.</p>
+
+      <p>The typical use of <code class="function">pivot_root</code>() is during system startup, when
+      the system mounts a temporary root filesystem (e.g., an
+      <em class="replaceable"><code>initrd</code></em>), then
+      mounts the real root filesystem, and eventually turns the
+      latter into the current root of all relevant processes or
+      threads.</p>
+
+      <p><code class="function">pivot_root</code>() may or may not
+      change the current root and the current working directory of
+      any processes or threads which use the old root directory.
+      The caller of <code class="function">pivot_root</code>() must
+      ensure that processes with root or current working directory
+      at the old root operate correctly in either case. An easy way
+      to ensure this is to change their root and current working
+      directory to <em class="parameter"><code>new_root</code></em>
+      before invoking <code class="function">pivot_root</code>().</p>
+
+      <p>The paragraph above is intentionally vague because the
+      implementation of <code class="function">pivot_root</code>()
+      may change in the future. At the time of writing,
+      <code class="function">pivot_root</code>() changes root and
+      current working directory of each process or thread to
+      <em class="parameter"><code>new_root</code></em> if they
+      point to the old root directory. This is necessary in order
+      to prevent kernel threads from keeping the old root directory
+      busy with their root and current working directory, even if
+      they never access the filesystem in any way. In the future,
+      there may be a mechanism for kernel threads to explicitly
+      relinquish any access to the filesystem, such that this
+      fairly intrusive mechanism can be removed from <code class="function">pivot_root</code>().</p>
+
+      <p>Note that this also applies to the calling process:
+      <code class="function">pivot_root</code>() may or may not
+      affect its current working directory. It is therefore
+      recommended to call <em class="replaceable"><code>chdir("/")</code></em> immediately after
+      <code class="function">pivot_root</code>().</p>
+
+      <p>The following restrictions apply to <em class="parameter"><code>new_root</code></em> and <em class="parameter"><code>put_old</code></em>:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p>They must be directories.</p>
+          </li>
+
+          <li class="listitem">
+            <p><em class="parameter"><code>new_root</code></em> and
+            <em class="parameter"><code>put_old</code></em> must
+            not be on the same filesystem as the current root.</p>
+          </li>
+
+          <li class="listitem">
+            <p><em class="parameter"><code>put_old</code></em> must
+            be underneath <em class="parameter"><code>new_root</code></em>, that is, adding
+            a nonzero number of <code class="filename">/..</code>
+            to the string pointed to by <em class="parameter"><code>put_old</code></em> must yield the
+            same directory as <em class="parameter"><code>new_root</code></em>.</p>
+          </li>
+
+          <li class="listitem">
+            <p>No other filesystem may be mounted on <em class="parameter"><code>put_old</code></em>.</p>
+          </li>
+        </ul>
+      </div>
+
+      <p>See also <a class="link" href="../htmlman8/pivot_root.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pivot_root</span>(8)</span></a> for
+      additional usage examples.</p>
+
+      <p>If the current root is not a mount point (e.g., after
+      <a class="link" href="../htmlman2/chroot.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chroot</span>(2)</span></a> or <code class="function">pivot_root</code>(), see also below), not the old
+      root directory, but the mount point of that filesystem is
+      mounted on <em class="parameter"><code>put_old</code></em>.</p>
+
+      <p><em class="parameter"><code>new_root</code></em> does not
+      have to be a mount point. In this case, <code class="filename">/proc/mounts</code> will show the mount point of
+      the filesystem containing <em class="parameter"><code>new_root</code></em> as root (<code class="filename">/</code>).</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pivot-root-2_sect2" name="pivot-root-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, zero is returned. On error, −1 is
+      returned, and <code class="varname">errno</code> is set
+      appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pivot-root-2_sect3" name="pivot-root-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <p><code class="function">pivot_root</code>() may return (in
+      <code class="varname">errno</code>) any of the errors
+      returned by <a class="link" href="../htmlman2/stat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">stat</span>(2)</span></a>. Additionally, it
+      may return:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EBUSY</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>new_root</code></em> or
+            <em class="parameter"><code>put_old</code></em> are on
+            the current root filesystem, or a filesystem is already
+            mounted on <em class="parameter"><code>put_old</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>put_old</code></em> is
+            not underneath <em class="parameter"><code>new_root</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOTDIR</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>new_root</code></em> or
+            <em class="parameter"><code>put_old</code></em> is not
+            a directory.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The calling process does not have the <code class="constant">CAP_SYS_ADMIN</code> capability.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pivot-root-2_sect4" name="pivot-root-2_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p><code class="function">pivot_root</code>() was introduced
+      in Linux 2.3.41.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pivot-root-2_sect5" name="pivot-root-2_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p><code class="function">pivot_root</code>() is
+      Linux-specific and hence is not portable.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pivot-root-2_sect6" name="pivot-root-2_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Glibc does not provide a wrapper for this system call;
+      call it using <a class="link" href="../htmlman2/syscall.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">syscall</span>(2)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pivot-root-2_sect7" name="pivot-root-2_sect7" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p><code class="function">pivot_root</code>() should not have
+      to change root and current working directory of all other
+      processes in the system.</p>
+
+      <p>Some of the more obscure uses of <code class="function">pivot_root</code>() may quickly lead to
+      insanity.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pivot-root-2_sect8" name="pivot-root-2_sect8" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/chdir.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chdir</span>(2)</span></a>, <a class="link" href="../htmlman2/chroot.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chroot</span>(2)</span></a>, <a class="link" href="../htmlman2/stat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">stat</span>(2)</span></a>, <a class="link" href="../htmlman4/initrd.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">initrd</span>(4)</span></a>, <a class="link" href="../htmlman8/pivot_root.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pivot_root</span>(8)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="pivot-root-2_sect9" name="pivot-root-2_sect9" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2000 by Werner Almesberger<br />
+
+                  <br />
+                  %%%LICENSE_START(GPL_NOVERSION_ONELINE)<br />
+                  May be distributed under GPL<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Written 2000-02-23 by Werner Almesberger<br />
+
+                  Modified 2004-06-17 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

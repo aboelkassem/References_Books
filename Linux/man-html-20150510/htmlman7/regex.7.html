@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>regex(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="regex(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="regex.7" name="regex.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>regex — POSIX.2 regular expressions</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="regex-7_sect1" name="regex-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>Regular expressions ("RE"s), as defined in POSIX.2, come
+      in two forms: modern REs (roughly those of <em class="replaceable"><code>egrep</code></em>; POSIX.2 calls these
+      "extended" REs) and obsolete REs (roughly those of
+      <span class="citerefentry"><span class="refentrytitle">ed</span>(1)</span>; POSIX.2 "basic" REs).
+      Obsolete REs mostly exist for backward compatibility in some
+      old programs; they will be discussed at the end. POSIX.2
+      leaves some aspects of RE syntax and semantics open;
+      "‡" marks decisions on these aspects that may not be
+      fully portable to other POSIX.2 implementations.</p>
+
+      <p>A (modern) RE is one‡ or more nonempty‡
+      <em class="replaceable"><code>branches</code></em>, separated
+      by '|'. It matches anything that matches one of the
+      branches.</p>
+
+      <p>A branch is one‡ or more <em class="replaceable"><code>pieces</code></em>, concatenated. It
+      matches a match for the first, followed by a match for the
+      second, and so on.</p>
+
+      <p>A piece is an <em class="replaceable"><code>atom</code></em> possibly followed by a
+      single‡ '*', '+', '?', or <em class="replaceable"><code>bound</code></em>. An atom followed by
+      '*' matches a sequence of 0 or more matches of the atom. An
+      atom followed by '+' matches a sequence of 1 or more matches
+      of the atom. An atom followed by '?' matches a sequence of 0
+      or 1 matches of the atom.</p>
+
+      <p>A <em class="replaceable"><code>bound</code></em> is '{'
+      followed by an unsigned decimal integer, possibly followed by
+      ',' possibly followed by another unsigned decimal integer,
+      always followed by '}'. The integers must lie between 0 and
+      <code class="constant">RE_DUP_MAX</code> (255‡)
+      inclusive, and if there are two of them, the first may not
+      exceed the second. An atom followed by a bound containing one
+      integer <em class="replaceable"><code>i</code></em> and no
+      comma matches a sequence of exactly <em class="replaceable"><code>i</code></em> matches of the atom. An
+      atom followed by a bound containing one integer <em class="replaceable"><code>i</code></em> and a comma matches a
+      sequence of <em class="replaceable"><code>i</code></em> or
+      more matches of the atom. An atom followed by a bound
+      containing two integers <em class="replaceable"><code>i</code></em> and <em class="replaceable"><code>j</code></em> matches a sequence of
+      <em class="replaceable"><code>i</code></em> through
+      <em class="replaceable"><code>j</code></em> (inclusive)
+      matches of the atom.</p>
+
+      <p>An atom is a regular expression enclosed in "()" (matching
+      a match for the regular expression), an empty set of "()"
+      (matching the null string)‡, a <span class="emphasis"><em>bracket expression</em></span> (see below),
+      '.' (matching any single character), '^' (matching the null
+      string at the beginning of a line), '$' (matching the null
+      string at the end of a line), a '\' followed by one of the
+      characters "<code class="function">^.[$</code>()|*+?{\"
+      (matching that character taken as an ordinary character), a
+      '\' followed by any other character‡ (matching that
+      character taken as an ordinary character, as if the '\' had
+      not been present‡), or a single character with no
+      other significance (matching that character). A '{' followed
+      by a character other than a digit is an ordinary character,
+      not the beginning of a bound‡. It is illegal to end an
+      RE with '\'.</p>
+
+      <p>A <span class="emphasis"><em>bracket
+      expression</em></span> is a list of characters enclosed in
+      "<em class="replaceable"><code>[]</code></em>". It normally
+      matches any single character from the list (but see below).
+      If the list begins with '^', it matches any single character
+      (but see below) <em class="replaceable"><code>not</code></em>
+      from the rest of the list. If two characters in the list are
+      separated by '−', this is shorthand for the full
+      <em class="replaceable"><code>range</code></em> of characters
+      between those two (inclusive) in the collating sequence, for
+      example, "<em class="replaceable"><code>[0−9]</code></em>" in ASCII matches
+      any decimal digit. It is illegal‡ for two ranges to
+      share an endpoint, for example, "<em class="replaceable"><code>a-c-e</code></em>". Ranges are very
+      collating-sequence-dependent, and portable programs should
+      avoid relying on them.</p>
+
+      <p>To include a literal ']' in the list, make it the first
+      character (following a possible '^'). To include a literal
+      '−', make it the first or last character, or the second
+      endpoint of a range. To use a literal '−' as the first
+      endpoint of a range, enclose it in "<em class="replaceable"><code>[.</code></em>" and "<em class="replaceable"><code>.]</code></em>" to make it a collating
+      element (see below). With the exception of these and some
+      combinations using '[' (see next paragraphs), all other
+      special characters, including '\', lose their special
+      significance within a bracket expression.</p>
+
+      <p>Within a bracket expression, a collating element (a
+      character, a multicharacter sequence that collates as if it
+      were a single character, or a collating-sequence name for
+      either) enclosed in "<em class="replaceable"><code>[.</code></em>" and "<em class="replaceable"><code>.]</code></em>" stands for the sequence
+      of characters of that collating element. The sequence is a
+      single element of the bracket expression's list. A bracket
+      expression containing a multicharacter collating element can
+      thus match more than one character, for example, if the
+      collating sequence includes a "ch" collating element, then
+      the RE "<em class="replaceable"><code>[[.ch.]]*c</code></em>"
+      matches the first five characters of "chchcc".</p>
+
+      <p>Within a bracket expression, a collating element enclosed
+      in "<em class="replaceable"><code>[=</code></em>" and
+      "<em class="replaceable"><code>=]</code></em>" is an
+      equivalence class, standing for the sequences of characters
+      of all collating elements equivalent to that one, including
+      itself. (If there are no other equivalent collating elements,
+      the treatment is as if the enclosing delimiters were
+      "<em class="replaceable"><code>[.</code></em>" and
+      "<em class="replaceable"><code>.]</code></em>".) For example,
+      if o and ^ are the members of an equivalence class, then
+      "<em class="replaceable"><code>[[=o=]]</code></em>",
+      "<em class="replaceable"><code>[[=^=]]</code></em>", and
+      "<em class="replaceable"><code>[o^]</code></em>" are all
+      synonymous. An equivalence class may not‡ be an
+      endpoint of a range.</p>
+
+      <p>Within a bracket expression, the name of a <span class="emphasis"><em>character class</em></span> enclosed in
+      "<em class="replaceable"><code>[:</code></em>" and
+      "<em class="replaceable"><code>:]</code></em>" stands for the
+      list of all characters belonging to that class. Standard
+      character class names are:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informaltable">
+            <table style="border-collapse: collapse;">
+              <colgroup span="1">
+                <col class="c0" span="1" />
+                <col class="c1" span="1" />
+                <col class="c2" span="1" />
+              </colgroup>
+
+              <tbody>
+                <tr>
+                  <td style="" align="left" rowspan="1" colspan="1">alnum</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">digit</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">punct</td>
+                </tr>
+
+                <tr>
+                  <td style="" align="left" rowspan="1" colspan="1">alpha</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">graph</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">space</td>
+                </tr>
+
+                <tr>
+                  <td style="" align="left" rowspan="1" colspan="1">blank</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">lower</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">upper</td>
+                </tr>
+
+                <tr>
+                  <td style="" align="left" rowspan="1" colspan="1">cntrl</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">print</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">xdigit</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>These stand for the character classes defined in <a class="link" href="../htmlman3/wctype.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">wctype</span>(3)</span></a>. A locale may
+      provide others. A character class may not be used as an
+      endpoint of a range.</p>
+
+      <p>In the event that an RE could match more than one
+      substring of a given string, the RE matches the one starting
+      earliest in the string. If the RE could match more than one
+      substring starting at that point, it matches the longest.
+      Subexpressions also match the longest possible substrings,
+      subject to the constraint that the whole match be as long as
+      possible, with subexpressions starting earlier in the RE
+      taking priority over ones starting later. Note that
+      higher-level subexpressions thus take priority over their
+      lower-level component subexpressions.</p>
+
+      <p>Match lengths are measured in characters, not collating
+      elements. A null string is considered longer than no match at
+      all. For example, "<em class="replaceable"><code>bb*</code></em>" matches the three middle
+      characters of "abbbc", "<em class="replaceable"><code>(wee|week)(knights|nights)</code></em>"
+      matches all ten characters of "weeknights", when "<em class="replaceable"><code>(.*).*</code></em>" is matched against
+      "abc" the parenthesized subexpression matches all three
+      characters, and when "<em class="replaceable"><code>(a*)*</code></em>" is matched against
+      "bc" both the whole RE and the parenthesized subexpression
+      match the null string.</p>
+
+      <p>If case-independent matching is specified, the effect is
+      much as if all case distinctions had vanished from the
+      alphabet. When an alphabetic that exists in multiple cases
+      appears as an ordinary character outside a bracket
+      expression, it is effectively transformed into a bracket
+      expression containing both cases, for example, 'x' becomes
+      "<em class="replaceable"><code>[xX]</code></em>". When it
+      appears inside a bracket expression, all case counterparts of
+      it are added to the bracket expression, so that, for example,
+      "<em class="replaceable"><code>[x]</code></em>" becomes
+      "<em class="replaceable"><code>[xX]</code></em>" and
+      "<em class="replaceable"><code>[^x]</code></em>" becomes
+      "<em class="replaceable"><code>[^xX]</code></em>".</p>
+
+      <p>No particular limit is imposed on the length of
+      REs‡. Programs intended to be portable should not
+      employ REs longer than 256 bytes, as an implementation can
+      refuse to accept such REs and remain POSIX-compliant.</p>
+
+      <p>Obsolete ("basic") regular expressions differ in several
+      respects. '|', '+', and '?' are ordinary characters and there
+      is no equivalent for their functionality. The delimiters for
+      bounds are "<em class="replaceable"><code>\{</code></em>" and
+      "<em class="replaceable"><code>\}</code></em>", with '{' and
+      '}' by themselves ordinary characters. The parentheses for
+      nested subexpressions are "<em class="replaceable"><code>\(</code></em>" and "<em class="replaceable"><code>\)</code></em>", with '(' and ')' by
+      themselves ordinary characters. '^' is an ordinary character
+      except at the beginning of the RE or‡ the beginning of
+      a parenthesized subexpression, '$' is an ordinary character
+      except at the end of the RE or‡ the end of a
+      parenthesized subexpression, and '*' is an ordinary character
+      if it appears at the beginning of the RE or the beginning of
+      a parenthesized subexpression (after a possible leading
+      '^').</p>
+
+      <p>Finally, there is one new type of atom, a <span class="emphasis"><em>back reference</em></span>: '\' followed by a
+      nonzero decimal digit <em class="replaceable"><code>d</code></em> matches the same sequence
+      of characters matched by the <em class="replaceable"><code>d</code></em>th parenthesized
+      subexpression (numbering subexpressions by the positions of
+      their opening parentheses, left to right), so that, for
+      example, "<em class="replaceable"><code>\([bc]\)\1</code></em>" matches "bb" or
+      "cc" but not "bc".</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="regex-7_sect2" name="regex-7_sect2" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>Having two kinds of REs is a botch.</p>
+
+      <p>The current POSIX.2 spec says that ')' is an ordinary
+      character in the absence of an unmatched '('; this was an
+      unintentional result of a wording error, and change is
+      likely. Avoid relying on it.</p>
+
+      <p>Back references are a dreadful botch, posing major
+      problems for efficient implementations. They are also
+      somewhat vaguely defined (does "<em class="replaceable"><code>a\(\(b\)*\2\)*d</code></em>" match
+      "abbbd"?). Avoid using them.</p>
+
+      <p>POSIX.2's specification of case-independent matching is
+      vague. The "one case implies all cases" definition given
+      above is current consensus among implementors as to the right
+      interpretation.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="regex-7_sect3" name="regex-7_sect3" shape="rect"> </a>
+
+      <h2>AUTHOR</h2>
+
+      <p>This page was taken from Henry Spencer's regex
+      package.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="regex-7_sect4" name="regex-7_sect4" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><span class="citerefentry"><span class="refentrytitle">grep</span>(1)</span>, <a class="link" href="../htmlman3/regex.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">regex</span>(3)</span></a></p>
+
+      <p>POSIX.2, section 2.8 (Regular Expression Notation).</p>
+    </div>
+
+    <div class="colophon">
+      <a id="regex-7_sect5" name="regex-7_sect5" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    From Henry Spencer's regex package (as found in the apache<br />
+
+                  distribution). The package carries the following copyright:<br />
+
+                  <br />
+                   Copyright 1992, 1993, 1994 Henry Spencer.  All rights reserved.<br />
+
+                  %%%LICENSE_START(MISC)<br />
+                   This software is not subject to any license of the American Telephone<br />
+
+                   and Telegraph Company or of the Regents of the University of California.<br />
+
+                  <br />
+                   Permission is granted to anyone to use this software for any purpose<br />
+
+                   on any computer system, and to alter it and redistribute it, subject<br />
+
+                   to the following restrictions:<br />
+
+                  <br />
+                   1. The author is not responsible for the consequences of use of this<br />
+
+                      software, no matter how awful, even if they arise from flaws in it.<br />
+
+                  <br />
+                   2. The origin of this software must not be misrepresented, either by<br />
+
+                      explicit claim or by omission.  Since few users ever read sources,<br />
+
+                      credits must appear in the documentation.<br />
+
+                  <br />
+                   3. Altered versions must be plainly marked as such, and must not be<br />
+
+                      misrepresented as being the original software.  Since few users<br />
+
+                      ever read sources, credits must appear in the documentation.<br />
+
+                  <br />
+                   4. This notice may not be removed or altered.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  In order to comply with `credits must appear in the documentation'<br />
+
+                  I added an AUTHOR paragraph below - aeb.<br />
+
+                  <br />
+                  In the default nroff environment there is no dagger \(dg.<br />
+
+                  <br />
+                  2005-05-11 Removed discussion of `[[:&lt;:]]' and `[[:&gt;:]]', which<br />
+
+                  appear not to be in the glibc implementation of regcomp<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

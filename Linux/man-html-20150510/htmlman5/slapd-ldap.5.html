@@ -1,0 +1,977 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>slapd-ldap(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="slapd-ldap(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="slapd-ldap.5" name="slapd-ldap.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>slapd−ldap — LDAP backend to slapd</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ETCDIR/slapd.conf
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-ldap-5_sect1" name="slapd-ldap-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The LDAP backend to <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a> is not an actual
+      database; instead it acts as a proxy to forward incoming
+      requests to another LDAP server. While processing requests it
+      will also chase referrals, so that referrals are fully
+      processed instead of being returned to the slapd client.</p>
+
+      <p>Sessions that explicitly Bind to the back-ldap database
+      always create their own private connection to the remote LDAP
+      server. Anonymous sessions will share a single anonymous
+      connection to the remote server. For sessions bound through
+      other mechanisms, all sessions with the same DN will share
+      the same connection. This connection pooling strategy can
+      enhance the proxy's efficiency by reducing the overhead of
+      repeatedly making/breaking multiple connections.</p>
+
+      <p>The ldap database can also act as an information service,
+      i.e. the identity of locally authenticated clients is
+      asserted to the remote server, possibly in some modified
+      form. For this purpose, the proxy binds to the remote server
+      with some administrative identity, and, if required,
+      authorizes the asserted identity. See the <em class="replaceable"><code>idassert−</code></em>* rules below.
+      The administrative identity of the proxy, on the remote
+      server, must be allowed to authorize by means of appropriate
+      <em class="replaceable"><code>authzTo</code></em> rules; see
+      <a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a> for
+      details.</p>
+
+      <p>The proxy instance of <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a> must contain
+      schema information for the attributes and objectClasses used
+      in filters, request DNs and request-related data in general.
+      It should also contain schema information for the data
+      returned by the proxied server. It is the responsibility of
+      the proxy administrator to keep the schema of the proxy lined
+      up with that of the proxied server.</p>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <p>When looping back to the same instance of
+              <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a>, each
+              connection requires a new thread; as a consequence,
+              <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a> must be
+              compiled with thread support, and the <em class="replaceable"><code>threads</code></em> parameter may
+              need some tuning; in those cases, one may consider
+              using <a class="link" href="../htmlman5/slapd-relay.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-relay</span>(5)</span></a>
+              instead, which performs the relayed operation
+              internally and thus reuses the same connection.</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-ldap-5_sect2" name="slapd-ldap-5_sect2" shape="rect"> </a>
+
+      <h2>CONFIGURATION</h2>
+
+      <p>These <em class="replaceable"><code>slapd.conf</code></em>
+      options apply to the LDAP backend database. That is, they
+      must follow a "database ldap" line and come before any
+      subsequent "backend" or "database" lines. Other database
+      options are described in the <a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a> manual
+      page.</p>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <p>In early versions of back-ldap it was recommended
+              to always set</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+lastmod  off
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>for <em class="citetitle">ldap</em> and <em class="replaceable"><code>meta</code></em> databases. This was
+      required because operational attributes related to entry
+      creation and modification should not be proxied, as they
+      could be mistakenly written to the target server(s),
+      generating an error. The current implementation automatically
+      sets lastmod to <em class="replaceable"><code>off</code></em>, so its use is redundant
+      and should be omitted.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>uri
+          &lt;ldapurl&gt;</em></span></span></dt>
+
+          <dd>
+            <p>LDAP server to use. Multiple URIs can be set in a
+            single <em class="replaceable"><code>ldapurl</code></em> argument,
+            resulting in the underlying library automatically
+            calling the first server of the list that responds,
+            e.g.</p>
+
+            <p><span class="emphasis"><em>uri "ldap://host/
+            ldap://backup−host/"</em></span></p>
+
+            <p>The URI list is space- or comma-separated. Whenever
+            the server that responds is not the first one in the
+            list, the list is rearranged and the responsive server
+            is moved to the head, so that it will be first
+            contacted the next time a connection needs to be
+            created.</p>
+
+            <p><em class="replaceable"><code>acl−bind</code></em>
+            <span class="emphasis"><em>bindmethod=simple|sasl
+            [binddn=&lt;simple DN&gt;] [credentials=&lt;simple
+            password&gt;]</em></span> <span class="emphasis"><em>[saslmech=&lt;SASL mech&gt;]
+            [secprops=&lt;properties&gt;]
+            [realm=&lt;realm&gt;]</em></span> <span class="emphasis"><em>[authcId=&lt;authentication ID&gt;]
+            [authzId=&lt;authorization ID&gt;]</em></span>
+            <em class="replaceable"><code>[starttls=no|yes|critical]</code></em>
+            <em class="replaceable"><code>[tls_cert=&lt;file&gt;]</code></em>
+            <em class="replaceable"><code>[tls_key=&lt;file&gt;]</code></em>
+            <em class="replaceable"><code>[tls_cacert=&lt;file&gt;]</code></em>
+            <em class="replaceable"><code>[tls_cacertdir=&lt;path&gt;]</code></em>
+            <em class="replaceable"><code>[tls_reqcert=never|allow|try|demand]</code></em>
+            <em class="replaceable"><code>[tls_ciphersuite=&lt;ciphers&gt;]</code></em>
+            <em class="replaceable"><code>[tls_protocol_min=&lt;major&gt;[.&lt;minor&gt;]]</code></em>
+            <em class="replaceable"><code>[tls_crlcheck=none|peer|all]</code></em></p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <p>Allows to define the parameters of the
+                authentication method that is internally used by
+                the proxy to collect info related to access
+                control, and whenever an operation occurs with the
+                identity of the rootdn of the LDAP proxy database.
+                The identity defined by this directive, according
+                to the properties associated to the authentication
+                method, is supposed to have read access on the
+                target server to attributes used on the proxy for
+                ACL checking.</p>
+
+                <p>There is no risk of giving away such values;
+                they are only used to check permissions. The
+                default is to use <em class="replaceable"><code>simple</code></em> bind, with
+                empty <em class="replaceable"><code>binddn</code></em> and
+                <em class="replaceable"><code>credentials</code></em>, which
+                means that the related operations will be performed
+                anonymously. If not set, and if <em class="replaceable"><code>idassert−bind</code></em>
+                is defined, this latter identity is used instead.
+                See <em class="replaceable"><code>idassert−bind</code></em>
+                for details.</p>
+
+                <p>The connection between the proxy database and
+                the remote server associated to this identity is
+                cached regardless of the lifespan of the
+                client-proxy connection that first established
+                it.</p>
+
+                <p><span class="emphasis"><em>This identity is not
+                implicitly used by the proxy</em></span>
+                <span class="emphasis"><em>when the client connects
+                anonymously.</em></span> The <em class="replaceable"><code>idassert−bind</code></em>
+                feature, instead, in some cases can be crafted to
+                implement that behavior, which is <span class="emphasis"><em>intrinsically unsafe and should be
+                used with extreme care</em></span>. This directive
+                obsoletes <em class="replaceable"><code>acl−authcDN</code></em>,
+                and <em class="replaceable"><code>acl−passwd</code></em>.</p>
+
+                <p>The TLS settings default to the same as the main
+                slapd TLS settings, except for <em class="replaceable"><code>tls_reqcert</code></em> which
+                defaults to "demand".</p>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>cancel
+          {ABANDON|ignore|exop[−discover]}</em></span></span></dt>
+
+          <dd>
+            <p>Defines how to handle operation cancellation. By
+            default, <em class="replaceable"><code>abandon</code></em> is invoked, so
+            the operation is abandoned immediately. If set to
+            <em class="replaceable"><code>ignore</code></em>, no
+            action is taken and any further response is ignored;
+            this may result in further response messages to be
+            queued for that connection, so it is recommended that
+            long lasting connections are timed out either by
+            <em class="replaceable"><code>idle−timeout</code></em> or
+            <em class="replaceable"><code>conn−ttl</code></em>, so that
+            resources eventually get released. If set to <em class="replaceable"><code>exop</code></em>, a <em class="replaceable"><code>cancel</code></em> operation (RFC
+            3909) is issued, resulting in the cancellation of the
+            current operation; the <em class="replaceable"><code>cancel</code></em> operation waits
+            for remote server response, so its use may not be
+            recommended. If set to <em class="replaceable"><code>exop−discover</code></em>,
+            support of the <em class="replaceable"><code>cancel</code></em> extended
+            operation is detected by reading the remote server's
+            root DSE.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>chase−referrals
+          {YES|no}</em></span></span></dt>
+
+          <dd>
+            <p>enable/disable automatic referral chasing, which is
+            delegated to the underlying libldap, with rebinding
+            eventually performed if the <em class="replaceable"><code>rebind−as−user</code></em>
+            directive is used. The default is to chase
+            referrals.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>conn−ttl
+          &lt;time&gt;</em></span></span></dt>
+
+          <dd>
+            <p>This directive causes a cached connection to be
+            dropped and recreated after a given ttl, regardless of
+            being idle or not.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>idassert−authzFrom
+          &lt;authz-regexp&gt;</em></span></span></dt>
+
+          <dd>
+            <p>if defined, selects what <em class="replaceable"><code>local</code></em> identities are
+            authorized to exploit the identity assertion feature.
+            The string <em class="replaceable"><code>&lt;authz-regexp&gt;</code></em>
+            follows the rules defined for the <em class="replaceable"><code>authzFrom</code></em> attribute.
+            See <a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a>,
+            section related to <em class="replaceable"><code>authz−policy</code></em>, for
+            details on the syntax of this field.</p>
+
+            <p><em class="replaceable"><code>idassert−bind</code></em>
+            <span class="emphasis"><em>bindmethod=none|simple|sasl
+            [binddn=&lt;simple DN&gt;] [credentials=&lt;simple
+            password&gt;]</em></span> <span class="emphasis"><em>[saslmech=&lt;SASL mech&gt;]
+            [secprops=&lt;properties&gt;]
+            [realm=&lt;realm&gt;]</em></span> <span class="emphasis"><em>[authcId=&lt;authentication ID&gt;]
+            [authzId=&lt;authorization ID&gt;]</em></span>
+            <span class="emphasis"><em>[authz={native|proxyauthz}]
+            [mode=&lt;mode&gt;] [flags=&lt;flags&gt;]</em></span>
+            <em class="replaceable"><code>[starttls=no|yes|critical]</code></em>
+            <em class="replaceable"><code>[tls_cert=&lt;file&gt;]</code></em>
+            <em class="replaceable"><code>[tls_key=&lt;file&gt;]</code></em>
+            <em class="replaceable"><code>[tls_cacert=&lt;file&gt;]</code></em>
+            <em class="replaceable"><code>[tls_cacertdir=&lt;path&gt;]</code></em>
+            <em class="replaceable"><code>[tls_reqcert=never|allow|try|demand]</code></em>
+            <em class="replaceable"><code>[tls_ciphersuite=&lt;ciphers&gt;]</code></em>
+            <em class="replaceable"><code>[tls_protocol_min=&lt;version&gt;]</code></em>
+            <em class="replaceable"><code>[tls_crlcheck=none|peer|all]</code></em></p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <p>Allows to define the parameters of the
+                authentication method that is internally used by
+                the proxy to authorize connections that are
+                authenticated by other databases. Direct binds are
+                always proxied without any idassert handling.</p>
+
+                <p>The identity defined by this directive,
+                according to the properties associated to the
+                authentication method, is supposed to have auth
+                access on the target server to attributes used on
+                the proxy for authentication and authorization, and
+                to be allowed to authorize the users. This requires
+                to have <em class="replaceable"><code>proxyAuthz</code></em>
+                privileges on a wide set of DNs, e.g. <em class="replaceable"><code>authzTo=dn.subtree:""</code></em>,
+                and the remote server to have <em class="replaceable"><code>authz−policy</code></em>
+                set to <em class="replaceable"><code>to</code></em>
+                or <em class="replaceable"><code>both</code></em>.
+                See <a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a> for
+                details on these statements and for remarks and
+                drawbacks about their usage. The supported
+                bindmethods are</p>
+
+                <p><em class="replaceable"><code>none|simple|sasl</code></em></p>
+
+                <p>where <em class="replaceable"><code>none</code></em> is the
+                default, i.e. no <span class="emphasis"><em>identity assertion</em></span> is
+                performed.</p>
+
+                <p>The authz parameter is used to instruct the SASL
+                bind to exploit <em class="replaceable"><code>native</code></em> SASL
+                authorization, if available; since connections are
+                cached, this should only be used when authorizing
+                with a fixed identity (e.g. by means of the
+                <em class="replaceable"><code>authzDN</code></em>
+                or <em class="replaceable"><code>authzID</code></em>
+                parameters). Otherwise, the default <em class="replaceable"><code>proxyauthz</code></em> is used,
+                i.e. the proxyAuthz control (Proxied Authorization,
+                RFC 4370) is added to all operations.</p>
+
+                <p>The supported modes are:</p>
+
+                <p><span class="emphasis"><em>&lt;mode&gt; :=
+                {legacy|anonymous|none|self}</em></span></p>
+
+                <p>If <em class="replaceable"><code>&lt;mode&gt;</code></em> is not
+                present, and <em class="replaceable"><code>authzId</code></em> is given,
+                the proxy always authorizes that identity.
+                <span class="emphasis"><em>&lt;authorization
+                ID&gt;</em></span> can be</p>
+
+                <p><em class="replaceable"><code>u:&lt;user&gt;</code></em></p>
+
+                <p><em class="replaceable"><code>[dn:]&lt;DN&gt;</code></em></p>
+
+                <p>The former is supposed to be expanded by the
+                remote server according to the authz rules; see
+                <a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a> for
+                details. In the latter case, whether or not the
+                <em class="replaceable"><code>dn:</code></em>
+                prefix is present, the string must pass DN
+                validation and normalization.</p>
+
+                <p>The default mode is <em class="replaceable"><code>legacy</code></em>, which
+                implies that the proxy will either perform a simple
+                bind as the <em class="replaceable"><code>authcDN</code></em> or a SASL
+                bind as the <em class="replaceable"><code>authcID</code></em> and assert
+                the client's identity when it is not anonymous. The
+                other modes imply that the proxy will always either
+                perform a simple bind as the <em class="replaceable"><code>authcDN</code></em> or a SASL
+                bind as the <em class="replaceable"><code>authcID</code></em>, unless
+                restricted by <em class="replaceable"><code>idassert−authzFrom</code></em>
+                rules (see below), in which case the operation will
+                fail; eventually, it will assert some other
+                identity according to <em class="replaceable"><code>&lt;mode&gt;</code></em>. Other
+                identity assertion modes are <em class="replaceable"><code>anonymous</code></em> and
+                <em class="replaceable"><code>self</code></em>,
+                which respectively mean that the <em class="replaceable"><code>empty</code></em> or the
+                <em class="replaceable"><code>client</code></em>'s
+                identity will be asserted; <em class="replaceable"><code>none</code></em>, which means
+                that no proxyAuthz control will be used, so the
+                <em class="replaceable"><code>authcDN</code></em>
+                or the <em class="replaceable"><code>authcID</code></em> identity
+                will be asserted. For all modes that require the
+                use of the <em class="replaceable"><code>proxyAuthz</code></em> control,
+                on the remote server the proxy identity must have
+                appropriate <em class="replaceable"><code>authzTo</code></em>
+                permissions, or the asserted identities must have
+                appropriate <em class="replaceable"><code>authzFrom</code></em>
+                permissions. Note, however, that the ID assertion
+                feature is mostly useful when the asserted
+                identities do not exist on the remote server.</p>
+
+                <p>Flags can be</p>
+
+                <p><em class="replaceable"><code>override,[non−]prescriptive,proxy−authz−[non−]critical</code></em></p>
+
+                <p>When the <em class="replaceable"><code>override</code></em> flag is
+                used, identity assertion takes place even when the
+                database is authorizing for the identity of the
+                client, i.e. after binding with the provided
+                identity, and thus authenticating it, the proxy
+                performs the identity assertion using the
+                configured identity and authentication method.</p>
+
+                <p>When the <em class="replaceable"><code>prescriptive</code></em> flag
+                is used (the default), operations fail with
+                <em class="replaceable"><code>inappropriateAuthentication</code></em>
+                for those identities whose assertion is not allowed
+                by the <em class="replaceable"><code>idassert−authzFrom</code></em>
+                patterns. If the <em class="replaceable"><code>non−prescriptive</code></em>
+                flag is used, operations are performed anonymously
+                for those identities whose assertion is not allowed
+                by the <em class="replaceable"><code>idassert−authzFrom</code></em>
+                patterns.</p>
+
+                <p>When the <em class="replaceable"><code>proxy−authz−non−critical</code></em>
+                flag is used (the default), the proxyAuthz control
+                is not marked as critical, in violation of RFC
+                4370. Use of <em class="replaceable"><code>proxy−authz−critical</code></em>
+                is recommended.</p>
+
+                <p>The TLS settings default to the same as the main
+                slapd TLS settings, except for <em class="replaceable"><code>tls_reqcert</code></em> which
+                defaults to "demand".</p>
+
+                <p>The identity associated to this directive is
+                also used for privileged operations whenever
+                <em class="replaceable"><code>idassert−bind</code></em>
+                is defined and <em class="replaceable"><code>acl−bind</code></em> is
+                not. See <em class="replaceable"><code>acl−bind</code></em> for
+                details.</p>
+
+                <p>This directive obsoletes <em class="replaceable"><code>idassert−authcDN</code></em>,
+                <em class="replaceable"><code>idassert−passwd</code></em>,
+                <em class="replaceable"><code>idassert−mode</code></em>,
+                and <em class="replaceable"><code>idassert−method</code></em>.</p>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>idassert-passthru
+          &lt;authz-regexp&gt;</em></span></span></dt>
+
+          <dd>
+            <p>if defined, selects what <em class="replaceable"><code>local</code></em> identities bypass
+            the identity assertion feature. Those identities need
+            to be known by the remote host. The string <em class="replaceable"><code>&lt;authz-regexp&gt;</code></em>
+            follows the rules defined for the <em class="replaceable"><code>authzFrom</code></em> attribute.
+            See <a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a>,
+            section related to <em class="replaceable"><code>authz−policy</code></em>, for
+            details on the syntax of this field.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>idle−timeout
+          &lt;time&gt;</em></span></span></dt>
+
+          <dd>
+            <p>This directive causes a cached connection to be
+            dropped an recreated after it has been idle for the
+            specified time.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>keepalive
+          &lt;idle&gt;:&lt;probes&gt;:&lt;interval&gt;</em></span></span></dt>
+
+          <dd>
+            <p>The <em class="replaceable"><code>keepalive</code></em> parameter
+            sets the values of <em class="replaceable"><code>idle</code></em>, <em class="replaceable"><code>probes</code></em>, and <em class="replaceable"><code>interval</code></em> used to check
+            whether a socket is alive; <em class="replaceable"><code>idle</code></em> is the number of
+            seconds a connection needs to remain idle before TCP
+            starts sending keepalive probes; <em class="replaceable"><code>probes</code></em> is the maximum
+            number of keepalive probes TCP should send before
+            dropping the connection; <em class="replaceable"><code>interval</code></em> is interval in
+            seconds between individual keepalive probes. Only some
+            systems support the customization of these values; the
+            <em class="replaceable"><code>keepalive</code></em>
+            parameter is ignored otherwise, and system-wide
+            settings are used.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>network−timeout
+          &lt;time&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Sets the network timeout value after which <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a>/<a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a> following a
+            <a class="link" href="../htmlman2/connect.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">connect</span>(2)</span></a> returns in
+            case of no activity. The value is in seconds, and it
+            can be specified as for <em class="replaceable"><code>idle−timeout</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>norefs
+          &lt;NO|yes&gt;</em></span></span></dt>
+
+          <dd>
+            <p>If <em class="replaceable"><code>yes</code></em>, do
+            not return search reference responses. By default, they
+            are returned unless request is LDAPv2.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>noundeffilter
+          &lt;NO|yes&gt;</em></span></span></dt>
+
+          <dd>
+            <p>If <em class="replaceable"><code>yes</code></em>,
+            return success instead of searching if a filter is
+            undefined or contains undefined portions. By default,
+            the search is propagated after replacing undefined
+            portions with <em class="replaceable"><code>(!(objectClass=*))</code></em>,
+            which corresponds to the empty result set.</p>
+          </dd>
+
+          <dt><span class="term">nerr {CONTINUE|stop}</span></dt>
+
+          <dd>
+            <p>This directive allows to select the behavior in case
+            an error is returned by the remote server during a
+            search. The default, <em class="replaceable"><code>continue</code></em>, consists in
+            returning success. If the value is set to <em class="replaceable"><code>stop</code></em>, the error is
+            returned to the client.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>protocol−version
+          {0,2,3}</em></span></span></dt>
+
+          <dd>
+            <p>This directive indicates what protocol version must
+            be used to contact the remote server. If set to 0 (the
+            default), the proxy uses the same protocol version used
+            by the client, otherwise the requested protocol is
+            used. The proxy returns <em class="replaceable"><code>unwillingToPerform</code></em> if
+            an operation that is incompatible with the requested
+            protocol is attempted.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>proxy−whoami
+          {NO|yes}</em></span></span></dt>
+
+          <dd>
+            <p>Turns on proxying of the WhoAmI extended operation.
+            If this option is given, back-ldap will replace slapd's
+            original WhoAmI routine with its own. On slapd sessions
+            that were authenticated by back-ldap, the WhoAmI
+            request will be forwarded to the remote LDAP server.
+            Other sessions will be handled by the local slapd, as
+            before. This option is mainly useful in conjunction
+            with Proxy Authorization.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>quarantine
+          &lt;interval&gt;,&lt;num&gt;[;&lt;interval&gt;,&lt;num&gt;[...]]</em></span></span></dt>
+
+          <dd>
+            <p>Turns on quarantine of URIs that returned
+            <span class="errorname">LDAP_UNAVAILABLE</span>, so
+            that an attempt to reconnect only occurs at given
+            intervals instead of any time a client requests an
+            operation. The pattern is: retry only after at least
+            <em class="replaceable"><code>interval</code></em>
+            seconds elapsed since last attempt, for exactly
+            <em class="replaceable"><code>num</code></em> times;
+            then use the next pattern. If <em class="replaceable"><code>num</code></em> for the last
+            pattern is "<code class="literal">+</code>", it retries
+            forever; otherwise, no more retries occur. The process
+            can be restarted by resetting the <em class="replaceable"><code>olcDbQuarantine</code></em>
+            attribute of the database entry in the configuration
+            backend.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>rebind−as−user
+          {NO|yes}</em></span></span></dt>
+
+          <dd>
+            <p>If this option is given, the client's bind
+            credentials are remembered for rebinds, when trying to
+            re-establish a broken connection, or when chasing a
+            referral, if <em class="replaceable"><code>chase−referrals</code></em>
+            is set to <em class="replaceable"><code>yes</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>session−tracking−request
+          {NO|yes}</em></span></span></dt>
+
+          <dd>
+            <p>Adds session tracking control for all requests. The
+            client's IP and hostname, and the identity associated
+            to each request, if known, are sent to the remote
+            server for informational purposes. This directive is
+            incompatible with setting <em class="replaceable"><code>protocol−version</code></em>
+            to 2.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>single−conn
+          {NO|yes}</em></span></span></dt>
+
+          <dd>
+            <p>Discards current cached connection when the client
+            rebinds.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>t−f−support
+          {NO|yes|discover}</em></span></span></dt>
+
+          <dd>
+            <p>enable if the remote server supports absolute
+            filters (see <span class="emphasis"><em>RFC
+            4526</em></span> for details). If set to <em class="replaceable"><code>discover</code></em>, support is
+            detected by reading the remote server's root DSE.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>timeout
+          [&lt;op&gt;=]&lt;val&gt; [...]</em></span></span></dt>
+
+          <dd>
+            <p>This directive allows to set per-operation timeouts.
+            Operations can be</p>
+
+            <p><span class="emphasis"><em>&lt;op&gt; ::= bind, add,
+            delete, modrdn, modify, compare, search</em></span></p>
+
+            <p>The overall duration of the <em class="replaceable"><code>search</code></em> operation is
+            controlled either by the <em class="replaceable"><code>timelimit</code></em> parameter or
+            by server-side enforced time limits (see <em class="replaceable"><code>timelimit</code></em> and
+            <em class="replaceable"><code>limits</code></em> in
+            <a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a> for
+            details). This <em class="replaceable"><code>timeout</code></em> parameter
+            controls how long the target can be irresponsive before
+            the operation is aborted. Timeout is meaningless for
+            the remaining operations, <em class="replaceable"><code>unbind</code></em> and <em class="replaceable"><code>abandon</code></em>, which do not
+            imply any response, while it is not yet implemented in
+            currently supported <em class="replaceable"><code>extended</code></em> operations. If
+            no operation is specified, the timeout <em class="replaceable"><code>val</code></em> affects all
+            supported operations.</p>
+
+            <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+              <table border="0" summary="Note">
+                <tr>
+                  <td rowspan="2" align="center" valign="top" width="25" colspan="1"><img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+                  <th align="left" rowspan="1" colspan="1">Note</th>
+                </tr>
+
+                <tr>
+                  <td align="left" valign="top" rowspan="1" colspan="1">
+                    <p>If the timelimit is exceeded, the operation
+                    is cancelled (according to the <em class="replaceable"><code>cancel</code></em>
+                    directive); the protocol does not provide any
+                    means to rollback operations, so the client
+                    will not be notified about the result of the
+                    operation, which may eventually succeeded or
+                    not. In case the timeout is exceeded during a
+                    bind operation, the connection is destroyed,
+                    according to RFC4511.</p>
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+              <table border="0" summary="Note">
+                <tr>
+                  <td rowspan="2" align="center" valign="top" width="25" colspan="1"><img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+                  <th align="left" rowspan="1" colspan="1">Note</th>
+                </tr>
+
+                <tr>
+                  <td align="left" valign="top" rowspan="1" colspan="1">
+                    <p>In some cases, this backend may issue binds
+                    prior to other operations (e.g. to bind
+                    anonymously or with some prescribed identity
+                    according to the <em class="replaceable"><code>idassert−bind</code></em>
+                    directive). In this case, the timeout of the
+                    operation that resulted in the bind is
+                    used.</p>
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <p><span class="emphasis"><em>tls
+            {[try−]start|[try−]propagate|ldaps}</em></span>
+            <em class="replaceable"><code>[tls_cert=&lt;file&gt;]</code></em>
+            <em class="replaceable"><code>[tls_key=&lt;file&gt;]</code></em>
+            <em class="replaceable"><code>[tls_cacert=&lt;file&gt;]</code></em>
+            <em class="replaceable"><code>[tls_cacertdir=&lt;path&gt;]</code></em>
+            <em class="replaceable"><code>[tls_reqcert=never|allow|try|demand]</code></em>
+            <em class="replaceable"><code>[tls_ciphersuite=&lt;ciphers&gt;]</code></em>
+            <em class="replaceable"><code>[tls_crlcheck=none|peer|all]</code></em></p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <p>Specify the use of TLS when a regular connection
+                is initialized. The StartTLS extended operation
+                will be used unless the URI directive protocol
+                scheme is <em class="replaceable"><code>ldaps://</code></em>. In that
+                case this keyword may only be set to "ldaps" and
+                the StartTLS operation will not be used. <em class="replaceable"><code>propagate</code></em> issues
+                the StartTLS operation only if the original
+                connection did. The <em class="replaceable"><code>try−</code></em> prefix
+                instructs the proxy to continue operations if the
+                StartTLS operation failed; its use is <em class="replaceable"><code>not</code></em>
+                recommended.</p>
+
+                <p>The TLS settings default to the same as the main
+                slapd TLS settings, except for <em class="replaceable"><code>tls_reqcert</code></em> which
+                defaults to "demand".</p>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>use−temporary−conn
+          {NO|yes}</em></span></span></dt>
+
+          <dd>
+            <p>when set to <em class="replaceable"><code>yes</code></em>, create a temporary
+            connection whenever competing with other threads for a
+            shared one; otherwise, wait until the shared connection
+            is available.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-ldap-5_sect3" name="slapd-ldap-5_sect3" shape="rect"> </a>
+
+      <h2>BACKWARD COMPATIBILITY</h2>
+
+      <p>The LDAP backend has been heavily reworked between
+      releases 2.2 and 2.3, and subsequently between 2.3 and 2.4.
+      As a side-effect, some of the traditional directives have
+      been deprecated and should be no longer used, as they might
+      disappear in future releases.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>acl−authcDN &lt;administrative DN
+          for access control purposes&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Formerly known as the <em class="replaceable"><code>binddn</code></em>, it is the DN
+            that is used to query the target server for acl
+            checking; it is supposed to have read access on the
+            target server to attributes used on the proxy for acl
+            checking. There is no risk of giving away such values;
+            they are only used to check permissions.</p>
+
+            <p><span class="emphasis"><em>The acl−authcDN
+            identity is by no means implicitly used by the
+            proxy</em></span> <span class="emphasis"><em>when the
+            client connects anonymously.</em></span> The <em class="replaceable"><code>idassert−*</code></em>
+            feature can be used (at own risk) for that purpose
+            instead.</p>
+
+            <p>This directive is obsoleted by the <em class="replaceable"><code>binddn</code></em> arg of
+            <em class="replaceable"><code>acl−bind</code></em>
+            when <em class="replaceable"><code>bindmethod</code></em>=<em class="replaceable"><code>simple</code></em>, and will be
+            dismissed in the future.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>acl−passwd
+          &lt;password&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Formerly known as the <em class="replaceable"><code>bindpw</code></em>, it is the
+            password used with the above <em class="replaceable"><code>acl−authcDN</code></em>
+            directive. This directive is obsoleted by the
+            <em class="replaceable"><code>credentials</code></em>
+            arg of <em class="replaceable"><code>acl−bind</code></em> when
+            <em class="replaceable"><code>bindmethod</code></em>=<em class="replaceable"><code>simple</code></em>, and will be
+            dismissed in the future.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>idassert−authcDN &lt;administrative
+          DN for proxyAuthz purposes&gt;</em></span></span></dt>
+
+          <dd>
+            <p>DN which is used to propagate the client's identity
+            to the target by means of the proxyAuthz control when
+            the client does not belong to the DIT fragment that is
+            being proxied by back-ldap. This directive is obsoleted
+            by the <em class="replaceable"><code>binddn</code></em>
+            arg of <em class="replaceable"><code>idassert−bind</code></em>
+            when <em class="replaceable"><code>bindmethod</code></em>=<em class="replaceable"><code>simple</code></em>, and will be
+            dismissed in the future.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>idassert−passwd
+          &lt;password&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Password used with the <em class="replaceable"><code>idassert−authcDN</code></em>
+            above. This directive is obsoleted by the <em class="replaceable"><code>crendentials</code></em> arg of
+            <em class="replaceable"><code>idassert−bind</code></em>
+            when <em class="replaceable"><code>bindmethod</code></em>=<em class="replaceable"><code>simple</code></em>, and will be
+            dismissed in the future.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>idassert−mode &lt;mode&gt;
+          [&lt;flags&gt;]</em></span></span></dt>
+
+          <dd>
+            <p>defines what type of <span class="emphasis"><em>identity assertion</em></span> is used.
+            This directive is obsoleted by the <em class="replaceable"><code>mode</code></em> arg of <em class="replaceable"><code>idassert−bind</code></em>,
+            and will be dismissed in the future.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>idassert−method &lt;method&gt;
+          [&lt;saslargs&gt;]</em></span></span></dt>
+
+          <dd>
+            <p>This directive is obsoleted by the <em class="replaceable"><code>bindmethod</code></em> arg of
+            <em class="replaceable"><code>idassert−bind</code></em>,
+            and will be dismissed in the future.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>port
+          &lt;port&gt;</em></span></span></dt>
+
+          <dd>
+            <p>this directive is no longer supported. Use the
+            <em class="replaceable"><code>uri</code></em> directive
+            as described above.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>server
+          &lt;hostname[:port]&gt;</em></span></span></dt>
+
+          <dd>
+            <p>this directive is no longer supported. Use the
+            <em class="replaceable"><code>uri</code></em> directive
+            as described above.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>suffixmassage, map,
+          rewrite*</em></span></span></dt>
+
+          <dd>
+            <p>These directives are no longer supported by
+            back-ldap; their functionality is now delegated to the
+            <em class="replaceable"><code>rwm</code></em> overlay.
+            Essentially, add a statement</p>
+
+            <p><span class="emphasis"><em>overlay
+            rwm</em></span></p>
+
+            <p>first, and prefix all rewrite/map statements with
+            <em class="replaceable"><code>rwm−</code></em> to
+            obtain the original behavior. See <a class="link" href="../htmlman5/slapo-rwm.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapo-rwm</span>(5)</span></a> for
+            details.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-ldap-5_sect4" name="slapd-ldap-5_sect4" shape="rect"> </a>
+
+      <h2>ACCESS CONTROL</h2>
+
+      <p>The <em class="citetitle">ldap</em> backend does not honor
+      all ACL semantics as described in <a class="link" href="../htmlman5/slapd.access.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.access</span>(5)</span></a>. In
+      general, access checking is delegated to the remote
+      server(s). Only <span class="emphasis"><em>read
+      (=r)</em></span> access to the <em class="replaceable"><code>entry</code></em> pseudo-attribute and to
+      the other attribute values of the entries returned by the
+      <em class="replaceable"><code>search</code></em> operation is
+      honored, which is performed by the frontend.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-ldap-5_sect5" name="slapd-ldap-5_sect5" shape="rect"> </a>
+
+      <h2>OVERLAYS</h2>
+
+      <p>The LDAP backend provides basic proxying functionalities
+      to many overlays. The <em class="replaceable"><code>chain</code></em> overlay, described in
+      <a class="link" href="../htmlman5/slapo-chain.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapo-chain</span>(5)</span></a>, and the
+      <em class="replaceable"><code>translucent</code></em>
+      overlay, described in <a class="link" href="../htmlman5/slapo-translucent.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapo-translucent</span>(5)</span></a>,
+      deserve a special mention.</p>
+
+      <p>Conversely, there are many overlays that are best used in
+      conjunction with the LDAP backend. The <em class="replaceable"><code>proxycache</code></em> overlay allows
+      caching of LDAP search requests (queries) in a local
+      database. See <a class="link" href="../htmlman5/slapo-pcache.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapo-pcache</span>(5)</span></a> for
+      details. The <em class="replaceable"><code>rwm</code></em>
+      overlay provides DN rewrite and attribute/objectClass mapping
+      capabilities to the underlying database. See <a class="link" href="../htmlman5/slapo-rwm.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapo-rwm</span>(5)</span></a> for
+      details.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-ldap-5_sect6" name="slapd-ldap-5_sect6" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">ETCDIR/slapd.conf</span></dt>
+
+          <dd>
+            <p>default slapd configuration file</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-ldap-5_sect7" name="slapd-ldap-5_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a>, <a class="link" href="../htmlman5/slapd-config.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-config</span>(5)</span></a>, <a class="link" href="../htmlman5/slapd-meta.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-meta</span>(5)</span></a>, <a class="link" href="../htmlman5/slapo-chain.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapo-chain</span>(5)</span></a>, <a class="link" href="../htmlman5/slapo-pcache.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapo-pcache</span>(5)</span></a>, <a class="link" href="../htmlman5/slapo-rwm.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapo-rwm</span>(5)</span></a>, <a class="link" href="../htmlman5/slapo-translucent.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapo-translucent</span>(5)</span></a>,
+      <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a>, <a class="link" href="../htmlman3/ldap.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldap</span>(3)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-ldap-5_sect8" name="slapd-ldap-5_sect8" shape="rect"> </a>
+
+      <h2>AUTHOR</h2>
+
+      <p>Howard Chu, with enhancements by Pierangelo Masarati</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                  See the following documents: <a class="ulink" href="../openldap-COPYRIGHT.html" target="_top" shape="rect">COPYRIGHT</a>, <a class="ulink" href="../openldap-LICENSE.html" target="_top" shape="rect">LICENSE</a><br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

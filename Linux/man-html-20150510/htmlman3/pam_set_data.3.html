@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>pam_set_data(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="pam_set_data(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="pam-set-data.3" name="pam-set-data.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <a id="pam_set_data-name" name="pam_set_data-name" shape="rect"> </a>
+
+      <h2>Name</h2>
+
+      <p>pam_set_data — set module internal data</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <a id="pam_set_data-synopsis" name="pam_set_data-synopsis" shape="rect"> </a>
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;security/pam_modules.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>pam_set_data</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">pam_handle_t *<var class="pdparam">pamh</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">module_data_name</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">void *<var class="pdparam">data</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">void <var class="pdparam">(*cleanup)(pam_handle_t
+            *pamh, void *data, int
+            error_status)</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pam_set_data-description" name="pam_set_data-description" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">pam_set_data</code> function
+      associates a pointer to an object with the (hopefully) unique
+      string <span class="emphasis"><em>module_data_name</em></span> in the PAM
+      context specified by the <span class="emphasis"><em>pamh</em></span> argument.</p>
+
+      <p>PAM modules may be dynamically loadable objects. In
+      general such files should not contain <span class="emphasis"><em>static</em></span> variables. This function
+      and its counterpart <a class="link" href="../htmlman3/pam_get_data.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_get_data</span>(3)</span></a>, provide a
+      mechanism for a module to associate some data with the handle
+      <span class="emphasis"><em>pamh</em></span>. Typically a
+      module will call the <code class="function">pam_set_data</code> function to register some data
+      under a (hopefully) unique <span class="emphasis"><em>module_data_name</em></span>. The data is
+      available for use by other modules too but <span class="emphasis"><em>not</em></span> by an application. Since this
+      functions stores only a pointer to the <span class="emphasis"><em>data</em></span>, the module should not modify
+      or free the content of it.</p>
+
+      <p>The function <code class="function">cleanup()</code> is
+      associated with the <span class="emphasis"><em>data</em></span> and, if non-NULL, it is
+      called when this data is over-written or following a call to
+      <a class="link" href="../htmlman3/pam_end.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_end</span>(3)</span></a>.</p>
+
+      <p>The <span class="emphasis"><em>error_status</em></span>
+      argument is used to indicate to the module the sort of action
+      it is to take in cleaning this data item. As an example,
+      Kerberos creates a ticket file during the authentication
+      phase, this file might be associated with a data item. When
+      <a class="link" href="../htmlman3/pam_end.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_end</span>(3)</span></a> is called by the
+      module, the <span class="emphasis"><em>error_status</em></span> carries the return
+      value of the <a class="link" href="../htmlman3/pam_authenticate.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_authenticate</span>(3)</span></a> or
+      other <span class="emphasis"><em>libpam</em></span> function
+      as appropriate. Based on this value the Kerberos module may
+      choose to delete the ticket file (<span class="emphasis"><em>authentication failure</em></span>) or leave
+      it in place.</p>
+
+      <p>The <span class="emphasis"><em>error_status</em></span>
+      may have been logically OR'd with either of the following two
+      values:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">PAM_DATA_REPLACE</span></dt>
+
+          <dd>
+            <p>When a data item is being replaced (through a second
+            call to <code class="function">pam_set_data</code>)
+            this mask is used. Otherwise, the call is assumed to be
+            from <a class="link" href="../htmlman3/pam_end.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_end</span>(3)</span></a>.</p>
+          </dd>
+
+          <dt><span class="term">PAM_DATA_SILENT</span></dt>
+
+          <dd>
+            <p>Which indicates that the process would prefer to
+            perform the <code class="function">cleanup()</code>
+            quietly. That is, discourages logging/messages to the
+            user.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pam_set_data-return_values" name="pam_set_data-return_values" shape="rect"> </a>
+
+      <h2>RETURN VALUES</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">PAM_BUF_ERR</span></dt>
+
+          <dd>
+            <p>Memory buffer error.</p>
+          </dd>
+
+          <dt><span class="term">PAM_SUCCESS</span></dt>
+
+          <dd>
+            <p>Data was successful stored.</p>
+          </dd>
+
+          <dt><span class="term">PAM_SYSTEM_ERR</span></dt>
+
+          <dd>
+            <p>A NULL pointer was submitted as PAM handle or the
+            function was called by an application.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pam_set_data-see_also" name="pam_set_data-see_also" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/pam_end.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_end</span>(3)</span></a>, <a class="link" href="../htmlman3/pam_get_data.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_get_data</span>(3)</span></a>, <a class="link" href="../htmlman3/pam_strerror.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_strerror</span>(3)</span></a></p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  See <a class="ulink" href="../linuxpam-copyright.html" target="_top" shape="rect">Linux-PAM copyright notice</a> for more information.
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

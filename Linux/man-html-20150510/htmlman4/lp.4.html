@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>lp(4) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="lp(4) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index4.html" shape="rect">Section 4</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="lp.4" name="lp.4" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>lp — line printer devices</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;linux/lp.h&gt;
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="lp-4_sect1" name="lp-4_sect1" shape="rect"> </a>
+
+      <h2>CONFIGURATION</h2>
+
+      <p><code class="function">lp</code>[0–2] are character
+      devices for the parallel line printers; they have major
+      number 6 and minor number 0–2. The minor numbers
+      correspond to the printer port base addresses 0x03bc, 0x0378
+      and 0x0278. Usually they have mode 220 and are owned by root
+      and group lp. You can use printer ports either with polling
+      or with interrupts. Interrupts are recommended when high
+      traffic is expected, for example, for laser printers. For
+      usual dot matrix printers polling will usually be enough. The
+      default is polling.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="lp-4_sect2" name="lp-4_sect2" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The following <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> calls are
+      supported:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>int
+          ioctl(int</em></span> <code class="function">fd</code><span class="emphasis"><em>, LPTIME,
+          int</em></span> <code class="function">arg</code>)</span></dt>
+
+          <dd>
+            <p>Sets the amount of time that the driver sleeps
+            before rechecking the printer when the printer's buffer
+            appears to be filled to <code class="function">arg</code>. If you have a fast printer,
+            decrease this number; if you have a slow printer, then
+            increase it. This is in hundredths of a second, the
+            default 2 being 0.02 seconds. It only influences the
+            polling driver.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>int
+          ioctl(int</em></span> <code class="function">fd</code><span class="emphasis"><em>, LPCHAR,
+          int</em></span> <code class="function">arg</code>)</span></dt>
+
+          <dd>
+            <p>Sets the maximum number of busy-wait iterations
+            which the polling driver does while waiting for the
+            printer to get ready for receiving a character to
+            <code class="function">arg</code>. If printing is too
+            slow, increase this number; if the system gets too
+            slow, decrease this number. The default is 1000. It
+            only influences the polling driver.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>int
+          ioctl(int</em></span> <code class="function">fd</code><span class="emphasis"><em>, LPABORT,
+          int</em></span> <code class="function">arg</code>)</span></dt>
+
+          <dd>
+            <p>If <code class="function">arg</code> is 0, the
+            printer driver will retry on errors, otherwise it will
+            abort. The default is 0.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>int
+          ioctl(int</em></span> <code class="function">fd</code><span class="emphasis"><em>,
+          LPABORTOPEN, int</em></span> <code class="function">arg</code>)</span></dt>
+
+          <dd>
+            <p>If <code class="function">arg</code> is 0, <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a> will be
+            aborted on error, otherwise error will be ignored. The
+            default is to ignore it.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>int
+          ioctl(int</em></span> <code class="function">fd</code><span class="emphasis"><em>,
+          LPCAREFUL, int</em></span> <code class="function">arg</code>)</span></dt>
+
+          <dd>
+            <p>If <code class="function">arg</code> is 0, then the
+            out-of-paper, offline and error signals are required to
+            be false on all writes, otherwise they are ignored. The
+            default is to ignore them.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>int
+          ioctl(int</em></span> <code class="function">fd</code><span class="emphasis"><em>, LPWAIT,
+          int</em></span> <code class="function">arg</code>)</span></dt>
+
+          <dd>
+            <p>Sets the number of busy waiting iterations to wait
+            before strobing the printer to accept a just-written
+            character, and the number of iterations to wait before
+            turning the strobe off again, to <code class="function">arg</code>. The specification says this time
+            should be 0.5 microseconds, but experience has shown
+            the delay caused by the code is already enough. For
+            that reason, the default value is 0. This is used for
+            both the polling and the interrupt driver.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>int
+          ioctl(int</em></span> <code class="function">fd</code><span class="emphasis"><em>,
+          LPSETIRQ, int</em></span> <code class="function">arg</code>)</span></dt>
+
+          <dd>
+            <p>This <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> requires
+            superuser privileges. It takes an <span class="type">int</span> containing the new IRQ as argument.
+            As a side effect, the printer will be reset. When
+            <code class="function">arg</code> is 0, the polling
+            driver will be used, which is also default.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>int
+          ioctl(int</em></span> <code class="function">fd</code><span class="emphasis"><em>,
+          LPGETIRQ, int *</em></span><code class="function">arg</code>)</span></dt>
+
+          <dd>
+            <p>Stores the currently used IRQ in <code class="function">arg</code>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>int
+          ioctl(int</em></span> <code class="function">fd</code><span class="emphasis"><em>,
+          LPGETSTATUS, int *</em></span><code class="function">arg</code>)</span></dt>
+
+          <dd>
+            <p>Stores the value of the status port in <code class="function">arg</code>. The bits have the following
+            meaning:</p>
+          </dd>
+        </dl>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">LP_PBUSY</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">inverted busy input, active
+              high</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">LP_PACK</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">unchanged acknowledge
+              input, active low</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">LP_POUTPA</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">unchanged out-of-paper
+              input, active high</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">LP_PSELECD</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">unchanged selected input,
+              active high</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">LP_PERRORP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">unchanged error input,
+              active low</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Refer to your printer manual for the meaning of the
+      signals. Note that undocumented bits may also be set,
+      depending on your printer.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>int
+          ioctl(int</em></span> <code class="function">fd</code><span class="emphasis"><em>,
+          LPRESET)</em></span></span></dt>
+
+          <dd>
+            <p>Resets the printer. No argument is used.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="lp-4_sect3" name="lp-4_sect3" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <p>/dev/lp*</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="lp-4_sect4" name="lp-4_sect4" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman1/chmod.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chmod</span>(1)</span></a>, <a class="link" href="../htmlman1/chown.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chown</span>(1)</span></a>, <a class="link" href="../htmlman1/mknod.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mknod</span>(1)</span></a>, <span class="citerefentry"><span class="refentrytitle">lpcntl</span>(8)</span>, <a class="link" href="../htmlman8/tunelp.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tunelp</span>(8)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="lp-4_sect5" name="lp-4_sect5" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    t<br />
+                  Copyright (c) Michael Haardt (michael<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cantor.informatik.rwth-aachen.de),<br />
+
+                      Sun Jan 15 19:16:33 1995<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_DOC_FULL)<br />
+                  This is free documentation; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License as<br />
+
+                  published by the Free Software Foundation; either version 2 of<br />
+
+                  the License, or (at your option) any later version.<br />
+
+                  <br />
+                  The GNU General Public License's references to "object code"<br />
+
+                  and "executables" are to be interpreted as the output of any<br />
+
+                  document formatting or typesetting system, including<br />
+
+                  intermediate and printed output.<br />
+
+                  <br />
+                  This manual is distributed in the hope that it will be useful,<br />
+
+                  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+
+                  GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Modified, Sun Feb 26 15:02:58 1995, faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

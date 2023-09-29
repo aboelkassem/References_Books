@@ -1,0 +1,637 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>acct(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="acct(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="acct.5" name="acct.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>acct — process accounting file</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;sys/acct.h&gt;
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="acct-5_sect1" name="acct-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>If the kernel is built with the process accounting option
+      enabled (<code class="constant">CONFIG_BSD_PROCESS_ACCT</code>), then calling
+      <a class="link" href="../htmlman2/acct.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">acct</span>(2)</span></a> starts process
+      accounting, for example:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>acct("/var/log/pacct");</p>
+        </blockquote>
+      </div>
+
+      <p>When process accounting is enabled, the kernel writes a
+      record to the accounting file as each process on the system
+      terminates. This record contains information about the
+      terminated process, and is defined in <code class="literal">&lt;</code><code class="filename">sys/acct.h</code><code class="literal">&gt;</code>
+      as follows:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+#define ACCT_COMM 16
+
+typedef u_int16_t comp_t;
+
+struct acct {
+    char ac_flag;           /* Accounting flags */
+    u_int16_t ac_uid;       /* Accounting user ID */
+    u_int16_t ac_gid;       /* Accounting group ID */
+    u_int16_t ac_tty;       /* Controlling terminal */
+    u_int32_t ac_btime;     /* Process creation time
+                               (seconds since the Epoch) */
+    comp_t    ac_utime;     /* User CPU time */
+    comp_t    ac_stime;     /* System CPU time */
+    comp_t    ac_etime;     /* Elapsed time */
+    comp_t    ac_mem;       /* Average memory usage (kB) */
+    comp_t    ac_io;        /* Characters transferred (unused) */
+    comp_t    ac_rw;        /* Blocks read or written (unused) */
+    comp_t    ac_minflt;    /* Minor page faults */
+    comp_t    ac_majflt;    /* Major page faults */
+    comp_t    ac_swaps;     /* Number of swaps (unused) */
+    u_int32_t ac_exitcode;  /* Process termination status
+                               (see wait(2)) */
+    char      ac_comm[ACCT_COMM+1];
+                            /* Command name (basename of last
+                               executed command; null-terminated) */
+    char      ac_pad[<code class="constant">X</code>];    /* padding bytes */
+};
+
+enum {          /* Bits that may be set in ac_flag field */
+    AFORK = 0x01,           /* Has executed fork, but no exec */
+    ASU   = 0x02,           /* Used superuser privileges */
+    ACORE = 0x08,           /* Dumped core */
+    AXSIG = 0x10            /* Killed by a signal */
+};
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>The <em class="replaceable"><code>comp_t</code></em> data
+      type is a floating-point value consisting of a 3-bit, base-8
+      exponent, and a 13-bit mantissa. A value, <code class="literal">c</code>, of this type can be converted to a (long)
+      integer as follows:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+    v = (c &amp; 0x1fff) &lt;&lt; (((c &gt;&gt; 13) &amp; 0x7) * 3);
+</pre>
+      </div>
+
+      <p>The <em class="replaceable"><code>ac_utime</code></em>,
+      <em class="replaceable"><code>ac_stime</code></em>, and
+      <em class="replaceable"><code>ac_etime</code></em> fields
+      measure time in "clock ticks"; divide these values by
+      <em class="replaceable"><code>sysconf(_SC_CLK_TCK)</code></em> to
+      convert them to seconds.</p>
+
+      <div class="refsect2">
+        <a id="acct-5_sect2" name="acct-5_sect2" shape="rect"> </a>
+
+        <h3>Version 3 accounting file format</h3>
+
+        <p>Since kernel 2.6.8, an optional alternative version of
+        the accounting file can be produced if the <code class="constant">CONFIG_BSD_PROCESS_ACCT_V3</code> option is set
+        when building the kernel. With this option is set, the
+        records written to the accounting file contain additional
+        fields, and the width of <em class="replaceable"><code>c_uid</code></em> and <em class="replaceable"><code>ac_gid</code></em> fields is widened
+        from 16 to 32 bits (in line with the increased size of UID
+        and GIDs in Linux 2.4 and later). The records are defined
+        as follows:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="structdef">
+              <table style="border-collapse: collapse;">
+                <colgroup span="1">
+                  <col class="c1" span="1" />
+                  <col class="c2" span="1" />
+                  <col class="c3" span="1" />
+                  <col class="c4" span="1" />
+                  <col class="c5" span="1" />
+                </colgroup>
+
+                <tbody>
+                  <tr>
+                    <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                    struct</td>
+
+                    <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">acct_v3</span> {</td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">char</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ac_flag</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        /* Flags */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">char</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ac_version</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Always set to ACCT_VERSION (3) */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">u_int16_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ac_tty</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Controlling terminal */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">u_int32_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ac_exitcode</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Process termination status */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">u_int32_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ac_uid</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Real user ID */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">u_int32_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ac_gid</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Real group ID */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">u_int32_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ac_pid</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        /* Process ID */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">u_int32_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ac_ppid</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Parent process ID */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">u_int32_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ac_btime</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Process creation time */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">float</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ac_etime</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        /* Elapsed time */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">comp_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ac_utime</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* User CPU time */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">comp_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ac_stime</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        /* System time */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">comp_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ac_mem</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Average memory usage (kB) */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">comp_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ac_io</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Characters transferred (unused) */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">comp_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ac_rw</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Blocks read or written<br />
+
+                        (unused) */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">comp_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ac_minflt</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Minor page faults */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">comp_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ac_majflt</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Major page faults */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">comp_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ac_swaps</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Number of swaps (unused) */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">char</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ac_comm</code></em>[ACCT_COMM];</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        /* Command name */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </blockquote>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="acct-5_sect3" name="acct-5_sect3" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p>The <em class="replaceable"><code>acct_v3</code></em>
+      structure is defined in glibc since version 2.6.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="acct-5_sect4" name="acct-5_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>Process accounting originated on BSD. Although it is
+      present on most systems, it is not standardized, and the
+      details vary somewhat between systems.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="acct-5_sect5" name="acct-5_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Records in the accounting file are ordered by termination
+      time of the process.</p>
+
+      <p>In kernels up to and including 2.6.9, a separate
+      accounting record is written for each thread created using
+      the NPTL threading library; since Linux 2.6.10, a single
+      accounting record is written for the entire process on
+      termination of the last thread in the process.</p>
+
+      <p>The <em class="replaceable"><code>proc/sys/kernel/acct</code></em> file,
+      described in <a class="link" href="../htmlman5/proc.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">proc</span>(5)</span></a>, defines settings
+      that control the behavior of process accounting when disk
+      space runs low.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="acct-5_sect6" name="acct-5_sect6" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><span class="citerefentry"><span class="refentrytitle">lastcomm</span>(1)</span>, <a class="link" href="../htmlman2/acct.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">acct</span>(2)</span></a>, <span class="citerefentry"><span class="refentrytitle">accton</span>(8)</span>, <span class="citerefentry"><span class="refentrytitle">sa</span>(8)</span></p>
+    </div>
+
+    <div class="colophon">
+      <a id="acct-5_sect7" name="acct-5_sect7" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2008, Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

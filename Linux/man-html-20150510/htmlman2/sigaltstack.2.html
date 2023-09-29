@@ -1,0 +1,534 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>sigaltstack(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="sigaltstack(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="sigaltstack.2" name="sigaltstack.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>sigaltstack — set and/or get signal stack
+      context</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;signal.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>sigaltstack</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">const stack_t *<var class="pdparam">ss</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">stack_t *<var class="pdparam">oss</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <div class="featuretests">
+                <table style="border-collapse: collapse;">
+                  <colgroup span="1">
+                    <col span="1" />
+                  </colgroup>
+
+                  <thead>
+                    <tr>
+                      <th style="" rowspan="1" colspan="1">Feature Test Macro Requirements
+                      for glibc (see <a class="link" href="../htmlman7/feature_test_macros.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">feature_test_macros</span>(7)</span></a>):</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"><code class="function">sigaltstack</code>():</td>
+                    </tr>
+
+                    <tr>
+                      <td class="featuretestdef" style="" rowspan="1" colspan="1">
+                      <code class="constant">_BSD_SOURCE</code> ||
+                      <code class="constant">_XOPEN_SOURCE</code>
+                      &gt;= 500 || <code class="constant">_XOPEN_SOURCE</code> &amp;&amp;
+                      <code class="constant">_XOPEN_SOURCE_EXTENDED</code></td>
+                    </tr>
+
+                    <tr>
+                      <td class="featuretestver" style="" rowspan="1" colspan="1">|| /*
+                      Since glibc 2.12: */</td>
+                    </tr>
+
+                    <tr>
+                      <td class="featuretestdef" style="" rowspan="1" colspan="1">
+                      <code class="constant">_POSIX_C_SOURCE</code>
+                      &gt;= 200809L</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sigaltstack-2_sect1" name="sigaltstack-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">sigaltstack</code>() allows a
+      process to define a new alternate signal stack and/or
+      retrieve the state of an existing alternate signal stack. An
+      alternate signal stack is used during the execution of a
+      signal handler if the establishment of that handler (see
+      <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a>) requested
+      it.</p>
+
+      <p>The normal sequence of events for using an alternate
+      signal stack is the following:</p>
+
+      <div class="orderedlist">
+        <ol class="orderedlist" type="1">
+          <li class="listitem">
+            <p>Allocate an area of memory to be used for the
+            alternate signal stack.</p>
+          </li>
+
+          <li class="listitem">
+            <p>Use <code class="function">sigaltstack</code>() to
+            inform the system of the existence and location of the
+            alternate signal stack.</p>
+          </li>
+
+          <li class="listitem">
+            <p>When establishing a signal handler using <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a>, inform
+            the system that the signal handler should be executed
+            on the alternate signal stack by specifying the
+            <code class="constant">SA_ONSTACK</code> flag.</p>
+          </li>
+        </ol>
+      </div>
+
+      <p>The <em class="parameter"><code>ss</code></em> argument is
+      used to specify a new alternate signal stack, while the
+      <em class="parameter"><code>oss</code></em> argument is used
+      to retrieve information about the currently established
+      signal stack. If we are interested in performing just one of
+      these tasks, then the other argument can be specified as
+      NULL. Each of these arguments is a structure of the following
+      type:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="structdef">
+            <table style="border-collapse: collapse;">
+              <colgroup span="1">
+                <col class="c1" span="1" />
+                <col class="c2" span="1" />
+                <col class="c3" span="1" />
+                <col class="c4" span="1" />
+                <col class="c5" span="1" />
+              </colgroup>
+
+              <tbody>
+                <tr>
+                  <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                  typedef</td>
+
+                  <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1">struct {</td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">void</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                  *</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ss_sp</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      
+                      /* Base address of stack */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ss_flags</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      /* Flags */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">size_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ss_size</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      
+                      /* Number of bytes in stack */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">} stack_t;</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>To establish a new alternate signal stack, <em class="replaceable"><code>ss.ss_flags</code></em> is set to zero,
+      and <em class="replaceable"><code>ss.ss_sp</code></em> and
+      <em class="replaceable"><code>ss.ss_size</code></em> specify
+      the starting address and size of the stack. The constant
+      <code class="constant">SIGSTKSZ</code> is defined to be large
+      enough to cover the usual size requirements for an alternate
+      signal stack, and the constant <code class="constant">MINSIGSTKSZ</code> defines the minimum size
+      required to execute a signal handler.</p>
+
+      <p>When a signal handler is invoked on the alternate stack,
+      the kernel automatically aligns the address given in
+      <em class="replaceable"><code>ss.ss_sp</code></em> to a
+      suitable address boundary for the underlying hardware
+      architecture.</p>
+
+      <p>To disable an existing stack, specify <em class="replaceable"><code>ss.ss_flags</code></em> as <code class="constant">SS_DISABLE</code>. In this case, the remaining
+      fields in <em class="parameter"><code>ss</code></em> are
+      ignored.</p>
+
+      <p>If <em class="parameter"><code>oss</code></em> is not
+      NULL, then it is used to return information about the
+      alternate signal stack which was in effect prior to the call
+      to <code class="function">sigaltstack</code>(). The
+      <em class="replaceable"><code>oss.ss_sp</code></em> and
+      <em class="replaceable"><code>oss.ss_size</code></em> fields
+      return the starting address and size of that stack. The
+      <em class="replaceable"><code>oss.ss_flags</code></em> may
+      return either of the following values:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">SS_ONSTACK</code></span></dt>
+
+          <dd>
+            <p>The process is currently executing on the alternate
+            signal stack. (Note that it is not possible to change
+            the alternate signal stack if the process is currently
+            executing on it.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">SS_DISABLE</code></span></dt>
+
+          <dd>
+            <p>The alternate signal stack is currently
+            disabled.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sigaltstack-2_sect2" name="sigaltstack-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p><code class="function">sigaltstack</code>() returns 0 on
+      success, or −1 on failure with <code class="varname">errno</code> set to indicate the error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sigaltstack-2_sect3" name="sigaltstack-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p>Either <em class="parameter"><code>ss</code></em> or
+            <em class="parameter"><code>oss</code></em> is not NULL
+            and points to an area outside of the process's address
+            space.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>ss</code></em> is not
+            NULL and the <em class="parameter"><code>ss_flags</code></em> field contains a
+            nonzero value other than <code class="constant">SS_DISABLE</code>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>The specified size of the new alternate signal stack
+            <em class="replaceable"><code>ss.ss_size</code></em>
+            was less than <code class="constant">MINSTKSZ</code>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>An attempt was made to change the alternate signal
+            stack while it was active (i.e., the process was
+            already executing on the current alternate signal
+            stack).</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sigaltstack-2_sect4" name="sigaltstack-2_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>SUSv2, SVr4, POSIX.1-2001.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sigaltstack-2_sect5" name="sigaltstack-2_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>The most common usage of an alternate signal stack is to
+      handle the <code class="constant">SIGSEGV</code> signal that
+      is generated if the space available for the normal process
+      stack is exhausted: in this case, a signal handler for
+      <code class="constant">SIGSEGV</code> cannot be invoked on
+      the process stack; if we wish to handle it, we must use an
+      alternate signal stack.</p>
+
+      <p>Establishing an alternate signal stack is useful if a
+      process expects that it may exhaust its standard stack. This
+      may occur, for example, because the stack grows so large that
+      it encounters the upwardly growing heap, or it reaches a
+      limit established by a call to <span class="emphasis"><em>setrlimit(RLIMIT_STACK,
+      &amp;rlim)</em></span>. If the standard stack is exhausted,
+      the kernel sends the process a <code class="constant">SIGSEGV</code> signal. In these circumstances the
+      only way to catch this signal is on an alternate signal
+      stack.</p>
+
+      <p>On most hardware architectures supported by Linux, stacks
+      grow downward. <code class="function">sigaltstack</code>()
+      automatically takes account of the direction of stack
+      growth.</p>
+
+      <p>Functions called from a signal handler executing on an
+      alternate signal stack will also use the alternate signal
+      stack. (This also applies to any handlers invoked for other
+      signals while the process is executing on the alternate
+      signal stack.) Unlike the standard stack, the system does not
+      automatically extend the alternate signal stack. Exceeding
+      the allocated size of the alternate signal stack will lead to
+      unpredictable results.</p>
+
+      <p>A successful call to <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a> removes any
+      existing alternate signal stack. A child process created via
+      <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> inherits a copy of
+      its parent's alternate signal stack settings.</p>
+
+      <p><code class="function">sigaltstack</code>() supersedes the
+      older <code class="function">sigstack</code>() call. For
+      backward compatibility, glibc also provides <code class="function">sigstack</code>(). All new applications should be
+      written using <code class="function">sigaltstack</code>().</p>
+
+      <div class="refsect2">
+        <a id="sigaltstack-2_sect6" name="sigaltstack-2_sect6" shape="rect"> </a>
+
+        <h3>History</h3>
+
+        <p>4.2BSD had a <code class="function">sigstack</code>()
+        system call. It used a slightly different struct, and had
+        the major disadvantage that the caller had to know the
+        direction of stack growth.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sigaltstack-2_sect7" name="sigaltstack-2_sect7" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>The following code segment demonstrates the use of
+      <code class="function">sigaltstack</code>():</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+stack_t ss;
+
+ss.ss_sp = malloc(SIGSTKSZ);
+if (ss.ss_sp == NULL)
+    /* Handle error */;
+ss.ss_size = SIGSTKSZ;
+ss.ss_flags = 0;
+if (sigaltstack(&amp;ss, NULL) == −1)
+    /* Handle error */;
+</pre>
+          </div>
+        </blockquote>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sigaltstack-2_sect8" name="sigaltstack-2_sect8" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>, <a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setrlimit</span>(2)</span></a>, <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a>, <a class="link" href="../htmlman3/longjmp.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">siglongjmp</span>(3)</span></a>, <a class="link" href="../htmlman3/setjmp.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigsetjmp</span>(3)</span></a>, <a class="link" href="../htmlman7/signal.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="sigaltstack-2_sect9" name="sigaltstack-2_sect9" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    t<br />
+                  Copyright (c) 2001, Michael Kerrisk (mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com)<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  aeb, various minor fixes<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>icmp(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="icmp(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="icmp.7" name="icmp.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>icmp — Linux IPv4 ICMP kernel module.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="icmp-7_sect1" name="icmp-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>This kernel protocol module implements the Internet
+      Control Message Protocol defined in RFC 792. It is used to
+      signal error conditions and for diagnosis. The user doesn't
+      interact directly with this module; instead it communicates
+      with the other protocols in the kernel and these pass the
+      ICMP errors to the application layers. The kernel ICMP module
+      also answers ICMP requests.</p>
+
+      <p>A user protocol may receive ICMP packets for all local
+      sockets by opening a raw socket with the protocol
+      <code class="constant">IPPROTO_ICMP</code>. See <a class="link" href="../htmlman7/raw.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">raw</span>(7)</span></a> for more
+      information. The types of ICMP packets passed to the socket
+      can be filtered using the <code class="constant">ICMP_FILTER</code> socket option. ICMP packets are
+      always processed by the kernel too, even when passed to a
+      user socket.</p>
+
+      <p>Linux limits the rate of ICMP error packets to each
+      destination. <code class="constant">ICMP_REDIRECT</code> and
+      <code class="constant">ICMP_DEST_UNREACH</code> are also
+      limited by the destination route of the incoming packets.</p>
+
+      <div class="refsect2">
+        <a id="icmp-7_sect2" name="icmp-7_sect2" shape="rect"> </a>
+
+        <h3>/proc interfaces</h3>
+
+        <p>ICMP supports a set of <code class="filename">/proc</code> interfaces to configure some global
+        IP parameters. The parameters can be accessed by reading or
+        writing files in the directory <code class="filename">/proc/sys/net/ipv4/</code>. Most of these
+        parameters are rate limitations for specific ICMP types.
+        Linux 2.2 uses a token bucket filter to limit ICMPs. The
+        value is the timeout in jiffies until the token bucket
+        filter is cleared after a burst. A jiffy is a system
+        dependent unit, usually 10ms on i386 and about 1ms on alpha
+        and ia64.</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><em class="replaceable"><code>icmp_destunreach_rate</code></em>
+            (Linux 2.2 to 2.4.9)</span></dt>
+
+            <dd>
+              <p>Maximum rate to send ICMP Destination Unreachable
+              packets. This limits the rate at which packets are
+              sent to any individual route or destination. The
+              limit does not affect sending of <code class="constant">ICMP_FRAG_NEEDED</code> packets needed for
+              path MTU discovery.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>icmp_echo_ignore_all</code></em>
+            (since Linux 2.2)</span></dt>
+
+            <dd>
+              <p>If this value is nonzero, Linux will ignore all
+              <code class="constant">ICMP_ECHO</code> requests.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>icmp_echo_ignore_broadcasts</code></em>
+            (since Linux 2.2)</span></dt>
+
+            <dd>
+              <p>If this value is nonzero, Linux will ignore all
+              <code class="constant">ICMP_ECHO</code> packets sent
+              to broadcast addresses.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>icmp_echoreply_rate</code></em>
+            (Linux 2.2 to 2.4.9)</span></dt>
+
+            <dd>
+              <p>Maximum rate for sending <code class="constant">ICMP_ECHOREPLY</code> packets in response
+              to <code class="constant">ICMP_ECHOREQUEST</code>
+              packets.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>icmp_errors_use_inbound_ifaddr</code></em>
+            (Boolean; default: disabled; since Linux
+            2.6.12)</span></dt>
+
+            <dd>
+              <p>If disabled, ICMP error messages are sent with the
+              primary address of the exiting interface.</p>
+
+              <p>If enabled, the message will be sent with the
+              primary address of the interface that received the
+              packet that caused the ICMP error. This is the
+              behavior that many network administrators will expect
+              from a router. And it can make debugging complicated
+              network layouts much easier.</p>
+
+              <p>Note that if no primary address exists for the
+              interface selected, then the primary address of the
+              first non-loopback interface that has one will be
+              used regardless of this setting.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>icmp_ignore_bogus_error_responses</code></em>
+            (Boolean; default: disabled; since Linux
+            2.2)</span></dt>
+
+            <dd>
+              <p>Some routers violate RFC1122 by sending bogus
+              responses to broadcast frames. Such violations are
+              normally logged via a kernel warning. If this
+              parameter is enabled, the kernel will not give such
+              warnings, which will avoid log file clutter.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>icmp_paramprob_rate</code></em>
+            (Linux 2.2 to 2.4.9)</span></dt>
+
+            <dd>
+              <p>Maximum rate for sending <code class="constant">ICMP_PARAMETERPROB</code> packets. These
+              packets are sent when a packet arrives with an
+              invalid IP header.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>icmp_ratelimit</code></em>
+            (integer; default: 1000; since Linux
+            2.4.10)</span></dt>
+
+            <dd>
+              <p>Limit the maximum rates for sending ICMP packets
+              whose type matches <em class="replaceable"><code>icmp_ratemask</code></em> (see
+              below) to specific targets. 0 to disable any
+              limiting, otherwise the minimum space between
+              responses in milliseconds.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>icmp_ratemask</code></em> (integer;
+            default: see below; since Linux 2.4.10)</span></dt>
+
+            <dd>
+              <p>Mask made of ICMP types for which rates are being
+              limited.</p>
+
+              <p>Significant bits: IHGFEDCBA9876543210</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>Default mask: 0000001100000011000 (0x1818)</p>
+
+        <p>Bit definitions (see the Linux kernel source file
+        <code class="filename">include/linux/icmp.h</code>):</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informaltable">
+              <table style="border-collapse: collapse;">
+                <colgroup span="1">
+                  <col class="c0" span="1" />
+                  <col class="c1" span="1" />
+                </colgroup>
+
+                <tbody>
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1">0 Echo Reply</td>
+
+                    <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1">3 Destination
+                    Unreachable *</td>
+
+                    <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1">4 Source Quench
+                    *</td>
+
+                    <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1">5 Redirect</td>
+
+                    <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1">8 Echo Request</td>
+
+                    <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1">B Time Exceeded
+                    *</td>
+
+                    <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1">C Parameter Problem
+                    *</td>
+
+                    <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1">D Timestamp
+                    Request</td>
+
+                    <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1">E Timestamp
+                    Reply</td>
+
+                    <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1">F Info Request</td>
+
+                    <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1">G Info Reply</td>
+
+                    <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1">H Address Mask
+                    Request</td>
+
+                    <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1">I Address Mask
+                    Reply</td>
+
+                    <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>The bits marked with an asterisk are rate limited by
+        default (see the default mask above).</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><em class="replaceable"><code>icmp_timeexceed_rate</code></em>
+            (Linux 2.2 to 2.4.9)</span></dt>
+
+            <dd>
+              <p>Maximum rate for sending <code class="constant">ICMP_TIME_EXCEEDED</code> packets. These
+              packets are sent to prevent loops when a packet has
+              crossed too many hops.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>ping_group_range</code></em> (two
+            integers; default: see below; since Linux
+            2.6.39)</span></dt>
+
+            <dd>
+              <p>Range of the group IDs (minimum and maximum group
+              IDs, inclusive) ithat are allowed to create ICMP Echo
+              sockets. The default is "1 0", which means no group
+              is allowed to create ICMP Echo sockets.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="icmp-7_sect3" name="icmp-7_sect3" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p>Support for the <code class="constant">ICMP_ADDRESS</code>
+      request was removed in 2.2.</p>
+
+      <p>Support for <code class="constant">ICMP_SOURCE_QUENCH</code> was removed in Linux
+      2.2.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="icmp-7_sect4" name="icmp-7_sect4" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>As many other implementations don't support <code class="constant">IPPROTO_ICMP</code> raw sockets, this feature
+      should not be relied on in portable programs.</p>
+
+      <p><code class="constant">ICMP_REDIRECT</code> packets are
+      not sent when Linux is not acting as a router. They are also
+      accepted only from the old gateway defined in the routing
+      table and the redirect routes are expired after some
+      time.</p>
+
+      <p>The 64-bit timestamp returned by <code class="constant">ICMP_TIMESTAMP</code> is in milliseconds since the
+      Epoch, 1970-01-01 00:00:00 +0000 (UTC).</p>
+
+      <p>Linux ICMP internally uses a raw socket to send ICMPs.
+      This raw socket may appear in <span class="citerefentry"><span class="refentrytitle">netstat</span>(8)</span> output with a zero
+      inode.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="icmp-7_sect5" name="icmp-7_sect5" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman7/ip.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ip</span>(7)</span></a></p>
+
+      <p>RFC 792 for a description of the ICMP protocol.</p>
+    </div>
+
+    <div class="colophon">
+      <a id="icmp-7_sect6" name="icmp-7_sect6" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    This man page is Copyright (C) 1999 Andi Kleen &lt;ak<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>muc.de&gt;.<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM_ONE_PARA)<br />
+                  Permission is granted to distribute possibly modified copies<br />
+
+                  of this page provided the header is included verbatim,<br />
+
+                  and in case of nontrivial modification author and date<br />
+
+                  of the modification is added to the header.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  $Id: icmp.7,v 1.6 2000/08/14 08:03:45 ak Exp $<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

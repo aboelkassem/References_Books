@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>passwd(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="passwd(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="passwd.5" name="passwd.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>passwd — password file</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="passwd-5_sect1" name="passwd-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="filename">/etc/passwd</code> file is a
+      text file that describes user login accounts for the system.
+      It should have read permission allowed for all users (many
+      utilities, like <a class="link" href="../htmlman1/ls.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ls</span>(1)</span></a> use it to map user
+      IDs to usernames), but write access only for the
+      superuser.</p>
+
+      <p>In the good old days there was no great problem with this
+      general read permission. Everybody could read the encrypted
+      passwords, but the hardware was too slow to crack a
+      well-chosen password, and moreover the basic assumption used
+      to be that of a friendly user-community. These days many
+      people run some version of the shadow password suite, where
+      <code class="filename">/etc/passwd</code> has an 'x'
+      character in the password field, and the encrypted passwords
+      are in <code class="filename">/etc/shadow</code>, which is
+      readable by the superuser only.</p>
+
+      <p>If the encrypted password, whether in <code class="filename">/etc/passwd</code> or in <code class="filename">/etc/shadow</code>, is an empty string, login is
+      allowed without even asking for a password. Note that this
+      functionality may be intentionally disabled in applications,
+      or configurable (for example using the "nullok" or "nonull"
+      arguments to pam_unix.so).</p>
+
+      <p>If the encrypted password in <code class="filename">/etc/passwd</code> is "<em class="replaceable"><code>*NP*</code></em>" (without the quotes),
+      the shadow record should be obtained from an NIS+ server.</p>
+
+      <p>Regardless of whether shadow passwords are used, many
+      system administrators use an asterisk (*) in the encrypted
+      password field to make sure that this user can not
+      authenticate him- or herself using a password. (But see NOTES
+      below.)</p>
+
+      <p>If you create a new login, first put an asterisk (*) in
+      the password field, then use <span class="citerefentry"><span class="refentrytitle">passwd</span>(1)</span> to set it.</p>
+
+      <p>Each line of the file describes a single user, and
+      contains seven colon-separated fields:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>name:password:UID:GID:GECOS:directory:shell</p>
+        </blockquote>
+      </div>
+
+      <p>The field are as follows:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><em class="replaceable"><code>name</code></em></span></dt>
+
+          <dd>
+            <p>This is the user's login name. It should not contain
+            capital letters.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>password</code></em></span></dt>
+
+          <dd>
+            <p>This is either the encrypted user password, an
+            asterisk (*), or the letter 'x'. (See <span class="citerefentry"><span class="refentrytitle">pwconv</span>(8)</span> for an
+            explanation of 'x'.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">UID</code></span></dt>
+
+          <dd>
+            <p>The privileged <em class="replaceable"><code>root</code></em> login account
+            (superuser) has the user ID 0.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">GID</code></span></dt>
+
+          <dd>
+            <p>This is the numeric primary group ID for this user.
+            (Additional groups for the user are defined in the
+            system group file; see <a class="link" href="../htmlman5/group.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">group</span>(5)</span></a>).</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">GECOS</code></span></dt>
+
+          <dd>
+            <p>This field (sometimes called the "comment field") is
+            optional and used only for informational purposes.
+            Usually, it contains the full username. Some programs
+            (for example, <span class="citerefentry"><span class="refentrytitle">finger</span>(1)</span>) display
+            information from this field.</p>
+
+            <p>GECOS stands for "General Electric Comprehensive
+            Operating System", which was renamed to GCOS when GE's
+            large systems division was sold to Honeywell. Dennis
+            Ritchie has reported: "Sometimes we sent printer output
+            or batch jobs to the GCOS machine. The gcos field in
+            the password file was a place to stash the information
+            for the $IDENTcard. Not elegant."</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>directory</code></em></span></dt>
+
+          <dd>
+            <p>This is the user's home directory: the initial
+            directory where the user is placed after logging in.
+            The value in this field is used to set the <code class="constant">HOME</code> environment variable.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>shell</code></em></span></dt>
+
+          <dd>
+            <p>This is the program to run at login (if empty, use
+            <code class="filename">/bin/sh</code>). If set to a
+            nonexistent executable, the user will be unable to
+            login through <a class="link" href="../htmlman1/login.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">login</span>(1)</span></a>. The value
+            in this field is used to set the <code class="constant">SHELL</code> environment variable.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="passwd-5_sect2" name="passwd-5_sect2" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <p><code class="filename">/etc/passwd</code></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="passwd-5_sect3" name="passwd-5_sect3" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>If you want to create user groups, there must be an entry
+      in <code class="filename">/etc/group</code>, or no group will
+      exist.</p>
+
+      <p>If the encrypted password is set to an asterisk (*), the
+      user will be unable to login using <a class="link" href="../htmlman1/login.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">login</span>(1)</span></a>, but may still
+      login using <span class="citerefentry"><span class="refentrytitle">rlogin</span>(1)</span>, run existing
+      processes and initiate new ones through <span class="citerefentry"><span class="refentrytitle">rsh</span>(1)</span>, <span class="citerefentry"><span class="refentrytitle">cron</span>(8)</span>, <span class="citerefentry"><span class="refentrytitle">at</span>(1)</span>, or mail filters, etc.
+      Trying to lock an account by simply changing the shell field
+      yields the same result and additionally allows the use of
+      <a class="link" href="../htmlman1/su.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">su</span>(1)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="passwd-5_sect4" name="passwd-5_sect4" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman1/chfn.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chfn</span>(1)</span></a>, <a class="link" href="../htmlman1/chsh.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chsh</span>(1)</span></a>, <a class="link" href="../htmlman1/login.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">login</span>(1)</span></a>, <span class="citerefentry"><span class="refentrytitle">passwd</span>(1)</span>, <a class="link" href="../htmlman1/su.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">su</span>(1)</span></a>, <a class="link" href="../htmlman3/crypt.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">crypt</span>(3)</span></a>, <a class="link" href="../htmlman3/getpwent.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getpwent</span>(3)</span></a>, <a class="link" href="../htmlman3/getpwnam.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getpwnam</span>(3)</span></a>, <a class="link" href="../htmlman5/group.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">group</span>(5)</span></a>, <span class="citerefentry"><span class="refentrytitle">shadow</span>(5)</span></p>
+    </div>
+
+    <div class="colophon">
+      <a id="passwd-5_sect5" name="passwd-5_sect5" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 1993 Michael Haardt (michael<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>moria.de),<br />
+
+                      Fri Apr  2 11:32:09 MET DST 1993<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_DOC_FULL)<br />
+                  This is free documentation; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License as<br />
+
+                  published by the Free Software Foundation; either version 2 of<br />
+
+                  the License, or (at your option) any later version.<br />
+
+                  <br />
+                  The GNU General Public License's references to "object code"<br />
+
+                  and "executables" are to be interpreted as the output of any<br />
+
+                  document formatting or typesetting system, including<br />
+
+                  intermediate and printed output.<br />
+
+                  <br />
+                  This manual is distributed in the hope that it will be useful,<br />
+
+                  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+
+                  GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Modified Sun Jul 25 10:46:28 1993 by Rik Faith (faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu)<br />
+
+                  Modified Sun Aug 21 18:12:27 1994 by Rik Faith (faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu)<br />
+
+                  Modified Sun Jun 18 01:53:57 1995 by Andries Brouwer (aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl)<br />
+
+                  Modified Mon Jan  5 20:24:40 MET 1998 by Michael Haardt<br />
+
+                   (michael<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cantor.informatik.rwth-aachen.de)<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

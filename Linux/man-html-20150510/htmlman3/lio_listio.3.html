@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>lio_listio(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="lio_listio(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="lio-listio.3" name="lio-listio.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>lio_listio — initiate a list of I/O requests</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;aio.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>lio_listio</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">mode</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">struct aiocb *const <var class="pdparam">aiocb_list[]</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">nitems</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">struct sigevent *<var class="pdparam">sevp</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <p>Link with <code class="option">−lrt</code>.</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="lio-listio-3_sect1" name="lio-listio-3_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">lio_listio</code>() function
+      initiates the list of I/O operations described by the array
+      <em class="parameter"><code>aiocb_list</code></em>.</p>
+
+      <p>The <em class="parameter"><code>mode</code></em> operation
+      has one of the following values:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">LIO_WAIT</code></span></dt>
+
+          <dd>
+            <p>The call blocks until all operations are complete.
+            The <em class="parameter"><code>sevp</code></em>
+            argument is ignored.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">LIO_NOWAIT</code></span></dt>
+
+          <dd>
+            <p>The I/O operations are queued for processing and the
+            call returns immediately. When all of the I/O
+            operations complete, asynchronous notification occurs,
+            as specified by the <em class="parameter"><code>sevp</code></em> argument; see
+            <a class="link" href="../htmlman7/sigevent.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigevent</span>(7)</span></a> for
+            details. If <em class="parameter"><code>sevp</code></em> is NULL, no
+            asynchronous notification occurs.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>The <em class="parameter"><code>aiocb_list</code></em>
+      argument is an array of pointers to <span class="structname">aiocb</span> structures that describe I/O
+      operations. These operations are executed in an unspecified
+      order. The <em class="parameter"><code>nitems</code></em>
+      argument specifies the size of the array <em class="parameter"><code>aiocb_list</code></em>. null pointers in
+      <em class="parameter"><code>aiocb_list</code></em> are
+      ignored.</p>
+
+      <p>In each control block in <em class="parameter"><code>aiocb_list</code></em>, the <code class="function">aio_lio_opcode</code> field specifies the I/O
+      operation to be initiated, as follows:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">LIO_READ</code></span></dt>
+
+          <dd>
+            <p>Initiate a read operation. The operation is queued
+            as for a call to <a class="link" href="../htmlman3/aio_read.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">aio_read</span>(3)</span></a>
+            specifying this control block.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">LIO_WRITE</code></span></dt>
+
+          <dd>
+            <p>Initiate a write operation. The operation is queued
+            as for a call to <a class="link" href="../htmlman3/aio_write.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">aio_write</span>(3)</span></a>
+            specifying this control block.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">LIO_NOP</code></span></dt>
+
+          <dd>
+            <p>Ignore this control block.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>The remaining fields in each control block have the same
+      meanings as for <a class="link" href="../htmlman3/aio_read.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">aio_read</span>(3)</span></a> and <a class="link" href="../htmlman3/aio_write.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">aio_write</span>(3)</span></a>. The
+      <code class="function">aio_sigevent</code> fields of each
+      control block can be used to specify notifications for the
+      individual I/O operations (see <a class="link" href="../htmlman7/sigevent.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigevent</span>(7)</span></a>).</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="lio-listio-3_sect2" name="lio-listio-3_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>If <em class="parameter"><code>mode</code></em> is
+      <code class="constant">LIO_NOWAIT</code>, <code class="function">lio_listio</code>() returns 0 if all I/O
+      operations are successfully queued. Otherwise, −1 is
+      returned, and <code class="varname">errno</code> is set to
+      indicate the error.</p>
+
+      <p>If <em class="parameter"><code>mode</code></em> is
+      <code class="constant">LIO_WAIT</code>, <code class="function">lio_listio</code>() returns 0 when all of the I/O
+      operations have completed successfully. Otherwise, −1
+      is returned, and <code class="varname">errno</code> is set to
+      indicate the error.</p>
+
+      <p>The return status from <code class="function">lio_listio</code>() provides information only
+      about the call itself, not about the individual I/O
+      operations. One or more of the I/O operations may fail, but
+      this does not prevent other operations completing. The status
+      of individual I/O operations in <em class="parameter"><code>aiocb_list</code></em> can be determined
+      using <a class="link" href="../htmlman3/aio_error.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">aio_error</span>(3)</span></a>. When an
+      operation has completed, its return status can be obtained
+      using <a class="link" href="../htmlman3/aio_return.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">aio_return</span>(3)</span></a>. Individual
+      I/O operations can fail for the reasons described in
+      <a class="link" href="../htmlman3/aio_read.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">aio_read</span>(3)</span></a> and <a class="link" href="../htmlman3/aio_write.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">aio_write</span>(3)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="lio-listio-3_sect3" name="lio-listio-3_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <p>The <code class="function">lio_listio</code>() function
+      may fail for the following reasons:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EAGAIN</span></span></dt>
+
+          <dd>
+            <p>Out of resources.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EAGAIN</span></span></dt>
+
+          <dd>
+            <p>The number of I/O operations specified by <em class="parameter"><code>nitems</code></em> would cause the
+            limit <code class="constant">AIO_MAX</code> to be
+            exceeded.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>mode</code></em> is
+            invalid, or <em class="parameter"><code>nitems</code></em> exceeds the limit
+            <code class="constant">AIO_LISTIO_MAX</code>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINTR</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>mode</code></em> was
+            <code class="constant">LIO_WAIT</code> and a signal was
+            caught before all I/O operations completed. (This may
+            even be one of the signals used for asynchronous I/O
+            completion notification.)</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EIO</span></span></dt>
+
+          <dd>
+            <p>One of more of the operations specified by
+            <em class="parameter"><code>aiocb_list</code></em>
+            failed. The application can check the status of each
+            operation using <a class="link" href="../htmlman3/aio_return.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">aio_return</span>(3)</span></a>.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>If <code class="function">lio_listio</code>() fails with
+      the error <span class="errorname">EAGAIN</span>, <span class="errorname">EINTR</span>, or <span class="errorname">EIO</span>, then some of the operations in
+      <em class="parameter"><code>aiocb_list</code></em> may have
+      been initiated. If <code class="function">lio_listio</code>()
+      fails for any other reason, then none of the I/O operations
+      has been initiated.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="lio-listio-3_sect4" name="lio-listio-3_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p>The <code class="function">lio_listio</code>() function is
+      available since glibc 2.1.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="lio-listio-3_sect5" name="lio-listio-3_sect5" shape="rect"> </a>
+
+      <h2>ATTRIBUTES</h2>
+
+      <p>For an explanation of the terms used in this section, see
+      <a class="link" href="../htmlman7/attributes.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">attributes</span>(7)</span></a>.</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">Interface</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Attribute</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Value</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><code class="literal">lio_listio</code>()</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Thread safety</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">MT-Safe</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="lio-listio-3_sect6" name="lio-listio-3_sect6" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>POSIX.1-2001, POSIX.1-2008.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="lio-listio-3_sect7" name="lio-listio-3_sect7" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>It is a good idea to zero out the control blocks before
+      use. The control blocks must not be changed while the I/O
+      operations are in progress. The buffer areas being read into
+      or written from must not be accessed during the operations or
+      undefined results may occur. The memory areas involved must
+      remain valid.</p>
+
+      <p>Simultaneous I/O operations specifying the same
+      <span class="structname">aiocb</span> structure produce
+      undefined results.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="lio-listio-3_sect8" name="lio-listio-3_sect8" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/aio_cancel.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">aio_cancel</span>(3)</span></a>, <a class="link" href="../htmlman3/aio_error.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">aio_error</span>(3)</span></a>, <a class="link" href="../htmlman3/aio_fsync.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">aio_fsync</span>(3)</span></a>, <a class="link" href="../htmlman3/aio_return.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">aio_return</span>(3)</span></a>, <a class="link" href="../htmlman3/aio_suspend.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">aio_suspend</span>(3)</span></a>, <a class="link" href="../htmlman3/aio_write.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">aio_write</span>(3)</span></a>, <a class="link" href="../htmlman7/aio.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">aio</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="lio-listio-3_sect9" name="lio-listio-3_sect9" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2010, Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_DOC_FULL)<br />
+                  This is free documentation; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License as<br />
+
+                  published by the Free Software Foundation; either version 2 of<br />
+
+                  the License, or (at your option) any later version.<br />
+
+                  <br />
+                  The GNU General Public License's references to "object code"<br />
+
+                  and "executables" are to be interpreted as the output of any<br />
+
+                  document formatting or typesetting system, including<br />
+
+                  intermediate and printed output.<br />
+
+                  <br />
+                  This manual is distributed in the hope that it will be useful,<br />
+
+                  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+
+                  GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

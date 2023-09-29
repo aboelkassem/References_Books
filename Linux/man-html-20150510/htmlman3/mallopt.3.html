@@ -1,0 +1,749 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>mallopt(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="mallopt(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="mallopt.3" name="mallopt.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>mallopt — set memory allocation parameters</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;malloc.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>mallopt</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">param</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">value</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mallopt-3_sect1" name="mallopt-3_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">mallopt</code>() function
+      adjusts parameters that control the behavior of the
+      memory-allocation functions (see <a class="link" href="../htmlman3/malloc.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">malloc</span>(3)</span></a>). The <em class="parameter"><code>param</code></em> argument specifies the
+      parameter to be modified, and <em class="parameter"><code>value</code></em> specifies the new value
+      for that parameter.</p>
+
+      <p>The following values can be specified for <em class="parameter"><code>param</code></em>:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">M_CHECK_ACTION</code></span></dt>
+
+          <dd>
+            <p>Setting this parameter controls how glibc responds
+            when various kinds of programming errors are detected
+            (e.g., freeing the same pointer twice). The 3 least
+            significant bits (2, 1, and 0) of the value assigned to
+            this parameter determine the glibc behavior, as
+            follows:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term">Bit 0</span></dt>
+
+                    <dd>
+                      <p>If this bit is set, then print a one-line
+                      message on <code class="varname">stderr</code> that provides details
+                      about the error. The message starts with the
+                      string "*** glibc detected ***", followed by
+                      the program name, the name of the
+                      memory-allocation function in which the error
+                      was detected, a brief description of the
+                      error, and the memory address where the error
+                      was detected.</p>
+                    </dd>
+
+                    <dt><span class="term">Bit 1</span></dt>
+
+                    <dd>
+                      <p>If this bit is set, then, after printing
+                      any error message specified by bit 0, the
+                      program is terminated by calling <a class="link" href="../htmlman3/abort.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">abort</span>(3)</span></a>.
+                      In glibc versions since 2.4, if bit 0 is also
+                      set, then, between printing the error message
+                      and aborting, the program also prints a stack
+                      trace in the manner of <a class="link" href="../htmlman3/backtrace.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">backtrace</span>(3)</span></a>,
+                      and prints the process's memory mapping in
+                      the style of <code class="filename">/proc/[pid]/maps</code> (see
+                      <a class="link" href="../htmlman5/proc.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">proc</span>(5)</span></a>).</p>
+                    </dd>
+
+                    <dt><span class="term">Bit 2 (since glibc
+                    2.4)</span></dt>
+
+                    <dd>
+                      <p>This bit has an effect only if bit 0 is
+                      also set. If this bit is set, then the
+                      one-line message describing the error is
+                      simplified to contain just the name of the
+                      function where the error was detected and the
+                      brief description of the error.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>The remaining bits in <em class="parameter"><code>value</code></em> are ignored.</p>
+
+            <p>Combining the above details, the following numeric
+            values are meaningful for <code class="constant">M_CHECK_ACTION</code>:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><code class="constant">0</code></span></dt>
+
+                    <dd>
+                      <p>Ignore error conditions; continue
+                      execution (with undefined results).</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">1</code></span></dt>
+
+                    <dd>
+                      <p>Print a detailed error message and
+                      continue execution.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">2</code></span></dt>
+
+                    <dd>
+                      <p>Abort the program.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">3</code></span></dt>
+
+                    <dd>
+                      <p>Print detailed error message, stack trace,
+                      and memory mappings, and abort the
+                      program.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">5</code></span></dt>
+
+                    <dd>
+                      <p>Print a simple error message and continue
+                      execution.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">7</code></span></dt>
+
+                    <dd>
+                      <p>Print simple error message, stack trace,
+                      and memory mappings, and abort the
+                      program.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>Since glibc 2.3.4, the default value for the
+            <code class="constant">M_CHECK_ACTION</code> parameter
+            is 3. In glibc version 2.3.3 and earlier, the default
+            value is 1.</p>
+
+            <p>Using a nonzero <code class="constant">M_CHECK_ACTION</code> value can be useful
+            because otherwise a crash may happen much later, and
+            the true cause of the problem is then very hard to
+            track down.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">M_MMAP_MAX</code></span></dt>
+
+          <dd>
+            <p>This parameter specifies the maximum number of
+            allocation requests that may be simultaneously serviced
+            using <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>. This
+            parameter exists because some systems have a limited
+            number of internal tables for use by <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>, and using
+            more than a few of them may degrade performance.</p>
+
+            <p>The default value is 65,536, a value which has no
+            special significance and which servers only as a
+            safeguard. Setting this parameter to 0 disables the use
+            of <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a> for servicing
+            large allocation requests.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">M_MMAP_THRESHOLD</code></span></dt>
+
+          <dd>
+            <p>For allocations greater than or equal to the limit
+            specified (in bytes) by <code class="constant">M_MMAP_THRESHOLD</code> that can't be
+            satisfied from the free list, the memory-allocation
+            functions employ <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a> instead of
+            increasing the program break using <a class="link" href="../htmlman2/brk.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sbrk</span>(2)</span></a>.</p>
+
+            <p>Allocating memory using <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a> has the
+            significant advantage that the allocated memory blocks
+            can always be independently released back to the
+            system. (By contrast, the heap can be trimmed only if
+            memory is freed at the top end.) On the other hand,
+            there are some disadvantages to the use of <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>: deallocated
+            space is not placed on the free list for reuse by later
+            allocations; memory may be wasted because <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a> allocations
+            must be page-aligned; and the kernel must perform the
+            expensive task of zeroing out memory allocated via
+            <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>. Balancing
+            these factors leads to a default setting of 128*1024
+            for the <code class="constant">M_MMAP_THRESHOLD</code>
+            parameter.</p>
+
+            <p>The lower limit for this parameter is 0. The upper
+            limit is <code class="constant">DEFAULT_MMAP_THRESHOLD_MAX</code>: 512*1024
+            on 32-bit systems or <em class="replaceable"><code>4*1024*1024*sizeof(long)</code></em>
+            on 64-bit systems.</p>
+
+            <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+              <table border="0" summary="Note">
+                <tr>
+                  <td rowspan="2" align="center" valign="top" width="25" colspan="1"><img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+                  <th align="left" rowspan="1" colspan="1">Note</th>
+                </tr>
+
+                <tr>
+                  <td align="left" valign="top" rowspan="1" colspan="1">
+                    <p>Nowadays, glibc uses a dynamic mmap
+                    threshold by default. The initial value of the
+                    threshold is 128*1024, but when blocks larger
+                    than the current threshold and less than or
+                    equal to <code class="constant">DEFAULT_MMAP_THRESHOLD_MAX</code>
+                    are freed, the threshold is adjusted upward to
+                    the size of the freed block. When dynamic mmap
+                    thresholding is in effect, the threshold for
+                    trimming the heap is also dynamically adjusted
+                    to be twice the dynamic mmap threshold. Dynamic
+                    adjustment of the mmap threshold is disabled if
+                    any of the <code class="constant">M_TRIM_THRESHOLD</code>,
+                    <code class="constant">M_TOP_PAD</code>,
+                    <code class="constant">M_MMAP_THRESHOLD</code>,
+                    or <code class="constant">M_MMAP_MAX</code>
+                    parameters is set.</p>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </dd>
+
+          <dt><span class="term"><code class="constant">M_MXFAST</code> (since glibc 2.3)</span></dt>
+
+          <dd>
+            <p>Set the upper limit for memory allocation requests
+            that are satisfied using "fastbins". (The measurement
+            unit for this parameter is bytes.) Fastbins are storage
+            areas that hold deallocated blocks of memory of the
+            same size without merging adjacent free blocks.
+            Subsequent reallocation of blocks of the same size can
+            be handled very quickly by allocating from the fastbin,
+            although memory fragmentation and the overall memory
+            footprint of the program can increase. The default
+            value for this parameter is <em class="replaceable"><code>64*sizeof(size_t)/4</code></em>
+            (i.e., 64 on 32-bit architectures). The range for this
+            parameter is 0 to <em class="replaceable"><code>80*sizeof(size_t)/4</code></em>.
+            Setting <code class="constant">M_MXFAST</code> to 0
+            disables the use of fastbins.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">M_PERTURB</code> (since glibc 2.4)</span></dt>
+
+          <dd>
+            <p>If this parameter is set to a nonzero value, then
+            bytes of allocated memory (other than allocations via
+            <a class="link" href="../htmlman3/malloc.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">calloc</span>(3)</span></a>) are
+            initialized to the complement of the value in the least
+            significant byte of <em class="parameter"><code>value</code></em>, and when allocated
+            memory is released using <a class="link" href="../htmlman3/malloc.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">free</span>(3)</span></a>, the freed
+            bytes are set to the least significant byte of
+            <em class="parameter"><code>value</code></em>. This can
+            be useful for detecting errors where programs
+            incorrectly rely on allocated memory being initialized
+            to zero, or reuse values in memory that has already
+            been freed.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">M_TOP_PAD</code></span></dt>
+
+          <dd>
+            <p>This parameter defines the amount of padding to
+            employ when calling <a class="link" href="../htmlman2/brk.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sbrk</span>(2)</span></a> to modify the
+            program break. (The measurement unit for this parameter
+            is bytes.) This parameter has an effect in the
+            following circumstances:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="itemizedlist">
+                  <ul class="itemizedlist" style="list-style-type: disc;">
+                    <li class="listitem">
+                      <p>When the program break is increased, then
+                      <code class="constant">M_TOP_PAD</code> bytes
+                      are added to the <a class="link" href="../htmlman2/brk.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sbrk</span>(2)</span></a>
+                      request.</p>
+                    </li>
+
+                    <li class="listitem">
+                      <p>When the heap is trimmed as a consequence
+                      of calling <a class="link" href="../htmlman3/malloc.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">free</span>(3)</span></a>
+                      (see the discussion of <code class="constant">M_TRIM_THRESHOLD</code>) this much
+                      free space is preserved at the top of the
+                      heap.</p>
+                    </li>
+                  </ul>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>In either case, the amount of padding is always
+            rounded to a system page boundary.</p>
+
+            <p>Modifying <code class="constant">M_TOP_PAD</code> is
+            a trade-off between increasing the number of system
+            calls (when the parameter is set low) and wasting
+            unused memory at the top of the heap (when the
+            parameter is set high).</p>
+
+            <p>The default value for this parameter is
+            128*1024.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">M_TRIM_THRESHOLD</code></span></dt>
+
+          <dd>
+            <p>When the amount of contiguous free memory at the top
+            of the heap grows sufficiently large, <a class="link" href="../htmlman3/malloc.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">free</span>(3)</span></a> employs
+            <a class="link" href="../htmlman2/brk.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sbrk</span>(2)</span></a> to release
+            this memory back to the system. (This can be useful in
+            programs that continue to execute for a long period
+            after freeing a significant amount of memory.) The
+            <code class="constant">M_TRIM_THRESHOLD</code>
+            parameter specifies the minimum size (in bytes) that
+            this block of memory must reach before <a class="link" href="../htmlman2/brk.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sbrk</span>(2)</span></a> is used to
+            trim the heap.</p>
+
+            <p>The default value for this parameter is 128*1024.
+            Setting <code class="constant">M_TRIM_THRESHOLD</code>
+            to −1 disables trimming completely.</p>
+
+            <p>Modifying <code class="constant">M_TRIM_THRESHOLD</code> is a trade-off
+            between increasing the number of system calls (when the
+            parameter is set low) and wasting unused memory at the
+            top of the heap (when the parameter is set high).</p>
+          </dd>
+        </dl>
+      </div>
+
+      <div class="refsect2">
+        <a id="mallopt-3_sect2" name="mallopt-3_sect2" shape="rect"> </a>
+
+        <h3>Environment variables</h3>
+
+        <p>A number of environment variables can be defined to
+        modify some of the same parameters as are controlled by
+        <code class="function">mallopt</code>(). Using these
+        variables has the advantage that the source code of the
+        program need not be changed. To be effective, these
+        variables must be defined before the first call to a
+        memory-allocation function. (If the same parameters are
+        adjusted via <code class="function">mallopt</code>(), then
+        the <code class="function">mallopt</code>() settings take
+        precedence.) For security reasons, these variables are
+        ignored in set-user-ID and set-group-ID programs.</p>
+
+        <p>The environment variables are as follows (note the
+        trailing underscore at the end of the name of each
+        variable):</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">MALLOC_CHECK_</code></span></dt>
+
+            <dd>
+              <p>This environment variable controls the same
+              parameter as <code class="function">mallopt</code>()
+              <code class="constant">M_CHECK_ACTION</code>. If this
+              variable is set to a nonzero value, then a special
+              implementation of the memory-allocation functions is
+              used. (This is accomplished using the <a class="link" href="../htmlman3/malloc_hook.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">malloc_hook</span>(3)</span></a>
+              feature.) This implementation performs additional
+              error checking, but is slower than the standard set
+              of memory-allocation functions. (This implementation
+              does not detect all possible errors; memory leaks can
+              still occur.)</p>
+
+              <p>The value assigned to this environment variable
+              should be a single digit, whose meaning is as
+              described for <code class="constant">M_CHECK_ACTION</code>. Any characters
+              beyond the initial digit are ignored.</p>
+
+              <p>For security reasons, the effect of <code class="constant">MALLOC_CHECK_</code> is disabled by
+              default for set-user-ID and set-group-ID programs.
+              However, if the file <code class="filename">/etc/suid−debug</code> exists (the
+              content of the file is irrelevant), then <code class="constant">MALLOC_CHECK_</code> also has an effect
+              for set-user-ID and set-group-ID programs.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">MALLOC_MMAP_MAX_</code></span></dt>
+
+            <dd>
+              <p>Controls the same parameter as <code class="function">mallopt</code>() <code class="constant">M_MMAP_MAX</code>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">MALLOC_MMAP_THRESHOLD_</code></span></dt>
+
+            <dd>
+              <p>Controls the same parameter as <code class="function">mallopt</code>() <code class="constant">M_MMAP_THRESHOLD</code>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">MALLOC_PERTURB_</code></span></dt>
+
+            <dd>
+              <p>Controls the same parameter as <code class="function">mallopt</code>() <code class="constant">M_PERTURB</code>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">MALLOC_TRIM_THRESHOLD_</code></span></dt>
+
+            <dd>
+              <p>Controls the same parameter as <code class="function">mallopt</code>() <code class="constant">M_TRIM_THRESHOLD</code>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">MALLOC_TOP_PAD_</code></span></dt>
+
+            <dd>
+              <p>Controls the same parameter as <code class="function">mallopt</code>() <code class="constant">M_TOP_PAD</code>.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mallopt-3_sect3" name="mallopt-3_sect3" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">mallopt</code>()
+      returns 1. On error, it returns 0.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mallopt-3_sect4" name="mallopt-3_sect4" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <p>On error, <code class="varname">errno</code> is
+      <span class="emphasis"><em>not</em></span> set.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mallopt-3_sect5" name="mallopt-3_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>This function is not specified by POSIX or the C
+      standards. A similar function exists on many System V
+      derivatives, but the range of values for <em class="parameter"><code>param</code></em> varies across systems.
+      The SVID defined options <code class="constant">M_MXFAST</code>, <code class="constant">M_NLBLKS</code>, <code class="constant">M_GRAIN</code>, and <code class="constant">M_KEEP</code>, but only the first of these is
+      implemented in glibc.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mallopt-3_sect6" name="mallopt-3_sect6" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>Specifying an invalid value for <em class="parameter"><code>param</code></em> does not generate an
+      error.</p>
+
+      <p>A calculation error within the glibc implementation means
+      that a call of the form:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+    mallopt(M_MXFAST, n)
+</pre>
+      </div>
+
+      <p>does not result in fastbins being employed for all
+      allocations of size up to <code class="literal">n</code>. To
+      ensure desired results, <code class="literal">n</code> should
+      be rounded up to the next multiple greater than or equal to
+      <em class="replaceable"><code>(2k+1)*sizeof(size_t)</code></em>, where
+      <code class="literal">k</code> is an integer.</p>
+
+      <p>If <code class="function">mallopt</code>() is used to set
+      <code class="constant">M_PERTURB</code>, then, as expected,
+      the bytes of allocated memory are initialized to the
+      complement of the byte in <em class="parameter"><code>value</code></em>, and when that memory is
+      freed, the bytes of the region are initialized to the byte
+      specified in <em class="parameter"><code>value</code></em>.
+      However, there is an off-by-<em class="replaceable"><code>sizeof(size_t)</code></em> error in the
+      implementation: instead of initializing precisely the block
+      of memory being freed by the call <em class="replaceable"><code>free(p)</code></em>, the block starting
+      at <em class="replaceable"><code>p+sizeof(size_t)</code></em>
+      is initialized.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mallopt-3_sect7" name="mallopt-3_sect7" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>The program below demonstrates the use of <code class="constant">M_CHECK_ACTION</code>. If the program is supplied
+      with an (integer) command-line argument, then that argument
+      is used to set the <code class="constant">M_CHECK_ACTION</code> parameter. The program then
+      allocates a block of memory, and frees it twice (an
+      error).</p>
+
+      <p>The following shell session shows what happens when we run
+      this program under glibc, with the default value for
+      <code class="constant">M_CHECK_ACTION</code>:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$ <em class="replaceable"><code>./a.out</code></em>
+main(): returned from first free() call
+*** glibc detected *** ./a.out: double free or corruption (top): 0x09d30008 ***
+======= Backtrace: =========
+/lib/libc.so.6(+0x6c501)[0x523501]
+/lib/libc.so.6(+0x6dd70)[0x524d70]
+/lib/libc.so.6(cfree+0x6d)[0x527e5d]
+./a.out[0x80485db]
+/lib/libc.so.6(__libc_start_main+0xe7)[0x4cdce7]
+./a.out[0x8048471]
+======= Memory map: ========
+001e4000−001fe000 r−xp 00000000 08:06 1083555    /lib/libgcc_s.so.1
+001fe000−001ff000 r−−p 00019000 08:06 1083555    /lib/libgcc_s.so.1
+[some lines omitted]
+b7814000−b7817000 rw−p 00000000 00:00 0
+bff53000−bff74000 rw−p 00000000 00:00 0          [stack]
+Aborted (core dumped)
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>The following runs show the results when employing other
+      values for <code class="constant">M_CHECK_ACTION</code>:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$ <span class="emphasis"><em>./a.out 1</em></span>             # Diagnose error and continue
+main(): returned from first free() call
+*** glibc detected *** ./a.out: double free or corruption (top): 0x09cbe008 ***
+main(): returned from second free() call
+$ <span class="emphasis"><em>./a.out 2</em></span>             # Abort without error message
+main(): returned from first free() call
+Aborted (core dumped)
+$ <span class="emphasis"><em>./a.out 0</em></span>             # Ignore error and continue
+main(): returned from first free() call
+main(): returned from second free() call
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>The next run shows how to set the same parameter using the
+      <code class="constant">MALLOC_CHECK_</code> environment
+      variable:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$ <span class="emphasis"><em>MALLOC_CHECK_=1 ./a.out</em></span>
+main(): returned from first free() call
+*** glibc detected *** ./a.out: free(): invalid pointer: 0x092c2008 ***
+main(): returned from second free() call
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="refsect2">
+        <a id="mallopt-3_sect8" name="mallopt-3_sect8" shape="rect"> </a>
+
+        <h3>Program source</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+#include &lt;malloc.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int
+main(int argc, char *argv[])
+{
+    char *p;
+
+    if (argc &gt; 1) {
+        if (mallopt(M_CHECK_ACTION, atoi(argv[1])) != 1) {
+            fprintf(stderr, "mallopt() failed");
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    p = malloc(1000);
+    if (p == NULL) {
+        fprintf(stderr, "malloc() failed");
+        exit(EXIT_FAILURE);
+    }
+
+    free(p);
+    printf("main(): returned from first free() call\n");
+
+    free(p);
+    printf("main(): returned from second free() call\n");
+
+    exit(EXIT_SUCCESS);
+}
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mallopt-3_sect9" name="mallopt-3_sect9" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>, <a class="link" href="../htmlman2/brk.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sbrk</span>(2)</span></a>, <a class="link" href="../htmlman3/mallinfo.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mallinfo</span>(3)</span></a>, <a class="link" href="../htmlman3/malloc.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">malloc</span>(3)</span></a>, <a class="link" href="../htmlman3/malloc_hook.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">malloc_hook</span>(3)</span></a>, <a class="link" href="../htmlman3/malloc_info.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">malloc_info</span>(3)</span></a>, <a class="link" href="../htmlman3/malloc_stats.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">malloc_stats</span>(3)</span></a>, <a class="link" href="../htmlman3/malloc_trim.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">malloc_trim</span>(3)</span></a>, <a class="link" href="../htmlman3/mcheck.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mcheck</span>(3)</span></a>, <a class="link" href="../htmlman3/mtrace.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mtrace</span>(3)</span></a>, <a class="link" href="../htmlman3/posix_memalign.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">posix_memalign</span>(3)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="mallopt-3_sect10" name="mallopt-3_sect10" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    t<br />
+                  Copyright (c) 2012 by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

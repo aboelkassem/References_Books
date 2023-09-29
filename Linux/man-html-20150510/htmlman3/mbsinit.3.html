@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>mbsinit(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="mbsinit(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="mbsinit.3" name="mbsinit.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>mbsinit — test for initial shift state</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;wchar.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>mbsinit</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">const mbstate_t *<var class="pdparam">ps</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mbsinit-3_sect1" name="mbsinit-3_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>Character conversion between the multibyte representation
+      and the wide character representation uses conversion state,
+      of type <span class="type">mbstate_t</span>. Conversion of a
+      string uses a finite-state machine; when it is interrupted
+      after the complete conversion of a number of characters, it
+      may need to save a state for processing the remaining
+      characters. Such a conversion state is needed for the sake of
+      encodings such as ISO-2022 and UTF-7.</p>
+
+      <p>The initial state is the state at the beginning of
+      conversion of a string. There are two kinds of state: The one
+      used by multibyte to wide character conversion functions,
+      such as <a class="link" href="../htmlman3/mbsrtowcs.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mbsrtowcs</span>(3)</span></a>, and the one
+      used by wide character to multibyte conversion functions,
+      such as <a class="link" href="../htmlman3/wcsrtombs.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">wcsrtombs</span>(3)</span></a>, but they both
+      fit in a <span class="type">mbstate_t</span>, and they both
+      have the same representation for an initial state.</p>
+
+      <p>For 8-bit encodings, all states are equivalent to the
+      initial state. For multibyte encodings like UTF-8, EUC-*,
+      BIG5 or SJIS, the wide character to multibyte conversion
+      functions never produce non-initial states, but the multibyte
+      to wide-character conversion functions like <a class="link" href="../htmlman3/mbrtowc.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mbrtowc</span>(3)</span></a> do produce
+      non-initial states when interrupted in the middle of a
+      character.</p>
+
+      <p>One possible way to create an <span class="type">mbstate_t</span> in initial state is to set it to
+      zero:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+    mbstate_t state;
+    memset(&amp;state,0,sizeof(mbstate_t));
+</pre>
+      </div>
+
+      <p>On Linux, the following works as well, but might generate
+      compiler warnings:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+    mbstate_t state = { 0 };
+</pre>
+      </div>
+
+      <p>The function <code class="function">mbsinit</code>() tests
+      whether *<em class="parameter"><code>ps</code></em>
+      corresponds to an initial state.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mbsinit-3_sect2" name="mbsinit-3_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p><code class="function">mbsinit</code>() returns nonzero if
+      *<em class="parameter"><code>ps</code></em> is an initial
+      state, or if <em class="parameter"><code>ps</code></em> is
+      NULL. Otherwise, it returns 0.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mbsinit-3_sect3" name="mbsinit-3_sect3" shape="rect"> </a>
+
+      <h2>ATTRIBUTES</h2>
+
+      <p>For an explanation of the terms used in this section, see
+      <a class="link" href="../htmlman7/attributes.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">attributes</span>(7)</span></a>.</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">Interface</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Attribute</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Value</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><code class="literal">mbsinit</code>()</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Thread safety</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">MT-Safe</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mbsinit-3_sect4" name="mbsinit-3_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>C99.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mbsinit-3_sect5" name="mbsinit-3_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>The behavior of <code class="function">mbsinit</code>()
+      depends on the <code class="constant">LC_CTYPE</code>
+      category of the current locale.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mbsinit-3_sect6" name="mbsinit-3_sect6" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/mbrlen.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mbrlen</span>(3)</span></a>, <a class="link" href="../htmlman3/mbrtowc.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mbrtowc</span>(3)</span></a>, <a class="link" href="../htmlman3/wcrtomb.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">wcrtomb</span>(3)</span></a>, <a class="link" href="../htmlman3/mbsrtowcs.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mbsrtowcs</span>(3)</span></a>, <a class="link" href="../htmlman3/wcsrtombs.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">wcsrtombs</span>(3)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="mbsinit-3_sect7" name="mbsinit-3_sect7" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) Bruno Haible &lt;haible<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>clisp.cons.org&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_DOC_ONEPARA)<br />
+                  This is free documentation; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License as<br />
+
+                  published by the Free Software Foundation; either version 2 of<br />
+
+                  the License, or (at your option) any later version.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  References consulted:<br />
+                    GNU glibc-2 source code and manual<br />
+
+                    Dinkumware C library reference http://www.dinkumware.com/<br />
+
+                    OpenGroup's Single UNIX specification http://www.UNIX-systems.org/online.html<br />
+
+                    ISO/IEC 9899:1999<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

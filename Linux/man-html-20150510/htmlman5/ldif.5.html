@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>ldif(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="ldif(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="ldif.5" name="ldif.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>ldif — LDAP Data Interchange Format</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ldif-5_sect1" name="ldif-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The LDAP Data Interchange Format (LDIF) is used to
+      represent LDAP entries and change records in text form. LDAP
+      tools, such as <a class="link" href="../htmlman1/ldapmodify.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldapadd</span>(1)</span></a> and <a class="link" href="../htmlman1/ldapsearch.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldapsearch</span>(1)</span></a>, read and
+      write LDIF entry records. <a class="link" href="../htmlman1/ldapmodify.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldapmodify</span>(1)</span></a> reads LDIF
+      change records.</p>
+
+      <p>This manual page provides a basic description of LDIF. A
+      formal specification of LDIF is published in RFC 2849.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ldif-5_sect2" name="ldif-5_sect2" shape="rect"> </a>
+
+      <h2>ENTRY RECORDS</h2>
+
+      <p>LDIF entry records are used to represent directory
+      entries. The basic form of an entry record is:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        dn: &lt;distinguished name&gt;
+        &lt;attrdesc&gt;: &lt;attrvalue&gt;
+        &lt;attrdesc&gt;: &lt;attrvalue&gt;
+        &lt;attrdesc&gt;:: &lt;base64-encoded-value&gt;
+        &lt;attrdesc&gt;:&lt; &lt;URL&gt;
+        ...
+</pre>
+      </div>
+
+      <p>The value may be specified as UTF-8 text or as base64
+      encoded data, or a URI may be provided to the location of the
+      attribute value.</p>
+
+      <p>A line may be continued by starting the next line with a
+      single space or tab, e.g.,</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        dn: cn=Barbara J Jensen,dc=exam
+         ple,dc=com
+</pre>
+      </div>
+
+      <p>Lines beginning with a sharp sign ('#') are ignored.</p>
+
+      <p>Multiple attribute values are specified on separate lines,
+      e.g.,</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        cn: Barbara J Jensen
+        cn: Babs Jensen
+</pre>
+      </div>
+
+      <p>If an value contains a non-printing character, or begins
+      with a space or a colon ':', the &lt;attrtype&gt; is followed
+      by a double colon and the value is encoded in base 64
+      notation. e.g., the value " begins with a space" would be
+      encoded like this:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        cn:: IGJlZ2lucyB3aXRoIGEgc3BhY2U=
+</pre>
+      </div>
+
+      <p>If the attribute value is located in a file, the
+      &lt;attrtype&gt; is followed by a ':&lt;' and a file: URI.
+      e.g., the value contained in the file /tmp/value would be
+      listed like this:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        cn:&lt; file:///tmp/value
+</pre>
+      </div>
+
+      <p>Other URI schemes (ftp,http) may be supported as well.</p>
+
+      <p>Multiple entries within the same LDIF file are separated
+      by blank lines.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ldif-5_sect3" name="ldif-5_sect3" shape="rect"> </a>
+
+      <h2>ENTRY RECORD EXAMPLE</h2>
+
+      <p>Here is an example of an LDIF file containing three
+      entries.</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        dn: cn=Barbara J Jensen,dc=example,dc=com
+        cn: Barbara J Jensen
+        cn: Babs Jensen
+        objectclass: person
+        description:&lt; file:///tmp/babs
+        sn: Jensen
+
+        dn: cn=Bjorn J Jensen,dc=example,dc=com
+        cn: Bjorn J Jensen
+        cn: Bjorn Jensen
+        objectclass: person
+        sn: Jensen
+
+        dn: cn=Jennifer J Jensen,dc=example,dc=com
+        cn: Jennifer J Jensen
+        cn: Jennifer Jensen
+        objectclass: person
+        sn: Jensen
+        jpegPhoto:: /9j/4AAQSkZJRgABAAAAAQABAAD/2wBDABALD
+         A4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQ
+         ERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVG
+        ...
+</pre>
+      </div>
+
+      <p>Note that the description in Barbara Jensen's entry is
+      read from file:///tmp/babs and the jpegPhoto in Jennifer
+      Jensen's entry is encoded using base 64.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ldif-5_sect4" name="ldif-5_sect4" shape="rect"> </a>
+
+      <h2>CHANGE RECORDS</h2>
+
+      <p>LDIF change records are used to represent directory change
+      requests. Each change record starts with line indicating the
+      distinguished name of the entry being changed:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        dn: &lt;distinguishedname&gt;
+</pre>
+      </div>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        changetype: &lt;[modify|add|delete|modrdn]&gt;
+</pre>
+      </div>
+
+      <p>Finally, the change information itself is given, the
+      format of which depends on what kind of change was specified
+      above. For a <em class="replaceable"><code>changetype</code></em> of <em class="replaceable"><code>modify</code></em>, the format is one or
+      more of the following:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        add: &lt;attributetype&gt;
+        &lt;attrdesc&gt;: &lt;value1&gt;
+        &lt;attrdesc&gt;: &lt;value2&gt;
+        ...
+        −
+</pre>
+      </div>
+
+      <p>Or, for a replace modification:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        replace: &lt;attributetype&gt;
+        &lt;attrdesc&gt;: &lt;value1&gt;
+        &lt;attrdesc&gt;: &lt;value2&gt;
+        ...
+        −
+</pre>
+      </div>
+
+      <p>If no <em class="replaceable"><code>attributetype</code></em> lines are given
+      to replace, the entire attribute is to be deleted (if
+      present).</p>
+
+      <p>Or, for a delete modification:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        delete: &lt;attributetype&gt;
+        &lt;attrdesc&gt;: &lt;value1&gt;
+        &lt;attrdesc&gt;: &lt;value2&gt;
+        ...
+        −
+</pre>
+      </div>
+
+      <p>If no <em class="replaceable"><code>attributetype</code></em> lines are given
+      to delete, the entire attribute is to be deleted.</p>
+
+      <p>For a <em class="replaceable"><code>changetype</code></em>
+      of <em class="replaceable"><code>add</code></em>, the format
+      is:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        &lt;attrdesc1&gt;: &lt;value1&gt;
+        &lt;attrdesc1&gt;: &lt;value2&gt;
+        ...
+        &lt;attrdescN&gt;: &lt;value1&gt;
+        &lt;attrdescN&gt;: &lt;value2&gt;
+</pre>
+      </div>
+
+      <p>For a <em class="replaceable"><code>changetype</code></em>
+      of <em class="replaceable"><code>modrdn</code></em> or
+      <em class="replaceable"><code>moddn</code></em>, the format
+      is:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        newrdn: &lt;newrdn&gt;
+        deleteoldrdn: 0 | 1
+        newsuperior: &lt;DN&gt;
+</pre>
+      </div>
+
+      <p>where a value of 1 for deleteoldrdn means to delete the
+      values forming the old rdn from the entry, and a value of 0
+      means to leave the values as non-distinguished attributes in
+      the entry. The newsuperior line is optional and, if present,
+      specifies the new superior to move the entry to.</p>
+
+      <p>For a <em class="replaceable"><code>changetype</code></em>
+      of <em class="replaceable"><code>delete</code></em>, no
+      additional information is needed in the record.</p>
+
+      <p>Note that attribute values may be presented using base64
+      or in files as described for entry records. Lines in change
+      records may be continued in the manner described for entry
+      records as well.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ldif-5_sect5" name="ldif-5_sect5" shape="rect"> </a>
+
+      <h2>CHANGE RECORD EXAMPLE</h2>
+
+      <p>The following sample LDIF file contains a change record of
+      each type of change.</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        dn: cn=Babs Jensen,dc=example,dc=com
+        changetype: add
+        objectclass: person
+        objectclass: extensibleObject
+        cn: babs
+        cn: babs jensen
+        sn: jensen
+
+        dn: cn=Babs Jensen,dc=example,dc=com
+        changetype: modify
+        add: givenName
+        givenName: Barbara
+        givenName: babs
+        −
+        replace: description
+        description: the fabulous babs
+        −
+        delete: sn
+        sn: jensen
+        −
+
+        dn: cn=Babs Jensen,dc=example,dc=com
+        changetype: modrdn
+        newrdn: cn=Barbara J Jensen
+        deleteoldrdn: 0
+        newsuperior: ou=People,dc=example,dc=com
+
+        dn: cn=Barbara J Jensen,ou=People,dc=example,dc=com
+        changetype: delete
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ldif-5_sect6" name="ldif-5_sect6" shape="rect"> </a>
+
+      <h2>INCLUDE STATEMENT</h2>
+
+      <p>The LDIF parser has been extended to support an <em class="replaceable"><code>include</code></em> statement for
+      referencing other LDIF files. The <em class="replaceable"><code>include</code></em> statement must be
+      separated from other records by a blank line. The referenced
+      file is specified using a file: URI and all of its contents
+      are incorporated as if they were part of the original LDIF
+      file. As above, other URI schemes may be supported. For
+      example:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        dn: dc=example,dc=com
+        objectclass: domain
+        dc: example
+
+        include: file:///tmp/example.com.ldif
+
+        dn: dc=example,dc=org
+        objectclass: domain
+        dc: example
+</pre>
+      </div>
+
+      <p>This feature is not part of the LDIF specification in RFC
+      2849 but is expected to appear in a future revision of this
+      spec. It is supported by the <a class="link" href="../htmlman1/ldapmodify.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldapadd</span>(1)</span></a>, <a class="link" href="../htmlman1/ldapmodify.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldapmodify</span>(1)</span></a>, and
+      <a class="link" href="../htmlman8/slapadd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapadd</span>(8)</span></a> commands.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ldif-5_sect7" name="ldif-5_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/ldap.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldap</span>(3)</span></a>, <a class="link" href="../htmlman1/ldapsearch.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldapsearch</span>(1)</span></a>, <a class="link" href="../htmlman1/ldapmodify.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldapadd</span>(1)</span></a>, <a class="link" href="../htmlman1/ldapmodify.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldapmodify</span>(1)</span></a>, <a class="link" href="../htmlman8/slapadd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapadd</span>(8)</span></a>, <a class="link" href="../htmlman8/slapcat.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapcat</span>(8)</span></a>, <a class="link" href="../htmlman5/slapd-ldif.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-ldif</span>(5)</span></a>.</p>
+
+      <p>"LDAP Data Interchange Format," Good, G., RFC 2849.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ldif-5_sect8" name="ldif-5_sect8" shape="rect"> </a>
+
+      <h2>ACKNOWLEDGEMENTS</h2>
+
+      <p><span class="emphasis"><em>OpenLDAP Software</em></span>
+      is developed and maintained by The OpenLDAP Project
+      &lt;<a class="literalurl" href="http://www.openldap.org/" target="_top" shape="rect">http://www.openldap.org/</a>&gt;. <span class="emphasis"><em>OpenLDAP Software</em></span> is derived from
+      University of Michigan LDAP 3.3 Release.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                  See the following documents: <a class="ulink" href="../openldap-COPYRIGHT.html" target="_top" shape="rect">COPYRIGHT</a>, <a class="ulink" href="../openldap-LICENSE.html" target="_top" shape="rect">LICENSE</a><br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

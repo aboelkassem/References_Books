@@ -1,0 +1,5280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>ioctl_list(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="ioctl_list(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="ioctl-list.2" name="ioctl-list.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>ioctl_list — list of ioctl calls in Linux/i386
+      kernel</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ioctl-list-2_sect1" name="ioctl-list-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>This is Ioctl List 1.3.27, a list of ioctl calls in
+      Linux/i386 kernel 1.3.27. It contains 421 ioctls from
+      <code class="literal">&lt;</code><code class="filename">/usr/include/{asm,linux}/*.h</code><code class="literal">&gt;</code> For each ioctl, its numerical value,
+      its name, and its argument type are given.</p>
+
+      <p>An argument type of <span class="type">const struct foo
+      *</span> means the argument is input to the kernel.
+      <span class="type">struct foo *</span> means the kernel
+      outputs the argument. If the kernel uses the argument for
+      both input and output, this is marked with <code class="filename">// I-O</code>.</p>
+
+      <p>Some ioctls take more arguments or return more values than
+      a single structure. These are marked <code class="filename">// MORE</code> and documented further in a
+      separate section.</p>
+
+      <p>This list is very incomplete.</p>
+
+      <div class="refsect2">
+        <a id="ioctl-list-2_sect2" name="ioctl-list-2_sect2" shape="rect"> </a>
+
+        <h3>ioctl structure</h3>
+
+        <p>Ioctl command values are 32-bit constants. In principle
+        these constants are completely arbitrary, but people have
+        tried to build some structure into them.</p>
+
+        <p>The old Linux situation was that of mostly 16-bit
+        constants, where the last byte is a serial number, and the
+        preceding byte(s) give a type indicating the driver.
+        Sometimes the major number was used: 0x03 for the
+        <em class="replaceable"><code>HDIO_*</code></em> ioctls,
+        0x06 for the <em class="replaceable"><code>LP*</code></em>
+        ioctls. And sometimes one or more ASCII letters were used.
+        For example, <code class="constant">TCGETS</code> has value
+        0x00005401, with 0x54 = 'T' indicating the terminal driver,
+        and <code class="constant">CYGETTIMEOUT</code> has value
+        0x00435906, with 0x43 0x59 = 'C' 'Y' indicating the
+        cyclades driver.</p>
+
+        <p>Later (0.98p5) some more information was built into the
+        number. One has 2 direction bits (00: none, 01: write, 10:
+        read, 11: read/write) followed by 14 size bits (giving the
+        size of the argument), followed by an 8-bit type
+        (collecting the ioctls in groups for a common purpose or a
+        common driver), and an 8-bit serial number.</p>
+
+        <p>The macros describing this structure live in
+        <code class="literal">&lt;</code><code class="filename">asm/ioctl.h</code><code class="literal">&gt;</code> and are <em class="replaceable"><code>_IO(type,nr)</code></em> and
+        <code class="function">{_IOR,_IOW,_IOWR}</code><code class="literal">(</code><em class="parameter"><code>type</code></em><code class="literal">,</code> <em class="parameter"><code>nr</code></em><code class="literal">,</code> <em class="parameter"><code>size</code></em><code class="literal">)</code>. They use <em class="replaceable"><code>sizeof(size)</code></em> so that size
+        is a misnomer here: this third argument is a data type.</p>
+
+        <p>Note that the size bits are very unreliable: in lots of
+        cases they are wrong, either because of buggy macros using
+        <em class="replaceable"><code>sizeof(sizeof(struct))</code></em>, or
+        because of legacy values.</p>
+
+        <p>Thus, it seems that the new structure only gave
+        disadvantages: it does not help in checking, but it causes
+        varying values for the various architectures.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ioctl-list-2_sect3" name="ioctl-list-2_sect3" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>Decent ioctls return 0 on success and −1 on error,
+      while any output value is stored via the argument. However,
+      quite a few ioctls in fact return an output value. This is
+      not yet indicated below.</p>
+
+      <p>// Main table.</p>
+
+      <p>// &lt;include/asm-i386/socket.h&gt;</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008901</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FIOSETOWN</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008902</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCSPGRP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008903</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FIOGETOWN</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008904</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCGPGRP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008905</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCATMAR</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008906</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCGSTAMP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">timeval *</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// &lt;include/asm-i386/termios.h&gt;</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005401</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TCGETS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct termios *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005402</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TCSETS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct termios *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005403</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TCSETSW</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct termios *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005404</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TCSETSF</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct termios *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005405</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TCGETA</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct termio *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005406</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TCSETA</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct termio *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005407</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TCSETAW</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct termio *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005408</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TCSETAF</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct termio *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005409</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TCSBRK</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000540A</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TCXONC</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000540B</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TCFLSH</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000540C</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCEXCL</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000540D</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCNXCL</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000540E</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCSCTTY</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000540F</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCGPGRP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">pid_t *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005410</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCSPGRP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const pid_t *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005411</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCOUTQ</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005412</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCSTI</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const char *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005413</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCGWINSZ</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct winsize *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005414</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCSWINSZ</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct winsize *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005415</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCMGET</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005416</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCMBIS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005417</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCMBIC</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005418</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCMSET</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005419</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCGSOFTCAR</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000541A</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCSSOFTCAR</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000541B</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FIONREAD</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000541B</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCINQ</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000541C</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCLINUX</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const char *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// MORE</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000541D</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCCONS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000541E</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCGSERIAL</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct serial_struct *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000541F</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCSSERIAL</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct serial_struct
+              *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005420</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCPKT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005421</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FIONBIO</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005422</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCNOTTY</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005423</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCSETD</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005424</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCGETD</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005425</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TCSBRKP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005426</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCTTYGSTRUCT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct tty_struct *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005450</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FIONCLEX</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005451</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FIOCLEX</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005452</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FIOASYNC</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005453</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCSERCONFIG</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005454</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCSERGWILD</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005455</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCSERSWILD</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005456</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCGLCKTRMIOS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct termios *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005457</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCSLCKTRMIOS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct termios *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005458</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCSERGSTRUCT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct async_struct *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005459</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCSERGETLSR</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000545A</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCSERGETMULTI</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct
+              serial_multiport_struct *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000545B</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCSERSETMULTI</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct
+              serial_multiport_struct *</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// &lt;include/linux/ax25.h&gt;</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000089E0</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCAX25GETUID</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct sockaddr_ax25
+              *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000089E1</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCAX25ADDUID</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct sockaddr_ax25
+              *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000089E2</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCAX25DELUID</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct sockaddr_ax25
+              *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000089E3</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCAX25NOUID</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000089E4</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCAX25DIGCTL</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000089E5</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCAX25GETPARMS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct ax25_parms_struct
+              *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000089E6</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCAX25SETPARMS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct
+              ax25_parms_struct *</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// &lt;include/linux/cdk.h&gt;</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00007314</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">STL_BINTR</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00007315</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">STL_BSTART</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00007316</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">STL_BSTOP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00007317</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">STL_BRESET</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// &lt;include/linux/cdrom.h&gt;</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005301</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CDROMPAUSE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005302</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CDROMRESUME</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005303</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CDROMPLAYMSF</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct cdrom_msf
+              *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005304</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CDROMPLAYTRKIND</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct cdrom_ti
+              *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005305</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CDROMREADTOCHDR</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct cdrom_tochdr *</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005306</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CDROMREADTOCENTRY</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct cdrom_tocentry
+              *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005307</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CDROMSTOP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005308</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CDROMSTART</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005309</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CDROMEJECT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000530A</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CDROMVOLCTRL</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct cdrom_volctrl
+              *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000530B</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CDROMSUBCHNL</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct cdrom_subchnl *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000530C</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CDROMREADMODE2</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct cdrom_msf
+              *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// MORE</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000530D</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CDROMREADMODE1</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct cdrom_msf
+              *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// MORE</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000530E</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CDROMREADAUDIO</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct
+              cdrom_read_audio *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// MORE</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000530F</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CDROMEJECT_SW</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005310</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CDROMMULTISESSION</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct cdrom_multisession
+              *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005311</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CDROM_GET_UPC</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct { char [8]; } *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005312</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CDROMRESET</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005313</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CDROMVOLREAD</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct cdrom_volctrl *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005314</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CDROMREADRAW</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct cdrom_msf
+              *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// MORE</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005315</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CDROMREADCOOKED</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct cdrom_msf
+              *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// MORE</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005316</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CDROMSEEK</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct cdrom_msf
+              *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// &lt;include/linux/cm206.h&gt;</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00002000</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CM206CTL_GET_STAT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00002001</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CM206CTL_GET_LAST_STAT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// &lt;include/linux/cyclades.h&gt;</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00435901</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CYGETMON</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct cyclades_monitor
+              *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00435902</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CYGETTHRESH</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00435903</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CYSETTHRESH</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00435904</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CYGETDEFTHRESH</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00435905</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CYSETDEFTHRESH</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00435906</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CYGETTIMEOUT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00435907</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CYSETTIMEOUT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00435908</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CYGETDEFTIMEOUT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00435909</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CYSETDEFTIMEOUT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// &lt;include/linux/fd.h&gt;</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000000</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FDCLRPRM</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000001</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FDSETPRM</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct floppy_struct
+              *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000002</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FDDEFPRM</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct floppy_struct
+              *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000003</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FDGETPRM</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct floppy_struct *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000004</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FDMSGON</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000005</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FDMSGOFF</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000006</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FDFMTBEG</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000007</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FDFMTTRK</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct format_descr
+              *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000008</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FDFMTEND</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000000A</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FDSETEMSGTRESH</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000000B</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FDFLUSH</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000000C</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FDSETMAXERRS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct
+              floppy_max_errors *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000000E</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FDGETMAXERRS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct floppy_max_errors
+              *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000010</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FDGETDRVTYP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct { char [16]; }
+              *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000014</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FDSETDRVPRM</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct
+              floppy_drive_params *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000015</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FDGETDRVPRM</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct floppy_drive_params
+              *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000016</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FDGETDRVSTAT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct floppy_drive_struct
+              *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000017</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FDPOLLDRVSTAT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct floppy_drive_struct
+              *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000018</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FDRESET</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000019</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FDGETFDCSTAT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct floppy_fdc_state
+              *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000001B</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FDWERRORCLR</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000001C</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FDWERRORGET</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct floppy_write_errors
+              *</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000001E</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FDRAWCMD</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct floppy_raw_cmd
+              *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// MORE // I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000028</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FDTWADDLE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// &lt;include/linux/fs.h&gt;</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000125D</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">BLKROSET</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000125E</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">BLKROGET</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000125F</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">BLKRRPART</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00001260</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">BLKGETSIZE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">unsigned long *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00001261</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">BLKFLSBUF</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00001262</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">BLKRASET</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00001263</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">BLKRAGET</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000001</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FIBMAP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000002</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FIGETBSZ</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80086601</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FS_IOC_GETFLAGS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x40086602</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FS_IOC_SETFLAGS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80087601</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FS_IOC_GETVERSION</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x40087602</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FS_IOC_SETVERSION</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC020660B</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FS_IOC_FIEMAP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct fiemap *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x40086602</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FS_IOC32_SETFLAGS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x40086602</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FS_IOC32_SETFLAGS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80047601</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FS_IOC32_GETVERSION</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x40047602</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FS_IOC32_SETVERSION</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// &lt;include/linux/hdreg.h&gt;</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000301</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">HDIO_GETGEO</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct hd_geometry *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000302</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">HDIO_GET_UNMASKINTR</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000304</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">HDIO_GET_MULTCOUNT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000307</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">HDIO_GET_IDENTITY</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct hd_driveid *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000308</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">HDIO_GET_KEEPSETTINGS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000309</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">HDIO_GET_CHIPSET</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000030A</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">HDIO_GET_NOWERR</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000030B</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">HDIO_GET_DMA</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000031F</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">HDIO_DRIVE_CMD</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000321</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">HDIO_SET_MULTCOUNT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000322</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">HDIO_SET_UNMASKINTR</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000323</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">HDIO_SET_KEEPSETTINGS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000324</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">HDIO_SET_CHIPSET</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000325</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">HDIO_SET_NOWERR</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000326</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">HDIO_SET_DMA</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// &lt;include/linux/if_eql.h&gt;</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000089F0</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">EQL_ENSLAVE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct ifreq *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// MORE // I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000089F1</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">EQL_EMANCIPATE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct ifreq *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// MORE // I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000089F2</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">EQL_GETSLAVECFG</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct ifreq *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// MORE // I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000089F3</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">EQL_SETSLAVECFG</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct ifreq *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// MORE // I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000089F4</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">EQL_GETMASTRCFG</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct ifreq *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// MORE // I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000089F5</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">EQL_SETMASTRCFG</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct ifreq *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// MORE // I-O</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// &lt;include/linux/if_plip.h&gt;</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000089F0</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCDEVPLIP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct ifreq *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// &lt;include/linux/if_ppp.h&gt;</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005490</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">PPPIOCGFLAGS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005491</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">PPPIOCSFLAGS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005492</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">PPPIOCGASYNCMAP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005493</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">PPPIOCSASYNCMAP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005494</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">PPPIOCGUNIT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005495</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">PPPIOCSINPSIG</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005497</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">PPPIOCSDEBUG</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005498</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">PPPIOCGDEBUG</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005499</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">PPPIOCGSTAT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct ppp_stats *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000549A</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">PPPIOCGTIME</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct ppp_ddinfo *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000549B</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">PPPIOCGXASYNCMAP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct { int [8]; } *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000549C</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">PPPIOCSXASYNCMAP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct { int [8]; }
+              *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000549D</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">PPPIOCSMRU</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000549E</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">PPPIOCRASYNCMAP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000549F</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">PPPIOCSMAXCID</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// &lt;include/linux/ipx.h&gt;</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000089E0</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCAIPXITFCRT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const char *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000089E1</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCAIPXPRISLT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const char *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000089E2</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCIPXCFGDATA</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct ipx_config_data
+              *</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// &lt;include/linux/kd.h&gt;</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B60</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">GIO_FONT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct { char [8192]; }
+              *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B61</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">PIO_FONT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct { char [8192];
+              } *</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B6B</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">GIO_FONTX</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct console_font_desc
+              *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// MORE // I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B6C</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">PIO_FONTX</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct
+              console_font_desc *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">//MORE</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B70</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">GIO_CMAP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct { char [48]; }
+              *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B71</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">PIO_CMAP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct { char [48];
+              }</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B2F</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">KIOCSOUND</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B30</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">KDMKTONE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B31</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">KDGETLED</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">char *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B32</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">KDSETLED</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B33</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">KDGKBTYPE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">char *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B34</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">KDADDIO</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// MORE</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B35</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">KDDELIO</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// MORE</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B36</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">KDENABIO</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// MORE</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B37</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">KDDISABIO</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// MORE</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B3A</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">KDSETMODE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B3B</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">KDGETMODE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B3C</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">KDMAPDISP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// MORE</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B3D</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">KDUNMAPDISP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// MORE</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B40</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">GIO_SCRNMAP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct { char [E_TABSZ]; }
+              *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B41</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">PIO_SCRNMAP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct { char
+              [E_TABSZ]; } *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B69</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">GIO_UNISCRNMAP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct { short [E_TABSZ]; }
+              *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B6A</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">PIO_UNISCRNMAP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct { short
+              [E_TABSZ]; } *</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B66</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">GIO_UNIMAP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct unimapdesc *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// MORE // I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B67</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">PIO_UNIMAP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct unimapdesc
+              *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// MORE</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B68</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">PIO_UNIMAPCLR</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct unimapinit
+              *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B44</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">KDGKBMODE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B45</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">KDSKBMODE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B62</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">KDGKBMETA</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B63</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">KDSKBMETA</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B64</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">KDGKBLED</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B65</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">KDSKBLED</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B46</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">KDGKBENT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct kbentry *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B47</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">KDSKBENT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct kbentry *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B48</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">KDGKBSENT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct kbsentry *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B49</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">KDSKBSENT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct kbsentry
+              *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B4A</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">KDGKBDIACR</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct kbdiacrs *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B4B</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">KDSKBDIACR</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct kbdiacrs
+              *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B4C</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">KDGETKEYCODE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct kbkeycode *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B4D</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">KDSETKEYCODE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct kbkeycode
+              *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004B4E</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">KDSIGACCEPT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// &lt;include/linux/lp.h&gt;</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000601</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">LPCHAR</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000602</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">LPTIME</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000604</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">LPABORT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000605</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">LPSETIRQ</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000606</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">LPGETIRQ</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000608</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">LPWAIT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000609</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">LPCAREFUL</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000060A</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">LPABORTOPEN</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000060B</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">LPGETSTATUS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000060C</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">LPRESET</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000060D</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">LPGETSTATS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct lp_stats *</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// &lt;include/linux/mroute.h&gt;</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000089E0</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCGETVIFCNT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct sioc_vif_req *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000089E1</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCGETSGCNT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct sioc_sg_req *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// &lt;include/linux/msdos_fs.h&gt; see <a class="link" href="../htmlman2/ioctl_fat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl_fat</span>(2)</span></a></p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x82307201</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              VFAT_IOCTL_READDIR_BOTH</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct dirent [2]</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x82307202</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              VFAT_IOCTL_READDIR_SHORT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct dirent [2]</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80047210</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              FAT_IOCTL_GET_ATTRIBUTES</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">__u32 *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x40047211</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              FAT_IOCTL_SET_ATTRIBUTES</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const __u32 *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80047213</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              FAT_IOCTL_GET_VOLUME_ID</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">__u32 *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// &lt;include/linux/mtio.h&gt;</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x40086D01</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">MTIOCTOP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct mtop *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x801C6D02</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">MTIOCGET</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct mtget *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80046D03</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">MTIOCPOS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct mtpos *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80206D04</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">MTIOCGETCONFIG</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct mtconfiginfo *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x40206D05</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">MTIOCSETCONFIG</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct mtconfiginfo
+              *</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// &lt;include/linux/netrom.h&gt;</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000089E0</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCNRGETPARMS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct nr_parms_struct
+              *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000089E1</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCNRSETPARMS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct
+              nr_parms_struct *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000089E2</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCNRDECOBS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000089E3</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCNRRTCTL</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// &lt;include/linux/sbpcd.h&gt;</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00009000</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">DDIOCSDBG</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005382</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CDROMAUDIOBUFSIZ</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// &lt;include/linux/scc.h&gt;</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005470</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCSCCINI</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005471</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCCHANINI</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct scc_modem
+              *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005472</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCGKISS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct ioctl_command *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005473</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCSKISS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct ioctl_command
+              *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005474</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TIOCSCCSTAT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct scc_stat *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// &lt;include/linux/scsi.h&gt;</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005382</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SCSI_IOCTL_GET_IDLUN struct
+              { int [2]; } *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005383</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SCSI_IOCTL_TAGGED_ENABLE
+              void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005384</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SCSI_IOCTL_TAGGED_DISABLE
+              void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005385</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SCSI_IOCTL_PROBE_HOST</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// MORE</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// &lt;include/linux/smb_fs.h&gt;</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80027501</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SMB_IOC_GETMOUNTUID</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">uid_t *</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// &lt;include/linux/sockios.h&gt;</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000890B</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCADDRT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct rtentry *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// MORE</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000890C</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCDELRT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct rtentry *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// MORE</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008910</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCGIFNAME</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">char []</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008911</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCSIFLINK</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008912</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCGIFCONF</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct ifconf *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// MORE // I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008913</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCGIFFLAGS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct ifreq *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008914</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCSIFFLAGS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct ifreq *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008915</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCGIFADDR</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct ifreq *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008916</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCSIFADDR</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct ifreq *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008917</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCGIFDSTADDR</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct ifreq *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008918</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCSIFDSTADDR</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct ifreq *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008919</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCGIFBRDADDR</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct ifreq *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000891A</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCSIFBRDADDR</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct ifreq *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000891B</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCGIFNETMASK</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct ifreq *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000891C</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCSIFNETMASK</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct ifreq *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000891D</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCGIFMETRIC</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct ifreq *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000891E</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCSIFMETRIC</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct ifreq *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000891F</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCGIFMEM</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct ifreq *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008920</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCSIFMEM</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct ifreq *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008921</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCGIFMTU</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct ifreq *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008922</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCSIFMTU</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct ifreq *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008923</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">OLD_SIOCGIFHWADDR</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct ifreq *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008924</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCSIFHWADDR</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct ifreq *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// MORE</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008925</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCGIFENCAP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008926</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCSIFENCAP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008927</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCGIFHWADDR</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct ifreq *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008929</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCGIFSLAVE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008930</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCSIFSLAVE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008931</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCADDMULTI</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct ifreq *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008932</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCDELMULTI</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct ifreq *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008940</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCADDRTOLD</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008941</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCDELRTOLD</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008950</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCDARP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct arpreq *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008951</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCGARP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct arpreq *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008952</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCSARP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct arpreq *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008960</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCDRARP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct arpreq *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008961</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCGRARP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct arpreq *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008962</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCSRARP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct arpreq *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008970</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCGIFMAP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct ifreq *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00008971</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SIOCSIFMAP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct ifreq *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// &lt;include/linux/soundcard.h&gt;</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005100</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_SEQ_RESET</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005101</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_SEQ_SYNC</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC08C5102</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_SYNTH_INFO</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct synth_info *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0045103</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_SEQ_CTRLRATE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80045104</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_SEQ_GETOUTCOUNT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80045105</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_SEQ_GETINCOUNT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x40045106</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_SEQ_PERCMODE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x40285107</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_FM_LOAD_INSTR</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct sbi_instrument
+              *</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x40045108</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_SEQ_TESTMIDI</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x40045109</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              SNDCTL_SEQ_RESETSAMPLES</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x8004510A</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_SEQ_NRSYNTHS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x8004510B</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_SEQ_NRMIDIS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC074510C</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_MIDI_INFO</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct midi_info *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x4004510D</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_SEQ_THRESHOLD</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC004510E</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_SYNTH_MEMAVL</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x4004510F</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_FM_4OP_ENABLE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xCFB85110</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_PMGR_ACCESS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct patmgr_info *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005111</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_SEQ_PANIC</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x40085112</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_SEQ_OUTOFBAND</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct seq_event_rec
+              *</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0045401</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_TMR_TIMEBASE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005402</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_TMR_START</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005403</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_TMR_STOP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005404</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_TMR_CONTINUE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0045405</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_TMR_TEMPO</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0045406</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_TMR_SOURCE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x40045407</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_TMR_METRONOME</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x40045408</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_TMR_SELECT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xCFB85001</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_PMGR_IFACE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct patmgr_info *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0046D00</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_MIDI_PRETIME</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0046D01</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_MIDI_MPUMODE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0216D02</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_MIDI_MPUCMD</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct mpu_command_rec
+              *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005000</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_DSP_RESET</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005001</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_DSP_SYNC</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0045002</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_DSP_SPEED</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0045003</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_DSP_STEREO</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0045004</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_DSP_GETBLKSIZE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0045006</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              SOUND_PCM_WRITE_CHANNELS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0045007</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SOUND_PCM_WRITE_FILTER</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005008</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_DSP_POST</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0045009</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_DSP_SUBDIVIDE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC004500A</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_DSP_SETFRAGMENT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x8004500B</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_DSP_GETFMTS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0045005</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_DSP_SETFMT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x800C500C</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_DSP_GETOSPACE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct audio_buf_info
+              *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x800C500D</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_DSP_GETISPACE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct audio_buf_info
+              *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000500E</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_DSP_NONBLOCK</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80045002</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SOUND_PCM_READ_RATE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80045006</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              SOUND_PCM_READ_CHANNELS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80045005</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SOUND_PCM_READ_BITS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80045007</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SOUND_PCM_READ_FILTER</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00004300</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_COPR_RESET</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xCFB04301</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_COPR_LOAD</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct copr_buffer
+              *</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0144302</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_COPR_RDATA</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct copr_debug_buf
+              *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0144303</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_COPR_RCODE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct copr_debug_buf
+              *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x40144304</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_COPR_WDATA</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct copr_debug_buf
+              *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x40144305</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_COPR_WCODE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct copr_debug_buf
+              *</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0144306</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_COPR_RUN</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct copr_debug_buf
+              *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0144307</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_COPR_HALT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct copr_debug_buf
+              *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x4FA44308</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_COPR_SENDMSG</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct copr_msg
+              *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x8FA44309</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_COPR_RCVMSG</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct copr_msg *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80044D00</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              SOUND_MIXER_READ_VOLUME</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80044D01</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SOUND_MIXER_READ_BASS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80044D02</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              SOUND_MIXER_READ_TREBLE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80044D03</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SOUND_MIXER_READ_SYNTH</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80044D04</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SOUND_MIXER_READ_PCM</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80044D05</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              SOUND_MIXER_READ_SPEAKER</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80044D06</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SOUND_MIXER_READ_LINE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80044D07</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SOUND_MIXER_READ_MIC</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80044D08</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SOUND_MIXER_READ_CD</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80044D09</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SOUND_MIXER_READ_IMIX</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80044D0A</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              SOUND_MIXER_READ_ALTPCM</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80044D0B</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              SOUND_MIXER_READ_RECLEV</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80044D0C</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SOUND_MIXER_READ_IGAIN</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80044D0D</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SOUND_MIXER_READ_OGAIN</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80044D0E</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SOUND_MIXER_READ_LINE1</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80044D0F</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SOUND_MIXER_READ_LINE2</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80044D10</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SOUND_MIXER_READ_LINE3</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80044D1C</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SOUND_MIXER_READ_MUTE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80044D1D</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              SOUND_MIXER_READ_ENHANCE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80044D1E</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SOUND_MIXER_READ_LOUD</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80044DFF</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              SOUND_MIXER_READ_RECSRC</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80044DFE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              SOUND_MIXER_READ_DEVMASK</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80044DFD</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              SOUND_MIXER_READ_RECMASK</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80044DFB</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              SOUND_MIXER_READ_STEREODEVS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x80044DFC</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SOUND_MIXER_READ_CAPS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0044D00</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              SOUND_MIXER_WRITE_VOLUME</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0044D01</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SOUND_MIXER_WRITE_BASS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0044D02</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              SOUND_MIXER_WRITE_TREBLE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0044D03</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              SOUND_MIXER_WRITE_SYNTH</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0044D04</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SOUND_MIXER_WRITE_PCM</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0044D05</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              SOUND_MIXER_WRITE_SPEAKER</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0044D06</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SOUND_MIXER_WRITE_LINE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0044D07</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SOUND_MIXER_WRITE_MIC</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0044D08</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SOUND_MIXER_WRITE_CD</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0044D09</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SOUND_MIXER_WRITE_IMIX</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0044D0A</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              SOUND_MIXER_WRITE_ALTPCM</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0044D0B</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              SOUND_MIXER_WRITE_RECLEV</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0044D0C</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              SOUND_MIXER_WRITE_IGAIN</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0044D0D</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              SOUND_MIXER_WRITE_OGAIN</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0044D0E</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              SOUND_MIXER_WRITE_LINE1</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0044D0F</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              SOUND_MIXER_WRITE_LINE2</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0044D10</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              SOUND_MIXER_WRITE_LINE3</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0044D1C</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SOUND_MIXER_WRITE_MUTE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0044D1D</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              SOUND_MIXER_WRITE_ENHANCE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0044D1E</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SOUND_MIXER_WRITE_LOUD</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0xC0044DFF</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+              SOUND_MIXER_WRITE_RECSRC</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// &lt;include/linux/timerfd.h&gt; see <a class="link" href="../htmlman2/timerfd_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">timerfd_create</span>(2)</span></a></p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x40085400</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TFD_IOC_SET_TICKS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">uint64_t *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// &lt;include/linux/umsdos_fs.h&gt;</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+            <col class="c3" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000004D2</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">UMSDOS_READDIR_DOS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct umsdos_ioctl *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000004D3</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">UMSDOS_UNLINK_DOS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct umsdos_ioctl
+              *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000004D4</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">UMSDOS_RMDIR_DOS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct umsdos_ioctl
+              *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000004D5</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">UMSDOS_STAT_DOS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct umsdos_ioctl *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000004D6</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">UMSDOS_CREAT_EMD</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct umsdos_ioctl
+              *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000004D7</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">UMSDOS_UNLINK_EMD</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct umsdos_ioctl
+              *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000004D8</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">UMSDOS_READDIR_EMD</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct umsdos_ioctl *</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">// I-O</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000004D9</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">UMSDOS_GETVERSION</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct umsdos_ioctl *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000004DA</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">UMSDOS_INIT_EMD</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000004DB</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">UMSDOS_DOS_SETUP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct umsdos_ioctl
+              *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x000004DC</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">UMSDOS_RENAME_DOS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct umsdos_ioctl
+              *</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// &lt;include/linux/vt.h&gt;</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005600</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">VT_OPENQRY</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005601</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">VT_GETMODE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct vt_mode *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005602</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">VT_SETMODE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct vt_mode *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005603</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">VT_GETSTATE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">struct vt_stat *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005604</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">VT_SENDSIG</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">void</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005605</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">VT_RELDISP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005606</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">VT_ACTIVATE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005607</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">VT_WAITACTIVE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005608</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">VT_DISALLOCATE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">int</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005609</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">VT_RESIZE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct vt_sizes
+              *</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x0000560A</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">VT_RESIZEX</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">const struct vt_consize
+              *</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>// More arguments. Some ioctl's take a pointer to a
+      structure which contains additional pointers. These are
+      documented here in alphabetical order.</p>
+
+      <p><code class="constant">CDROMREADAUDIO</code> takes an
+      input pointer <span class="type">const struct
+      cdrom_read_audio *</span>. The <em class="replaceable"><code>buf</code></em> field points to an output
+      buffer of length <span class="emphasis"><em>nframes *
+      CD_FRAMESIZE_RAW</em></span>.</p>
+
+      <p><code class="constant">CDROMREADCOOKED</code>,
+      <code class="constant">CDROMREADMODE1</code>, <code class="constant">CDROMREADMODE2</code>, and <code class="constant">CDROMREADRAW</code> take an input pointer
+      <span class="type">const struct cdrom_msf *</span>. They use
+      the same pointer as an output pointer to <span class="emphasis"><em>char []</em></span>. The length varies by
+      request. For <code class="constant">CDROMREADMODE1</code>,
+      most drivers use CD_FRAMESIZE, but the Optics Storage driver
+      uses OPT_BLOCKSIZE instead (both have the numerical value
+      2048).</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+    CDROMREADCOOKED    char [CD_FRAMESIZE]
+    CDROMREADMODE1     char [CD_FRAMESIZE or OPT_BLOCKSIZE]
+    CDROMREADMODE2     char [CD_FRAMESIZE_RAW0]
+    CDROMREADRAW       char [CD_FRAMESIZE_RAW]
+</pre>
+      </div>
+
+      <p><code class="constant">EQL_ENSLAVE</code>, <code class="constant">EQL_EMANCIPATE</code>, <code class="constant">EQL_GETSLAVECFG</code>, <code class="constant">EQL_SETSLAVECFG</code>, <code class="constant">EQL_GETMASTERCFG</code>, and <code class="constant">EQL_SETMASTERCFG</code> take a <span class="type">struct ifreq *</span>. The <em class="replaceable"><code>ifr_data</code></em> field is a pointer
+      to another structure as follows:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+    EQL_ENSLAVE         const struct slaving_request *
+    EQL_EMANCIPATE      const struct slaving_request *
+    EQL_GETSLAVECFG     struct slave_config *           // I-O
+    EQL_SETSLAVECFG     const struct slave_config *
+    EQL_GETMASTERCFG    struct master_config *
+    EQL_SETMASTERCFG    const struct master_config *
+</pre>
+      </div>
+
+      <p><code class="constant">FDRAWCMD</code> takes a
+      <span class="type">struct floppy raw_cmd *</span>. If
+      <span class="emphasis"><em>flags &amp;
+      FD_RAW_WRITE</em></span> is nonzero, then <em class="replaceable"><code>data</code></em> points to an input
+      buffer of length <em class="replaceable"><code>length</code></em>. If <span class="emphasis"><em>flags &amp; FD_RAW_READ</em></span> is
+      nonzero, then <em class="replaceable"><code>data</code></em>
+      points to an output buffer of length <em class="replaceable"><code>length</code></em>.</p>
+
+      <p><code class="constant">GIO_FONTX</code> and <code class="constant">PIO_FONTX</code> take a <span class="type">struct
+      console_font_desc *</span> or a <span class="type">const
+      struct console_font_desc *</span>, respectively. <em class="replaceable"><code>chardata</code></em> points to a buffer
+      of <span class="emphasis"><em>char [charcount]</em></span>.
+      This is an output buffer for <code class="constant">GIO_FONTX</code> and an input buffer for
+      <code class="constant">PIO_FONTX</code>.</p>
+
+      <p><code class="constant">GIO_UNIMAP</code> and <code class="constant">PIO_UNIMAP</code> take a <span class="type">struct
+      unimapdesc *</span> or a <span class="type">const struct
+      unimapdesc *</span>, respectively. <em class="replaceable"><code>entries</code></em> points to a buffer of
+      <span class="emphasis"><em>struct unipair
+      [entry_ct]</em></span>. This is an output buffer for
+      <code class="constant">GIO_UNIMAP</code> and an input buffer
+      for <code class="constant">PIO_UNIMAP</code>.</p>
+
+      <p>KDADDIO, KDDELIO, KDDISABIO, and KDENABIO enable or
+      disable access to I/O ports. They are essentially alternate
+      interfaces to 'ioperm'.</p>
+
+      <p><code class="constant">KDMAPDISP</code> and <code class="constant">KDUNMAPDISP</code> enable or disable memory
+      mappings or I/O port access. They are not implemented in the
+      kernel.</p>
+
+      <p><code class="constant">SCSI_IOCTL_PROBE_HOST</code> takes
+      an input pointer <span class="type">const int *</span>, which
+      is a length. It uses the same pointer as an output pointer to
+      a <span class="emphasis"><em>char []</em></span> buffer of
+      this length.</p>
+
+      <p><code class="constant">SIOCADDRT</code> and <code class="constant">SIOCDELRT</code> take an input pointer whose type
+      depends on the protocol:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+    Most protocols      const struct rtentry *
+    AX.25               const struct ax25_route *
+    NET/ROM             const struct nr_route_struct *
+    INET6               const struct in6_rtmsg *
+</pre>
+      </div>
+
+      <p><code class="constant">SIOCGIFCONF</code> takes a
+      <span class="type">struct ifconf *</span>. The <em class="replaceable"><code>ifc_buf</code></em> field points to a
+      buffer of length <em class="replaceable"><code>ifc_len</code></em> bytes, into which the
+      kernel writes a list of type <span class="emphasis"><em>struct ifreq []</em></span>.</p>
+
+      <p><code class="constant">SIOCSIFHWADDR</code> takes an input
+      pointer whose type depends on the protocol:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+    Most protocols      const struct ifreq *
+    AX.25               const char [AX25_ADDR_LEN]
+</pre>
+      </div>
+
+      <p><code class="constant">TIOCLINUX</code> takes a
+      <span class="type">const char *</span>. It uses this to
+      distinguish several independent subcases. In the table below,
+      <span class="emphasis"><em>N + foo</em></span> means
+      <em class="replaceable"><code>foo</code></em> after an N-byte
+      pad. <span class="emphasis"><em>struct selection</em></span>
+      is implicitly defined in <code class="filename">drivers/char/selection.c</code></p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+    TIOCLINUX-2         1 + const struct selection *
+    TIOCLINUX-3         void
+    TIOCLINUX-4         void
+    TIOCLINUX-5         4 + const struct { long [8]; } *
+    TIOCLINUX-6         char *
+    TIOCLINUX-7         char *
+    TIOCLINUX-10        1 + const char *
+</pre>
+      </div>
+
+      <p>// Duplicate ioctls</p>
+
+      <p>This list does not include ioctls in the range
+      <code class="constant">SIOCDEVPRIVATE</code> and <code class="constant">SIOCPROTOPRIVATE</code>.</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000001</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FDSETPRM</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FIBMAP</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00000002</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FDDEFPRM</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">FIGETBSZ</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005382</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">CDROMAUDIOBUFSIZ</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SCSI_IOCTL_GET_IDLUN</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005402</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_TMR_START</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TCSETS</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005403</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_TMR_STOP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TCSETSW</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">0x00005404</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">SNDCTL_TMR_CONTINUE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">TCSETSF</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ioctl-list-2_sect4" name="ioctl-list-2_sect4" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a>, <a class="link" href="../htmlman2/ioctl_fat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl_fat</span>(2)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="ioctl-list-2_sect5" name="ioctl-list-2_sect5" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Ioctl List 1.3.27 is copyright 1995 by Michael Elizabeth Chastain.<br />
+
+                  Michael Elizabeth Chastain<br />
+                  &lt;mec<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>duracef.shout.net&gt;<br />
+                  <br />
+                  %%%LICENSE_START(GPLv2_MISC)<br />
+                  It is licensed under the Gnu Public License, Version 2.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Ioctl List 1.3.27<br />
+                  Sun 17 Sep 1995<br />
+                  <br />
+                  // Copyright<br />
+                  <br />
+                  <br />
+                  <br />
+                  // Change Log<br />
+                  <br />
+                  1.3.27 421 ioctls.<br />
+                  Type information for non-pointer args.<br />
+
+                  SIOCDEVPRIVATE, SIOCPROTOPRIVATE ioctls.<br />
+
+                  Descriptions of extended arguments.<br />
+
+                  <br />
+                  1.2.9 365 ioctls.<br />
+                  First public version.<br />
+                  <br />
+                  <br />
+                  2007-12-29 Alain Portal &lt;aportal<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>univ-montp2.fr&gt; and Michael Kerrisk<br />
+
+                      &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;:<br />
+
+                           Various formatting improvements<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

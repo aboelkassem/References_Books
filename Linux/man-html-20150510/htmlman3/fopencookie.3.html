@@ -1,0 +1,701 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>fopencookie(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="fopencookie(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="fopencookie.3" name="fopencookie.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>fopencookie — opening a custom stream</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#define _GNU_SOURCE          /* See feature_test_macros(7) */
+#include &lt;stdio.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">FILE
+            *<strong>fopencookie</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">void *<var class="pdparam">cookie</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">mode</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">cookie_io_functions_t <var class="pdparam">io_funcs</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fopencookie-3_sect1" name="fopencookie-3_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">fopencookie</code>() function
+      allows the programmer to create a custom implementation for a
+      standard I/O stream. This implementation can store the
+      stream's data at a location of its own choosing; for example,
+      <code class="function">fopencookie</code>() is used to
+      implement <a class="link" href="../htmlman3/fmemopen.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fmemopen</span>(3)</span></a>, which provides
+      a stream interface to data that is stored in a buffer in
+      memory.</p>
+
+      <p>In order to create a custom stream the programmer
+      must:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p>Implement four "hook" functions that are used
+            internally by the standard I/O library when performing
+            I/O on the stream.</p>
+          </li>
+
+          <li class="listitem">
+            <p>Define a "cookie" data type, a structure that
+            provides bookkeeping information (e.g., where to store
+            data) used by the aforementioned hook functions. The
+            standard I/O package knows nothing about the contents
+            of this cookie (thus it is typed as <span class="emphasis"><em>void *</em></span> when passed to
+            <code class="function">fopencookie</code>()), but
+            automatically supplies the cookie as the first argument
+            when calling the hook functions.</p>
+          </li>
+
+          <li class="listitem">
+            <p>Call <code class="function">fopencookie</code>() to
+            open a new stream and associate the cookie and hook
+            functions with that stream.</p>
+          </li>
+        </ul>
+      </div>
+
+      <p>The <code class="function">fopencookie</code>() function
+      serves a purpose similar to <a class="link" href="../htmlman3/fopen.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fopen</span>(3)</span></a>: it opens a new
+      stream and returns a pointer to a <span class="type">FILE</span> object that is used to operate on that
+      stream.</p>
+
+      <p>The <em class="parameter"><code>cookie</code></em>
+      argument is a pointer to the caller's cookie structure that
+      is to be associated with the new stream. This pointer is
+      supplied as the first argument when the standard I/O library
+      invokes any of the hook functions described below.</p>
+
+      <p>The <em class="parameter"><code>mode</code></em> argument
+      serves the same purpose as for <a class="link" href="../htmlman3/fopen.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fopen</span>(3)</span></a>. The following
+      modes are supported: <code class="literal">r</code>,
+      <code class="literal">w</code>, <code class="literal">a</code>, <em class="replaceable"><code>r+</code></em>, <em class="replaceable"><code>w+</code></em>, and <em class="replaceable"><code>a+</code></em>. See <a class="link" href="../htmlman3/fopen.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fopen</span>(3)</span></a> for details.</p>
+
+      <p>The <em class="parameter"><code>io_funcs</code></em>
+      argument is a structure that contains four fields pointing to
+      the programmer-defined hook functions that are used to
+      implement this stream. The structure is defined as
+      follows</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="structdef">
+            <table style="border-collapse: collapse;">
+              <colgroup span="1">
+                <col class="c1" span="1" />
+                <col class="c2" span="1" />
+                <col class="c3" span="1" />
+                <col class="c4" span="1" />
+                <col class="c5" span="1" />
+              </colgroup>
+
+              <tbody>
+                <tr>
+                  <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                  typedef</td>
+
+                  <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1">struct {</td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">cookie_read_function_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                  *</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>read</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">cookie_write_function_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                  *</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>write</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">cookie_seek_function_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                  *</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>seek</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">cookie_close_function_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                  *</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>close</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">} cookie_io_functions_t;</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>The four fields are as follows:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="function">cookie_read_function_t*read</code></span></dt>
+
+          <dd>
+            <p>This function implements read operations for the
+            stream. When called, it receives three arguments:</p>
+
+            <p>ssize_t read(void *cookie, char *buf, size_t
+            size);</p>
+
+            <p>The <code class="function">buf</code> and
+            <code class="function">size</code> arguments are,
+            respectively, a buffer into which input data can be
+            placed and the size of that buffer. As its function
+            result, the <em class="parameter"><code>read</code></em> function should
+            return the number of bytes copied into <code class="function">buf</code>, 0 on end of file, or −1 on
+            error. The <em class="parameter"><code>read</code></em>
+            function should update the stream offset
+            appropriately.</p>
+
+            <p>If *<em class="parameter"><code>read</code></em> is
+            a null pointer, then reads from the custom stream
+            always return end of file.</p>
+          </dd>
+
+          <dt><span class="term"><code class="function">cookie_write_function_t*write</code></span></dt>
+
+          <dd>
+            <p>This function implements write operations for the
+            stream. When called, it receives three arguments:</p>
+
+            <p>ssize_t write(void *cookie, const char *buf, size_t
+            size);</p>
+
+            <p>The <code class="function">buf</code> and
+            <code class="function">size</code> arguments are,
+            respectively, a buffer of data to be output to the
+            stream and the size of that buffer. As its function
+            result, the <em class="parameter"><code>write</code></em> function should
+            return the number of bytes copied from <code class="function">buf</code>, or 0 on error. (The function
+            must not return a negative value.) The <em class="parameter"><code>write</code></em> function should
+            update the stream offset appropriately.</p>
+
+            <p>If *<em class="parameter"><code>write</code></em> is
+            a null pointer, then output to the stream is
+            discarded.</p>
+          </dd>
+
+          <dt><span class="term"><code class="function">cookie_seek_function_t*seek</code></span></dt>
+
+          <dd>
+            <p>This function implements seek operations on the
+            stream. When called, it receives three arguments:</p>
+
+            <p>int seek(void *cookie, off64_t *offset, int
+            whence);</p>
+
+            <p>The <code class="function">*offset</code> argument
+            specifies the new file offset depending on which of the
+            following three values is supplied in <code class="function">whence</code>:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><code class="constant">SEEK_SET</code></span></dt>
+
+                    <dd>
+                      <p>The stream offset should be set
+                      <code class="function">*offset</code> bytes
+                      from the start of the stream.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">SEEK_CUR</code></span></dt>
+
+                    <dd>
+                      <p><code class="function">*offset</code>
+                      should be added to the current stream
+                      offset.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">SEEK_END</code></span></dt>
+
+                    <dd>
+                      <p>The stream offset should be set to the
+                      size of the stream plus <code class="function">*offset</code>.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>Before returning, the <em class="parameter"><code>seek</code></em> function should
+            update <code class="function">*offset</code> to
+            indicate the new stream offset.</p>
+
+            <p>As its function result, the <em class="parameter"><code>seek</code></em> function should
+            return 0 on success, and −1 on error.</p>
+
+            <p>If *<em class="parameter"><code>seek</code></em> is
+            a null pointer, then it is not possible to perform seek
+            operations on the stream.</p>
+          </dd>
+
+          <dt><span class="term"><code class="function">cookie_close_function_t*close</code></span></dt>
+
+          <dd>
+            <p>This function closes the stream. The hook function
+            can do things such as freeing buffers allocated for the
+            stream. When called, it receives one argument:</p>
+
+            <p>int close(void *cookie);</p>
+
+            <p>The <em class="parameter"><code>cookie</code></em>
+            argument is the cookie that the programmer supplied
+            when calling <code class="function">fopencookie</code>().</p>
+
+            <p>As its function result, the <em class="parameter"><code>close</code></em> function should
+            return 0 on success, and <code class="constant">EOF</code> on error.</p>
+
+            <p>If *<em class="parameter"><code>close</code></em> is
+            NULL, then no special action is performed when the
+            stream is closed.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fopencookie-3_sect2" name="fopencookie-3_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success <code class="function">fopencookie</code>()
+      returns a pointer to the new stream. On error, NULL is
+      returned.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="fopencookie-3_sect3" name="fopencookie-3_sect3" shape="rect"> </a>
+
+      <h2>ATTRIBUTES</h2>
+
+      <p>For an explanation of the terms used in this section, see
+      <a class="link" href="../htmlman7/attributes.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">attributes</span>(7)</span></a>.</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">Interface</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Attribute</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Value</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><code class="literal">fopencookie</code>()</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Thread safety</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">MT-Safe</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fopencookie-3_sect4" name="fopencookie-3_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>This function is a nonstandard GNU extension.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="fopencookie-3_sect5" name="fopencookie-3_sect5" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>The program below implements a custom stream whose
+      functionality is similar (but not identical) to that
+      available via <a class="link" href="../htmlman3/fmemopen.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fmemopen</span>(3)</span></a>. It implements
+      a stream whose data is stored in a memory buffer. The program
+      writes its command-line arguments to the stream, and then
+      seeks through the stream reading two out of every five
+      characters and writing them to standard output. The following
+      shell session demonstrates the use of the program:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$<span class="emphasis"><em> ./a.out 'hello world'</em></span>
+/he/
+/ w/
+/d/
+Reached end of file
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>Note that a more general version of the program below
+      could be improved to more robustly handle various error
+      situations (e.g., opening a stream with a cookie that already
+      has an open stream; closing a stream that has already been
+      closed).</p>
+
+      <div class="refsect2">
+        <a id="fopencookie-3_sect6" name="fopencookie-3_sect6" shape="rect"> </a>
+
+        <h3>Program source</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+#define _GNU_SOURCE
+#include &lt;sys/types.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;string.h&gt;
+
+#define INIT_BUF_SIZE 4
+
+struct memfile_cookie {
+    char   *buf;        /* Dynamically sized buffer for data */
+    size_t  allocated;  /* Size of buf */
+    size_t  endpos;     /* Number of characters in buf */
+    off_t   offset;     /* Current file offset in buf */
+};
+
+ssize_t
+memfile_write(void *c, const char *buf, size_t size)
+{
+    char *new_buff;
+    struct memfile_cookie *cookie = c;
+
+    /* Buffer too small? Keep doubling size until big enough */
+
+    while (size + cookie−&gt;offset &gt; cookie−&gt;allocated) {
+        new_buff = realloc(cookie−&gt;buf, cookie−&gt;allocated * 2);
+        if (new_buff == NULL) {
+            return −1;
+        } else {
+            cookie−&gt;allocated *= 2;
+            cookie−&gt;buf = new_buff;
+        }
+    }
+
+    memcpy(cookie−&gt;buf + cookie−&gt;offset, buf, size);
+
+    cookie−&gt;offset += size;
+    if (cookie−&gt;offset &gt; cookie−&gt;endpos)
+        cookie−&gt;endpos = cookie−&gt;offset;
+
+    return size;
+}
+
+ssize_t
+memfile_read(void *c, char *buf, size_t size)
+{
+    ssize_t xbytes;
+    struct memfile_cookie *cookie = c;
+
+    /* Fetch minimum of bytes requested and bytes available */
+
+    xbytes = size;
+    if (cookie−&gt;offset + size &gt; cookie−&gt;endpos)
+        xbytes = cookie−&gt;endpos − cookie−&gt;offset;
+    if (xbytes &lt; 0)     /* offset may be past endpos */
+       xbytes = 0;
+
+    memcpy(buf, cookie−&gt;buf + cookie−&gt;offset, xbytes);
+
+    cookie−&gt;offset += xbytes;
+    return xbytes;
+}
+
+int
+memfile_seek(void *c, off64_t *offset, int whence)
+{
+    off64_t new_offset;
+    struct memfile_cookie *cookie = c;
+
+    if (whence == SEEK_SET)
+        new_offset = *offset;
+    else if (whence == SEEK_END)
+        new_offset = cookie−&gt;endpos + *offset;
+    else if (whence == SEEK_CUR)
+        new_offset = cookie−&gt;offset + *offset;
+    else
+        return −1;
+
+    if (new_offset &lt; 0)
+        return −1;
+
+    cookie−&gt;offset = new_offset;
+    *offset = new_offset;
+    return 0;
+}
+
+int
+memfile_close(void *c)
+{
+    struct memfile_cookie *cookie = c;
+
+    free(cookie−&gt;buf);
+    cookie−&gt;allocated = 0;
+    cookie−&gt;buf = NULL;
+
+    return 0;
+}
+
+int
+main(int argc, char *argv[])
+{
+    cookie_io_functions_t  memfile_func = {
+        .read  = memfile_read,
+        .write = memfile_write,
+        .seek  = memfile_seek,
+        .close = memfile_close
+    };
+    FILE *stream;
+    struct memfile_cookie mycookie;
+    ssize_t nread;
+    long p;
+    int j;
+    char buf[1000];
+
+    /* Set up the cookie before calling fopencookie() */
+
+    mycookie.buf = malloc(INIT_BUF_SIZE);
+    if (mycookie.buf == NULL) {
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
+
+    mycookie.allocated = INIT_BUF_SIZE;
+    mycookie.offset = 0;
+    mycookie.endpos = 0;
+
+    stream = fopencookie(&amp;mycookie,"w+", memfile_func);
+    if (stream == NULL) {
+        perror("fopencookie");
+        exit(EXIT_FAILURE);
+    }
+
+    /* Write command−line arguments to our file */
+
+    for (j = 1; j &lt; argc; j++)
+        if (fputs(argv[j], stream) == EOF) {
+            perror("fputs");
+            exit(EXIT_FAILURE);
+        }
+
+    /* Read two bytes out of every five, until EOF */
+
+    for (p = 0; ; p += 5) {
+        if (fseek(stream, p, SEEK_SET) == −1) {
+            perror("fseek");
+            exit(EXIT_FAILURE);
+        }
+        nread = fread(buf, 1, 2, stream);
+        if (nread == −1) {
+            perror("fread");
+            exit(EXIT_FAILURE);
+        }
+        if (nread == 0) {
+            printf("Reached end of file\n");
+            break;
+        }
+
+        printf("/%.*s/\n", nread, buf);
+    }
+
+    exit(EXIT_SUCCESS);
+}
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fopencookie-3_sect7" name="fopencookie-3_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/fclose.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fclose</span>(3)</span></a>, <a class="link" href="../htmlman3/fmemopen.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fmemopen</span>(3)</span></a>, <a class="link" href="../htmlman3/fopen.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fopen</span>(3)</span></a>, <a class="link" href="../htmlman3/fseek.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fseek</span>(3)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="fopencookie-3_sect8" name="fopencookie-3_sect8" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 2008, Linux Foundation, written by Michael Kerrisk<br />
+
+                       &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

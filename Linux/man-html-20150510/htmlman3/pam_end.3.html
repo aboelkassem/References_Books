@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>pam_end(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="pam_end(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry" title="pam_end(3) — Linux manual pages">
+    <a id="pam-end.3" name="pam-end.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <a id="pam_end-name" name="pam_end-name" shape="rect"> </a>
+
+      <h2>Name</h2>
+
+      <p>pam_end — termination of PAM transaction</p>
+    </div>
+
+    <div class="refsynopsisdiv" title="Synopsis">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <a id="pam_end-synopsis" name="pam_end-synopsis" shape="rect"> </a>
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;security/pam_appl.h&gt;
+</pre>
+
+        <table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>pam_end</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">pam_handle_t *<var class="pdparam">pamh</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">pam_status</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1" title="DESCRIPTION">
+      <a id="pam_end-description" name="pam_end-description" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">pam_end</code> function
+      terminates the PAM transaction and is the last function an
+      application should call in the PAM context. Upon return the
+      handle <span class="emphasis"><em>pamh</em></span> is no
+      longer valid and all memory associated with it will be
+      invalid.</p>
+
+      <p>The <span class="emphasis"><em>pam_status</em></span>
+      argument should be set to the value returned to the
+      application by the last PAM library call.</p>
+
+      <p>The value taken by <span class="emphasis"><em>pam_status</em></span> is used as an argument
+      to the module specific callback function, <code class="function">cleanup()</code> (See <a class="link" href="../htmlman3/pam_set_data.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_set_data</span>(3)</span></a> and
+      <a class="link" href="../htmlman3/pam_get_data.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_get_data</span>(3)</span></a>). In this
+      way the module can be given notification of the pass/fail
+      nature of the tear-down process, and perform any last minute
+      tasks that are appropriate to the module before it is
+      unlinked. This argument can be logically OR'd with
+      <span class="emphasis"><em>PAM_DATA_SILENT</em></span> to
+      indicate to indicate that the module should not treat the
+      call too seriously. It is generally used to indicate that the
+      current closing of the library is in a <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a>ed process, and that
+      the parent will take care of cleaning up things that exist
+      outside of the current process space (files etc.).</p>
+
+      <p>This function <span class="emphasis"><em>free</em></span>'s all memory for items
+      associated with the <a class="link" href="../htmlman3/pam_set_item.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_set_item</span>(3)</span></a> and
+      <a class="link" href="../htmlman3/pam_get_item.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_get_item</span>(3)</span></a> functions.
+      Pointers associated with such objects are not valid anymore
+      after <code class="function">pam_end</code> was called.</p>
+    </div>
+
+    <div class="refsect1" title="RETURN VALUES">
+      <a id="pam_end-return_values" name="pam_end-return_values" shape="rect"> </a>
+
+      <h2>RETURN VALUES</h2>
+
+      <div class="variablelist">
+        <dl>
+          <dt><span class="term">PAM_SUCCESS</span></dt>
+
+          <dd>
+            <p>Transaction was successful terminated.</p>
+          </dd>
+
+          <dt><span class="term">PAM_SYSTEM_ERR</span></dt>
+
+          <dd>
+            <p>System error, for example a NULL pointer was
+            submitted as PAM handle or the function was called by a
+            module.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1" title="SEE ALSO">
+      <a id="pam_end-see_also" name="pam_end-see_also" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/pam_get_data.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_get_data</span>(3)</span></a>, <a class="link" href="../htmlman3/pam_set_data.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_set_data</span>(3)</span></a>, <a class="link" href="../htmlman3/pam_start.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_start</span>(3)</span></a>, <a class="link" href="../htmlman3/pam_strerror.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_strerror</span>(3)</span></a></p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  See <a class="ulink" href="../linuxpam-copyright.html" target="_top" shape="rect">Linux-PAM copyright notice</a> for more information.
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

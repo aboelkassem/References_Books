@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>slapd-relay(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="slapd-relay(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="slapd-relay.5" name="slapd-relay.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>slapd−relay — relay backend to slapd</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ETCDIR/slapd.conf
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-relay-5_sect1" name="slapd-relay-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The primary purpose of this <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a> backend is to map
+      a naming context defined in a database running in the same
+      <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a> instance into a
+      virtual naming context, with attributeType and objectClass
+      manipulation, if required. It requires the <a class="link" href="../htmlman5/slapo-rwm.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapo-rwm</span>(5)</span></a> overlay.</p>
+
+      <p>This backend and the above mentioned overlay are
+      experimental.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-relay-5_sect2" name="slapd-relay-5_sect2" shape="rect"> </a>
+
+      <h2>CONFIGURATION</h2>
+
+      <p>The following <em class="replaceable"><code>slapd.conf</code></em> directives apply
+      to the relay backend database. That is, they must follow a
+      "database relay" line and come before any subsequent
+      "backend" or "database" lines. Other database options are
+      described in the <a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a> manual page;
+      only the <em class="replaceable"><code>suffix</code></em>
+      directive is allowed by the <em class="replaceable"><code>relay</code></em> backend.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>relay
+          &lt;real naming context&gt;</em></span></span></dt>
+
+          <dd>
+            <p>The naming context of the database that is presented
+            under a virtual naming context. The presence of this
+            directive implies that one specific database, i.e. the
+            one serving the <span class="emphasis"><em>real naming
+            context</em></span>, will be presented under a virtual
+            naming context.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-relay-5_sect3" name="slapd-relay-5_sect3" shape="rect"> </a>
+
+      <h2>MASSAGING</h2>
+
+      <p>The <em class="replaceable"><code>relay</code></em>
+      database does not automatically rewrite the naming context of
+      requests and responses. For this purpose, the <a class="link" href="../htmlman5/slapo-rwm.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapo-rwm</span>(5)</span></a> overlay must
+      be explicitly instantiated, and configured as appropriate.
+      Usually, the <em class="replaceable"><code>rwm−suffixmassage</code></em>
+      directive suffices if only naming context rewriting is
+      required.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-relay-5_sect4" name="slapd-relay-5_sect4" shape="rect"> </a>
+
+      <h2>ACCESS RULES</h2>
+
+      <p>One important issue is that access rules are based on the
+      identity that issued the operation. After massaging from the
+      virtual to the real naming context, the frontend sees the
+      operation as performed by the identity in the real naming
+      context. Moreover, since <em class="replaceable"><code>back−relay</code></em> bypasses the
+      real database frontend operations by short-circuiting
+      operations through the internal backend API, the original
+      database access rules do not apply but in selected cases,
+      i.e. when the backend itself applies access control. As a
+      consequence, the instances of the relay database must provide
+      own access rules that are consistent with those of the
+      original database, possibly adding further specific
+      restrictions. So, access rules in the <em class="replaceable"><code>relay</code></em> database must refer to
+      identities in the real naming context. Examples are reported
+      in the EXAMPLES section.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-relay-5_sect5" name="slapd-relay-5_sect5" shape="rect"> </a>
+
+      <h2>SCENARIOS</h2>
+
+      <p>If no <em class="replaceable"><code>relay</code></em>
+      directive is given, the <em class="replaceable"><code>relay</code></em> database does not refer
+      to any specific database, but the most appropriate one is
+      looked-up after rewriting the request DN for the operation
+      that is being handled.</p>
+
+      <p>This allows to write carefully crafted rewrite rules that
+      cause some of the requests to be directed to one database,
+      and some to another; e.g., authentication can be mapped to
+      one database, and searches to another, or different target
+      databases can be selected based on the DN of the request, and
+      so.</p>
+
+      <p>Another possibility is to map the same operation to
+      different databases based on details of the virtual naming
+      context, e.g. groups on one database and persons on
+      another.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-relay-5_sect6" name="slapd-relay-5_sect6" shape="rect"> </a>
+
+      <h2>EXAMPLES</h2>
+
+      <p>To implement a plain virtual naming context mapping that
+      refers to a single database, use</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+  database                relay
+  suffix                  "dc=virtual,dc=naming,dc=context"
+  relay                   "dc=real,dc=naming,dc=context"
+  overlay                 rwm
+  rwm−suffixmassage       "dc=real,dc=naming,dc=context"
+</pre>
+      </div>
+
+      <p>To implement a plain virtual naming context mapping that
+      looks up the real naming context for each operation, use</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+  database                relay
+  suffix                  "dc=virtual,dc=naming,dc=context"
+  overlay                 rwm
+  rwm−suffixmassage       "dc=real,dc=naming,dc=context"
+</pre>
+      </div>
+
+      <p>This is useful, for instance, to relay different databases
+      that share the terminal portion of the naming context (the
+      one that is rewritten).</p>
+
+      <p>To implement the old-fashioned suffixalias, e.g. mapping
+      the virtual to the real naming context, but not the results
+      back from the real to the virtual naming context, use</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+  database                relay
+  suffix                  "dc=virtual,dc=naming,dc=context"
+  relay                   "dc=real,dc=naming,dc=context"
+  overlay                 rwm
+  rwm−rewriteEngine       on
+  rwm−rewriteContext      default
+  rwm−rewriteRule         "dc=virtual,dc=naming,dc=context"
+                          "dc=real,dc=naming,dc=context" ":@"
+  rwm−rewriteContext      searchFilter
+  rwm−rewriteContext      searchEntryDN
+  rwm−rewriteContext      searchAttrDN
+  rwm−rewriteContext      matchedDN
+</pre>
+      </div>
+
+      <p>Note that the <a class="link" href="../htmlman5/slapo-rwm.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapo-rwm</span>(5)</span></a> overlay is
+      instantiated, but the rewrite rules are written explicitly,
+      rather than automatically as with the <em class="replaceable"><code>rwm−suffixmassage</code></em>
+      statement, to map all the virtual to real naming context data
+      flow, but none of the real to virtual.</p>
+
+      <p>Access rules:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+  database                bdb
+  suffix                  "dc=example,dc=com"
+  # skip...
+  access to dn.subtree="dc=example,dc=com"
+          by dn.exact="cn=Supervisor,dc=example,dc=com" write
+          by * read
+
+  database                relay
+  suffix                  "o=Example,c=US"
+  relay                   "dc=example,dc=com"
+  overlay                 rwm
+  rwm−suffixmassage       "dc=example,dc=com"
+  # skip ...
+  access to dn.subtree="o=Example,c=US"
+          by dn.exact="cn=Supervisor,dc=example,dc=com" write
+          by dn.exact="cn=Relay Supervisor,dc=example,dc=com" write
+          by * read
+</pre>
+      </div>
+
+      <p>Note that, in both databases, the identities (the
+      <em class="replaceable"><code>&lt;who&gt;</code></em> clause)
+      are in the <span class="emphasis"><em>real naming
+      context</em></span>, i.e. <em class="replaceable"><code>`dc=example,dc=com'</code></em>, while
+      the targets (the <em class="replaceable"><code>&lt;what&gt;</code></em> clause) are in
+      the <em class="replaceable"><code>real</code></em> and in the
+      <span class="emphasis"><em>virtual naming
+      context</em></span>, respectively.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-relay-5_sect7" name="slapd-relay-5_sect7" shape="rect"> </a>
+
+      <h2>ACCESS CONTROL</h2>
+
+      <p>The <em class="replaceable"><code>relay</code></em>
+      backend does not honor any of the access control semantics
+      described in <a class="link" href="../htmlman5/slapd.access.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.access</span>(5)</span></a>; all access
+      control is delegated to the relayed database(s). Only
+      <span class="emphasis"><em>read (=r)</em></span> access to
+      the <em class="replaceable"><code>entry</code></em>
+      pseudo-attribute and to the other attribute values of the
+      entries returned by the <em class="replaceable"><code>search</code></em> operation is honored,
+      which is performed by the frontend.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-relay-5_sect8" name="slapd-relay-5_sect8" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">ETCDIR/slapd.conf</span></dt>
+
+          <dd>
+            <p>default slapd configuration file</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-relay-5_sect9" name="slapd-relay-5_sect9" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a>, <a class="link" href="../htmlman5/slapd-config.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-config</span>(5)</span></a>, <a class="link" href="../htmlman5/slapo-rwm.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapo-rwm</span>(5)</span></a>, <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a>.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                  See the following documents: <a class="ulink" href="../openldap-COPYRIGHT.html" target="_top" shape="rect">COPYRIGHT</a>, <a class="ulink" href="../openldap-LICENSE.html" target="_top" shape="rect">LICENSE</a><br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>fork(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="fork(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="fork.2" name="fork.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>fork — create a child process</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;unistd.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">pid_t
+            <strong>fork</strong>(</code></td>
+
+            <td rowspan="1" colspan="1"><code>void)</code>;</td>
+
+            <td rowspan="1" colspan="1"> </td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fork-2_sect1" name="fork-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">fork</code>() creates a new process
+      by duplicating the calling process. The new process is
+      referred to as the <em class="replaceable"><code>child</code></em> process. The calling
+      process is referred to as the <em class="replaceable"><code>parent</code></em> process.</p>
+
+      <p>The child process and the parent process run in separate
+      memory spaces. At the time of <code class="function">fork</code>() both memory spaces have the same
+      content. Memory writes, file mappings (<a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>), and unmappings
+      (<a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">munmap</span>(2)</span></a>) performed by one
+      of the processes do not affect the other.</p>
+
+      <p>The child process is an exact duplicate of the parent
+      process except for the following points:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p>The child has its own unique process ID, and this
+            PID does not match the ID of any existing process group
+            (<a class="link" href="../htmlman2/setpgid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setpgid</span>(2)</span></a>).</p>
+          </li>
+
+          <li class="listitem">
+            <p>The child's parent process ID is the same as the
+            parent's process ID.</p>
+          </li>
+
+          <li class="listitem">
+            <p>The child does not inherit its parent's memory locks
+            (<a class="link" href="../htmlman2/mlock.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mlock</span>(2)</span></a>, <a class="link" href="../htmlman2/mlock.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mlockall</span>(2)</span></a>).</p>
+          </li>
+
+          <li class="listitem">
+            <p>Process resource utilizations (<a class="link" href="../htmlman2/getrusage.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getrusage</span>(2)</span></a>) and CPU
+            time counters (<a class="link" href="../htmlman2/times.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">times</span>(2)</span></a>) are reset
+            to zero in the child.</p>
+          </li>
+
+          <li class="listitem">
+            <p>The child's set of pending signals is initially
+            empty (<a class="link" href="../htmlman2/sigpending.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigpending</span>(2)</span></a>).</p>
+          </li>
+
+          <li class="listitem">
+            <p>The child does not inherit semaphore adjustments
+            from its parent (<a class="link" href="../htmlman2/semop.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">semop</span>(2)</span></a>).</p>
+          </li>
+
+          <li class="listitem">
+            <p>The child does not inherit process-associated record
+            locks from its parent (<a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a>). (On the
+            other hand, it does inherit <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a> open file
+            description locks and <a class="link" href="../htmlman2/flock.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">flock</span>(2)</span></a> locks from
+            its parent.)</p>
+          </li>
+
+          <li class="listitem">
+            <p>The child does not inherit timers from its parent
+            (<a class="link" href="../htmlman2/getitimer.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setitimer</span>(2)</span></a>,
+            <a class="link" href="../htmlman2/alarm.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">alarm</span>(2)</span></a>, <a class="link" href="../htmlman2/timer_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">timer_create</span>(2)</span></a>).</p>
+          </li>
+
+          <li class="listitem">
+            <p>The child does not inherit outstanding asynchronous
+            I/O operations from its parent (<a class="link" href="../htmlman3/aio_read.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">aio_read</span>(3)</span></a>,
+            <a class="link" href="../htmlman3/aio_write.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">aio_write</span>(3)</span></a>), nor
+            does it inherit any asynchronous I/O contexts from its
+            parent (see <a class="link" href="../htmlman2/io_setup.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">io_setup</span>(2)</span></a>).</p>
+          </li>
+        </ul>
+      </div>
+
+      <p>The process attributes in the preceding list are all
+      specified in POSIX.1-2001. The parent and child also differ
+      with respect to the following Linux-specific process
+      attributes:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p>The child does not inherit directory change
+            notifications (dnotify) from its parent (see the
+            description of <code class="constant">F_NOTIFY</code>
+            in <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a>).</p>
+          </li>
+
+          <li class="listitem">
+            <p>The <a class="link" href="../htmlman2/prctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">prctl</span>(2)</span></a> <code class="constant">PR_SET_PDEATHSIG</code> setting is reset so
+            that the child does not receive a signal when its
+            parent terminates.</p>
+          </li>
+
+          <li class="listitem">
+            <p>The default timer slack value is set to the parent's
+            current timer slack value. See the description of
+            <code class="constant">PR_SET_TIMERSLACK</code> in
+            <a class="link" href="../htmlman2/prctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">prctl</span>(2)</span></a>.</p>
+          </li>
+
+          <li class="listitem">
+            <p>Memory mappings that have been marked with the
+            <a class="link" href="../htmlman2/madvise.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">madvise</span>(2)</span></a>
+            <code class="constant">MADV_DONTFORK</code> flag are
+            not inherited across a <code class="function">fork</code>().</p>
+          </li>
+
+          <li class="listitem">
+            <p>The termination signal of the child is always
+            <code class="constant">SIGCHLD</code> (see <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a>).</p>
+          </li>
+
+          <li class="listitem">
+            <p>The port access permission bits set by <a class="link" href="../htmlman2/ioperm.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioperm</span>(2)</span></a> are not
+            inherited by the child; the child must turn on any bits
+            that it requires using <a class="link" href="../htmlman2/ioperm.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioperm</span>(2)</span></a>.</p>
+          </li>
+        </ul>
+      </div>
+
+      <p>Note the following further points:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p>The child process is created with a single
+            thread—the one that called <code class="function">fork</code>(). The entire virtual address
+            space of the parent is replicated in the child,
+            including the states of mutexes, condition variables,
+            and other pthreads objects; the use of <span class="citerefentry"><span class="refentrytitle">pthread_atfork</span>(3)</span> may be
+            helpful for dealing with problems that this can
+            cause.</p>
+          </li>
+
+          <li class="listitem">
+            <p>The child inherits copies of the parent's set of
+            open file descriptors. Each file descriptor in the
+            child refers to the same open file description (see
+            <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>) as the
+            corresponding file descriptor in the parent. This means
+            that the two descriptors share open file status flags,
+            current file offset, and signal-driven I/O attributes
+            (see the description of <code class="constant">F_SETOWN</code> and <code class="constant">F_SETSIG</code> in <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a>).</p>
+          </li>
+
+          <li class="listitem">
+            <p>The child inherits copies of the parent's set of
+            open message queue descriptors (see <a class="link" href="../htmlman7/mq_overview.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_overview</span>(7)</span></a>). Each
+            descriptor in the child refers to the same open message
+            queue description as the corresponding descriptor in
+            the parent. This means that the two descriptors share
+            the same flags (<em class="replaceable"><code>mq_flags</code></em>).</p>
+          </li>
+
+          <li class="listitem">
+            <p>The child inherits copies of the parent's set of
+            open directory streams (see <a class="link" href="../htmlman3/opendir.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">opendir</span>(3)</span></a>).
+            POSIX.1-2001 says that the corresponding directory
+            streams in the parent and child <em class="replaceable"><code>may</code></em> share the directory
+            stream positioning; on Linux/glibc they do not.</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fork-2_sect2" name="fork-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, the PID of the child process is returned in
+      the parent, and 0 is returned in the child. On failure,
+      −1 is returned in the parent, no child process is
+      created, and <code class="varname">errno</code> is set
+      appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="fork-2_sect3" name="fork-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EAGAIN</span></span></dt>
+
+          <dd>
+            <p>A system-imposed limit on the number of threads was
+            encountered. There are a number of limits that may
+            trigger this error: the <code class="constant">RLIMIT_NPROC</code> soft resource limit (set
+            via <a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setrlimit</span>(2)</span></a>), which
+            limits the number of processes and threads for a real
+            user ID, was reached; the kernel's system-wide limit on
+            the number of processes and threads, <code class="filename">/proc/sys/kernel/threads-max</code>, was
+            reached (see <a class="link" href="../htmlman5/proc.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">proc</span>(5)</span></a>); or the
+            maximum number of PIDs, <code class="filename">/proc/sys/kernel/pid_max</code>, was reached
+            (see <a class="link" href="../htmlman5/proc.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">proc</span>(5)</span></a>).</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EAGAIN</span></span></dt>
+
+          <dd>
+            <p>The caller is operating under the <code class="constant">SCHED_DEADLINE</code> scheduling policy and
+            does not have the reset-on-fork flag set. See <a class="link" href="../htmlman7/sched.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched</span>(7)</span></a>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p><code class="function">fork</code>() failed to
+            allocate the necessary kernel structures because memory
+            is tight.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOSYS</span></span></dt>
+
+          <dd>
+            <p><code class="function">fork</code>() is not
+            supported on this platform (for example, hardware
+            without a Memory-Management Unit).</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fork-2_sect4" name="fork-2_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>SVr4, 4.3BSD, POSIX.1-2001.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="fork-2_sect5" name="fork-2_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Under Linux, <code class="function">fork</code>() is
+      implemented using copy-on-write pages, so the only penalty
+      that it incurs is the time and memory required to duplicate
+      the parent's page tables, and to create a unique task
+      structure for the child.</p>
+
+      <div class="refsect2">
+        <a id="fork-2_sect6" name="fork-2_sect6" shape="rect"> </a>
+
+        <h3>C library/kernel ABI differences</h3>
+
+        <p>Since version 2.3.3, rather than invoking the kernel's
+        <code class="function">fork</code>() system call, the glibc
+        <code class="function">fork</code>() wrapper that is
+        provided as part of the NPTL threading implementation
+        invokes <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> with flags that
+        provide the same effect as the traditional system call. (A
+        call to <code class="function">fork</code>() is equivalent
+        to a call to <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> specifying
+        <em class="replaceable"><code>flags</code></em> as just
+        <code class="constant">SIGCHLD</code>.) The glibc wrapper
+        invokes any fork handlers that have been established using
+        <span class="citerefentry"><span class="refentrytitle">pthread_atfork</span>(3)</span>.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fork-2_sect7" name="fork-2_sect7" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>See <a class="link" href="../htmlman2/pipe.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pipe</span>(2)</span></a> and <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">wait</span>(2)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="fork-2_sect8" name="fork-2_sect8" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a>, <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>, <a class="link" href="../htmlman2/_exit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">exit</span>(2)</span></a>, <a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setrlimit</span>(2)</span></a>, <a class="link" href="../htmlman2/unshare.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unshare</span>(2)</span></a>, <a class="link" href="../htmlman2/vfork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">vfork</span>(2)</span></a>, <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">wait</span>(2)</span></a>, <a class="link" href="../htmlman3/daemon.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">daemon</span>(3)</span></a>, <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>, <a class="link" href="../htmlman7/credentials.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">credentials</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="fork-2_sect9" name="fork-2_sect9" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2006 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  A few fragments remain from an earlier (1992) page by<br />
+
+                  Drew Eckhardt (drew<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.colorado.edu),<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Modified by Michael Haardt (michael<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>moria.de)<br />
+
+                  Modified Sat Jul 24 13:22:07 1993 by Rik Faith (faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu)<br />
+
+                  Modified 21 Aug 1994 by Michael Chastain (mec<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>shell.portal.com):<br />
+
+                    Referenced 'clone(2)'.<br />
+                  Modified 1995-06-10, 1996-04-18, 1999-11-01, 2000-12-24<br />
+
+                    by Andries Brouwer (aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl)<br />
+
+                  Modified, 27 May 2004, Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                      Added notes on capability requirements<br />
+
+                  2006-09-04, Michael Kerrisk<br />
+                      Greatly expanded, to describe all attributes that differ<br />
+
+                  parent and child.<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

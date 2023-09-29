@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>xattr(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="xattr(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="xattr.7" name="xattr.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>attr — Extended attributes</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="xattr-7_sect1" name="xattr-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>Extended attributes are name:value pairs associated
+      permanently with files and directories, similar to the
+      environment strings associated with a process. An attribute
+      may be defined or undefined. If it is defined, its value may
+      be empty or non-empty.</p>
+
+      <p>Extended attributes are extensions to the normal
+      attributes which are associated with all inodes in the system
+      (i.e., the <a class="link" href="../htmlman2/stat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">stat</span>(2)</span></a> data). They are
+      often used to provide additional functionality to a
+      filesystem—for example, additional security features
+      such as Access Control Lists (ACLs) may be implemented using
+      extended attributes.</p>
+
+      <p>Users with search access to a file or directory may use
+      <a class="link" href="../htmlman2/listxattr.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">listxattr</span>(2)</span></a> to retrieve a
+      list of attribute names defined for that file or
+      directory.</p>
+
+      <p>Extended attributes are accessed as atomic objects.
+      Reading (<a class="link" href="../htmlman2/getxattr.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getxattr</span>(2)</span></a>) retrieves the
+      whole value of an attribute and stores it in a buffer.
+      Writing (<a class="link" href="../htmlman2/setxattr.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setxattr</span>(2)</span></a>) replaces any
+      previous value with the new value.</p>
+
+      <p>Space consumed for extended attributes may be counted
+      towards the disk quotas of the file owner and file group.</p>
+
+      <div class="refsect2">
+        <a id="xattr-7_sect2" name="xattr-7_sect2" shape="rect"> </a>
+
+        <h3>Extended attribute namespaces</h3>
+
+        <p>Attribute names are null-terminated strings. The
+        attribute name is always specified in the fully qualified
+        <em class="replaceable"><code>namespace.attribute</code></em> form,
+        for example, <em class="replaceable"><code>user.mime_type</code></em>, <em class="replaceable"><code>trusted.md5sum</code></em>, <em class="replaceable"><code>system.posix_acl_access</code></em>, or
+        <em class="replaceable"><code>security.selinux</code></em>.</p>
+
+        <p>The namespace mechanism is used to define different
+        classes of extended attributes. These different classes
+        exist for several reasons; for example, the permissions and
+        capabilities required for manipulating extended attributes
+        of one namespace may differ to another.</p>
+
+        <p>Currently, the <em class="replaceable"><code>security</code></em>, <em class="replaceable"><code>system</code></em>, <em class="replaceable"><code>trusted</code></em>, and <em class="replaceable"><code>user</code></em> extended attribute
+        classes are defined as described below. Additional classes
+        may be added in the future.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="xattr-7_sect3" name="xattr-7_sect3" shape="rect"> </a>
+
+        <h3>Extended security attributes</h3>
+
+        <p>The security attribute namespace is used by kernel
+        security modules, such as Security Enhanced Linux, and also
+        to implement file capabilities (see <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>). Read
+        and write access permissions to security attributes depend
+        on the policy implemented for each security attribute by
+        the security module. When no security module is loaded, all
+        processes have read access to extended security attributes,
+        and write access is limited to processes that have the
+        <code class="constant">CAP_SYS_ADMIN</code> capability.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="xattr-7_sect4" name="xattr-7_sect4" shape="rect"> </a>
+
+        <h3>Extended system attributes</h3>
+
+        <p>Extended system attributes are used by the kernel to
+        store system objects such as Access Control Lists. Read and
+        write access permissions to system attributes depend on the
+        policy implemented for each system attribute implemented by
+        filesystems in the kernel.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="xattr-7_sect5" name="xattr-7_sect5" shape="rect"> </a>
+
+        <h3>Trusted extended attributes</h3>
+
+        <p>Trusted extended attributes are visible and accessible
+        only to processes that have the <code class="constant">CAP_SYS_ADMIN</code> capability. Attributes in
+        this class are used to implement mechanisms in user space
+        (i.e., outside the kernel) which keep information in
+        extended attributes to which ordinary processes should not
+        have access.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="xattr-7_sect6" name="xattr-7_sect6" shape="rect"> </a>
+
+        <h3>Extended user attributes</h3>
+
+        <p>Extended user attributes may be assigned to files and
+        directories for storing arbitrary additional information
+        such as the mime type, character set or encoding of a file.
+        The access permissions for user attributes are defined by
+        the file permission bits: read permission is required to
+        retrieve the attribute value, and writer permission is
+        required to change it.</p>
+
+        <p>The file permission bits of regular files and
+        directories are interpreted differently from the file
+        permission bits of special files and symbolic links. For
+        regular files and directories the file permission bits
+        define access to the file's contents, while for device
+        special files they define access to the device described by
+        the special file. The file permissions of symbolic links
+        are not used in access checks. These differences would
+        allow users to consume filesystem resources in a way not
+        controllable by disk quotas for group or world writable
+        special files and directories.</p>
+
+        <p>For this reason, extended user attributes are allowed
+        only for regular files and directories, and access to
+        extended user attributes is restricted to the owner and to
+        users with appropriate capabilities for directories with
+        the sticky bit set (see the <a class="link" href="../htmlman1/chmod.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chmod</span>(1)</span></a> manual page for
+        an explanation of the sticky bit).</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="xattr-7_sect7" name="xattr-7_sect7" shape="rect"> </a>
+
+        <h3>Filesystem differences</h3>
+
+        <p>The kernel and the filesystem may place limits on the
+        maximum number and size of extended attributes that can be
+        associated with a file. The VFS imposes limitations that an
+        attribute names is limited to 255 bytes and an attribute
+        value is limited to 64 kB. The list of attribute names that
+        can be returned is also limited to 64 kB (see BUGS in
+        <a class="link" href="../htmlman2/listxattr.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">listxattr</span>(2)</span></a>).</p>
+
+        <p>Some filesystems, such as Reiserfs (and, historically,
+        ext2 and ext3), require the filesystem to be mounted with
+        the <em class="replaceable"><code>user_xattr</code></em>
+        mount option in order for extended user attributes to be
+        used.</p>
+
+        <p>In the current ext2, ext3, and ext4 filesystem
+        implementations, the total bytes used by the names and
+        values of all of a files extended attributes must fit in a
+        single filesystem block (1024, 2048 or 4096 bytes,
+        depending on the block size specified when the filesystem
+        was created).</p>
+
+        <p>In the Btrfs, XFS, and Reiserfs filesystem
+        implementations, there is no practical limit on the number
+        of extended attributes associated with a file, and the
+        algorithms used to store extended attribute information on
+        disk are scalable.</p>
+
+        <p>In the JFS, XFS, and Reiserfs filesystem
+        implementations, the limit on bytes used in an EA value is
+        the ceiling imposed by the VFS.</p>
+
+        <p>In the Btrfs filesystem implementation, the total bytes
+        used for the name, value, and implementation overhead bytes
+        is limited to the filesystem <em class="replaceable"><code>nodesize</code></em> value (16 kB by
+        default).</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="xattr-7_sect8" name="xattr-7_sect8" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>Extended attributes are not specified in POSIX.1, but some
+      other systems (e.g., the BSDs and Solaris) provide a similar
+      feature.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="xattr-7_sect9" name="xattr-7_sect9" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Since the filesystems on which extended attributes are
+      stored might also be used on architectures with a different
+      byte order and machine word size, care should be taken to
+      store attribute values in an architecture-independent
+      format.</p>
+
+      <p>This page was formerly named <a class="link" href="../htmlman7/xattr.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">attr</span>(5)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="xattr-7_sect10" name="xattr-7_sect10" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><span class="citerefentry"><span class="refentrytitle">getfattr</span>(1)</span>, <span class="citerefentry"><span class="refentrytitle">setfattr</span>(1)</span>, <a class="link" href="../htmlman2/getxattr.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getxattr</span>(2)</span></a>, <a class="link" href="../htmlman2/listxattr.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">listxattr</span>(2)</span></a>, <a class="link" href="../htmlman2/removexattr.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">removexattr</span>(2)</span></a>, <a class="link" href="../htmlman2/setxattr.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setxattr</span>(2)</span></a>, <span class="citerefentry"><span class="refentrytitle">acl</span>(5)</span>, <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="xattr-7_sect11" name="xattr-7_sect11" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Extended attributes manual page<br />
+
+                  <br />
+                  Copyright (C) 2000, 2002, 2007  Andreas Gruenbacher &lt;agruen<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>suse.de&gt;<br />
+
+                  Copyright (C) 2001, 2002, 2004, 2007 Silicon Graphics, Inc.<br />
+
+                  All rights reserved.<br />
+                  <br />
+                  %%%LICENSE_START(GPLv2+_DOC_FULL)<br />
+                  This is free documentation; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License as<br />
+
+                  published by the Free Software Foundation; either version 2 of<br />
+
+                  the License, or (at your option) any later version.<br />
+
+                  <br />
+                  The GNU General Public License's references to "object code"<br />
+
+                  and "executables" are to be interpreted as the output of any<br />
+
+                  document formatting or typesetting system, including<br />
+
+                  intermediate and printed output.<br />
+
+                  <br />
+                  This manual is distributed in the hope that it will be useful,<br />
+
+                  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+
+                  GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual.  If not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

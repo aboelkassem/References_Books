@@ -1,0 +1,598 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>eventfd(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="eventfd(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="eventfd.2" name="eventfd.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>eventfd — create a file descriptor for event
+      notification</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;sys/eventfd.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>eventfd</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">unsigned int <var class="pdparam">initval</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">flags</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="eventfd-2_sect1" name="eventfd-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">eventfd</code>() creates an
+      "eventfd object" that can be used as an event wait/notify
+      mechanism by user-space applications, and by the kernel to
+      notify user-space applications of events. The object contains
+      an unsigned 64-bit integer (<span class="type">uint64_t</span>) counter that is maintained by the
+      kernel. This counter is initialized with the value specified
+      in the argument <em class="parameter"><code>initval</code></em>.</p>
+
+      <p>The following values may be bitwise ORed in <em class="parameter"><code>flags</code></em> to change the behavior of
+      <code class="function">eventfd</code>():</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">EFD_CLOEXEC</code> (since Linux
+          2.6.27)</span></dt>
+
+          <dd>
+            <p>Set the close-on-exec (<code class="constant">FD_CLOEXEC</code>) flag on the new file
+            descriptor. See the description of the <code class="constant">O_CLOEXEC</code> flag in <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a> for reasons
+            why this may be useful.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">EFD_NONBLOCK</code> (since Linux
+          2.6.27)</span></dt>
+
+          <dd>
+            <p>Set the <code class="constant">O_NONBLOCK</code>
+            file status flag on the new open file description.
+            Using this flag saves extra calls to <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a> to achieve
+            the same result.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">EFD_SEMAPHORE</code> (since Linux
+          2.6.30)</span></dt>
+
+          <dd>
+            <p>Provide semaphore-like semantics for reads from the
+            new file descriptor. See below.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>In Linux up to version 2.6.26, the <em class="parameter"><code>flags</code></em> argument is unused, and
+      must be specified as zero.</p>
+
+      <p>As its return value, <code class="function">eventfd</code>() returns a new file descriptor
+      that can be used to refer to the eventfd object. The
+      following operations can be performed on the file
+      descriptor:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="function">read</code>(<em class="parameter"><code>2</code></em>)</span></dt>
+
+          <dd>
+            <p>Each successful <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> returns an
+            8-byte integer. A <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> will fail
+            with the error <span class="errorname">EINVAL</span> if
+            the size of the supplied buffer is less than 8
+            bytes.</p>
+
+            <p>The value returned by <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> is in host
+            byte order—that is, the native byte order for
+            integers on the host machine.</p>
+
+            <p>The semantics of <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> depend on
+            whether the eventfd counter currently has a nonzero
+            value and whether the <code class="constant">EFD_SEMAPHORE</code> flag was specified when
+            creating the eventfd file descriptor:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="itemizedlist">
+                  <ul class="itemizedlist" style="list-style-type: disc;">
+                    <li class="listitem">
+                      <p>If <code class="constant">EFD_SEMAPHORE</code> was not
+                      specified and the eventfd counter has a
+                      nonzero value, then a <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>
+                      returns 8 bytes containing that value, and
+                      the counter's value is reset to zero.</p>
+                    </li>
+
+                    <li class="listitem">
+                      <p>If <code class="constant">EFD_SEMAPHORE</code> was specified
+                      and the eventfd counter has a nonzero value,
+                      then a <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>
+                      returns 8 bytes containing the value 1, and
+                      the counter's value is decremented by 1.</p>
+                    </li>
+
+                    <li class="listitem">
+                      <p>If the eventfd counter is zero at the time
+                      of the call to <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>,
+                      then the call either blocks until the counter
+                      becomes nonzero (at which time, the <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>
+                      proceeds as described above) or fails with
+                      the error <span class="errorname">EAGAIN</span> if the file
+                      descriptor has been made nonblocking.</p>
+                    </li>
+                  </ul>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><code class="function">write</code>(<em class="parameter"><code>2</code></em>)</span></dt>
+
+          <dd>
+            <p>A <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a> call adds
+            the 8-byte integer value supplied in its buffer to the
+            counter. The maximum value that may be stored in the
+            counter is the largest unsigned 64-bit value minus 1
+            (i.e., 0xfffffffffffffffe). If the addition would cause
+            the counter's value to exceed the maximum, then the
+            <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a> either
+            blocks until a <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> is performed
+            on the file descriptor, or fails with the error
+            <span class="errorname">EAGAIN</span> if the file
+            descriptor has been made nonblocking.</p>
+
+            <p>A <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a> will fail
+            with the error <span class="errorname">EINVAL</span> if
+            the size of the supplied buffer is less than 8 bytes,
+            or if an attempt is made to write the value
+            0xffffffffffffffff.</p>
+          </dd>
+
+          <dt><span class="term"><code class="function">poll</code>(<em class="parameter"><code>2)</code></em>, <em class="parameter"><code>select(2) (and
+          similar</code></em>)</span></dt>
+
+          <dd>
+            <p>The returned file descriptor supports <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a> (and
+            analogously <a class="link" href="../htmlman7/epoll.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll</span>(7)</span></a>) and
+            <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a>, as
+            follows:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="itemizedlist">
+                  <ul class="itemizedlist" style="list-style-type: disc;">
+                    <li class="listitem">
+                      <p>The file descriptor is readable (the
+                      <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a>
+                      <em class="replaceable"><code>readfds</code></em>
+                      argument; the <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a>
+                      <code class="constant">POLLIN</code> flag) if
+                      the counter has a value greater than 0.</p>
+                    </li>
+
+                    <li class="listitem">
+                      <p>The file descriptor is writable (the
+                      <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a>
+                      <em class="replaceable"><code>writefds</code></em>
+                      argument; the <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a>
+                      <code class="constant">POLLOUT</code> flag)
+                      if it is possible to write a value of at
+                      least "1" without blocking.</p>
+                    </li>
+
+                    <li class="listitem">
+                      <p>If an overflow of the counter value was
+                      detected, then <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a>
+                      indicates the file descriptor as being both
+                      readable and writable, and <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a>
+                      returns a <code class="constant">POLLERR</code> event. As noted
+                      above, <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a>
+                      can never overflow the counter. However an
+                      overflow can occur if 2^64 eventfd "signal
+                      posts" were performed by the KAIO subsystem
+                      (theoretically possible, but practically
+                      unlikely). If an overflow has occurred, then
+                      <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>
+                      will return that maximum <span class="type">uint64_t</span> value (i.e.,
+                      0xffffffffffffffff).</p>
+                    </li>
+                  </ul>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>The eventfd file descriptor also supports the other
+            file-descriptor multiplexing APIs: <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pselect</span>(2)</span></a> and
+            <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ppoll</span>(2)</span></a>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="function">close</code>(<em class="parameter"><code>2</code></em>)</span></dt>
+
+          <dd>
+            <p>When the file descriptor is no longer required it
+            should be closed. When all file descriptors associated
+            with the same eventfd object have been closed, the
+            resources for object are freed by the kernel.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>A copy of the file descriptor created by <code class="function">eventfd</code>() is inherited by the child
+      produced by <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a>. The duplicate file
+      descriptor is associated with the same eventfd object. File
+      descriptors created by <code class="function">eventfd</code>() are preserved across <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>, unless the
+      close-on-exec flag has been set.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="eventfd-2_sect2" name="eventfd-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">eventfd</code>()
+      returns a new eventfd file descriptor. On error, −1 is
+      returned and <code class="varname">errno</code> is set to
+      indicate the error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="eventfd-2_sect3" name="eventfd-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>An unsupported value was specified in <em class="parameter"><code>flags</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EMFILE</span></span></dt>
+
+          <dd>
+            <p>The per-process limit on open file descriptors has
+            been reached.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENFILE</span></span></dt>
+
+          <dd>
+            <p>The system-wide limit on the total number of open
+            files has been reached.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENODEV</span></span></dt>
+
+          <dd>
+            <p>Could not mount (internal) anonymous inode
+            device.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>There was insufficient memory to create a new
+            eventfd file descriptor.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="eventfd-2_sect4" name="eventfd-2_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p><code class="function">eventfd</code>() is available on
+      Linux since kernel 2.6.22. Working support is provided in
+      glibc since version 2.8. The <code class="function">eventfd2</code>() system call (see NOTES) is
+      available on Linux since kernel 2.6.27. Since version 2.9,
+      the glibc <code class="function">eventfd</code>() wrapper
+      will employ the <code class="function">eventfd2</code>()
+      system call, if it is supported by the kernel.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="eventfd-2_sect5" name="eventfd-2_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p><code class="function">eventfd</code>() and <code class="function">eventfd2</code>() are Linux-specific.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="eventfd-2_sect6" name="eventfd-2_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Applications can use an eventfd file descriptor instead of
+      a pipe (see <a class="link" href="../htmlman2/pipe.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pipe</span>(2)</span></a>) in all cases where
+      a pipe is used simply to signal events. The kernel overhead
+      of an eventfd file descriptor is much lower than that of a
+      pipe, and only one file descriptor is required (versus the
+      two required for a pipe).</p>
+
+      <p>When used in the kernel, an eventfd file descriptor can
+      provide a bridge from kernel to user space, allowing, for
+      example, functionalities like KAIO (kernel AIO) to signal to
+      a file descriptor that some operation is complete.</p>
+
+      <p>A key point about an eventfd file descriptor is that it
+      can be monitored just like any other file descriptor using
+      <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a>, <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a>, or <a class="link" href="../htmlman7/epoll.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll</span>(7)</span></a>. This means that
+      an application can simultaneously monitor the readiness of
+      "traditional" files and the readiness of other kernel
+      mechanisms that support the eventfd interface. (Without the
+      <code class="function">eventfd</code>() interface, these
+      mechanisms could not be multiplexed via <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a>, <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a>, or <a class="link" href="../htmlman7/epoll.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll</span>(7)</span></a>.)</p>
+
+      <div class="refsect2">
+        <a id="eventfd-2_sect7" name="eventfd-2_sect7" shape="rect"> </a>
+
+        <h3>C library/kernel ABI differences</h3>
+
+        <p>There are two underlying Linux system calls:
+        <code class="function">eventfd</code>() and the more recent
+        <code class="function">eventfd2</code>(). The former system
+        call does not implement a <em class="parameter"><code>flags</code></em> argument. The latter
+        system call implements the <em class="parameter"><code>flags</code></em> values described above.
+        The glibc wrapper function will use <code class="function">eventfd2</code>() where it is available.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="eventfd-2_sect8" name="eventfd-2_sect8" shape="rect"> </a>
+
+        <h3>Additional glibc features</h3>
+
+        <p>The GNU C library defines an additional type, and two
+        functions that attempt to abstract some of the details of
+        reading and writing on an eventfd file descriptor:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+typedef uint64_t eventfd_t;
+
+int eventfd_read(int fd, eventfd_t *value);
+int eventfd_write(int fd, eventfd_t value);
+</pre>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>The functions perform the read and write operations on
+        an eventfd file descriptor, returning 0 if the correct
+        number of bytes was transferred, or −1 otherwise.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="eventfd-2_sect9" name="eventfd-2_sect9" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>The following program creates an eventfd file descriptor
+      and then forks to create a child process. While the parent
+      briefly sleeps, the child writes each of the integers
+      supplied in the program's command-line arguments to the
+      eventfd file descriptor. When the parent has finished
+      sleeping, it reads from the eventfd file descriptor.</p>
+
+      <p>The following shell session shows a sample run of the
+      program:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$<span class="emphasis"><em> ./a.out 1 2 4 7 14</em></span>
+Child writing 1 to efd
+Child writing 2 to efd
+Child writing 4 to efd
+Child writing 7 to efd
+Child writing 14 to efd
+Child completed write loop
+Parent about to read
+Parent read 28 (0x1c) from efd
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="refsect2">
+        <a id="eventfd-2_sect10" name="eventfd-2_sect10" shape="rect"> </a>
+
+        <h3>Program source</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+#include &lt;sys/eventfd.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdint.h&gt;             /* Definition of uint64_t */
+
+#define handle_error(msg) \
+    do { perror(msg); exit(EXIT_FAILURE); } while (0)
+
+int
+main(int argc, char *argv[])
+{
+    int efd, j;
+    uint64_t u;
+    ssize_t s;
+
+    if (argc &lt; 2) {
+        fprintf(stderr, "Usage: %s &lt;num&gt;...\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    efd = eventfd(0, 0);
+    if (efd == −1)
+        handle_error("eventfd");
+
+    switch (fork()) {
+    case 0:
+        for (j = 1; j &lt; argc; j++) {
+            printf("Child writing %s to efd\n", argv[j]);
+            u = strtoull(argv[j], NULL, 0);
+                    /* strtoull() allows various bases */
+            s = write(efd, &amp;u, sizeof(uint64_t));
+            if (s != sizeof(uint64_t))
+                handle_error("write");
+        }
+        printf("Child completed write loop\n");
+
+        exit(EXIT_SUCCESS);
+
+    default:
+        sleep(2);
+
+        printf("Parent about to read\n");
+        s = read(efd, &amp;u, sizeof(uint64_t));
+        if (s != sizeof(uint64_t))
+            handle_error("read");
+        printf("Parent read %llu (0x%llx) from efd\n",
+                (unsigned long long) u, (unsigned long long) u);
+        exit(EXIT_SUCCESS);
+
+    case −1:
+        handle_error("fork");
+    }
+}
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="eventfd-2_sect11" name="eventfd-2_sect11" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/futex.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">futex</span>(2)</span></a>, <a class="link" href="../htmlman2/pipe.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pipe</span>(2)</span></a>, <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a>, <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>, <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a>, <a class="link" href="../htmlman2/signalfd.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signalfd</span>(2)</span></a>, <a class="link" href="../htmlman2/timerfd_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">timerfd_create</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a>, <a class="link" href="../htmlman7/epoll.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll</span>(7)</span></a>, <a class="link" href="../htmlman7/sem_overview.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_overview</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="eventfd-2_sect12" name="eventfd-2_sect12" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2008 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  starting from a version by Davide Libenzi &lt;davidel<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>xmailserver.org&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_SW_3_PARA)<br />
+                  This program is free software; you can redistribute it and/or modify<br />
+
+                  it under the terms of the GNU General Public License as published by<br />
+
+                  the Free Software Foundation; either version 2 of the License, or<br />
+
+                  (at your option) any later version.<br />
+
+                  <br />
+                  This program is distributed in the hope that it will be useful,<br />
+
+                  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+
+                  GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  2008-10-10, mtk: describe eventfd2(), and EFD_NONBLOCK and EFD_CLOEXEC<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,767 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>sched_setattr(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="sched_setattr(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="sched-setattr.2" name="sched-setattr.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>sched_setattr, sched_getattr — set and get
+      scheduling policy and attributes</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;sched.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>sched_setattr</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">pid_t <var class="pdparam">pid</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const struct sched_attr *<var class="pdparam">attr</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">unsigned int <var class="pdparam">flags</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>sched_getattr</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">pid_t <var class="pdparam">pid</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">struct sched_attr *<var class="pdparam">attr</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">unsigned int <var class="pdparam">size</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">unsigned int <var class="pdparam">flags</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sched-setattr-2_sect1" name="sched-setattr-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <div class="refsect2">
+        <a id="sched-setattr-2_sect2" name="sched-setattr-2_sect2" shape="rect"> </a>
+
+        <h3>sched_setattr()</h3>
+
+        <p>The <code class="function">sched_setattr</code>() system
+        call sets the scheduling policy and associated attributes
+        for the thread whose ID is specified in <em class="parameter"><code>pid</code></em>. If <em class="parameter"><code>pid</code></em> equals zero, the
+        scheduling policy and attributes of the calling thread will
+        be set.</p>
+
+        <p>Currently, Linux supports the following "normal" (i.e.,
+        non-real-time) scheduling policies as values that may be
+        specified in <em class="replaceable"><code>policy</code></em>:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">SCHED_OTHER</code></span></dt>
+
+            <dd>
+              <p>the standard round-robin time-sharing policy;</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SCHED_BATCH</code></span></dt>
+
+            <dd>
+              <p>for "batch" style execution of processes; and</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SCHED_IDLE</code></span></dt>
+
+            <dd>
+              <p>for running <em class="replaceable"><code>very</code></em> low priority
+              background jobs.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>Various "real-time" policies are also supported, for
+        special time-critical applications that need precise
+        control over the way in which runnable threads are selected
+        for execution. For the rules governing when a process may
+        use these policies, see <a class="link" href="../htmlman7/sched.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched</span>(7)</span></a>. The real-time
+        policies that may be specified in <em class="replaceable"><code>policy</code></em> are:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">SCHED_FIFO</code></span></dt>
+
+            <dd>
+              <p>a first-in, first-out policy; and</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SCHED_RR</code></span></dt>
+
+            <dd>
+              <p>a round-robin policy.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>Linux also provides the following policy:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">SCHED_DEADLINE</code></span></dt>
+
+            <dd>
+              <p>a deadline scheduling policy; see <a class="link" href="../htmlman7/sched.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched</span>(7)</span></a> for
+              details.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>The <em class="parameter"><code>attr</code></em>
+        argument is a pointer to a structure that defines the new
+        scheduling policy and attributes for the specified thread.
+        This structure has the following form:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="structdef">
+              <table style="border-collapse: collapse;">
+                <colgroup span="1">
+                  <col class="c1" span="1" />
+                  <col class="c2" span="1" />
+                  <col class="c3" span="1" />
+                  <col class="c4" span="1" />
+                  <col class="c5" span="1" />
+                </colgroup>
+
+                <tbody>
+                  <tr>
+                    <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                    struct</td>
+
+                    <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">sched_attr</span> {</td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">u32</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>size</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Size of this structure */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">u32</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sched_policy</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Policy (SCHED_*) */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">u64</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sched_flags</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        /* Flags */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">s32</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sched_nice</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Nice value (SCHED_OTHER,<br />
+
+                        SCHED_BATCH) */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">u32</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sched_priority</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Static priority (SCHED_FIFO,<br />
+
+                        SCHED_RR) */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" colspan="5" align="left" rowspan="1">
+                      <div class="literallayout">
+                        
+                        /* Remaining fields are for SCHED_DEADLINE */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">u64</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sched_runtime</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"> </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">u64</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sched_deadline</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"> </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">u64</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sched_period</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"> </td>
+                  </tr>
+
+                  <tr>
+                    <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>The fields of this structure are as follows:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><em class="parameter"><code>size</code></em></span></dt>
+
+            <dd>
+              <p>This field should be set to the size of the
+              structure in bytes, as in <span class="emphasis"><em>sizeof(struct sched_attr)</em></span>.
+              If the provided structure is smaller than the kernel
+              structure, any additional fields are assumed to be
+              '0'. If the provided structure is larger than the
+              kernel structure, the kernel verifies that all
+              additional fields are 0; if they are not,
+              <code class="function">sched_setattr</code>() fails
+              with the error <span class="errorname">E2BIG</span>
+              and updates <em class="parameter"><code>size</code></em> to contain the
+              size of the kernel structure.</p>
+
+              <p>The above behavior when the size of the user-space
+              <span class="structname">sched_attr</span> structure
+              does not match the size of the kernel structure
+              allows for future extensibility of the interface.
+              Malformed applications that pass oversize structures
+              won't break in the future if the size of the kernel
+              <span class="structname">sched_attr</span> structure
+              is increased. In the future, it could also allow
+              applications that know about a larger user-space
+              <span class="structname">sched_attr</span> structure
+              to determine whether they are running on an older
+              kernel that does not support the larger
+              structure.</p>
+            </dd>
+
+            <dt><span class="term"><em class="parameter"><code>sched_policy</code></em></span></dt>
+
+            <dd>
+              <p>This field specifies the scheduling policy, as one
+              of the <em class="replaceable"><code>SCHED_*</code></em> values listed
+              above.</p>
+            </dd>
+
+            <dt><span class="term"><em class="parameter"><code>sched_flags</code></em></span></dt>
+
+            <dd>
+              <p>This field contains flags controlling scheduling
+              behavior. Only one such flag is currently defined:
+              <code class="constant">SCHED_FLAG_RESET_ON_FORK</code>. As a
+              result of including this flag, children created by
+              <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> do not
+              inherit privileged scheduling policies. See <a class="link" href="../htmlman7/sched.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched</span>(7)</span></a> for
+              details.</p>
+            </dd>
+
+            <dt><span class="term"><em class="parameter"><code>sched_nice</code></em></span></dt>
+
+            <dd>
+              <p>This field specifies the nice value to be set when
+              specifying <em class="parameter"><code>sched_policy</code></em> as
+              <code class="constant">SCHED_OTHER</code> or
+              <code class="constant">SCHED_BATCH</code>. The nice
+              value is a number in the range −20 (high
+              priority) to +19 (low priority); see <a class="link" href="../htmlman2/getpriority.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setpriority</span>(2)</span></a>.</p>
+            </dd>
+
+            <dt><span class="term"><em class="parameter"><code>sched_priority</code></em></span></dt>
+
+            <dd>
+              <p>This field specifies the static priority to be set
+              when specifying <em class="parameter"><code>sched_policy</code></em> as
+              <code class="constant">SCHED_FIFO</code> or
+              <code class="constant">SCHED_RR</code>. The allowed
+              range of priorities for these policies can be
+              determined using <a class="link" href="../htmlman2/sched_get_priority_max.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_get_priority_min</span>(2)</span></a>
+              and <a class="link" href="../htmlman2/sched_get_priority_max.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_get_priority_max</span>(2)</span></a>.
+              For other policies, this field must be specified as
+              0.</p>
+            </dd>
+
+            <dt><span class="term"><em class="parameter"><code>sched_runtime</code></em></span></dt>
+
+            <dd>
+              <p>This field specifies the "Runtime" parameter for
+              deadline scheduling. The value is expressed in
+              nanoseconds. This field, and the next two fields, are
+              used only for <code class="constant">SCHED_DEADLINE</code> scheduling; for
+              further details, see <a class="link" href="../htmlman7/sched.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched</span>(7)</span></a>.</p>
+            </dd>
+
+            <dt><span class="term"><em class="parameter"><code>sched_deadline</code></em></span></dt>
+
+            <dd>
+              <p>This field specifies the "Deadline" parameter for
+              deadline scheduling. The value is expressed in
+              nanoseconds.</p>
+            </dd>
+
+            <dt><span class="term"><em class="parameter"><code>sched_period</code></em></span></dt>
+
+            <dd>
+              <p>This field specifies the "Period" parameter for
+              deadline scheduling. The value is expressed in
+              nanoseconds.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>The <em class="parameter"><code>flags</code></em>
+        argument is provided to allow for future extensions to the
+        interface; in the current implementation it must be
+        specified as 0.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="sched-setattr-2_sect3" name="sched-setattr-2_sect3" shape="rect"> </a>
+
+        <h3>sched_getattr()</h3>
+
+        <p>The <code class="function">sched_getattr</code>() system
+        call fetches the scheduling policy and the associated
+        attributes for the thread whose ID is specified in
+        <em class="parameter"><code>pid</code></em>. If <em class="parameter"><code>pid</code></em> equals zero, the
+        scheduling policy and attributes of the calling thread will
+        be retrieved.</p>
+
+        <p>The <em class="parameter"><code>size</code></em>
+        argument should be set to the size of the <span class="structname">sched_attr</span> structure as known to user
+        space. The value must be at least as large as the size of
+        the initially published <span class="structname">sched_attr</span> structure, or the call fails
+        with the error <span class="errorname">EINVAL</span>.</p>
+
+        <p>The retrieved scheduling attributes are placed in the
+        fields of the <span class="structname">sched_attr</span>
+        structure pointed to by <em class="parameter"><code>attr</code></em>. The kernel sets
+        <em class="replaceable"><code>attr.size</code></em> to the
+        size of its <span class="structname">sched_attr</span>
+        structure.</p>
+
+        <p>If the caller-provided <em class="parameter"><code>attr</code></em> buffer is larger than
+        the kernel's <span class="structname">sched_attr</span>
+        structure, the additional bytes in the user-space structure
+        are not touched. If the caller-provided structure is
+        smaller than the kernel <span class="structname">sched_attr</span> structure and the kernel
+        needs to return values outside the provided space,
+        <code class="function">sched_getattr</code>() fails with
+        the error <span class="errorname">E2BIG</span>. As with
+        <code class="function">sched_setattr</code>(), these
+        semantics allow for future extensibility of the
+        interface.</p>
+
+        <p>The <em class="parameter"><code>flags</code></em>
+        argument is provided to allow for future extensions to the
+        interface; in the current implementation it must be
+        specified as 0.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sched-setattr-2_sect4" name="sched-setattr-2_sect4" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">sched_setattr</code>()
+      and <code class="function">sched_getattr</code>() return 0.
+      On error, −1 is returned, and <code class="varname">errno</code> is set to indicate the cause of the
+      error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sched-setattr-2_sect5" name="sched-setattr-2_sect5" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <p><code class="function">sched_getattr</code>() and
+      <code class="function">sched_setattr</code>() can both fail
+      for the following reasons:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>attr</code></em> is
+            NULL; or <em class="parameter"><code>pid</code></em> is
+            negative; or <em class="parameter"><code>flags</code></em> is not zero.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ESRCH</span></span></dt>
+
+          <dd>
+            <p>The thread whose ID is <em class="parameter"><code>pid</code></em> could not be
+            found.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>In addition, <code class="function">sched_getattr</code>()
+      can fail for the following reasons:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">E2BIG</span></span></dt>
+
+          <dd>
+            <p>The buffer specified by <em class="parameter"><code>size</code></em> and <em class="parameter"><code>attr</code></em> is too small.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>size</code></em> is
+            invalid; that is, it is smaller than the initial
+            version of the <span class="structname">sched_attr</span> structure (48 bytes) or
+            larger than the system page size.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>In addition, <code class="function">sched_setattr</code>()
+      can fail for the following reasons:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">E2BIG</span></span></dt>
+
+          <dd>
+            <p>The buffer specified by <em class="parameter"><code>size</code></em> and <em class="parameter"><code>attr</code></em> is larger than the
+            kernel structure, and one or more of the excess bytes
+            is nonzero.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EBUSY</span></span></dt>
+
+          <dd>
+            <p><code class="constant">SCHED_DEADLINE</code>
+            admission control failure, see <a class="link" href="../htmlman7/sched.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched</span>(7)</span></a>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="replaceable"><code>attr.sched_policy</code></em> is
+            not one of the recognized policies; <em class="replaceable"><code>attr.sched_flags</code></em>
+            contains a flag other than <code class="constant">SCHED_FLAG_RESET_ON_FORK</code>; or
+            <em class="replaceable"><code>attr.sched_priority</code></em> is
+            invalid; or <em class="replaceable"><code>attr.sched_policy</code></em> is
+            <code class="constant">SCHED_DEADLINE</code> and the
+            deadline scheduling parameters in <em class="parameter"><code>attr</code></em> are invalid.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The caller does not have appropriate privileges.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The caller's CPU affinity mask does not include all
+            CPUs in the system (see <a class="link" href="../htmlman2/sched_setaffinity.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_setaffinity</span>(2)</span></a>).</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sched-setattr-2_sect6" name="sched-setattr-2_sect6" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p>These system calls first appeared in Linux 3.14.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sched-setattr-2_sect7" name="sched-setattr-2_sect7" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>These system calls are nonstandard Linux extensions.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sched-setattr-2_sect8" name="sched-setattr-2_sect8" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p><code class="function">sched_setattr</code>() provides a
+      superset of the functionality of <a class="link" href="../htmlman2/sched_setscheduler.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_setscheduler</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/sched_setparam.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_setparam</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/nice.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">nice</span>(2)</span></a>, and (other than
+      the ability to set the priority of all processes belonging to
+      a specified user or all processes in a specified group)
+      <a class="link" href="../htmlman2/getpriority.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setpriority</span>(2)</span></a>.
+      Analogously, <code class="function">sched_getattr</code>()
+      provides a superset of the functionality of <a class="link" href="../htmlman2/sched_setscheduler.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_getscheduler</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/sched_setparam.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_getparam</span>(2)</span></a>, and
+      (partially) <a class="link" href="../htmlman2/getpriority.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getpriority</span>(2)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sched-setattr-2_sect9" name="sched-setattr-2_sect9" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>In Linux versions up to 3.15, <code class="function">sched_settattr</code>() failed with the error
+      <span class="errorname">EFAULT</span> instead of <span class="errorname">E2BIG</span> for the case described in
+      ERRORS.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sched-setattr-2_sect10" name="sched-setattr-2_sect10" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman1/chrt.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chrt</span>(1)</span></a>, <a class="link" href="../htmlman2/nice.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">nice</span>(2)</span></a>, <a class="link" href="../htmlman2/sched_get_priority_max.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_get_priority_max</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/sched_get_priority_max.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_get_priority_min</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/sched_setaffinity.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_getaffinity</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/sched_setscheduler.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_getscheduler</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/sched_setparam.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_getparam</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/sched_rr_get_interval.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_rr_get_interval</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/sched_setaffinity.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_setaffinity</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/sched_setscheduler.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_setscheduler</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/sched_setparam.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_setparam</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/sched_yield.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_yield</span>(2)</span></a>, <a class="link" href="../htmlman2/getpriority.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setpriority</span>(2)</span></a>, <a class="link" href="../htmlman3/pthread_setschedparam.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_getschedparam</span>(3)</span></a>,
+      <a class="link" href="../htmlman3/pthread_setschedparam.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_setschedparam</span>(3)</span></a>,
+      <a class="link" href="../htmlman3/pthread_setschedprio.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_setschedprio</span>(3)</span></a>,
+      <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>, <a class="link" href="../htmlman7/cpuset.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">cpuset</span>(7)</span></a>, <a class="link" href="../htmlman7/sched.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="sched-setattr-2_sect11" name="sched-setattr-2_sect11" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2014 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  and Copyright (C) 2014 Peter Zijlstra &lt;peterz<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>infradead.org&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

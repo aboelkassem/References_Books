@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>swapon(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="swapon(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="swapon.2" name="swapon.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>swapon, swapoff — start/stop swapping to
+      file/device</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;unistd.h&gt;
+#include &lt;sys/swap.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>swapon</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">path</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">swapflags</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>swapoff</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">path</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="swapon-2_sect1" name="swapon-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">swapon</code>() sets the swap area
+      to the file or block device specified by <em class="parameter"><code>path</code></em>. <code class="function">swapoff</code>() stops swapping to the file or
+      block device specified by <em class="parameter"><code>path</code></em>.</p>
+
+      <p>If the <code class="constant">SWAP_FLAG_PREFER</code> flag
+      is specified in the <code class="function">swapon</code>()
+      <em class="parameter"><code>swapflags</code></em> argument,
+      the new swap area will have a higher priority than default.
+      The priority is encoded within <em class="parameter"><code>swapflags</code></em> as:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+<span class="emphasis"><em>    (prio &lt;&lt; SWAP_FLAG_PRIO_SHIFT) &amp; SWAP_FLAG_PRIO_MASK</em></span>
+</pre>
+      </div>
+
+      <p>If the <code class="constant">SWAP_FLAG_DISCARD</code>
+      flag is specified in the <code class="function">swapon</code>() <em class="parameter"><code>swapflags</code></em> argument, freed swap
+      pages will be discarded before they are reused, if the swap
+      device supports the discard or trim operation. (This may
+      improve performance on some Solid State Devices, but often it
+      does not.) See also NOTES.</p>
+
+      <p>These functions may be used only by a privileged process
+      (one having the <code class="constant">CAP_SYS_ADMIN</code>
+      capability).</p>
+
+      <div class="refsect2">
+        <a id="swapon-2_sect2" name="swapon-2_sect2" shape="rect"> </a>
+
+        <h3>Priority</h3>
+
+        <p>Each swap area has a priority, either high or low. The
+        default priority is low. Within the low-priority areas,
+        newer areas are even lower priority than older areas.</p>
+
+        <p>All priorities set with <em class="parameter"><code>swapflags</code></em> are high-priority,
+        higher than default. They may have any nonnegative value
+        chosen by the caller. Higher numbers mean higher
+        priority.</p>
+
+        <p>Swap pages are allocated from areas in priority order,
+        highest priority first. For areas with different
+        priorities, a higher-priority area is exhausted before
+        using a lower-priority area. If two or more areas have the
+        same priority, and it is the highest priority available,
+        pages are allocated on a round-robin basis between
+        them.</p>
+
+        <p>As of Linux 1.3.6, the kernel usually follows these
+        rules, but there are exceptions.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="swapon-2_sect3" name="swapon-2_sect3" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, zero is returned. On error, −1 is
+      returned, and <code class="varname">errno</code> is set
+      appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="swapon-2_sect4" name="swapon-2_sect4" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EBUSY</span></span></dt>
+
+          <dd>
+            <p>(for <code class="function">swapon</code>()) The
+            specified <em class="parameter"><code>path</code></em>
+            is already being used as a swap area.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>The file <em class="parameter"><code>path</code></em> exists, but refers
+            neither to a regular file nor to a block device;</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>(<code class="function">swapon</code>()) The
+            indicated path does not contain a valid swap signature
+            or resides on an in-memory filesystem such as
+            tmpfs.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span> (since Linux 3.4)</span></dt>
+
+          <dd>
+            <p>(<code class="function">swapon</code>()) An invalid
+            flag value was specified in <em class="replaceable"><code>flags</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>(<code class="function">swapoff</code>()) <em class="parameter"><code>path</code></em> is not currently a
+            swap area.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENFILE</span></span></dt>
+
+          <dd>
+            <p>The system limit on the total number of open files
+            has been reached.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOENT</span></span></dt>
+
+          <dd>
+            <p>The file <em class="parameter"><code>path</code></em> does not exist.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>The system has insufficient memory to start
+            swapping.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The caller does not have the <code class="constant">CAP_SYS_ADMIN</code> capability.
+            Alternatively, the maximum number of swap files are
+            already in use; see NOTES below.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="swapon-2_sect5" name="swapon-2_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>These functions are Linux-specific and should not be used
+      in programs intended to be portable. The second <em class="parameter"><code>swapflags</code></em> argument was
+      introduced in Linux 1.3.2.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="swapon-2_sect6" name="swapon-2_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>The partition or path must be prepared with <a class="link" href="../htmlman8/mkswap.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mkswap</span>(8)</span></a>.</p>
+
+      <p>There is an upper limit on the number of swap files that
+      may be used, defined by the kernel constant <code class="constant">MAX_SWAPFILES</code>. Before kernel 2.4.10,
+      <code class="constant">MAX_SWAPFILES</code> has the value 8;
+      since kernel 2.4.10, it has the value 32. Since kernel
+      2.6.18, the limit is decreased by 2 (thus: 30) if the kernel
+      is built with the <code class="constant">CONFIG_MIGRATION</code> option (which reserves two
+      swap table entries for the page migration features of
+      <a class="link" href="../htmlman2/mbind.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mbind</span>(2)</span></a> and <a class="link" href="../htmlman2/migrate_pages.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">migrate_pages</span>(2)</span></a>). Since
+      kernel 2.6.32, the limit is further decreased by 1 if the
+      kernel is built with the <code class="constant">CONFIG_MEMORY_FAILURE</code> option.</p>
+
+      <p>Discard of swap pages was introduced in kernel 2.6.29,
+      then made conditional on the <code class="constant">SWAP_FLAG_DISCARD</code> flag in kernel 2.6.36,
+      which still discards the entire swap area when <code class="function">swapon</code>() is called, even if that flag bit
+      is not set.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="swapon-2_sect7" name="swapon-2_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman8/mkswap.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mkswap</span>(8)</span></a>, <a class="link" href="../htmlman8/swapon.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">swapoff</span>(8)</span></a>, <a class="link" href="../htmlman8/swapon.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">swapon</span>(8)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="swapon-2_sect8" name="swapon-2_sect8" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 1992 Drew Eckhardt (drew<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.colorado.edu), March 28, 1992<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Modified by Michael Haardt &lt;michael<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>moria.de&gt;<br />
+
+                  Modified 1993-07-24 by Rik Faith &lt;faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu&gt;<br />
+
+                  Modified 1995-07-22 by Michael Chastain &lt;mec<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>duracef.shout.net&gt;<br />
+
+                  Modified 1995-07-23 by aeb<br />
+                  Modified 1996-10-22 by Eric S. Raymond &lt;esr<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>thyrsus.com&gt;<br />
+
+                  Modified 1998-09-08 by aeb<br />
+                  Modified 2004-06-17 by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  Modified 2004-10-10 by aeb<br />
+                  2004-12-14 mtk, Anand Kumria: added new errors<br />
+
+                  2007-06-22 Ivana Varekova &lt;varekova<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>redhat.com&gt;, mtk<br />
+
+                      Update text describing limit on number of swap files.<br />
+
+                  <br />
+                  FIXME Linux 3.11 added SWAP_FLAG_DISCARD_ONCE and SWAP_FLAG_DISCARD_PAGES<br />
+
+                  commit dcf6b7ddd7df8965727746f89c59229b23180e5a<br />
+
+                  Author: Rafael Aquini &lt;aquini<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>redhat.com&gt;<br />
+
+                  Date:   Wed Jul 3 15:02:46 2013 -0700<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

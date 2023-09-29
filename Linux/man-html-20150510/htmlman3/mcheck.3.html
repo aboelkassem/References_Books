@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>mcheck(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="mcheck(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="mcheck.3" name="mcheck.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>mcheck, mcheck_check_all, mcheck_pedantic, mprobe —
+      heap consistency checking</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;mcheck.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>mcheck</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">void <var class="pdparam">(*abortfunc)</var><code>(</code>enum
+            mcheck_status mstatus<code>)</code><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>mcheck_pedantic</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">void <var class="pdparam">(*abortfunc)</var><code>(</code>enum
+            mcheck_status mstatus<code>)</code><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">void
+            <strong>mcheck_check_all</strong>(</code></td>
+
+            <td rowspan="1" colspan="1"><code>void)</code>;</td>
+
+            <td rowspan="1" colspan="1"> </td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">enum mcheck_status
+            <strong>mprobe</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">void *<var class="pdparam">ptr</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mcheck-3_sect1" name="mcheck-3_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">mcheck</code>() function
+      installs a set of debugging hooks for the <a class="link" href="../htmlman3/malloc.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">malloc</span>(3)</span></a> family of
+      memory-allocation functions. These hooks cause certain
+      consistency checks to be performed on the state of the heap.
+      The checks can detect application errors such as freeing a
+      block of memory more than once or corrupting the bookkeeping
+      data structures that immediately precede a block of allocated
+      memory.</p>
+
+      <p>To be effective, the <code class="function">mcheck</code>() function must be called before the
+      first call to <a class="link" href="../htmlman3/malloc.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">malloc</span>(3)</span></a> or a related
+      function. In cases where this is difficult to ensure, linking
+      the program with <code class="option">−lmcheck</code>
+      inserts an implicit call to <code class="function">mcheck</code>() (with a NULL argument) before the
+      first call to a memory-allocation function.</p>
+
+      <p>The <code class="function">mcheck_pedantic</code>()
+      function is similar to <code class="function">mcheck</code>(), but performs checks on all
+      allocated blocks whenever one of the memory-allocation
+      functions is called. This can be very slow!</p>
+
+      <p>The <code class="function">mcheck_check_all</code>()
+      function causes an immediate check on all allocated blocks.
+      This call is effective only if <code class="function">mcheck</code>() is called beforehand.</p>
+
+      <p>If the system detects an inconsistency in the heap, the
+      caller-supplied function pointed to by <em class="parameter"><code>abortfunc</code></em> is invoked with a
+      single argument argument, <code class="function">mstatus</code>, that indicates what type of
+      inconsistency was detected. If <em class="parameter"><code>abortfunc</code></em> is NULL, a default
+      function prints an error message on <code class="varname">stderr</code> and calls <a class="link" href="../htmlman3/abort.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">abort</span>(3)</span></a>.</p>
+
+      <p>The <code class="function">mprobe</code>() function
+      performs a consistency check on the block of allocated memory
+      pointed to by <em class="parameter"><code>ptr</code></em>.
+      The <code class="function">mcheck</code>() function should be
+      called beforehand (otherwise <code class="function">mprobe</code>() returns <code class="constant">MCHECK_DISABLED</code>).</p>
+
+      <p>The following list describes the values returned by
+      <code class="function">mprobe</code>() or passed as the
+      <code class="function">mstatus</code> argument when
+      <em class="parameter"><code>abortfunc</code></em> is
+      invoked:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="function">MCHECK_DISABLED (mprobe</code>()
+          only)</span></dt>
+
+          <dd>
+            <p><code class="function">mcheck</code>() was not
+            called before the first memory allocation function was
+            called. Consistency checking is not possible.</p>
+          </dd>
+
+          <dt><span class="term"><code class="function">MCHECK_OK
+          (mprobe</code>() only)</span></dt>
+
+          <dd>
+            <p>No inconsistency detected.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MCHECK_HEAD</code></span></dt>
+
+          <dd>
+            <p>Memory preceding an allocated block was
+            clobbered.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MCHECK_TAIL</code></span></dt>
+
+          <dd>
+            <p>Memory following an allocated block was
+            clobbered.</p>
+          </dd>
+
+          <dd>
+            <p>MCHECK_FREE A block of memory was freed twice.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mcheck-3_sect2" name="mcheck-3_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p><code class="function">mcheck</code>() and <code class="function">mcheck_pedantic</code>() return 0 on success, or
+      −1 on error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mcheck-3_sect3" name="mcheck-3_sect3" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p>The <code class="function">mcheck_pedantic</code>() and
+      <code class="function">mcheck_check_all</code>() functions
+      are available since glibc 2.2. The <code class="function">mcheck</code>() and <code class="function">mprobe</code>() functions are present since at
+      least glibc 2.0</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mcheck-3_sect4" name="mcheck-3_sect4" shape="rect"> </a>
+
+      <h2>ATTRIBUTES</h2>
+
+      <p>For an explanation of the terms used in this section, see
+      <a class="link" href="../htmlman7/attributes.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">attributes</span>(7)</span></a>.</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">Interface</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Attribute</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Value</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">
+                <p><code class="literal">mcheck</code>(),
+                <code class="literal">mcheck_pedantic</code>(),</p>
+
+                <p><code class="literal">mcheck_check_all</code>(),
+                <code class="literal">mprobe</code>()</p>
+              </td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Thread safety</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+                <p>MT-Unsafe race:mcheck</p>
+
+                <p>const:malloc_hooks</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mcheck-3_sect5" name="mcheck-3_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>These functions are GNU extensions.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mcheck-3_sect6" name="mcheck-3_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Linking a program with <code class="option">−lmcheck</code> and using the <code class="constant">MALLOC_CHECK_</code> environment variable
+      (described in <a class="link" href="../htmlman3/mallopt.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mallopt</span>(3)</span></a>) cause the same
+      kinds of errors to be detected. But, using <code class="constant">MALLOC_CHECK_</code> does not require the
+      application to be relinked.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mcheck-3_sect7" name="mcheck-3_sect7" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>The program below calls <code class="function">mcheck</code>() with a NULL argument and then
+      frees the same block of memory twice. The following shell
+      session demonstrates what happens when running the
+      program:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$<span class="emphasis"><em> ./a.out</em></span>
+About to free
+
+About to free a second time
+block freed twice
+Aborted (core dumped)
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="refsect2">
+        <a id="mcheck-3_sect8" name="mcheck-3_sect8" shape="rect"> </a>
+
+        <h3>Program source</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;mcheck.h&gt;
+
+int
+main(int argc, char *argv[])
+{
+    char *p;
+
+    if (mcheck(NULL) != 0) {
+        fprintf(stderr, "mcheck() failed\n");
+
+        exit(EXIT_FAILURE);
+    }
+
+    p = malloc(1000);
+
+    fprintf(stderr, "About to free\n");
+    free(p);
+    fprintf(stderr, "\nAbout to free a second time\n");
+    free(p);
+
+    exit(EXIT_SUCCESS);
+}
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mcheck-3_sect9" name="mcheck-3_sect9" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/malloc.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">malloc</span>(3)</span></a>, <a class="link" href="../htmlman3/mallopt.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mallopt</span>(3)</span></a>, <a class="link" href="../htmlman3/mtrace.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mtrace</span>(3)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="mcheck-3_sect10" name="mcheck-3_sect10" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 2012 by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

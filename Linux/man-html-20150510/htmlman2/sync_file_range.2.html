@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>sync_file_range(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="sync_file_range(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="sync-file-range.2" name="sync-file-range.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>sync_file_range — sync a file segment with disk</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#define _GNU_SOURCE          /* See feature_test_macros(7) */
+#include &lt;fcntl.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>sync_file_range</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">fd</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">off64_t <var class="pdparam">offset</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">off64_t <var class="pdparam">nbytes</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">unsigned int <var class="pdparam">flags</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sync-file-range-2_sect1" name="sync-file-range-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">sync_file_range</code>() permits
+      fine control when synchronizing the open file referred to by
+      the file descriptor <em class="parameter"><code>fd</code></em> with disk.</p>
+
+      <p><em class="parameter"><code>offset</code></em> is the
+      starting byte of the file range to be synchronized.
+      <em class="parameter"><code>nbytes</code></em> specifies the
+      length of the range to be synchronized, in bytes; if
+      <em class="parameter"><code>nbytes</code></em> is zero, then
+      all bytes from <em class="parameter"><code>offset</code></em>
+      through to the end of file are synchronized. Synchronization
+      is in units of the system page size: <em class="parameter"><code>offset</code></em> is rounded down to a
+      page boundary; <em class="replaceable"><code>(offset+nbytes-1)</code></em> is rounded
+      up to a page boundary.</p>
+
+      <p>The <em class="parameter"><code>flags</code></em> bit-mask
+      argument can include any of the following values:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">SYNC_FILE_RANGE_WAIT_BEFORE</code></span></dt>
+
+          <dd>
+            <p>Wait upon write-out of all pages in the specified
+            range that have already been submitted to the device
+            driver for write-out before performing any write.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">SYNC_FILE_RANGE_WRITE</code></span></dt>
+
+          <dd>
+            <p>Initiate write-out of all dirty pages in the
+            specified range which are not presently submitted
+            write-out. Note that even this may block if you attempt
+            to write more than request queue size.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">SYNC_FILE_RANGE_WAIT_AFTER</code></span></dt>
+
+          <dd>
+            <p>Wait upon write-out of all pages in the range after
+            performing any write.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>Specifying <em class="parameter"><code>flags</code></em>
+      as 0 is permitted, as a no-op.</p>
+
+      <div class="refsect2">
+        <a id="sync-file-range-2_sect2" name="sync-file-range-2_sect2" shape="rect"> </a>
+
+        <h3>Warning</h3>
+
+        <p>This system call is extremely dangerous and should not
+        be used in portable programs. None of these operations
+        writes out the file's metadata. Therefore, unless the
+        application is strictly performing overwrites of
+        already-instantiated disk blocks, there are no guarantees
+        that the data will be available after a crash. There is no
+        user interface to know if a write is purely an overwrite.
+        On filesystems using copy-on-write semantics (e.g.,
+        <em class="replaceable"><code>btrfs</code></em>) an
+        overwrite of existing allocated blocks is impossible. When
+        writing into preallocated space, many filesystems also
+        require calls into the block allocator, which this system
+        call does not sync out to disk. This system call does not
+        flush disk write caches and thus does not provide any data
+        integrity on systems with volatile disk write caches.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="sync-file-range-2_sect3" name="sync-file-range-2_sect3" shape="rect"> </a>
+
+        <h3>Some details</h3>
+
+        <p><code class="constant">SYNC_FILE_RANGE_WAIT_BEFORE</code> and
+        <code class="constant">SYNC_FILE_RANGE_WAIT_AFTER</code>
+        will detect any I/O errors or <span class="errorname">ENOSPC</span> conditions and will return these
+        to the caller.</p>
+
+        <p>Useful combinations of the <em class="parameter"><code>flags</code></em> bits are:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><span class="emphasis"><em>SYNC_FILE_RANGE_WAIT_BEFORE |
+            SYNC_FILE_RANGE_WRITE</em></span></span></dt>
+
+            <dd>
+              <p>Ensures that all pages in the specified range
+              which were dirty when <code class="function">sync_file_range</code>() was called are
+              placed under write-out. This is a
+              start-write-for-data-integrity operation.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SYNC_FILE_RANGE_WRITE</code></span></dt>
+
+            <dd>
+              <p>Start write-out of all dirty pages in the
+              specified range which are not presently under
+              write-out. This is an asynchronous flush-to-disk
+              operation. This is not suitable for data integrity
+              operations.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SYNC_FILE_RANGE_WAIT_BEFORE</code> (or
+            <code class="constant">SYNC_FILE_RANGE_WAIT_AFTER</code>)</span></dt>
+
+            <dd>
+              <p>Wait for completion of write-out of all pages in
+              the specified range. This can be used after an
+              earlier <span class="emphasis"><em>SYNC_FILE_RANGE_WAIT_BEFORE |
+              SYNC_FILE_RANGE_WRITE</em></span> operation to wait
+              for completion of that operation, and obtain its
+              result.</p>
+            </dd>
+
+            <dt><span class="term"><span class="emphasis"><em>SYNC_FILE_RANGE_WAIT_BEFORE |
+            SYNC_FILE_RANGE_WRITE |
+            SYNC_FILE_RANGE_WAIT_AFTER</em></span></span></dt>
+
+            <dd>
+              <p>This is a write-for-data-integrity operation that
+              will ensure that all pages in the specified range
+              which were dirty when <code class="function">sync_file_range</code>() was called are
+              committed to disk.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sync-file-range-2_sect4" name="sync-file-range-2_sect4" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">sync_file_range</code>() returns 0; on failure
+      −1 is returned and <code class="varname">errno</code>
+      is set to indicate the error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sync-file-range-2_sect5" name="sync-file-range-2_sect5" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EBADF</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>fd</code></em> is not a
+            valid file descriptor.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>flags</code></em>
+            specifies an invalid bit; or <em class="parameter"><code>offset</code></em> or <em class="parameter"><code>nbytes</code></em> is invalid.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EIO</span></span></dt>
+
+          <dd>
+            <p>I/O error.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>Out of memory.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOSPC</span></span></dt>
+
+          <dd>
+            <p>Out of disk space.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ESPIPE</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>fd</code></em> refers to
+            something other than a regular file, a block device, a
+            directory, or a symbolic link.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sync-file-range-2_sect6" name="sync-file-range-2_sect6" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p><code class="function">sync_file_range</code>() appeared
+      on Linux in kernel 2.6.17.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sync-file-range-2_sect7" name="sync-file-range-2_sect7" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>This system call is Linux-specific, and should be avoided
+      in portable programs.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sync-file-range-2_sect8" name="sync-file-range-2_sect8" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <div class="refsect2">
+        <a id="sync-file-range-2_sect9" name="sync-file-range-2_sect9" shape="rect"> </a>
+
+        <h3>sync_file_range2()</h3>
+
+        <p>Some architectures (e.g., PowerPC, ARM) need 64-bit
+        arguments to be aligned in a suitable pair of registers. On
+        such architectures, the call signature of <code class="function">sync_file_range</code>() shown in the SYNOPSIS
+        would force a register to be wasted as padding between the
+        <em class="parameter"><code>fd</code></em> and <em class="parameter"><code>offset</code></em> arguments. (See
+        <a class="link" href="../htmlman2/syscall.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">syscall</span>(2)</span></a> for details.)
+        Therefore, these architectures define a different system
+        call that orders the arguments suitably:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+  <code class="function">int sync_file_range2</code>(<em class="parameter"><code>int fd</code></em>, <em class="parameter"><code>unsigned int flags</code></em>, <em class="parameter"><code>off64_t offset</code></em>, <em class="parameter"><code>off64_t nbytes</code></em>);
+</pre>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>The behavior of this system call is otherwise exactly
+        the same as <code class="function">sync_file_range</code>().</p>
+
+        <p>A system call with this signature first appeared on the
+        ARM architecture in Linux 2.6.20, with the name
+        <code class="function">arm_sync_file_range</code>(). It was
+        renamed in Linux 2.6.22, when the analogous system call was
+        added for PowerPC. On architectures where glibc support is
+        provided, glibc transparently wraps <code class="function">sync_file_range2</code>() under the name
+        <code class="function">sync_file_range</code>().</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sync-file-range-2_sect10" name="sync-file-range-2_sect10" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/fsync.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fdatasync</span>(2)</span></a>, <a class="link" href="../htmlman2/fsync.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fsync</span>(2)</span></a>, <a class="link" href="../htmlman2/msync.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">msync</span>(2)</span></a>, <a class="link" href="../htmlman2/sync.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sync</span>(2)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="sync-file-range-2_sect11" name="sync-file-range-2_sect11" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 2006 Andrew Morton &lt;akpm<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>osdl.org&gt;<br />
+
+                  and Copyright 2006 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  2006-07-05 Initial creation, Michael Kerrisk based on<br />
+
+                      Andrew Morton's comments in fs/sync.c<br />
+
+                  2010-10-09, mtk, Document sync_file_range2()<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

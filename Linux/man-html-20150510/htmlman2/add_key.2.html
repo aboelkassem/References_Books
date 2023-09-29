@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>add_key(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="add_key(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="add-key.2" name="add-key.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>add_key — add a key to the kernel's key management
+      facility</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;keyutils.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">key_serial_t
+            <strong>add_key</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">type</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">description</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const void *<var class="pdparam">payload</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">size_t <var class="pdparam">plen</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">key_serial_t <var class="pdparam">keyring</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="add-key-2_sect1" name="add-key-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">add_key</code>() asks the kernel to
+      create or update a key of the given <em class="parameter"><code>type</code></em> and <em class="parameter"><code>description</code></em>, instantiate it
+      with the <em class="parameter"><code>payload</code></em> of
+      length <em class="parameter"><code>plen</code></em>, and to
+      attach it to the nominated <em class="parameter"><code>keyring</code></em> and to return its
+      serial number.</p>
+
+      <p>The key type may reject the data if it's in the wrong
+      format or in some other way invalid.</p>
+
+      <p>If the destination <em class="parameter"><code>keyring</code></em> already contains a key
+      that matches the specified <em class="parameter"><code>type</code></em> and <em class="replaceable"><code>description,</code></em> then, if the key
+      type supports it, that key will be updated rather than a new
+      key being created; if not, a new key will be created and it
+      will displace the link to the extant key from the
+      keyring.</p>
+
+      <p>The destination <em class="parameter"><code>keyring</code></em> serial number may be
+      that of a valid keyring to which the caller has write
+      permission, or it may be a special keyring ID:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">KEY_SPEC_THREAD_KEYRING</code></span></dt>
+
+          <dd>
+            <p>This specifies the caller's thread-specific
+            keyring.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">KEY_SPEC_PROCESS_KEYRING</code></span></dt>
+
+          <dd>
+            <p>This specifies the caller's process-specific
+            keyring.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">KEY_SPEC_SESSION_KEYRING</code></span></dt>
+
+          <dd>
+            <p>This specifies the caller's session-specific
+            keyring.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">KEY_SPEC_USER_KEYRING</code></span></dt>
+
+          <dd>
+            <p>This specifies the caller's UID-specific
+            keyring.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">KEY_SPEC_USER_SESSION_KEYRING</code></span></dt>
+
+          <dd>
+            <p>This specifies the caller's UID-session keyring.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="add-key-2_sect2" name="add-key-2_sect2" shape="rect"> </a>
+
+      <h2>KEY TYPES</h2>
+
+      <p>There are a number of key types available in the core key
+      management code, and these can be specified to this
+      function:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="quote">“<span class="quote">user</span>”</span></span></dt>
+
+          <dd>
+            <p>Keys of the user-defined key type may contain a blob
+            of arbitrary data, and the <em class="parameter"><code>description</code></em> may be any
+            valid string, though it is preferred that the
+            description be prefixed with a string representing the
+            service to which the key is of interest and a colon
+            (for instance <span class="quote">“<span class="quote"><em class="replaceable"><code>afs:mykey</code></em></span>”</span>).
+            The <em class="parameter"><code>payload</code></em> may
+            be empty or NULL for keys of this type.</p>
+          </dd>
+
+          <dt><span class="term"><span class="quote">“<span class="quote">keyring</span>”</span></span></dt>
+
+          <dd>
+            <p>Keyrings are special key types that may contain
+            links to sequences of other keys of any type. If this
+            interface is used to create a keyring, then a NULL
+            <em class="parameter"><code>payload</code></em> should
+            be specified, and <em class="parameter"><code>plen</code></em> should be zero.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="add-key-2_sect3" name="add-key-2_sect3" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success <code class="function">add_key</code>() returns
+      the serial number of the key it created or updated. On error,
+      the value −1 will be returned and errno will have been
+      set to an appropriate error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="add-key-2_sect4" name="add-key-2_sect4" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">ENOKEY</span></span></dt>
+
+          <dd>
+            <p>The keyring doesn't exist.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EKEYEXPIRED</span></span></dt>
+
+          <dd>
+            <p>The keyring has expired.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EKEYREVOKED</span></span></dt>
+
+          <dd>
+            <p>The keyring has been revoked.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>The payload data was invalid.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>Insufficient memory to create a key.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EDQUOT</span></span></dt>
+
+          <dd>
+            <p>The key quota for this user would be exceeded by
+            creating this key or linking it to the keyring.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EACCES</span></span></dt>
+
+          <dd>
+            <p>The keyring wasn't available for modification by the
+            user.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="add-key-2_sect5" name="add-key-2_sect5" shape="rect"> </a>
+
+      <h2>LINKING</h2>
+
+      <p>Although this is a Linux system call, it is not present in
+      <em class="replaceable"><code>libc</code></em> but can be
+      found rather in <em class="replaceable"><code>libkeyutils</code></em>. When linking,
+      <code class="option">−lkeyutils</code> should be
+      specified to the linker.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="add-key-2_sect6" name="add-key-2_sect6" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><span class="citerefentry"><span class="refentrytitle">keyctl</span>(1)</span>, <a class="link" href="../htmlman2/keyctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">keyctl</span>(2)</span></a>, <a class="link" href="../htmlman2/request_key.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">request_key</span>(2)</span></a>,
+      <span class="citerefentry"><span class="refentrytitle">keyctl</span>(3)</span>, <span class="citerefentry"><span class="refentrytitle">keyrings</span>(7)</span></p>
+    </div>
+
+    <div class="colophon">
+      <a id="add-key-2_sect7" name="add-key-2_sect7" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2006 Red Hat, Inc. All Rights Reserved.<br />
+
+                  Written by David Howells (dhowells<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>redhat.com)<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_SW_ONEPARA)<br />
+                  This program is free software; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License<br />
+
+                  as published by the Free Software Foundation; either version<br />
+
+                  2 of the License, or (at your option) any later version.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

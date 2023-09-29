@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>services(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="services(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="services.5" name="services.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>services — Internet network services list</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="services-5_sect1" name="services-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><em class="replaceable"><code>services</code></em> is a
+      plain ASCII file providing a mapping between human-friendly
+      textual names for internet services, and their underlying
+      assigned port numbers and protocol types. Every networking
+      program should look into this file to get the port number
+      (and protocol) for its service. The C library routines
+      <a class="link" href="../htmlman3/getservent.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getservent</span>(3)</span></a>, <a class="link" href="../htmlman3/getservent.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getservbyname</span>(3)</span></a>, <a class="link" href="../htmlman3/getservent.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getservbyport</span>(3)</span></a>, <a class="link" href="../htmlman3/getservent.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setservent</span>(3)</span></a>, and
+      <a class="link" href="../htmlman3/getservent.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">endservent</span>(3)</span></a> support
+      querying this file from programs.</p>
+
+      <p>Port numbers are assigned by the IANA (Internet Assigned
+      Numbers Authority), and their current policy is to assign
+      both TCP and UDP protocols when assigning a port number.
+      Therefore, most entries will have two entries, even for
+      TCP-only services.</p>
+
+      <p>Port numbers below 1024 (so-called "low numbered" ports)
+      can be bound to only by root (see <a class="link" href="../htmlman2/bind.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">bind</span>(2)</span></a>, <a class="link" href="../htmlman7/tcp.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tcp</span>(7)</span></a>, and <a class="link" href="../htmlman7/udp.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">udp</span>(7)</span></a>). This is so clients
+      connecting to low numbered ports can trust that the service
+      running on the port is the standard implementation, and not a
+      rogue service run by a user of the machine. Well-known port
+      numbers specified by the IANA are normally located in this
+      root-only space.</p>
+
+      <p>The presence of an entry for a service in the <em class="replaceable"><code>services</code></em> file does not
+      necessarily mean that the service is currently running on the
+      machine. See <span class="citerefentry"><span class="refentrytitle">inetd.conf</span>(5)</span> for the
+      configuration of Internet services offered. Note that not all
+      networking services are started by <span class="citerefentry"><span class="refentrytitle">inetd</span>(8)</span>, and so won't appear
+      in <span class="citerefentry"><span class="refentrytitle">inetd.conf</span>(5)</span>. In particular,
+      news (NNTP) and mail (SMTP) servers are often initialized
+      from the system boot scripts.</p>
+
+      <p>The location of the <em class="replaceable"><code>services</code></em> file is defined by
+      <code class="constant">_PATH_SERVICES</code> in <code class="literal">&lt;</code><code class="filename">netdb.h</code><code class="literal">&gt;</code>
+      This is usually set to <code class="filename">/etc/services</code>.</p>
+
+      <p>Each line describes one service, and is of the form:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p><em class="replaceable"><code>service</code></em>-<em class="replaceable"><code>name</code></em> <em class="replaceable"><code>port</code></em>/<em class="replaceable"><code>protocol</code></em> [<em class="replaceable"><code>aliases</code></em> ...]</p>
+
+            <div class="variablelist">
+              <dl class="variablelist">
+                <dt><span class="term">where:</span></dt>
+
+                <dt><span class="term"><em class="replaceable"><code>service-name</code></em></span></dt>
+
+                <dd>
+                  <p>is the friendly name the service is known by
+                  and looked up under. It is case sensitive. Often,
+                  the client program is named after the <em class="replaceable"><code>service-name</code></em>.</p>
+                </dd>
+
+                <dt><span class="term"><em class="replaceable"><code>port</code></em></span></dt>
+
+                <dd>
+                  <p>is the port number (in decimal) to use for
+                  this service.</p>
+                </dd>
+
+                <dt><span class="term"><em class="replaceable"><code>protocol</code></em></span></dt>
+
+                <dd>
+                  <p>is the type of protocol to be used. This field
+                  should match an entry in the <a class="link" href="../htmlman5/protocols.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">protocols</span>(5)</span></a>
+                  file. Typical values include <em class="replaceable"><code>tcp</code></em> and
+                  <em class="replaceable"><code>udp</code></em>.</p>
+                </dd>
+
+                <dt><span class="term"><em class="replaceable"><code>aliases</code></em></span></dt>
+
+                <dd>
+                  <p>is an optional space or tab separated list of
+                  other names for this service. Again, the names
+                  are case sensitive.</p>
+                </dd>
+              </dl>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <p>Either spaces or tabs may be used to separate the
+      fields.</p>
+
+      <p>Comments are started by the hash sign (#) and continue
+      until the end of the line. Blank lines are skipped.</p>
+
+      <p>The <em class="replaceable"><code>service-name</code></em>
+      should begin in the first column of the file, since leading
+      spaces are not stripped. <em class="replaceable"><code>service-names</code></em> can be any
+      printable characters excluding space and tab. However, a
+      conservative choice of characters should be used to minimize
+      compatibility problems. For example, a−z, 0−9,
+      and hyphen (−) would seem a sensible choice.</p>
+
+      <p>Lines not matching this format should not be present in
+      the file. (Currently, they are silently skipped by <a class="link" href="../htmlman3/getservent.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getservent</span>(3)</span></a>, <a class="link" href="../htmlman3/getservent.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getservbyname</span>(3)</span></a>, and
+      <a class="link" href="../htmlman3/getservent.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getservbyport</span>(3)</span></a>. However,
+      this behavior should not be relied on.)</p>
+
+      <p>This file might be distributed over a network using a
+      network-wide naming service like Yellow Pages/NIS or
+      BIND/Hesiod.</p>
+
+      <p>A sample <em class="replaceable"><code>services</code></em> file might look like
+      this:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+netstat         15/tcp
+qotd            17/tcp          quote
+msp             18/tcp          # message send protocol
+msp             18/udp          # message send protocol
+chargen         19/tcp          ttytst source
+chargen         19/udp          ttytst source
+ftp             21/tcp
+# 22 − unassigned
+telnet          23/tcp
+</pre>
+          </div>
+        </blockquote>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="services-5_sect2" name="services-5_sect2" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="filename">/etc/services</code></span></dt>
+
+          <dd>
+            <p>The Internet network services list</p>
+          </dd>
+
+          <dt><span class="term"><code class="literal">&lt;</code><code class="filename">netdb.h</code><code class="literal">&gt;</code></span></dt>
+
+          <dd>
+            <p>Definition of <code class="constant">_PATH_SERVICES</code></p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="services-5_sect3" name="services-5_sect3" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/listen.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">listen</span>(2)</span></a>, <a class="link" href="../htmlman3/getservent.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">endservent</span>(3)</span></a>, <a class="link" href="../htmlman3/getservent.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getservbyname</span>(3)</span></a>, <a class="link" href="../htmlman3/getservent.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getservbyport</span>(3)</span></a>, <a class="link" href="../htmlman3/getservent.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getservent</span>(3)</span></a>, <a class="link" href="../htmlman3/getservent.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setservent</span>(3)</span></a>, <span class="citerefentry"><span class="refentrytitle">inetd.conf</span>(5)</span>, <a class="link" href="../htmlman5/protocols.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">protocols</span>(5)</span></a>, <span class="citerefentry"><span class="refentrytitle">inetd</span>(8)</span></p>
+
+      <p>Assigned Numbers RFC, most recently RFC 1700, (AKA
+      STD0002).</p>
+    </div>
+
+    <div class="colophon">
+      <a id="services-5_sect4" name="services-5_sect4" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    This manpage is Copyright (C) 1996 Austin Donnelly &lt;and1000<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cam.ac.uk&gt;,<br />
+
+                  with additional material Copyright (c) 1995 Martin Schulze<br />
+
+                      &lt;joey<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>infodrom.north.de&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                    This manpage was made by merging two independently written manpages,<br />
+
+                    one written by Martin Schulze (18 Oct 95), the other written by<br />
+
+                    Austin Donnelly, (9 Jan 96).<br />
+
+                  <br />
+                  Thu Jan 11 12:14:41 1996 Austin Donnelly  &lt;and1000<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cam.ac.uk&gt;<br />
+
+                    * Merged two services(5) manpages<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

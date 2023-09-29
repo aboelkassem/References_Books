@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>sd(4) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="sd(4) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index4.html" shape="rect">Section 4</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="sd.4" name="sd.4" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>sd — driver for SCSI disk drives</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;linux/hdreg.h&gt;         /* for HDIO_GETGEO */
+#include &lt;linux/fs.h&gt;            /* for BLKGETSIZE and BLKRRPART */
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sd-4_sect1" name="sd-4_sect1" shape="rect"> </a>
+
+      <h2>CONFIGURATION</h2>
+
+      <p>The block device name has the following form: <code class="function">sd</code><em class="replaceable"><code>lp,</code></em> where <code class="literal">l</code> is a letter denoting the physical drive,
+      and <code class="literal">p</code> is a number denoting the
+      partition on that physical drive. Often, the partition
+      number, <code class="literal">p</code>, will be left off when
+      the device corresponds to the whole drive.</p>
+
+      <p>SCSI disks have a major device number of 8, and a minor
+      device number of the form (16 * <code class="function">drive_number</code>) + <code class="function">partition_number</code>, where <code class="function">drive_number</code> is the number of the physical
+      drive in order of detection, and <code class="function">partition_number</code> is as follows:</p>
+
+      <p>partition 0 is the whole drive</p>
+
+      <p>partitions 1-4 are the DOS "primary" partitions</p>
+
+      <p>partitions 5-8 are the DOS "extended" (or "logical")
+      partitions</p>
+
+      <p>For example, <code class="filename">/dev/sda</code> will
+      have major 8, minor 0, and will refer to all of the first
+      SCSI drive in the system; and <code class="filename">/dev/sdb3</code> will have major 8, minor 19, and
+      will refer to the third DOS "primary" partition on the second
+      SCSI drive in the system.</p>
+
+      <p>At this time, only block devices are provided. Raw devices
+      have not yet been implemented.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sd-4_sect2" name="sd-4_sect2" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The following <code class="function">ioctl</code>s are
+      provided:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">HDIO_GETGEO</code></span></dt>
+
+          <dd>
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <p>Returns the BIOS disk parameters in the
+                following structure:</p>
+
+                <div class="blockquote">
+                  <blockquote class="blockquote">
+                    <div class="structdef">
+                      <table style="border-collapse: collapse;">
+                        <colgroup span="1">
+                          <col class="c1" span="1" />
+                          <col class="c2" span="1" />
+                          <col class="c3" span="1" />
+                          <col class="c4" span="1" />
+                          <col class="c5" span="1" />
+                        </colgroup>
+
+                        <tbody>
+                          <tr>
+                            <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                            <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">hd_geometry</span> {</td>
+                          </tr>
+
+                          <tr>
+                            <td style="" rowspan="1" colspan="1"> </td>
+
+                            <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                            <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                            <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>heads</code></em>;</td>
+
+                            <td style="" align="left" rowspan="1" colspan="1"> </td>
+                          </tr>
+
+                          <tr>
+                            <td style="" rowspan="1" colspan="1"> </td>
+
+                            <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                            <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                            <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sectors</code></em>;</td>
+
+                            <td style="" align="left" rowspan="1" colspan="1"> </td>
+                          </tr>
+
+                          <tr>
+                            <td style="" rowspan="1" colspan="1"> </td>
+
+                            <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                            <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                            <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>cylinders</code></em>;</td>
+
+                            <td style="" align="left" rowspan="1" colspan="1"> </td>
+                          </tr>
+
+                          <tr>
+                            <td style="" rowspan="1" colspan="1"> </td>
+
+                            <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned long</span></td>
+
+                            <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                            <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>start</code></em>;</td>
+
+                            <td style="" align="left" rowspan="1" colspan="1"> </td>
+                          </tr>
+
+                          <tr>
+                            <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </blockquote>
+                </div>
+
+                <p>A pointer to this structure is passed as the
+                <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a>
+                parameter.</p>
+
+                <p>The information returned in the parameter is the
+                disk geometry of the drive <span class="emphasis"><em>as understood by DOS!</em></span>
+                This geometry is <code class="function">not</code>
+                the physical geometry of the drive. It is used when
+                constructing the drive's partition table, however,
+                and is needed for convenient operation of
+                <span class="citerefentry"><span class="refentrytitle">fdisk</span>(1)</span>,
+                <span class="citerefentry"><span class="refentrytitle">efdisk</span>(1)</span>, and
+                <span class="citerefentry"><span class="refentrytitle">lilo</span>(1)</span>. If the
+                geometry information is not available, zero will be
+                returned for all of the parameters.</p>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><code class="constant">BLKGETSIZE</code></span></dt>
+
+          <dd>
+            <p>Returns the device size in sectors. The <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> parameter
+            should be a pointer to a <code class="function">long</code>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">BLKRRPART</code></span></dt>
+
+          <dd>
+            <p>Forces a reread of the SCSI disk partition tables.
+            No parameter is needed.</p>
+
+            <p>The SCSI <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> operations
+            are also supported. If the <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> parameter is
+            required, and it is NULL, then <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> will fail
+            with the error <span class="errorname">EINVAL</span>.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sd-4_sect3" name="sd-4_sect3" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <p>/dev/sd[a−h]: the whole device</p>
+
+      <p>/dev/sd[a−h][0−8]: individual block
+      partitions</p>
+    </div>
+
+    <div class="colophon">
+      <a id="sd-4_sect4" name="sd-4_sect4" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    sd.4<br />
+                  Copyright 1992 Rickard E. Faith (faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu)<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

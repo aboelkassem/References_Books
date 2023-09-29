@@ -1,0 +1,876 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>signalfd(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="signalfd(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="signalfd.2" name="signalfd.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>signalfd — create a file descriptor for accepting
+      signals</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;sys/signalfd.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>signalfd</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">fd</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const sigset_t *<var class="pdparam">mask</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">flags</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="signalfd-2_sect1" name="signalfd-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">signalfd</code>() creates a file
+      descriptor that can be used to accept signals targeted at the
+      caller. This provides an alternative to the use of a signal
+      handler or <a class="link" href="../htmlman2/sigwaitinfo.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigwaitinfo</span>(2)</span></a>, and has the
+      advantage that the file descriptor may be monitored by
+      <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a>, <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a>, and <a class="link" href="../htmlman7/epoll.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll</span>(7)</span></a>.</p>
+
+      <p>The <em class="parameter"><code>mask</code></em> argument
+      specifies the set of signals that the caller wishes to accept
+      via the file descriptor. This argument is a signal set whose
+      contents can be initialized using the macros described in
+      <a class="link" href="../htmlman3/sigsetops.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigsetops</span>(3)</span></a>. Normally, the
+      set of signals to be received via the file descriptor should
+      be blocked using <a class="link" href="../htmlman2/sigprocmask.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigprocmask</span>(2)</span></a>, to prevent
+      the signals being handled according to their default
+      dispositions. It is not possible to receive <code class="constant">SIGKILL</code> or <code class="constant">SIGSTOP</code> signals via a signalfd file
+      descriptor; these signals are silently ignored if specified
+      in <em class="parameter"><code>mask</code></em>.</p>
+
+      <p>If the <em class="parameter"><code>fd</code></em> argument
+      is −1, then the call creates a new file descriptor and
+      associates the signal set specified in <em class="parameter"><code>mask</code></em> with that descriptor. If
+      <em class="parameter"><code>fd</code></em> is not −1,
+      then it must specify a valid existing signalfd file
+      descriptor, and <em class="parameter"><code>mask</code></em>
+      is used to replace the signal set associated with that
+      descriptor.</p>
+
+      <p>Starting with Linux 2.6.27, the following values may be
+      bitwise ORed in <em class="parameter"><code>flags</code></em>
+      to change the behavior of <code class="function">signalfd</code>():</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">SFD_NONBLOCK</code></span></dt>
+
+          <dd>
+            <p>Set the <code class="constant">O_NONBLOCK</code>
+            file status flag on the new open file description.
+            Using this flag saves extra calls to <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a> to achieve
+            the same result.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">SFD_CLOEXEC</code></span></dt>
+
+          <dd>
+            <p>Set the close-on-exec (<code class="constant">FD_CLOEXEC</code>) flag on the new file
+            descriptor. See the description of the <code class="constant">O_CLOEXEC</code> flag in <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a> for reasons
+            why this may be useful.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>In Linux up to version 2.6.26, the <em class="parameter"><code>flags</code></em> argument is unused, and
+      must be specified as zero.</p>
+
+      <p><code class="function">signalfd</code>() returns a file
+      descriptor that supports the following operations:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="function">read</code>(<em class="parameter"><code>2</code></em>)</span></dt>
+
+          <dd>
+            <p>If one or more of the signals specified in
+            <em class="parameter"><code>mask</code></em> is pending
+            for the process, then the buffer supplied to <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> is used to
+            return one or more <em class="replaceable"><code>signalfd_siginfo</code></em>
+            structures (see below) that describe the signals. The
+            <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> returns
+            information for as many signals as are pending and will
+            fit in the supplied buffer. The buffer must be at least
+            <span class="emphasis"><em>sizeof(struct
+            signalfd_siginfo)</em></span> bytes. The return value
+            of the <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> is the total
+            number of bytes read.</p>
+
+            <p>As a consequence of the <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>, the signals
+            are consumed, so that they are no longer pending for
+            the process (i.e., will not be caught by signal
+            handlers, and cannot be accepted using <a class="link" href="../htmlman2/sigwaitinfo.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigwaitinfo</span>(2)</span></a>).</p>
+
+            <p>If none of the signals in <em class="parameter"><code>mask</code></em> is pending for the
+            process, then the <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> either blocks
+            until one of the signals in <em class="parameter"><code>mask</code></em> is generated for the
+            process, or fails with the error <span class="errorname">EAGAIN</span> if the file descriptor has
+            been made nonblocking.</p>
+          </dd>
+
+          <dt><span class="term"><code class="function">poll</code>(<em class="parameter"><code>2)</code></em>, <em class="parameter"><code>select(2) (and
+          similar</code></em>)</span></dt>
+
+          <dd>
+            <p>The file descriptor is readable (the <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a> <em class="replaceable"><code>readfds</code></em> argument; the
+            <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a> <code class="constant">POLLIN</code> flag) if one or more of the
+            signals in <em class="parameter"><code>mask</code></em>
+            is pending for the process.</p>
+
+            <p>The signalfd file descriptor also supports the other
+            file-descriptor multiplexing APIs: <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pselect</span>(2)</span></a>, <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ppoll</span>(2)</span></a>, and
+            <a class="link" href="../htmlman7/epoll.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll</span>(7)</span></a>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="function">close</code>(<em class="parameter"><code>2</code></em>)</span></dt>
+
+          <dd>
+            <p>When the file descriptor is no longer required it
+            should be closed. When all file descriptors associated
+            with the same signalfd object have been closed, the
+            resources for object are freed by the kernel.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <div class="refsect2">
+        <a id="signalfd-2_sect2" name="signalfd-2_sect2" shape="rect"> </a>
+
+        <h3>The signalfd_siginfo structure</h3>
+
+        <p>The format of the <em class="replaceable"><code>signalfd_siginfo</code></em>
+        structure(s) returned by <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>s from a signalfd
+        file descriptor is as follows:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="structdef">
+              <table style="border-collapse: collapse;">
+                <colgroup span="1">
+                  <col class="c1" span="1" />
+                  <col class="c2" span="1" />
+                  <col class="c3" span="1" />
+                  <col class="c4" span="1" />
+                  <col class="c5" span="1" />
+                </colgroup>
+
+                <tbody>
+                  <tr>
+                    <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                    struct</td>
+
+                    <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">signalfd_siginfo</span> {</td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ssi_signo</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        /* Signal number */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">int32_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ssi_errno</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Error number (unused) */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">int32_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ssi_code</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        /* Signal code */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ssi_pid</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* PID of sender */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ssi_uid</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Real UID of sender */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">int32_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ssi_fd</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* File descriptor (SIGIO) */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ssi_tid</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Kernel timer ID (POSIX timers)<br />
+
+                        uint32_t ssi_band;    /* Band event (SIGIO) */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ssi_overrun</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* POSIX timer overrun count */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ssi_trapno</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Trap number that caused signal */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">int32_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ssi_status</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Exit status or signal (SIGCHLD) */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">int32_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ssi_int</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Integer sent by sigqueue(3) */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ssi_ptr</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Pointer sent by sigqueue(3) */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ssi_utime</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* User CPU time consumed (SIGCHLD) */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ssi_stime</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* System CPU time consumed (SIGCHLD) */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ssi_addr</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Address that generated signal<br />
+
+                        (for hardware-generated signals) */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint8_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>pad</code></em>[X];</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Pad size to 128 bytes (allow for<br />
+
+                        additional fields in the future) */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>Each of the fields in this structure is analogous to the
+        similarly named field in the <span class="type">siginfo_t</span> structure. The <span class="type">siginfo_t</span> structure is described in <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a>. Not all
+        fields in the returned <em class="replaceable"><code>signalfd_siginfo</code></em> structure
+        will be valid for a specific signal; the set of valid
+        fields can be determined from the value returned in the
+        <em class="parameter"><code>ssi_code</code></em> field.
+        This field is the analog of the <span class="type">siginfo_t</span> <em class="replaceable"><code>si_code</code></em> field; see
+        <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a> for
+        details.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="signalfd-2_sect3" name="signalfd-2_sect3" shape="rect"> </a>
+
+        <h3>fork(2) semantics</h3>
+
+        <p>After a <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a>, the child
+        inherits a copy of the signalfd file descriptor. A
+        <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> from the file
+        descriptor in the child will return information about
+        signals queued to the child.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="signalfd-2_sect4" name="signalfd-2_sect4" shape="rect"> </a>
+
+        <h3>execve(2) semantics</h3>
+
+        <p>Just like any other file descriptor, a signalfd file
+        descriptor remains open across an <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>, unless it has
+        been marked for close-on-exec (see <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a>). Any signals
+        that were available for reading before the <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a> remain
+        available to the newly loaded program. (This is analogous
+        to traditional signal semantics, where a blocked signal
+        that is pending remains pending across an <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>.)</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="signalfd-2_sect5" name="signalfd-2_sect5" shape="rect"> </a>
+
+        <h3>Thread semantics</h3>
+
+        <p>The semantics of signalfd file descriptors in a
+        multithreaded program mirror the standard semantics for
+        signals. In other words, when a thread reads from a
+        signalfd file descriptor, it will read the signals that are
+        directed to the thread itself and the signals that are
+        directed to the process (i.e., the entire thread group). (A
+        thread will not be able to read signals that are directed
+        to other threads in the process.)</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="signalfd-2_sect6" name="signalfd-2_sect6" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">signalfd</code>()
+      returns a signalfd file descriptor; this is either a new file
+      descriptor (if <em class="parameter"><code>fd</code></em> was
+      −1), or <em class="parameter"><code>fd</code></em> if
+      <em class="parameter"><code>fd</code></em> was a valid
+      signalfd file descriptor. On error, −1 is returned and
+      <code class="varname">errno</code> is set to indicate the
+      error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="signalfd-2_sect7" name="signalfd-2_sect7" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EBADF</span></span></dt>
+
+          <dd>
+            <p>The <em class="parameter"><code>fd</code></em> file
+            descriptor is not a valid file descriptor.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>fd</code></em> is not a
+            valid signalfd file descriptor.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>flags</code></em> is
+            invalid; or, in Linux 2.6.26 or earlier, <em class="parameter"><code>flags</code></em> is nonzero.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EMFILE</span></span></dt>
+
+          <dd>
+            <p>The per-process limit of open file descriptors has
+            been reached.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENFILE</span></span></dt>
+
+          <dd>
+            <p>The system-wide limit on the total number of open
+            files has been reached.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENODEV</span></span></dt>
+
+          <dd>
+            <p>Could not mount (internal) anonymous inode
+            device.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>There was insufficient memory to create a new
+            signalfd file descriptor.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="signalfd-2_sect8" name="signalfd-2_sect8" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p><code class="function">signalfd</code>() is available on
+      Linux since kernel 2.6.22. Working support is provided in
+      glibc since version 2.8. The <code class="function">signalfd4</code>() system call (see NOTES) is
+      available on Linux since kernel 2.6.27.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="signalfd-2_sect9" name="signalfd-2_sect9" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p><code class="function">signalfd</code>() and <code class="function">signalfd4</code>() are Linux-specific.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="signalfd-2_sect10" name="signalfd-2_sect10" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>A process can create multiple signalfd file descriptors.
+      This makes it possible to accept different signals on
+      different file descriptors. (This may be useful if monitoring
+      the file descriptors using <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a>, <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a>, or <a class="link" href="../htmlman7/epoll.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll</span>(7)</span></a>: the arrival of
+      different signals will make different descriptors ready.) If
+      a signal appears in the <em class="parameter"><code>mask</code></em> of more than one of the
+      file descriptors, then occurrences of that signal can be read
+      (once) from any one of the descriptors.</p>
+
+      <div class="refsect2">
+        <a id="signalfd-2_sect11" name="signalfd-2_sect11" shape="rect"> </a>
+
+        <h3>C library/kernel ABI differences</h3>
+
+        <p>The underlying Linux system call requires an additional
+        argument, <span class="emphasis"><em>size_t
+        sizemask</em></span>, which specifies the size of the
+        <em class="parameter"><code>mask</code></em> argument. The
+        glibc <code class="function">signalfd</code>() wrapper
+        function does not include this argument, since it provides
+        the required value for the underlying system call.</p>
+
+        <p>There are two underlying Linux system calls:
+        <code class="function">signalfd</code>() and the more
+        recent <code class="function">signalfd4</code>(). The
+        former system call does not implement a <em class="parameter"><code>flags</code></em> argument. The latter
+        system call implements the <em class="parameter"><code>flags</code></em> values described above.
+        Starting with glibc 2.9, the <code class="function">signalfd</code>() wrapper function will use
+        <code class="function">signalfd4</code>() where it is
+        available.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="signalfd-2_sect12" name="signalfd-2_sect12" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>In kernels before 2.6.25, the <em class="parameter"><code>ssi_ptr</code></em> and <em class="parameter"><code>ssi_int</code></em> fields are not filled
+      in with the data accompanying a signal sent by <a class="link" href="../htmlman3/sigqueue.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigqueue</span>(3)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="signalfd-2_sect13" name="signalfd-2_sect13" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>The program below accepts the signals <code class="constant">SIGINT</code> and <code class="constant">SIGQUIT</code> via a signalfd file descriptor. The
+      program terminates after accepting a <code class="constant">SIGQUIT</code> signal. The following shell session
+      demonstrates the use of the program:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$<span class="emphasis"><em> ./signalfd_demo</em></span>
+<code class="literal">^C</code>                   # Control−C generates SIGINT
+Got SIGINT
+<code class="literal">^C</code>
+Got SIGINT
+<code class="literal">^\</code>                    # Control−\ generates SIGQUIT
+Got SIGQUIT
+$
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="refsect2">
+        <a id="signalfd-2_sect14" name="signalfd-2_sect14" shape="rect"> </a>
+
+        <h3>Program source</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+#include &lt;sys/signalfd.h&gt;
+#include &lt;signal.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+
+#define handle_error(msg) \
+    do { perror(msg); exit(EXIT_FAILURE); } while (0)
+
+int
+main(int argc, char *argv[])
+{
+    sigset_t mask;
+    int sfd;
+    struct signalfd_siginfo fdsi;
+    ssize_t s;
+
+    sigemptyset(&amp;mask);
+    sigaddset(&amp;mask, SIGINT);
+    sigaddset(&amp;mask, SIGQUIT);
+
+    /* Block signals so that they aren't handled
+       according to their default dispositions */
+
+    if (sigprocmask(SIG_BLOCK, &amp;mask, NULL) == −1)
+        handle_error("sigprocmask");
+
+    sfd = signalfd(−1, &amp;mask, 0);
+    if (sfd == −1)
+        handle_error("signalfd");
+
+    for (;;) {
+        s = read(sfd, &amp;fdsi, sizeof(struct signalfd_siginfo));
+        if (s != sizeof(struct signalfd_siginfo))
+            handle_error("read");
+
+        if (fdsi.ssi_signo == SIGINT) {
+            printf("Got SIGINT\n");
+        } else if (fdsi.ssi_signo == SIGQUIT) {
+            printf("Got SIGQUIT\n");
+            exit(EXIT_SUCCESS);
+        } else {
+            printf("Read unexpected signal\n");
+        }
+    }
+}
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="signalfd-2_sect15" name="signalfd-2_sect15" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/eventfd.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">eventfd</span>(2)</span></a>, <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a>, <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>, <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a>, <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a>, <a class="link" href="../htmlman2/sigprocmask.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigprocmask</span>(2)</span></a>, <a class="link" href="../htmlman2/sigwaitinfo.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigwaitinfo</span>(2)</span></a>, <a class="link" href="../htmlman2/timerfd_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">timerfd_create</span>(2)</span></a>,
+      <a class="link" href="../htmlman3/sigsetops.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigsetops</span>(3)</span></a>, <a class="link" href="../htmlman3/sigwait.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigwait</span>(3)</span></a>, <a class="link" href="../htmlman7/epoll.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll</span>(7)</span></a>, <a class="link" href="../htmlman7/signal.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="signalfd-2_sect16" name="signalfd-2_sect16" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2008 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  starting from a version by Davide Libenzi &lt;davidel<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>xmailserver.org&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_SW_3_PARA)<br />
+                  This program is free software; you can redistribute it and/or modify<br />
+
+                  it under the terms of the GNU General Public License as published by<br />
+
+                  the Free Software Foundation; either version 2 of the License, or<br />
+
+                  (at your option) any later version.<br />
+
+                  <br />
+                  This program is distributed in the hope that it will be useful,<br />
+
+                  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+
+                  GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

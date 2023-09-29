@@ -1,0 +1,567 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>sysconf(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="sysconf(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="sysconf.3" name="sysconf.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>sysconf — get configuration information at run
+      time</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;unistd.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">long
+            <strong>sysconf</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">name</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sysconf-3_sect1" name="sysconf-3_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>POSIX allows an application to test at compile or run time
+      whether certain options are supported, or what the value is
+      of certain configurable constants or limits.</p>
+
+      <p>At compile time this is done by including <code class="literal">&lt;</code><code class="filename">unistd.h</code><code class="literal">&gt;</code>
+      and/or <code class="literal">&lt;</code><code class="filename">limits.h</code><code class="literal">&gt;</code>
+      and testing the value of certain macros.</p>
+
+      <p>At run time, one can ask for numerical values using the
+      present function <code class="function">sysconf</code>(). One
+      can ask for numerical values that may depend on the
+      filesystem a file is in using the calls <a class="link" href="../htmlman3/fpathconf.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fpathconf</span>(3)</span></a> and <a class="link" href="../htmlman3/fpathconf.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pathconf</span>(3)</span></a>. One can ask
+      for string values using <a class="link" href="../htmlman3/confstr.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">confstr</span>(3)</span></a>.</p>
+
+      <p>The values obtained from these functions are system
+      configuration constants. They do not change during the
+      lifetime of a process.</p>
+
+      <p>For options, typically, there is a constant <code class="constant">_POSIX_FOO</code> that may be defined in
+      <code class="literal">&lt;</code><code class="filename">unistd.h</code><code class="literal">&gt;</code>
+      If it is undefined, one should ask at run time. If it is
+      defined to −1, then the option is not supported. If it
+      is defined to 0, then relevant functions and headers exist,
+      but one has to ask at run time what degree of support is
+      available. If it is defined to a value other than −1 or
+      0, then the option is supported. Usually the value (such as
+      200112L) indicates the year and month of the POSIX revision
+      describing the option. Glibc uses the value 1 to indicate
+      support as long as the POSIX revision has not been published
+      yet. The <code class="function">sysconf</code>() argument
+      will be <code class="constant">_SC_FOO</code>. For a list of
+      options, see <a class="link" href="../htmlman7/posixoptions.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">posixoptions</span>(7)</span></a>.</p>
+
+      <p>For variables or limits, typically, there is a constant
+      <code class="constant">_FOO</code>, maybe defined in
+      <code class="literal">&lt;</code><code class="filename">limits.h</code><code class="literal">&gt;</code>
+      or <code class="constant">_POSIX_FOO</code>, maybe defined in
+      <code class="literal">&lt;</code><code class="filename">unistd.h</code><code class="literal">&gt;</code>
+      The constant will not be defined if the limit is unspecified.
+      If the constant is defined, it gives a guaranteed value, and
+      a greater value might actually be supported. If an
+      application wants to take advantage of values which may
+      change between systems, a call to <code class="function">sysconf</code>() can be made. The <code class="function">sysconf</code>() argument will be <code class="constant">_SC_FOO</code>.</p>
+
+      <div class="refsect2">
+        <a id="sysconf-3_sect2" name="sysconf-3_sect2" shape="rect"> </a>
+
+        <h3>POSIX.1 variables</h3>
+
+        <p>We give the name of the variable, the name of the
+        <code class="function">sysconf</code>() argument used to
+        inquire about its value, and a short description.</p>
+
+        <p>First, the POSIX.1 compatible values.</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">ARG_MAX</code> - <code class="constant">_SC_ARG_MAX</code></span></dt>
+
+            <dd>
+              <p>The maximum length of the arguments to the
+              <a class="link" href="../htmlman3/exec.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">exec</span>(3)</span></a> family of
+              functions. Must not be less than <code class="constant">_POSIX_ARG_MAX</code> (4096).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CHILD_MAX</code> - <code class="constant">_SC_CHILD_MAX</code></span></dt>
+
+            <dd>
+              <p>The maximum number of simultaneous processes per
+              user ID. Must not be less than <code class="constant">_POSIX_CHILD_MAX</code> (25).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">HOST_NAME_MAX</code> - <code class="constant">_SC_HOST_NAME_MAX</code></span></dt>
+
+            <dd>
+              <p>Maximum length of a hostname, not including the
+              terminating null byte, as returned by <a class="link" href="../htmlman2/gethostname.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gethostname</span>(2)</span></a>.
+              Must not be less than <code class="constant">_POSIX_HOST_NAME_MAX</code> (255).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">LOGIN_NAME_MAX</code> - <code class="constant">_SC_LOGIN_NAME_MAX</code></span></dt>
+
+            <dd>
+              <p>Maximum length of a login name, including the
+              terminating null byte. Must not be less than
+              <code class="constant">_POSIX_LOGIN_NAME_MAX</code>
+              (9).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">NGROUPS_MAX</code> - <code class="constant">_SC_NGROUPS_MAX</code></span></dt>
+
+            <dd>
+              <p>Maximum number of supplementary group IDs.</p>
+            </dd>
+
+            <dt><span class="term">clock ticks - <code class="constant">_SC_CLK_TCK</code></span></dt>
+
+            <dd>
+              <p>The number of clock ticks per second. The
+              corresponding variable is obsolete. It was of course
+              called <code class="constant">CLK_TCK</code>.</p>
+
+              <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+                <table border="0" summary="Note">
+                  <tr>
+                    <td rowspan="2" align="center" valign="top" width="25" colspan="1"><img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+                    <th align="left" rowspan="1" colspan="1">Note</th>
+                  </tr>
+
+                  <tr>
+                    <td align="left" valign="top" rowspan="1" colspan="1">
+                      <p>The macro <code class="constant">CLOCKS_PER_SEC</code> does not
+                      give information: it must equal 1000000.</p>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="constant">OPEN_MAX</code> - <code class="constant">_SC_OPEN_MAX</code></span></dt>
+
+            <dd>
+              <p>The maximum number of files that a process can
+              have open at any time. Must not be less than
+              <code class="constant">_POSIX_OPEN_MAX</code>
+              (20).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">PAGESIZE</code> - <code class="constant">_SC_PAGESIZE</code></span></dt>
+
+            <dd>
+              <p>Size of a page in bytes. Must not be less than 1.
+              (Some systems use PAGE_SIZE instead.)</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">RE_DUP_MAX</code> - <code class="constant">_SC_RE_DUP_MAX</code></span></dt>
+
+            <dd>
+              <p>The number of repeated occurrences of a BRE
+              permitted by <a class="link" href="../htmlman3/regex.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">regexec</span>(3)</span></a> and
+              <a class="link" href="../htmlman3/regex.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">regcomp</span>(3)</span></a>. Must
+              not be less than <code class="constant">_POSIX2_RE_DUP_MAX</code> (255).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">STREAM_MAX</code> - <code class="constant">_SC_STREAM_MAX</code></span></dt>
+
+            <dd>
+              <p>The maximum number of streams that a process can
+              have open at any time. If defined, it has the same
+              value as the standard C macro <code class="constant">FOPEN_MAX</code>. Must not be less than
+              <code class="constant">_POSIX_STREAM_MAX</code>
+              (8).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SYMLOOP_MAX</code> - <code class="constant">_SC_SYMLOOP_MAX</code></span></dt>
+
+            <dd>
+              <p>The maximum number of symbolic links seen in a
+              pathname before resolution returns <span class="errorname">ELOOP</span>. Must not be less than
+              <code class="constant">_POSIX_SYMLOOP_MAX</code>
+              (8).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">TTY_NAME_MAX</code> - <code class="constant">_SC_TTY_NAME_MAX</code></span></dt>
+
+            <dd>
+              <p>The maximum length of terminal device name,
+              including the terminating null byte. Must not be less
+              than <code class="constant">_POSIX_TTY_NAME_MAX</code> (9).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">TZNAME_MAX</code> - <code class="constant">_SC_TZNAME_MAX</code></span></dt>
+
+            <dd>
+              <p>The maximum number of bytes in a timezone name.
+              Must not be less than <code class="constant">_POSIX_TZNAME_MAX</code> (6).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">_POSIX_VERSION</code> - <code class="constant">_SC_VERSION</code></span></dt>
+
+            <dd>
+              <p>indicates the year and month the POSIX.1 standard
+              was approved in the format <code class="constant">YYYYMML</code>; the value <code class="constant">199009L</code> indicates the Sept. 1990
+              revision.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="sysconf-3_sect3" name="sysconf-3_sect3" shape="rect"> </a>
+
+        <h3>POSIX.2 variables</h3>
+
+        <p>Next, the POSIX.2 values, giving limits for
+        utilities.</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">BC_BASE_MAX</code> - <code class="constant">_SC_BC_BASE_MAX</code></span></dt>
+
+            <dd>
+              <p>indicates the maximum <em class="replaceable"><code>obase</code></em> value accepted
+              by the <span class="citerefentry"><span class="refentrytitle">bc</span>(1)</span> utility.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">BC_DIM_MAX</code> - <code class="constant">_SC_BC_DIM_MAX</code></span></dt>
+
+            <dd>
+              <p>indicates the maximum value of elements permitted
+              in an array by <span class="citerefentry"><span class="refentrytitle">bc</span>(1)</span>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">BC_SCALE_MAX</code> - <code class="constant">_SC_BC_SCALE_MAX</code></span></dt>
+
+            <dd>
+              <p>indicates the maximum <em class="replaceable"><code>scale</code></em> value allowed
+              by <span class="citerefentry"><span class="refentrytitle">bc</span>(1)</span>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">BC_STRING_MAX</code> - <code class="constant">_SC_BC_STRING_MAX</code></span></dt>
+
+            <dd>
+              <p>indicates the maximum length of a string accepted
+              by <span class="citerefentry"><span class="refentrytitle">bc</span>(1)</span>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">COLL_WEIGHTS_MAX</code> - <code class="constant">_SC_COLL_WEIGHTS_MAX</code></span></dt>
+
+            <dd>
+              <p>indicates the maximum numbers of weights that can
+              be assigned to an entry of the <span class="emphasis"><em>LC_COLLATE order</em></span> keyword
+              in the locale definition file,</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">EXPR_NEST_MAX</code> - <code class="constant">_SC_EXPR_NEST_MAX</code></span></dt>
+
+            <dd>
+              <p>is the maximum number of expressions which can be
+              nested within parentheses by <a class="link" href="../htmlman1/expr.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">expr</span>(1)</span></a>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">LINE_MAX</code> - <code class="constant">_SC_LINE_MAX</code></span></dt>
+
+            <dd>
+              <p>The maximum length of a utility's input line,
+              either from standard input or from a file. This
+              includes space for a trailing newline.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">RE_DUP_MAX</code> - <code class="constant">_SC_RE_DUP_MAX</code></span></dt>
+
+            <dd>
+              <p>The maximum number of repeated occurrences of a
+              regular expression when the interval notation
+              <em class="replaceable"><code>\{m,n\}</code></em> is
+              used.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">POSIX2_VERSION</code> - <code class="constant">_SC_2_VERSION</code></span></dt>
+
+            <dd>
+              <p>indicates the version of the POSIX.2 standard in
+              the format of YYYYMML.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">POSIX2_C_DEV</code> - <code class="constant">_SC_2_C_DEV</code></span></dt>
+
+            <dd>
+              <p>indicates whether the POSIX.2 C language
+              development facilities are supported.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">POSIX2_FORT_DEV</code> - <code class="constant">_SC_2_FORT_DEV</code></span></dt>
+
+            <dd>
+              <p>indicates whether the POSIX.2 FORTRAN development
+              utilities are supported.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">POSIX2_FORT_RUN</code> - <code class="constant">_SC_2_FORT_RUN</code></span></dt>
+
+            <dd>
+              <p>indicates whether the POSIX.2 FORTRAN run-time
+              utilities are supported.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">_POSIX2_LOCALEDEF</code> - <code class="constant">_SC_2_LOCALEDEF</code></span></dt>
+
+            <dd>
+              <p>indicates whether the POSIX.2 creation of locates
+              via <span class="citerefentry"><span class="refentrytitle">localedef</span>(1)</span> is
+              supported.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">POSIX2_SW_DEV</code> - <code class="constant">_SC_2_SW_DEV</code></span></dt>
+
+            <dd>
+              <p>indicates whether the POSIX.2 software development
+              utilities option is supported.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>These values also exist, but may not be standard.</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term">- <code class="constant">_SC_PHYS_PAGES</code></span></dt>
+
+            <dd>
+              <p>The number of pages of physical memory. Note that
+              it is possible for the product of this value and the
+              value of <code class="constant">_SC_PAGESIZE</code>
+              to overflow.</p>
+            </dd>
+
+            <dt><span class="term">- <code class="constant">_SC_AVPHYS_PAGES</code></span></dt>
+
+            <dd>
+              <p>The number of currently available pages of
+              physical memory.</p>
+            </dd>
+
+            <dt><span class="term">- <code class="constant">_SC_NPROCESSORS_CONF</code></span></dt>
+
+            <dd>
+              <p>The number of processors configured.</p>
+            </dd>
+
+            <dt><span class="term">- <code class="constant">_SC_NPROCESSORS_ONLN</code></span></dt>
+
+            <dd>
+              <p>The number of processors currently online
+              (available).</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sysconf-3_sect4" name="sysconf-3_sect4" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>If <em class="parameter"><code>name</code></em> is
+      invalid, −1 is returned, and <code class="varname">errno</code> is set to <span class="errorname">EINVAL</span>. Otherwise, the value returned is
+      the value of the system resource and <code class="varname">errno</code> is not changed. In the case of
+      options, a positive value is returned if a queried option is
+      available, and −1 if it is not. In the case of limits,
+      −1 means that there is no definite limit.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sysconf-3_sect5" name="sysconf-3_sect5" shape="rect"> </a>
+
+      <h2>ATTRIBUTES</h2>
+
+      <p>For an explanation of the terms used in this section, see
+      <a class="link" href="../htmlman7/attributes.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">attributes</span>(7)</span></a>.</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">Interface</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Attribute</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Value</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><code class="literal">sysconf</code>()</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Thread safety</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">MT-Safe env</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sysconf-3_sect6" name="sysconf-3_sect6" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>POSIX.1-2001.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sysconf-3_sect7" name="sysconf-3_sect7" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>It is difficult to use <code class="constant">ARG_MAX</code> because it is not specified how
+      much of the argument space for <a class="link" href="../htmlman3/exec.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">exec</span>(3)</span></a> is consumed by the
+      user's environment variables.</p>
+
+      <p>Some returned values may be huge; they are not suitable
+      for allocating memory.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sysconf-3_sect8" name="sysconf-3_sect8" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><span class="citerefentry"><span class="refentrytitle">bc</span>(1)</span>, <a class="link" href="../htmlman1/expr.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">expr</span>(1)</span></a>, <span class="citerefentry"><span class="refentrytitle">getconf</span>(1)</span>, <span class="citerefentry"><span class="refentrytitle">locale</span>(1)</span>, <a class="link" href="../htmlman3/confstr.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">confstr</span>(3)</span></a>, <a class="link" href="../htmlman3/fpathconf.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fpathconf</span>(3)</span></a>, <a class="link" href="../htmlman3/fpathconf.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pathconf</span>(3)</span></a>, <a class="link" href="../htmlman7/posixoptions.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">posixoptions</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="sysconf-3_sect9" name="sysconf-3_sect9" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 1993 by Thomas Koenig (ig25<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>rz.uni-karlsruhe.de)<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Modified Sat Jul 24 17:51:42 1993 by Rik Faith (faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu)<br />
+
+                  Modified Tue Aug 17 11:42:20 1999 by Ariel Scolnicov (ariels<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>compugen.co.il)<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

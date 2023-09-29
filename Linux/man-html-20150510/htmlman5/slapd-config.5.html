@@ -1,0 +1,2671 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>slapd-config(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="slapd-config(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="slapd-config.5" name="slapd-config.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>slapd−config — configuration backend to
+      slapd</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ETCDIR/slapd.d
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-config-5_sect1" name="slapd-config-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <em class="replaceable"><code>config</code></em>
+      backend manages all of the configuration information for the
+      <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a> daemon. This
+      configuration information is also used by the SLAPD tools
+      <a class="link" href="../htmlman8/slapacl.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapacl</span>(8)</span></a>, <a class="link" href="../htmlman8/slapadd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapadd</span>(8)</span></a>, <a class="link" href="../htmlman8/slapauth.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapauth</span>(8)</span></a>, <a class="link" href="../htmlman8/slapcat.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapcat</span>(8)</span></a>, <a class="link" href="../htmlman8/slapdn.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapdn</span>(8)</span></a>, <a class="link" href="../htmlman8/slapindex.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapindex</span>(8)</span></a>, and <a class="link" href="../htmlman8/slaptest.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slaptest</span>(8)</span></a>.</p>
+
+      <p>The <em class="replaceable"><code>config</code></em>
+      backend is backward compatible with the older <a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a> file but
+      provides the ability to change the configuration dynamically
+      at runtime. If slapd is run with only a <em class="replaceable"><code>slapd.conf</code></em> file dynamic
+      changes will be allowed but they will not persist across a
+      server restart. Dynamic changes are only saved when slapd is
+      running from a <em class="replaceable"><code>slapd.d</code></em> configuration
+      directory.</p>
+
+      <p>Unlike other backends, there can only be one instance of
+      the <em class="replaceable"><code>config</code></em> backend,
+      and most of its structure is predefined. The root of the
+      database is hardcoded to <em class="replaceable"><code>cn=config</code></em> and this root entry
+      contains global settings for slapd. Multiple child entries
+      underneath the root entry are used to carry various other
+      settings:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="variablelist">
+            <dl class="variablelist">
+              <dt><span class="term">cn=Module</span></dt>
+
+              <dd>
+                <p>dynamically loaded modules</p>
+              </dd>
+
+              <dt><span class="term">cn=Schema</span></dt>
+
+              <dd>
+                <p>schema definitions</p>
+              </dd>
+
+              <dt><span class="term">lcBackend=xxx</span></dt>
+
+              <dd>
+                <p>backend-specific settings</p>
+              </dd>
+
+              <dt><span class="term">lcDatabase=xxx</span></dt>
+
+              <dd>
+                <p>database-specific settings</p>
+              </dd>
+            </dl>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>The <em class="replaceable"><code>cn=Module</code></em>
+      entries will only appear in configurations where slapd was
+      built with support for dynamically loaded modules. There can
+      be multiple entries, one for each configured module path.
+      Within each entry there will be values recorded for each
+      module loaded on a given path. These entries have no
+      children.</p>
+
+      <p>The <em class="replaceable"><code>cn=Schema</code></em>
+      entry contains all of the hardcoded schema elements. The
+      children of this entry contain all user-defined schema
+      elements. In schema that were loaded from include files, the
+      child entry will be named after the include file from which
+      the schema was loaded. Typically the first child in this
+      subtree will be <em class="replaceable"><code>cn=core,cn=schema,cn=config</code></em>.</p>
+
+      <p><em class="replaceable"><code>olcBackend</code></em>
+      entries are for storing settings specific to a single backend
+      type (and thus global to all database instances of that
+      type). At present there are no backends that implement
+      settings of this nature, so usually there will not be any
+      olcBackend entries.</p>
+
+      <p><em class="replaceable"><code>olcDatabase</code></em>
+      entries store settings specific to a single database
+      instance. These entries may have <em class="replaceable"><code>olcOverlay</code></em> child entries
+      corresponding to any overlays configured on the database. The
+      olcDatabase and olcOverlay entries may also have
+      miscellaneous child entries for other settings as needed.
+      There are two special database entries that are predefined -
+      one is an entry for the config database itself, and the other
+      is for the "frontend" database. Settings in the frontend
+      database are inherited by the other databases, unless they
+      are explicitly overridden in a specific database.</p>
+
+      <p>The specific configuration options available are discussed
+      below in the Global Configuration Options, General Backend
+      Options, and General Database Options. Options are set by
+      defining LDAP attributes with specific values. In general the
+      names of the LDAP attributes are the same as the
+      corresponding <em class="replaceable"><code>slapd.conf</code></em> keyword, with an
+      "olc" prefix added on.</p>
+
+      <p>The parser for many of these attributes is the same as
+      used for parsing the slapd.conf keywords. As such, slapd.conf
+      keywords that allow multiple items to be specified on one
+      line, separated by whitespace, will allow multiple items to
+      be specified in one attribute value. However, when reading
+      the attribute via LDAP, the items will be returned as
+      individual attribute values.</p>
+
+      <p>Backend-specific options are discussed in the <em class="replaceable"><code>slapd−&lt;backend&gt;(5)</code></em>
+      manual pages. Refer to the "OpenLDAP Administrator's Guide"
+      for more details on configuring slapd.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-config-5_sect2" name="slapd-config-5_sect2" shape="rect"> </a>
+
+      <h2>GLOBAL CONFIGURATION OPTIONS</h2>
+
+      <p>Options described in this section apply to the server as a
+      whole. Arguments that should be replaced by actual text are
+      shown in brackets &lt;&gt;.</p>
+
+      <p>These options may only be specified in the <em class="replaceable"><code>cn=config</code></em> entry. This entry
+      must have an objectClass of <em class="replaceable"><code>olcGlobal</code></em>.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">lcAllows:
+          &lt;features&gt;</span></dt>
+
+          <dd>
+            <p>Specify a set of features to allow (default none).
+            <em class="replaceable"><code>bind_v2</code></em>
+            allows acceptance of LDAPv2 bind requests. Note that
+            <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a> does not
+            truly implement LDAPv2 (RFC 1777), now Historic (RFC
+            3494). <em class="replaceable"><code>bind_anon_cred</code></em> allows
+            anonymous bind when credentials are not empty (e.g.
+            when DN is empty). <em class="replaceable"><code>bind_anon_dn</code></em> allows
+            unauthenticated (anonymous) bind when DN is not empty.
+            <em class="replaceable"><code>update_anon</code></em>
+            allows unauthenticated (anonymous) update operations to
+            be processed (subject to access controls and other
+            administrative limits). <em class="replaceable"><code>proxy_authz_anon</code></em> allows
+            unauthenticated (anonymous) proxy authorization control
+            to be processed (subject to access controls,
+            authorization and other administrative limits).</p>
+          </dd>
+
+          <dt><span class="term">lcArgsFile:
+          &lt;filename&gt;</span></dt>
+
+          <dd>
+            <p>The (absolute) name of a file that will hold the
+            <em class="replaceable"><code>slapd</code></em>
+            server's command line (program name and options).</p>
+          </dd>
+
+          <dt><span class="term">lcAttributeOptions:
+          &lt;option-name&gt;...</span></dt>
+
+          <dd>
+            <p>Define tagging attribute options or option tag/range
+            prefixes. Options must not end with `−', prefixes
+            must end with `−'. The `lang−' prefix is
+            predefined. If you use the <em class="replaceable"><code>olcAttributeOptions</code></em>
+            directive, `lang−' will no longer be defined and
+            you must specify it explicitly if you want it
+            defined.</p>
+
+            <p>An attribute description with a tagging option is a
+            subtype of that attribute description without the
+            option. Except for that, options defined this way have
+            no special semantics. Prefixes defined this way work
+            like the `lang−' options: They define a prefix
+            for tagging options starting with the prefix. That is,
+            if you define the prefix `x−foo−', you can
+            use the option `x−foo−bar'. Furthermore, in
+            a search or compare, a prefix or range name (with a
+            trailing `−') matches all options starting with
+            that name, as well as the option with the range name
+            sans the trailing `−'. That is,
+            `x−foo−bar−' matches
+            `x−foo−bar' and
+            `x−foo−bar−baz'.</p>
+
+            <p>RFC 4520 reserves options beginning with `x−'
+            for private experiments. Other options should be
+            registered with IANA, see RFC 4520 section 3.5.
+            OpenLDAP also has the `binary' option built in, but
+            this is a transfer option, not a tagging option.</p>
+          </dd>
+
+          <dt><span class="term">lcAuthIDRewrite:
+          &lt;rewrite−rule&gt;</span></dt>
+
+          <dd>
+            <p>Used by the authentication framework to convert
+            simple user names to an LDAP DN used for authorization
+            purposes. Its purpose is analogous to that of
+            <em class="replaceable"><code>olcAuthzRegexp</code></em>
+            (see below). The <em class="replaceable"><code>rewrite−rule</code></em> is a
+            set of rules analogous to those described in <a class="link" href="../htmlman5/slapo-rwm.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapo-rwm</span>(5)</span></a> for data
+            rewriting (after stripping the <em class="replaceable"><code>rwm−</code></em> prefix).
+            <em class="replaceable"><code>olcAuthIDRewrite</code></em> and
+            <em class="replaceable"><code>olcAuthzRegexp</code></em> should
+            not be intermixed.</p>
+          </dd>
+
+          <dt><span class="term">lcAuthzPolicy:
+          &lt;policy&gt;</span></dt>
+
+          <dd>
+            <p>Used to specify which rules to use for Proxy
+            Authorization. Proxy authorization allows a client to
+            authenticate to the server using one user's
+            credentials, but specify a different identity to use
+            for authorization and access control purposes. It
+            essentially allows user A to login as user B, using
+            user A's password. The <em class="replaceable"><code>none</code></em> flag disables
+            proxy authorization. This is the default setting. The
+            <em class="replaceable"><code>from</code></em> flag
+            will use rules in the <em class="replaceable"><code>authzFrom</code></em> attribute of
+            the authorization DN. The <em class="replaceable"><code>to</code></em> flag will use rules
+            in the <em class="replaceable"><code>authzTo</code></em> attribute of
+            the authentication DN. The <em class="replaceable"><code>any</code></em> flag, an alias for
+            the deprecated value of <em class="replaceable"><code>both</code></em>, will allow any of
+            the above, whatever succeeds first (checked in
+            <em class="replaceable"><code>to</code></em>,
+            <em class="replaceable"><code>from</code></em>
+            sequence. The <em class="replaceable"><code>all</code></em> flag requires both
+            authorizations to succeed.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>The rules are mechanisms to specify which identities
+          are allowed to perform proxy authorization. The
+          <em class="replaceable"><code>authzFrom</code></em>
+          attribute in an entry specifies which other users are
+          allowed to proxy login to this entry. The <em class="replaceable"><code>authzTo</code></em> attribute in an
+          entry specifies which other users this user can authorize
+          as. Use of <em class="replaceable"><code>authzTo</code></em> rules can be
+          easily abused if users are allowed to write arbitrary
+          values to this attribute. In general the <em class="replaceable"><code>authzTo</code></em> attribute must be
+          protected with ACLs such that only privileged users can
+          modify it. The value of <em class="replaceable"><code>authzFrom</code></em> and <em class="replaceable"><code>authzTo</code></em> describes an
+          <em class="replaceable"><code>identity</code></em> or a
+          set of identities; it can take five forms:</p>
+
+          <div class="blockquote">
+            <blockquote class="blockquote">
+              <div class="variablelist">
+                <dl class="variablelist">
+                  <dt><span class="term">ldap:///&lt;base&gt;??[&lt;scope&gt;]?&lt;filter&gt;</span></dt>
+                </dl>
+              </div>
+            </blockquote>
+          </div>
+
+          <div class="blockquote">
+            <blockquote class="blockquote">
+              <p><em class="replaceable"><code>dn[.&lt;dnstyle&gt;]:&lt;pattern&gt;</code></em></p>
+            </blockquote>
+          </div>
+
+          <div class="blockquote">
+            <blockquote class="blockquote">
+              <p><em class="replaceable"><code>u[&lt;mech&gt;[&lt;realm&gt;]]:&lt;pattern&gt;</code></em></p>
+            </blockquote>
+          </div>
+
+          <div class="blockquote">
+            <blockquote class="blockquote">
+              <p><em class="replaceable"><code>group[/objectClass[/attributeType]]:&lt;pattern&gt;</code></em></p>
+            </blockquote>
+          </div>
+
+          <div class="blockquote">
+            <blockquote class="blockquote">
+              <p><em class="replaceable"><code>&lt;pattern&gt;</code></em></p>
+            </blockquote>
+          </div>
+
+          <div class="blockquote">
+            <blockquote class="blockquote">
+              <p><em class="replaceable"><code>&lt;dnstyle&gt;:={exact|onelevel|children|subtree|regex}</code></em></p>
+            </blockquote>
+          </div>
+
+          <p>The first form is a valid LDAP <code class="constant">URI</code> where the <em class="replaceable"><code>&lt;host&gt;:&lt;port&gt;</code></em>,
+          the <em class="replaceable"><code>&lt;attrs&gt;</code></em> and the
+          <em class="replaceable"><code>&lt;extensions&gt;</code></em>
+          portions must be absent, so that the search occurs
+          locally on either <em class="replaceable"><code>authzFrom</code></em> or <em class="replaceable"><code>authzTo</code></em>. The second form
+          is a <code class="constant">DN</code>, with the optional
+          style modifiers <em class="replaceable"><code>exact</code></em>, <em class="replaceable"><code>onelevel</code></em>, <em class="replaceable"><code>children</code></em>, and <em class="replaceable"><code>subtree</code></em> for exact,
+          onelevel, children and subtree matches, which cause
+          <em class="replaceable"><code>&lt;pattern&gt;</code></em>
+          to be normalized according to the DN normalization rules,
+          or the special <span class="emphasis"><em>regex</em></span> style, which causes the
+          <em class="replaceable"><code>&lt;pattern&gt;</code></em>
+          to be treated as a POSIX (''extended'') regular
+          expression, as discussed in <a class="link" href="../htmlman7/regex.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">regex</span>(7)</span></a> and/or
+          <span class="citerefentry"><span class="refentrytitle">re_format</span>(7)</span>. A pattern of
+          <code class="literal">*</code> means any non-anonymous
+          DN. The third form is a SASL <em class="replaceable"><code>id</code></em>, with the optional
+          fields <em class="replaceable"><code>&lt;mech&gt;</code></em> and
+          <em class="replaceable"><code>&lt;realm&gt;</code></em>
+          that allow to specify a SASL <em class="replaceable"><code>mechanism</code></em>, and eventually
+          a SASL <em class="replaceable"><code>realm</code></em>,
+          for those mechanisms that support one. The need to allow
+          the specification of a mechanism is still debated, and
+          users are strongly discouraged to rely on this
+          possibility. The fourth form is a group specification,
+          consisting of the keyword <em class="replaceable"><code>group</code></em>, optionally
+          followed by the specification of the group <em class="replaceable"><code>objectClass</code></em> and member
+          <em class="replaceable"><code>attributeType</code></em>.
+          The group with DN <em class="replaceable"><code>&lt;pattern&gt;</code></em> is
+          searched with base scope, and in case of match, the
+          values of the member <em class="replaceable"><code>attributeType</code></em> are
+          searched for the asserted DN. For backwards
+          compatibility, if no identity type is provided, i.e. only
+          <em class="replaceable"><code>&lt;pattern&gt;</code></em>
+          is present, an <span class="emphasis"><em>exact
+          DN</em></span> is assumed; as a consequence, <em class="replaceable"><code>&lt;pattern&gt;</code></em> is
+          subjected to DN normalization. Since the interpretation
+          of <em class="replaceable"><code>authzFrom</code></em>
+          and <em class="replaceable"><code>authzTo</code></em> can
+          impact security, users are strongly encouraged to
+          explicitly set the type of identity specification that is
+          being used. A subset of these rules can be used as third
+          arg in the <em class="replaceable"><code>olcAuthzRegexp</code></em> statement
+          (see below); significantly, the <code class="constant">URI</code> and the <em class="replaceable"><code>dn.exact:&lt;dn&gt;</code></em>
+          forms.</p>
+        </blockquote>
+      </div>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">lcAuthzRegexp: &lt;match&gt;
+          &lt;replace&gt;</span></dt>
+
+          <dd>
+            <p>Used by the authentication framework to convert
+            simple user names, such as provided by SASL subsystem,
+            to an LDAP DN used for authorization purposes. Note
+            that the resultant DN need not refer to an existing
+            entry to be considered valid. When an authorization
+            request is received from the SASL subsystem, the SASL
+            <code class="constant">USERNAME</code>, <code class="constant">REALM</code>, and <code class="constant">MECHANISM</code> are taken, when available,
+            and combined into a name of the form</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="blockquote">
+                  <blockquote class="blockquote">
+                    <div class="variablelist">
+                      <dl class="variablelist">
+                        <dt><span class="term">UID=&lt;username&gt;[[,CN=&lt;realm&gt;],CN=&lt;mechanism&gt;],CN=auth</span></dt>
+                      </dl>
+                    </div>
+                  </blockquote>
+                </div>
+
+                <p>This name is then compared against the
+                <em class="replaceable"><code>match</code></em>
+                POSIX (''extended'') regular expression, and if the
+                match is successful, the name is replaced with the
+                <em class="replaceable"><code>replace</code></em>
+                string. If there are wildcard strings in the
+                <em class="replaceable"><code>match</code></em>
+                regular expression that are enclosed in
+                parenthesis, e.g.</p>
+
+                <div class="blockquote">
+                  <blockquote class="blockquote">
+                    <div class="variablelist">
+                      <dl class="variablelist">
+                        <dt><span class="term">UID=([^,]*),CN=.*</span></dt>
+                      </dl>
+                    </div>
+                  </blockquote>
+                </div>
+
+                <p>then the portion of the name that matched the
+                wildcard will be stored in the numbered placeholder
+                variable $1. If there are other wildcard strings in
+                parenthesis, the matching strings will be in $2,
+                $3, etc. up to $9. The placeholders can then be
+                used in the <em class="replaceable"><code>replace</code></em> string,
+                e.g.</p>
+
+                <div class="blockquote">
+                  <blockquote class="blockquote">
+                    <div class="variablelist">
+                      <dl class="variablelist">
+                        <dt><span class="term"><em class="replaceable"><code>UID=$1,OU=Accounts,DC=example,DC=com</code></em></span></dt>
+                      </dl>
+                    </div>
+                  </blockquote>
+                </div>
+
+                <p>The replaced name can be either a DN, i.e. a
+                string prefixed by "dn:", or an LDAP URI. If the
+                latter, the server will use the URI to search its
+                own database(s) and, if the search returns exactly
+                one entry, the name is replaced by the DN of that
+                entry. The LDAP URI must have no hostport, attrs,
+                or extensions components, but the filter is
+                mandatory, e.g.</p>
+
+                <div class="blockquote">
+                  <blockquote class="blockquote">
+                    <div class="variablelist">
+                      <dl class="variablelist">
+                        <dt><span class="term"><code class="function">ldap:///OU=Accounts,DC=example,DC=com??one?</code>(<em class="parameter"><code>UID=$1</code></em>)</span></dt>
+                      </dl>
+                    </div>
+                  </blockquote>
+                </div>
+
+                <p>The protocol portion of the URI must be strictly
+                <em class="citetitle">ldap</em>. Note that this
+                search is subject to access controls. Specifically,
+                the authentication identity must have "auth" access
+                in the subject.</p>
+
+                <p>Multiple <em class="replaceable"><code>olcAuthzRegexp</code></em>
+                values can be specified to allow for multiple
+                matching and replacement patterns. The matching
+                patterns are checked in the order they appear in
+                the attribute, stopping at the first successful
+                match.</p>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term">lcConcurrency:
+          &lt;integer&gt;</span></dt>
+
+          <dd>
+            <p>Specify a desired level of concurrency. Provided to
+            the underlying thread system as a hint. The default is
+            not to provide any hint. This setting is only
+            meaningful on some platforms where there is not a one
+            to one correspondence between user threads and kernel
+            threads.</p>
+          </dd>
+
+          <dt><span class="term">lcConnMaxPending:
+          &lt;integer&gt;</span></dt>
+
+          <dd>
+            <p>Specify the maximum number of pending requests for
+            an anonymous session. If requests are submitted faster
+            than the server can process them, they will be queued
+            up to this limit. If the limit is exceeded, the session
+            is closed. The default is 100.</p>
+          </dd>
+
+          <dt><span class="term">lcConnMaxPendingAuth:
+          &lt;integer&gt;</span></dt>
+
+          <dd>
+            <p>Specify the maximum number of pending requests for
+            an authenticated session. The default is 1000.</p>
+          </dd>
+
+          <dt><span class="term">lcDisallows:
+          &lt;features&gt;</span></dt>
+
+          <dd>
+            <p>Specify a set of features to disallow (default
+            none). <em class="replaceable"><code>bind_anon</code></em> disables
+            acceptance of anonymous bind requests. Note that this
+            setting does not prohibit anonymous directory access
+            (See "require authc"). <em class="replaceable"><code>bind_simple</code></em> disables
+            simple (bind) authentication. <em class="replaceable"><code>tls_2_anon</code></em> disables
+            forcing session to anonymous status (see also
+            <em class="replaceable"><code>tls_authc</code></em>)
+            upon StartTLS operation receipt. <em class="replaceable"><code>tls_authc</code></em> disallows the
+            StartTLS operation if authenticated (see also
+            <em class="replaceable"><code>tls_2_anon</code></em>).</p>
+          </dd>
+
+          <dt><span class="term">lcGentleHUP: { TRUE | FALSE
+          }</span></dt>
+
+          <dd>
+            <p>A SIGHUP signal will only cause a 'gentle'
+            shutdown-attempt: <em class="replaceable"><code>Slapd</code></em> will stop
+            listening for new connections, but will not close the
+            connections to the current clients. Future write
+            operations return unwilling-to-perform, though. Slapd
+            terminates when all clients have closed their
+            connections (if they ever do), or - as before - if it
+            receives a SIGTERM signal. This can be useful if you
+            wish to terminate the server and start a new <em class="replaceable"><code>slapd</code></em> server
+            <span class="emphasis"><em>with another
+            database,</em></span> without disrupting the currently
+            active clients. The default is FALSE. You may wish to
+            use <code class="literal">olcIdleTimeout</code> along
+            with this option.</p>
+          </dd>
+
+          <dt><span class="term">lcIdleTimeout:
+          &lt;integer&gt;</span></dt>
+
+          <dd>
+            <p>Specify the number of seconds to wait before
+            forcibly closing an idle client connection. A setting
+            of 0 disables this feature. The default is 0. You may
+            also want to set the <em class="replaceable"><code>olcWriteTimeout</code></em>
+            option.</p>
+          </dd>
+
+          <dt><span class="term">lcIndexIntLen:
+          &lt;integer&gt;</span></dt>
+
+          <dd>
+            <p>Specify the key length for ordered integer indices.
+            The most significant bytes of the binary integer will
+            be used for index keys. The default value is 4, which
+            provides exact indexing for 31 bit values. A floating
+            point representation is used to index too large
+            values.</p>
+          </dd>
+
+          <dt><span class="term">lcIndexSubstrIfMaxlen:
+          &lt;integer&gt;</span></dt>
+
+          <dd>
+            <p>Specify the maximum length for subinitial and
+            subfinal indices. Only this many characters of an
+            attribute value will be processed by the indexing
+            functions; any excess characters are ignored. The
+            default is 4.</p>
+          </dd>
+
+          <dt><span class="term">lcIndexSubstrIfMinlen:
+          &lt;integer&gt;</span></dt>
+
+          <dd>
+            <p>Specify the minimum length for subinitial and
+            subfinal indices. An attribute value must have at least
+            this many characters in order to be processed by the
+            indexing functions. The default is 2.</p>
+          </dd>
+
+          <dt><span class="term">lcIndexSubstrAnyLen:
+          &lt;integer&gt;</span></dt>
+
+          <dd>
+            <p>Specify the length used for subany indices. An
+            attribute value must have at least this many characters
+            in order to be processed. Attribute values longer than
+            this length will be processed in segments of this
+            length. The default is 4. The subany index will also be
+            used in subinitial and subfinal index lookups when the
+            filter string is longer than the <em class="replaceable"><code>olcIndexSubstrIfMaxlen</code></em>
+            value.</p>
+          </dd>
+
+          <dt><span class="term">lcIndexSubstrAnyStep:
+          &lt;integer&gt;</span></dt>
+
+          <dd>
+            <p>Specify the steps used in subany index lookups. This
+            value sets the offset for the segments of a filter
+            string that are processed for a subany index lookup.
+            The default is 2. For example, with the default values,
+            a search using this filter "cn=*abcdefgh*" would
+            generate index lookups for "abcd", "cdef", and
+            "efgh".</p>
+
+            <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+              <table border="0" summary="Note">
+                <tr>
+                  <td rowspan="2" align="center" valign="top" width="25" colspan="1"><img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+                  <th align="left" rowspan="1" colspan="1">Note</th>
+                </tr>
+
+                <tr>
+                  <td align="left" valign="top" rowspan="1" colspan="1">
+                    <p>Indexing support depends on the particular
+                    backend in use. Also, changing these settings
+                    will generally require deleting any indices
+                    that depend on these parameters and recreating
+                    them with <a class="link" href="../htmlman8/slapindex.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapindex</span>(8)</span></a>.</p>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </dd>
+
+          <dt><span class="term">lcListenerThreads:
+          &lt;integer&gt;</span></dt>
+
+          <dd>
+            <p>Specify the number of threads to use for the
+            connection manager. The default is 1 and this is
+            typically adequate for up to 16 CPU cores. The value
+            should be set to a power of 2.</p>
+          </dd>
+
+          <dt><span class="term">lcLocalSSF:
+          &lt;SSF&gt;</span></dt>
+
+          <dd>
+            <p>Specifies the Security Strength Factor (SSF) to be
+            given local LDAP sessions, such as those to the
+            ldapi:// listener. For a description of SSF values, see
+            <em class="replaceable"><code>olcSaslSecProps</code></em>'s
+            <em class="replaceable"><code>minssf</code></em> option
+            description. The default is 71.</p>
+          </dd>
+
+          <dt><span class="term">lcLogFile:
+          &lt;filename&gt;</span></dt>
+
+          <dd>
+            <p>Specify a file for recording debug log messages. By
+            default these messages only go to stderr and are not
+            recorded anywhere else. Specifying a logfile copies
+            messages to both stderr and the logfile.</p>
+          </dd>
+
+          <dt><span class="term">lcLogLevel: &lt;integer&gt;
+          [...]</span></dt>
+
+          <dd>
+            <p>Specify the level at which debugging statements and
+            operation statistics should be syslogged (currently
+            logged to the <span class="citerefentry"><span class="refentrytitle">syslogd</span>(8)</span> LOG_LOCAL4
+            facility). They must be considered subsystems rather
+            than increasingly verbose log levels. Some messages
+            with higher priority are logged regardless of the
+            configured loglevel as soon as any logging is
+            configured. Log levels are additive, and available
+            levels are:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="blockquote">
+                  <blockquote class="blockquote">
+                    <div class="variablelist">
+                      <dl class="variablelist">
+                        <dt><span class="term"><code class="constant">1</code></span></dt>
+
+                        <dd>
+                          <p><span class="emphasis"><em>(0x1
+                          trace)</em></span> trace function
+                          calls</p>
+                        </dd>
+
+                        <dt><span class="term"><code class="constant">2</code></span></dt>
+
+                        <dd>
+                          <p><span class="emphasis"><em>(0x2
+                          packets)</em></span> debug packet
+                          handling</p>
+                        </dd>
+
+                        <dt><span class="term"><code class="constant">4</code></span></dt>
+
+                        <dd>
+                          <p><span class="emphasis"><em>(0x4
+                          args)</em></span> heavy trace debugging
+                          (function args)</p>
+                        </dd>
+
+                        <dt><span class="term"><code class="constant">8</code></span></dt>
+
+                        <dd>
+                          <p><span class="emphasis"><em>(0x8
+                          conns)</em></span> connection
+                          management</p>
+                        </dd>
+
+                        <dt><span class="term"><code class="constant">16</code></span></dt>
+
+                        <dd>
+                          <p><span class="emphasis"><em>(0x10
+                          BER)</em></span> print out packets sent
+                          and received</p>
+                        </dd>
+
+                        <dt><span class="term"><code class="constant">32</code></span></dt>
+
+                        <dd>
+                          <p><span class="emphasis"><em>(0x20
+                          filter)</em></span> search filter
+                          processing</p>
+                        </dd>
+
+                        <dt><span class="term"><code class="constant">64</code></span></dt>
+
+                        <dd>
+                          <p><span class="emphasis"><em>(0x40
+                          config)</em></span> configuration file
+                          processing</p>
+                        </dd>
+
+                        <dt><span class="term"><code class="constant">128</code></span></dt>
+
+                        <dd>
+                          <p><span class="emphasis"><em>(0x80
+                          ACL)</em></span> access control list
+                          processing</p>
+                        </dd>
+
+                        <dt><span class="term"><code class="constant">256</code></span></dt>
+
+                        <dd>
+                          <p><span class="emphasis"><em>(0x100
+                          stats)</em></span> stats log
+                          connections/operations/results</p>
+                        </dd>
+
+                        <dt><span class="term"><code class="constant">512</code></span></dt>
+
+                        <dd>
+                          <p><span class="emphasis"><em>(0x200
+                          stats2)</em></span> stats log entries
+                          sent</p>
+                        </dd>
+
+                        <dt><span class="term"><code class="constant">1024</code></span></dt>
+
+                        <dd>
+                          <p><span class="emphasis"><em>(0x400
+                          shell)</em></span> print communication
+                          with shell backends</p>
+                        </dd>
+
+                        <dt><span class="term"><code class="constant">2048</code></span></dt>
+
+                        <dd>
+                          <p><span class="emphasis"><em>(0x800
+                          parse)</em></span> entry parsing</p>
+                        </dd>
+
+                        <dt><span class="term"><code class="constant">16384</code></span></dt>
+
+                        <dd>
+                          <p><span class="emphasis"><em>(0x4000
+                          sync)</em></span> LDAPSync
+                          replication</p>
+                        </dd>
+
+                        <dt><span class="term"><code class="constant">32768</code></span></dt>
+
+                        <dd>
+                          <p><span class="emphasis"><em>(0x8000
+                          none)</em></span> only messages that get
+                          logged whatever log level is set</p>
+                        </dd>
+                      </dl>
+                    </div>
+                  </blockquote>
+                </div>
+
+                <p>The desired log level can be input as a single
+                integer that combines the (ORed) desired levels,
+                both in decimal or in hexadecimal notation, as a
+                list of integers (that are ORed internally), or as
+                a list of the names that are shown between
+                brackets, such that</p>
+
+                <div class="informalexample">
+                  <pre class="programlisting" xml:space="preserve">
+    olcLogLevel: 129
+    olcLogLevel: 0x81
+    olcLogLevel: 128 1
+    olcLogLevel: 0x80 0x1
+    olcLogLevel: acl trace
+</pre>
+                </div>
+
+                <p>are equivalent. The keyword <em class="replaceable"><code>any</code></em> can be used as
+                a shortcut to enable logging at all levels
+                (equivalent to −1). The keyword <em class="replaceable"><code>none</code></em>, or the
+                equivalent integer representation, causes those
+                messages that are logged regardless of the
+                configured olcLogLevel to be logged. In fact, if no
+                olcLogLevel (or a 0 level) is defined, no logging
+                occurs, so at least the <em class="replaceable"><code>none</code></em> level is
+                required to have high priority messages logged.</p>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term">lcPasswordCryptSaltFormat:
+          &lt;format&gt;</span></dt>
+
+          <dd>
+            <p>Specify the format of the salt passed to <a class="link" href="../htmlman3/crypt.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">crypt</span>(3)</span></a> when
+            generating {CRYPT} passwords (see <em class="replaceable"><code>olcPasswordHash</code></em>) during
+            processing of LDAP Password Modify Extended Operations
+            (RFC 3062).</p>
+
+            <p>This string needs to be in <a class="link" href="../htmlman3/printf.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sprintf</span>(3)</span></a> format and
+            may include one (and only one) %s conversion. This
+            conversion will be substituted with a string of random
+            characters from [A−Za−z0−9./]. For
+            example, "%.2s" provides a two character salt and
+            "$1$%.8s" tells some versions of crypt(3) to use an MD5
+            algorithm and provides 8 random characters of salt. The
+            default is "%s", which provides 31 characters of
+            salt.</p>
+          </dd>
+
+          <dt><span class="term">lcPidFile:
+          &lt;filename&gt;</span></dt>
+
+          <dd>
+            <p>The (absolute) name of a file that will hold the
+            <em class="replaceable"><code>slapd</code></em>
+            server's process ID (see <a class="link" href="../htmlman2/getpid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getpid</span>(2)</span></a>).</p>
+          </dd>
+
+          <dt><span class="term">lcPluginLogFile:
+          &lt;filename&gt;</span></dt>
+
+          <dd>
+            <p>The ( absolute ) name of a file that will contain
+            log messages from <code class="constant">SLAPI</code>
+            plugins. See <a class="link" href="../htmlman5/slapd.plugin.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.plugin</span>(5)</span></a> for
+            details.</p>
+          </dd>
+
+          <dt><span class="term">lcReferral:
+          &lt;url&gt;</span></dt>
+
+          <dd>
+            <p>Specify the referral to pass back when <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a> cannot find
+            a local database to handle a request. If multiple
+            values are specified, each url is provided.</p>
+          </dd>
+
+          <dt><span class="term">lcReverseLookup: TRUE |
+          FALSE</span></dt>
+
+          <dd>
+            <p>Enable/disable client name unverified reverse lookup
+            (default is <code class="constant">FALSE</code> if
+            compiled with −−enable−rlookups).</p>
+          </dd>
+
+          <dt><span class="term">lcRootDSE:
+          &lt;file&gt;</span></dt>
+
+          <dd>
+            <p>Specify the name of an LDIF(5) file containing user
+            defined attributes for the root DSE. These attributes
+            are returned in addition to the attributes normally
+            produced by slapd.</p>
+
+            <p>The root DSE is an entry with information about the
+            server and its capabilities, in operational attributes.
+            It has the empty DN, and can be read with e.g.:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="informalexample">
+                  <pre class="programlisting" xml:space="preserve">
+ldapsearch −x −b "" −s base "+"
+</pre>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>See RFC 4512 section 5.1 for details.</p>
+          </dd>
+
+          <dt><span class="term">lcSaslAuxprops: &lt;plugin&gt;
+          [...]</span></dt>
+
+          <dd>
+            <p>Specify which auxprop plugins to use for
+            authentication lookups. The default is empty, which
+            just uses slapd's internal support. Usually no other
+            auxprop plugins are needed.</p>
+          </dd>
+
+          <dt><span class="term">lcSaslHost:
+          &lt;fqdn&gt;</span></dt>
+
+          <dd>
+            <p>Used to specify the fully qualified domain name used
+            for SASL processing.</p>
+          </dd>
+
+          <dt><span class="term">lcSaslRealm:
+          &lt;realm&gt;</span></dt>
+
+          <dd>
+            <p>Specify SASL realm. Default is empty.</p>
+          </dd>
+
+          <dt><span class="term">lcSaslSecProps:
+          &lt;properties&gt;</span></dt>
+
+          <dd>
+            <p>Used to specify Cyrus SASL security properties. The
+            <em class="replaceable"><code>none</code></em> flag
+            (without any other properties) causes the flag
+            properties default, "noanonymous,noplain", to be
+            cleared. The <em class="replaceable"><code>noplain</code></em> flag disables
+            mechanisms susceptible to simple passive attacks. The
+            <em class="replaceable"><code>noactive</code></em> flag
+            disables mechanisms susceptible to active attacks. The
+            <em class="replaceable"><code>nodict</code></em> flag
+            disables mechanisms susceptible to passive dictionary
+            attacks. The <em class="replaceable"><code>noanonymous</code></em> flag
+            disables mechanisms which support anonymous login. The
+            <em class="replaceable"><code>forwardsec</code></em>
+            flag require forward secrecy between sessions. The
+            <em class="replaceable"><code>passcred</code></em>
+            require mechanisms which pass client credentials (and
+            allow mechanisms which can pass credentials to do so).
+            The <em class="replaceable"><code>minssf=&lt;factor&gt;</code></em>
+            property specifies the minimum acceptable <span class="emphasis"><em>security strength factor</em></span> as
+            an integer approximate to effective key length used for
+            encryption. 0 (zero) implies no protection, 1 implies
+            integrity protection only, 56 allows DES or other weak
+            ciphers, 112 allows triple DES and other strong
+            ciphers, 128 allows RC4, Blowfish and other modern
+            strong ciphers. The default is 0. The <em class="replaceable"><code>maxssf=&lt;factor&gt;</code></em>
+            property specifies the maximum acceptable <span class="emphasis"><em>security strength factor</em></span> as
+            an integer (see minssf description). The default is
+            INT_MAX. The <em class="replaceable"><code>maxbufsize=&lt;size&gt;</code></em>
+            property specifies the maximum security layer receive
+            buffer size allowed. 0 disables security layers. The
+            default is 65536.</p>
+          </dd>
+
+          <dt><span class="term">lcServerID: &lt;integer&gt;
+          [&lt;URL&gt;]</span></dt>
+
+          <dd>
+            <p>Specify an integer ID from 0 to 4095 for this server
+            (limited to 3 hexadecimal digits). The ID may also be
+            specified as a hexadecimal ID by prefixing the value
+            with "0x". These IDs are required when using
+            multimaster replication and each master must have a
+            unique ID. Note that this requirement also applies to
+            separate masters contributing to a glued set of
+            databases. If the URL is provided, this directive may
+            be specified multiple times, providing a complete list
+            of participating servers and their IDs. The fully
+            qualified hostname of each server should be used in the
+            supplied URLs. The IDs are used in the "replica id"
+            field of all CSNs generated by the specified server.
+            The default value is zero. Example:</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+        olcServerID: 1 ldap://ldap1.example.com
+        olcServerID: 2 ldap://ldap2.example.com
+</pre>
+            </div>
+          </dd>
+
+          <dt><span class="term">lcSockbufMaxIncoming:
+          &lt;integer&gt;</span></dt>
+
+          <dd>
+            <p>Specify the maximum incoming LDAP PDU size for
+            anonymous sessions. The default is 262143.</p>
+          </dd>
+
+          <dt><span class="term">lcSockbufMaxIncomingAuth:
+          &lt;integer&gt;</span></dt>
+
+          <dd>
+            <p>Specify the maximum incoming LDAP PDU size for
+            authenticated sessions. The default is 4194303.</p>
+          </dd>
+
+          <dt><span class="term">lcTCPBuffer [listener=&lt;URL&gt;]
+          [{read|write}=]&lt;size&gt;</span></dt>
+
+          <dd>
+            <p>Specify the size of the TCP buffer. A global value
+            for both read and write TCP buffers related to any
+            listener is defined, unless the listener is explicitly
+            specified, or either the read or write qualifiers are
+            used. See <a class="link" href="../htmlman7/tcp.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tcp</span>(7)</span></a> for details.
+            Note that some OS-es implement automatic TCP buffer
+            tuning.</p>
+          </dd>
+
+          <dt><span class="term">lcThreads:
+          &lt;integer&gt;</span></dt>
+
+          <dd>
+            <p>Specify the maximum size of the primary thread pool.
+            The default is 16; the minimum value is 2.</p>
+          </dd>
+
+          <dt><span class="term">lcToolThreads:
+          &lt;integer&gt;</span></dt>
+
+          <dd>
+            <p>Specify the maximum number of threads to use in tool
+            mode. This should not be greater than the number of
+            CPUs in the system. The default is 1.</p>
+          </dd>
+
+          <dt><span class="term">lcWriteTimeout:
+          &lt;integer&gt;</span></dt>
+
+          <dd>
+            <p>Specify the number of seconds to wait before
+            forcibly closing a connection with an outstanding
+            write. This allows recovery from various network hang
+            conditions. A setting of 0 disables this feature. The
+            default is 0.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-config-5_sect3" name="slapd-config-5_sect3" shape="rect"> </a>
+
+      <h2>TLS OPTIONS</h2>
+
+      <p>If <em class="replaceable"><code>slapd</code></em> is
+      built with support for Transport Layer Security, there are
+      more options you can specify.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">lcTLSCipherSuite:
+          &lt;cipher-suite-spec&gt;</span></dt>
+
+          <dd>
+            <p>Permits configuring what ciphers will be accepted
+            and the preference order. &lt;cipher-suite-spec&gt;
+            should be a cipher specification for the TLS library in
+            use (OpenSSL, GnuTLS, or Mozilla NSS). Example:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="blockquote">
+                  <blockquote class="blockquote">
+                    <div class="variablelist">
+                      <dl class="variablelist">
+                        <dt><span class="term"><em class="replaceable"><code>OpenSSL:</code></em></span></dt>
+
+                        <dd>
+                          <p>olcTLSCipherSuite:
+                          HIGH:MEDIUM:+SSLv2</p>
+                        </dd>
+
+                        <dt><span class="term"><em class="replaceable"><code>GnuTLS:</code></em></span></dt>
+
+                        <dd>
+                          <p>TLSCiphersuite
+                          SECURE256:!AES-128-CBC</p>
+                        </dd>
+                      </dl>
+                    </div>
+                  </blockquote>
+                </div>
+
+                <p>To check what ciphers a given spec selects in
+                OpenSSL, use:</p>
+
+                <div class="informalexample">
+                  <pre class="programlisting" xml:space="preserve">
+        openssl ciphers −v &lt;cipher-suite-spec&gt;
+</pre>
+                </div>
+
+                <p>With GnuTLS the available specs can be found in
+                the manual page of <a class="link" href="../htmlman1/gnutls-cli.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gnutls-cli</span>(1)</span></a>
+                (see the description of the option <code class="option">−−priority</code>).</p>
+
+                <p>In older versions of GnuTLS, where
+                gnutls−cli does not support the option
+                −−priority, you can obtain the —
+                more limited — list of ciphers by
+                calling:</p>
+
+                <div class="informalexample">
+                  <pre class="programlisting" xml:space="preserve">
+        gnutls−cli −l
+</pre>
+                </div>
+
+                <p>When using Mozilla NSS, the OpenSSL cipher suite
+                specifications are used and translated into the
+                format used internally by Mozilla NSS. There isn't
+                an easy way to list the cipher suites from the
+                command line. The authoritative list is in the
+                source code for Mozilla NSS in the file sslinfo.c
+                in the structure</p>
+
+                <div class="informalexample">
+                  <pre class="programlisting" xml:space="preserve">
+        static const SSLCipherSuiteInfo suiteInfo[]
+</pre>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term">lcTLSCACertificateFile:
+          &lt;filename&gt;</span></dt>
+
+          <dd>
+            <p>Specifies the file that contains certificates for
+            all of the Certificate Authorities that <em class="replaceable"><code>slapd</code></em> will
+            recognize.</p>
+          </dd>
+
+          <dt><span class="term">lcTLSCACertificatePath:
+          &lt;path&gt;</span></dt>
+
+          <dd>
+            <p>Specifies the path of a directory that contains
+            Certificate Authority certificates in separate
+            individual files. Usually only one of this or the
+            olcTLSCACertificateFile is defined. If both are
+            specified, both locations will be used. This directive
+            is not supported when using GnuTLS.</p>
+
+            <p>When using Mozilla NSS, &lt;path&gt; may contain a
+            Mozilla NSS cert/key database. If &lt;path&gt; contains
+            a Mozilla NSS cert/key database and CA cert files,
+            OpenLDAP will use the cert/key database and will ignore
+            the CA cert files.</p>
+          </dd>
+
+          <dt><span class="term">lcTLSCertificateFile:
+          &lt;filename&gt;</span></dt>
+
+          <dd>
+            <p>Specifies the file that contains the <em class="replaceable"><code>slapd</code></em> server
+            certificate.</p>
+
+            <p>When using Mozilla NSS, if using a cert/key database
+            (specified with olcTLSCACertificatePath),
+            olcTLSCertificateFile specifies the name of the
+            certificate to use:</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+        olcTLSCertificateFile: Server-Cert
+</pre>
+            </div>
+
+            <p>If using a token other than the internal built in
+            token, specify the token name first, followed by a
+            colon:</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+        olcTLSCertificateFile: my hardware device:Server-Cert
+</pre>
+            </div>
+
+            <p>Use certutil -L to list the certificates by
+            name:</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+        certutil -d /path/to/certdbdir -L
+</pre>
+            </div>
+          </dd>
+
+          <dt><span class="term">lcTLSCertificateKeyFile:
+          &lt;filename&gt;</span></dt>
+
+          <dd>
+            <p>Specifies the file that contains the <em class="replaceable"><code>slapd</code></em> server private
+            key that matches the certificate stored in the
+            <em class="replaceable"><code>olcTLSCertificateFile</code></em>
+            file. If the private key is protected with a password,
+            the password must be manually typed in when slapd
+            starts. Usually the private key is not protected with a
+            password, to allow slapd to start without manual
+            intervention, so it is of critical importance that the
+            file is protected carefully.</p>
+
+            <p>When using Mozilla NSS, olcTLSCertificateKeyFile
+            specifies the name of a file that contains the password
+            for the key for the certificate specified with
+            olcTLSCertificateFile. The modutil command can be used
+            to turn off password protection for the cert/key
+            database. For example, if olcTLSCACertificatePath
+            specifes /etc/openldap/certdb as the location of the
+            cert/key database, use modutil to change the password
+            to the empty string:</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+        modutil -dbdir /etc/openldap/certdb -changepw 'NSS Certificate DB'
+</pre>
+            </div>
+
+            <p>You must have the old password, if any. Ignore the
+            WARNING about the running browser. Press 'Enter' for
+            the new password.</p>
+          </dd>
+
+          <dt><span class="term">lcTLSDHParamFile:
+          &lt;filename&gt;</span></dt>
+
+          <dd>
+            <p>This directive specifies the file that contains
+            parameters for Diffie-Hellman ephemeral key exchange.
+            This is required in order to use a DSA certificate on
+            the server. If multiple sets of parameters are present
+            in the file, all of them will be processed. Note that
+            setting this option may also enable Anonymous
+            Diffie-Hellman key exchanges in certain non-default
+            cipher suites. You should append "!ADH" to your cipher
+            suites if you have changed them from the default,
+            otherwise no certificate exchanges or verification will
+            be done. When using GnuTLS or Mozilla NSS these
+            parameters are always generated randomly so this
+            directive is ignored.</p>
+          </dd>
+
+          <dt><span class="term">lcTLSProtocolMin:
+          &lt;major&gt;[.&lt;minor&gt;]</span></dt>
+
+          <dd>
+            <p>Specifies minimum SSL/TLS protocol version that will
+            be negotiated. If the server doesn't support at least
+            that version, the SSL handshake will fail. To require
+            TLS 1.x or higher, set this option to 3.(x+1),
+            e.g.,</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+        olcTLSProtocolMin: 3.2
+</pre>
+            </div>
+
+            <p>would require TLS 1.1. Specifying a minimum that is
+            higher than that supported by the OpenLDAP
+            implementation will result in it requiring the highest
+            level that it does support. This directive is ignored
+            with GnuTLS.</p>
+          </dd>
+
+          <dt><span class="term">lcTLSRandFile:
+          &lt;filename&gt;</span></dt>
+
+          <dd>
+            <p>Specifies the file to obtain random bits from when
+            /dev/[u]random is not available. Generally set to the
+            name of the EGD/PRNGD socket. The environment variable
+            RANDFILE can also be used to specify the filename. This
+            directive is ignored with GnuTLS and Mozilla NSS.</p>
+          </dd>
+
+          <dt><span class="term">lcTLSVerifyClient:
+          &lt;level&gt;</span></dt>
+
+          <dd>
+            <p>Specifies what checks to perform on client
+            certificates in an incoming TLS session, if any. The
+            <em class="replaceable"><code>&lt;level&gt;</code></em>
+            can be specified as one of the following keywords:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><em class="replaceable"><code>never</code></em></span></dt>
+
+                    <dd>
+                      <p>This is the default. <em class="replaceable"><code>slapd</code></em> will
+                      not ask the client for a certificate.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>allow</code></em></span></dt>
+
+                    <dd>
+                      <p>The client certificate is requested. If no
+                      certificate is provided, the session proceeds
+                      normally. If a bad certificate is provided,
+                      it will be ignored and the session proceeds
+                      normally.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>try</code></em></span></dt>
+
+                    <dd>
+                      <p>The client certificate is requested. If no
+                      certificate is provided, the session proceeds
+                      normally. If a bad certificate is provided,
+                      the session is immediately terminated.</p>
+                    </dd>
+
+                    <dt><span class="term"><span class="emphasis"><em>demand | hard |
+                    true</em></span></span></dt>
+
+                    <dd>
+                      <p>These keywords are all equivalent, for
+                      compatibility reasons. The client certificate
+                      is requested. If no certificate is provided,
+                      or a bad certificate is provided, the session
+                      is immediately terminated.</p>
+
+                      <p>Note that a valid client certificate is
+                      required in order to use the SASL EXTERNAL
+                      authentication mechanism with a TLS session.
+                      As such, a non-default <em class="replaceable"><code>olcTLSVerifyClient</code></em>
+                      setting must be chosen to enable SASL
+                      EXTERNAL authentication.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term">lcTLSCRLCheck:
+          &lt;level&gt;</span></dt>
+
+          <dd>
+            <p>Specifies if the Certificate Revocation List (CRL)
+            of the CA should be used to verify if the client
+            certificates have not been revoked. This requires
+            <em class="replaceable"><code>olcTLSCACertificatePath</code></em>
+            parameter to be set. This parameter is ignored with
+            GnuTLS and Mozilla NSS. <em class="replaceable"><code>&lt;level&gt;</code></em> can be
+            specified as one of the following keywords:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><em class="replaceable"><code>none</code></em></span></dt>
+
+                    <dd>
+                      <p>No CRL checks are performed</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>peer</code></em></span></dt>
+
+                    <dd>
+                      <p>Check the CRL of the peer certificate</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>all</code></em></span></dt>
+
+                    <dd>
+                      <p>Check the CRL for a whole certificate
+                      chain</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term">lcTLSCRLFile:
+          &lt;filename&gt;</span></dt>
+
+          <dd>
+            <p>Specifies a file containing a Certificate Revocation
+            List to be used for verifying that certificates have
+            not been revoked. This parameter is only valid when
+            using GnuTLS or Mozilla NSS.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-config-5_sect4" name="slapd-config-5_sect4" shape="rect"> </a>
+
+      <h2>DYNAMIC MODULE OPTIONS</h2>
+
+      <p>If <em class="replaceable"><code>slapd</code></em> is
+      compiled with −−enable−modules then the
+      module-related entries will be available. These entries are
+      named <em class="replaceable"><code>cn=module{x},cn=config</code></em> and
+      must have the olcModuleList objectClass. One entry should be
+      created per <em class="replaceable"><code>olcModulePath.</code></em> Normally the
+      config engine generates the "{x}" index in the RDN
+      automatically, so it can be omitted when initially loading
+      these entries.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">lcModuleLoad:
+          &lt;filename&gt;</span></dt>
+
+          <dd>
+            <p>Specify the name of a dynamically loadable module to
+            load. The filename may be an absolute path name or a
+            simple filename. Non-absolute names are searched for in
+            the directories specified by the <em class="replaceable"><code>olcModulePath</code></em>
+            option.</p>
+          </dd>
+
+          <dt><span class="term">lcModulePath:
+          &lt;pathspec&gt;</span></dt>
+
+          <dd>
+            <p>Specify a list of directories to search for loadable
+            modules. Typically the path is colon-separated but this
+            depends on the operating system. The default is
+            MODULEDIR, which is where the standard OpenLDAP install
+            will place its modules.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-config-5_sect5" name="slapd-config-5_sect5" shape="rect"> </a>
+
+      <h2>SCHEMA OPTIONS</h2>
+
+      <p>Schema definitions are created as entries in the
+      <em class="replaceable"><code>cn=schema,cn=config</code></em>
+      subtree. These entries must have the olcSchemaConfig
+      objectClass. As noted above, the actual <em class="replaceable"><code>cn=schema,cn=config</code></em> entry is
+      predefined and any values specified for it are ignored.</p>
+
+      <p><span class="emphasis"><em>olcAttributetypes: (
+      &lt;oid&gt; [NAME &lt;name&gt;] [DESC &lt;description&gt;]
+      [OBSOLETE] [SUP &lt;oid&gt;] [EQUALITY &lt;oid&gt;] [ORDERING
+      &lt;oid&gt;] [SUBSTR &lt;oid&gt;] [SYNTAX &lt;oidlen&gt;]
+      [SINGLE−VALUE] [COLLECTIVE]
+      [NO−USER−MODIFICATION] [USAGE
+      &lt;attributeUsage&gt;] )</em></span></p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>Specify an attribute type using the LDAPv3 syntax
+          defined in RFC 4512. The slapd parser extends the RFC
+          4512 definition by allowing string forms as well as
+          numeric OIDs to be used for the attribute OID and
+          attribute syntax OID. (See the <em class="replaceable"><code>olcObjectIdentifier</code></em>
+          description.)</p>
+        </blockquote>
+      </div>
+
+      <p><span class="emphasis"><em>olcDitContentRules: (
+      &lt;oid&gt; [NAME &lt;name&gt;] [DESC &lt;description&gt;]
+      [OBSOLETE] [AUX &lt;oids&gt;] [MUST &lt;oids&gt;] [MAY
+      &lt;oids&gt;] [NOT &lt;oids&gt;] )</em></span></p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>Specify an DIT Content Rule using the LDAPv3 syntax
+          defined in RFC 4512. The slapd parser extends the RFC
+          4512 definition by allowing string forms as well as
+          numeric OIDs to be used for the attribute OID and
+          attribute syntax OID. (See the <em class="replaceable"><code>olcObjectIdentifier</code></em>
+          description.)</p>
+        </blockquote>
+      </div>
+
+      <p><span class="emphasis"><em>olcObjectClasses: ( &lt;oid&gt;
+      [NAME &lt;name&gt;] [DESC &lt;description&gt;] [OBSOLETE]
+      [SUP &lt;oids&gt;] [{ ABSTRACT | STRUCTURAL | AUXILIARY }]
+      [MUST &lt;oids&gt;] [MAY &lt;oids&gt;] )</em></span></p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>Specify an objectclass using the LDAPv3 syntax defined
+          in RFC 4512. The slapd parser extends the RFC 4512
+          definition by allowing string forms as well as numeric
+          OIDs to be used for the object class OID. (See the
+          <em class="replaceable"><code>olcObjectIdentifier</code></em>
+          description.) Object classes are "STRUCTURAL" by
+          default.</p>
+        </blockquote>
+      </div>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">lcObjectIdentifier: &lt;name&gt;
+          "{ &lt;oid&gt; | &lt;name&gt;[:&lt;suffix&gt;]
+          }"</span></dt>
+
+          <dd>
+            <p>Define a string name that equates to the given OID.
+            The string can be used in place of the numeric OID in
+            objectclass and attribute definitions. The name can
+            also be used with a suffix of the form ":xx" in which
+            case the value "oid.xx" will be used.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-config-5_sect6" name="slapd-config-5_sect6" shape="rect"> </a>
+
+      <h2>GENERAL BACKEND OPTIONS</h2>
+
+      <p>Options in these entries only apply to the configuration
+      of a single type of backend. All backends may support this
+      class of options, but currently none do. The entry must be
+      named <em class="replaceable"><code>olcBackend=&lt;databasetype&gt;,cn=config</code></em>
+      and must have the olcBackendConfig objectClass.
+      &lt;databasetype&gt; should be one of <em class="replaceable"><code>bdb</code></em>, <em class="replaceable"><code>config</code></em>, <em class="replaceable"><code>dnssrv</code></em>, <em class="replaceable"><code>hdb</code></em>, <em class="citetitle">ldap</em>, <em class="replaceable"><code>ldif</code></em>, <em class="replaceable"><code>mdb</code></em>, <em class="replaceable"><code>meta</code></em>, <em class="replaceable"><code>monitor</code></em>, <em class="replaceable"><code>ndb</code></em>, <em class="replaceable"><code>null</code></em>, <em class="replaceable"><code>passwd</code></em>, <em class="replaceable"><code>perl</code></em>, <em class="replaceable"><code>relay</code></em>, <em class="replaceable"><code>shell</code></em>, or <em class="replaceable"><code>sql</code></em>. At present, no backend
+      implements any options of this type, so this entry should not
+      be used.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-config-5_sect7" name="slapd-config-5_sect7" shape="rect"> </a>
+
+      <h2>DATABASE OPTIONS</h2>
+
+      <p>Database options are set in entries named <em class="replaceable"><code>olcDatabase={x}&lt;databasetype&gt;,cn=config</code></em>
+      and must have the olcDatabaseConfig objectClass. Normally the
+      config engine generates the "{x}" index in the RDN
+      automatically, so it can be omitted when initially loading
+      these entries.</p>
+
+      <p>The special frontend database is always numbered
+      "{−1}" and the config database is always numbered
+      "{0}".</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-config-5_sect8" name="slapd-config-5_sect8" shape="rect"> </a>
+
+      <h2>GLOBAL DATABASE OPTIONS</h2>
+
+      <p>Options in this section may be set in the special
+      "frontend" database and inherited in all the other databases.
+      These options may be altered by further settings in each
+      specific database. The frontend entry must be named
+      <em class="replaceable"><code>olcDatabase=frontend,cn=config</code></em>
+      and must have the olcFrontendConfig objectClass.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">lcAccess: to &lt;what&gt; "[ by
+          &lt;who&gt; &lt;access&gt; &lt;control&gt;
+          ]+"</span></dt>
+
+          <dd>
+            <p>Grant access (specified by &lt;access&gt;) to a set
+            of entries and/or attributes (specified by
+            &lt;what&gt;) by one or more requestors (specified by
+            &lt;who&gt;). If no access controls are present, the
+            default policy allows anyone and everyone to read
+            anything but restricts updates to rootdn. (e.g.,
+            "olcAccess: to * by * read"). See <a class="link" href="../htmlman5/slapd.access.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.access</span>(5)</span></a> and
+            the "OpenLDAP Administrator's Guide" for details.</p>
+
+            <p>Access controls set in the frontend are appended to
+            any access controls set on the specific databases. The
+            rootdn of a database can always read and write
+            EVERYTHING in that database.</p>
+
+            <p>Extra special care must be taken with the access
+            controls on the config database. Unlike other
+            databases, the default policy for the config database
+            is to only allow access to the rootdn. Regular users
+            should not have read access, and write access should be
+            granted very carefully to privileged
+            administrators.</p>
+          </dd>
+
+          <dt><span class="term">lcDefaultSearchBase:
+          &lt;dn&gt;</span></dt>
+
+          <dd>
+            <p>Specify a default search base to use when client
+            submits a non-base search request with an empty base
+            DN. Base scoped search requests with an empty base DN
+            are not affected. This setting is only allowed in the
+            frontend entry.</p>
+          </dd>
+
+          <dt><span class="term">lcExtraAttrs:
+          &lt;attr&gt;</span></dt>
+
+          <dd>
+            <p>Lists what attributes need to be added to search
+            requests. Local storage backends return the entire
+            entry to the frontend. The frontend takes care of only
+            returning the requested attributes that are allowed by
+            ACLs. However, features like access checking and so may
+            need specific attributes that are not automatically
+            returned by remote storage backends, like proxy
+            backends and so on. <em class="replaceable"><code>&lt;attr&gt;</code></em> is an
+            attribute that is needed for internal purposes and thus
+            always needs to be collected, even when not explicitly
+            requested by clients. This attribute is
+            multi-valued.</p>
+          </dd>
+
+          <dt><span class="term">lcPasswordHash: &lt;hash&gt;
+          [&lt;hash&gt;...]</span></dt>
+
+          <dd>
+            <p>This option configures one or more hashes to be used
+            in generation of user passwords stored in the
+            userPassword attribute during processing of LDAP
+            Password Modify Extended Operations (RFC 3062). The
+            &lt;hash&gt; must be one of <em class="replaceable"><code>{SSHA}</code></em>, <em class="replaceable"><code>{SHA}</code></em>, <em class="replaceable"><code>{SMD5}</code></em>, <em class="replaceable"><code>{MD5}</code></em>, <em class="replaceable"><code>{CRYPT}</code></em>, and <em class="replaceable"><code>{CLEARTEXT}</code></em>. The
+            default is <em class="replaceable"><code>{SSHA}</code></em>.</p>
+
+            <p><em class="replaceable"><code>{SHA}</code></em> and
+            <em class="replaceable"><code>{SSHA}</code></em> use
+            the SHA-1 algorithm (FIPS 160-1), the latter with a
+            seed.</p>
+
+            <p><em class="replaceable"><code>{MD5}</code></em> and
+            <em class="replaceable"><code>{SMD5}</code></em> use
+            the MD5 algorithm (RFC 1321), the latter with a
+            seed.</p>
+
+            <p><em class="replaceable"><code>{CRYPT}</code></em>
+            uses the <a class="link" href="../htmlman3/crypt.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">crypt</span>(3)</span></a>.</p>
+
+            <p><em class="replaceable"><code>{CLEARTEXT}</code></em> indicates
+            that the new password should be added to userPassword
+            as clear text.</p>
+
+            <p>Note that this option does not alter the normal user
+            applications handling of userPassword during LDAP Add,
+            Modify, or other LDAP operations. This setting is only
+            allowed in the frontend entry.</p>
+          </dd>
+
+          <dt><span class="term">lcReadOnly: TRUE |
+          FALSE</span></dt>
+
+          <dd>
+            <p>This option puts the database into "read-only" mode.
+            Any attempts to modify the database will return an
+            "unwilling to perform" error. By default, olcReadOnly
+            is FALSE. Note that when this option is set TRUE on the
+            frontend, it cannot be reset without restarting the
+            server, since further writes to the config database
+            will be rejected.</p>
+          </dd>
+
+          <dt><span class="term">lcRequires:
+          &lt;conditions&gt;</span></dt>
+
+          <dd>
+            <p>Specify a set of conditions to require (default
+            none). The directive may be specified globally and/or
+            per-database; databases inherit global conditions, so
+            per-database specifications are additive. <em class="replaceable"><code>bind</code></em> requires bind
+            operation prior to directory operations. <em class="replaceable"><code>LDAPv3</code></em> requires session
+            to be using LDAP version 3. <em class="replaceable"><code>authc</code></em> requires
+            authentication prior to directory operations.
+            <code class="constant">SASL</code> requires SASL
+            authentication prior to directory operations.
+            <em class="replaceable"><code>strong</code></em>
+            requires strong authentication prior to directory
+            operations. The strong keyword allows protected
+            "simple" authentication as well as SASL authentication.
+            <em class="replaceable"><code>none</code></em> may be
+            used to require no conditions (useful to clear out
+            globally set conditions within a particular database);
+            it must occur first in the list of conditions.</p>
+          </dd>
+
+          <dt><span class="term">lcRestrict:
+          &lt;oplist&gt;</span></dt>
+
+          <dd>
+            <p>Specify a list of operations that are restricted.
+            Restrictions on a specific database override any
+            frontend setting. Operations can be any of <em class="replaceable"><code>add</code></em>, <em class="replaceable"><code>bind</code></em>, <em class="replaceable"><code>compare</code></em>, <em class="replaceable"><code>delete</code></em>, <em class="replaceable"><code>extended[=&lt;OID&gt;]</code></em>,
+            <em class="replaceable"><code>modify</code></em>,
+            <em class="replaceable"><code>rename</code></em>,
+            <em class="replaceable"><code>search</code></em>, or
+            the special pseudo-operations <em class="replaceable"><code>read</code></em> and <em class="replaceable"><code>write</code></em>, which
+            respectively summarize read and write operations. The
+            use of <span class="emphasis"><em>restrict
+            write</em></span> is equivalent to <span class="emphasis"><em>olcReadOnly: TRUE</em></span> (see
+            above). The <em class="replaceable"><code>extended</code></em> keyword allows
+            to indicate the OID of the specific operation to be
+            restricted.</p>
+          </dd>
+
+          <dt><span class="term">lcSchemaDN: &lt;dn&gt;</span></dt>
+
+          <dd>
+            <p>Specify the distinguished name for the subschema
+            subentry that controls the entries on this server. The
+            default is "cn=Subschema".</p>
+          </dd>
+
+          <dt><span class="term">lcSecurity:
+          &lt;factors&gt;</span></dt>
+
+          <dd>
+            <p>Specify a set of security strength factors
+            (separated by white space) to require (see <em class="replaceable"><code>olcSaslSecprops</code></em>'s
+            <em class="replaceable"><code>minssf</code></em> option
+            for a description of security strength factors). The
+            directive may be specified globally and/or
+            per-database. <em class="replaceable"><code>ssf=&lt;n&gt;</code></em> specifies
+            the overall security strength factor. <em class="replaceable"><code>transport=&lt;n&gt;</code></em>
+            specifies the transport security strength factor.
+            <em class="replaceable"><code>tls=&lt;n&gt;</code></em>
+            specifies the TLS security strength factor. <em class="replaceable"><code>sasl=&lt;n&gt;</code></em>
+            specifies the SASL security strength factor. <em class="replaceable"><code>update_ssf=&lt;n&gt;</code></em>
+            specifies the overall security strength factor to
+            require for directory updates. <em class="replaceable"><code>update_transport=&lt;n&gt;</code></em>
+            specifies the transport security strength factor to
+            require for directory updates. <em class="replaceable"><code>update_tls=&lt;n&gt;</code></em>
+            specifies the TLS security strength factor to require
+            for directory updates. <em class="replaceable"><code>update_sasl=&lt;n&gt;</code></em>
+            specifies the SASL security strength factor to require
+            for directory updates. <em class="replaceable"><code>simple_bind=&lt;n&gt;</code></em>
+            specifies the security strength factor required for
+            <em class="replaceable"><code>simple</code></em>
+            username/password authentication. Note that the
+            <em class="replaceable"><code>transport</code></em>
+            factor is measure of security provided by the
+            underlying transport, e.g. ldapi:// (and eventually
+            IPSEC). It is not normally used.</p>
+          </dd>
+
+          <dt><span class="term">lcSizeLimit:
+          {&lt;integer&gt;|unlimited}</span></dt>
+
+          <dt><span class="term">lcSizeLimit:
+          size[.{soft|hard|unchecked}]=&lt;integer&gt;
+          [...]</span></dt>
+
+          <dd>
+            <p>Specify the maximum number of entries to return from
+            a search operation. The default size limit is 500. Use
+            <em class="replaceable"><code>unlimited</code></em> to
+            specify no limits. The second format allows a fine
+            grain setting of the size limits. Extra args can be
+            added in the same value or as additional values. See
+            <em class="replaceable"><code>olcLimits</code></em> for
+            an explanation of the different flags.</p>
+          </dd>
+
+          <dt><span class="term">lcSortVals: &lt;attr&gt;
+          [...]</span></dt>
+
+          <dd>
+            <p>Specify a list of multi-valued attributes whose
+            values will always be maintained in sorted order. Using
+            this option will allow Modify, Compare, and filter
+            evaluations on these attributes to be performed more
+            efficiently. The resulting sort order depends on the
+            attributes' syntax and matching rules and may not
+            correspond to lexical order or any other recognizable
+            order. This setting is only allowed in the frontend
+            entry.</p>
+          </dd>
+
+          <dt><span class="term">lcTimeLimit:
+          {&lt;integer&gt;|unlimited}</span></dt>
+
+          <dt><span class="term">lcTimeLimit:
+          time[.{soft|hard}]=&lt;integer&gt; [...]</span></dt>
+
+          <dd>
+            <p>Specify the maximum number of seconds (in real time)
+            <em class="replaceable"><code>slapd</code></em> will
+            spend answering a search request. The default time
+            limit is 3600. Use <em class="replaceable"><code>unlimited</code></em> to specify no
+            limits. The second format allows a fine grain setting
+            of the time limits. Extra args can be added in the same
+            value or as additional values. See <em class="replaceable"><code>olcLimits</code></em> for an
+            explanation of the different flags.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-config-5_sect9" name="slapd-config-5_sect9" shape="rect"> </a>
+
+      <h2>GENERAL DATABASE OPTIONS</h2>
+
+      <p>Options in this section only apply to the specific
+      database for which they are defined. They are supported by
+      every type of backend. All of the Global Database Options may
+      also be used here.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">lcAddContentAcl: TRUE |
+          FALSE</span></dt>
+
+          <dd>
+            <p>Controls whether Add operations will perform ACL
+            checks on the content of the entry being added. This
+            check is off by default. See the <a class="link" href="../htmlman5/slapd.access.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.access</span>(5)</span></a>
+            manual page for more details on ACL requirements for
+            Add operations.</p>
+          </dd>
+
+          <dt><span class="term">lcHidden: TRUE | FALSE</span></dt>
+
+          <dd>
+            <p>Controls whether the database will be used to answer
+            queries. A database that is hidden will never be
+            selected to answer any queries, and any suffix
+            configured on the database will be ignored in checks
+            for conflicts with other databases. By default,
+            olcHidden is FALSE.</p>
+          </dd>
+
+          <dt><span class="term">lcLastMod: TRUE |
+          FALSE</span></dt>
+
+          <dd>
+            <p>Controls whether <em class="replaceable"><code>slapd</code></em> will
+            automatically maintain the modifiersName,
+            modifyTimestamp, creatorsName, and createTimestamp
+            attributes for entries. It also controls the entryCSN
+            and entryUUID attributes, which are needed by the
+            syncrepl provider. By default, olcLastMod is TRUE.</p>
+          </dd>
+
+          <dt><span class="term">lcLimits: &lt;selector&gt;
+          &lt;limit&gt; [&lt;limit&gt; [...]]</span></dt>
+
+          <dd>
+            <p>Specify time and size limits based on the
+            operation's initiator or base DN. The argument
+            <em class="replaceable"><code>&lt;selector&gt;</code></em> can be
+            any of</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="blockquote">
+                  <blockquote class="blockquote">
+                    <div class="variablelist">
+                      <dl class="variablelist">
+                        <dt><span class="term">anonymous | users |
+                        [&lt;dnspec&gt;=]&lt;pattern&gt; |
+                        group[/oc[/at]]=&lt;pattern&gt;</span></dt>
+                      </dl>
+                    </div>
+                  </blockquote>
+                </div>
+
+                <p>with</p>
+
+                <div class="blockquote">
+                  <blockquote class="blockquote">
+                    <div class="variablelist">
+                      <dl class="variablelist">
+                        <dt><span class="term">&lt;dnspec&gt; ::=
+                        dn[.&lt;type&gt;][.&lt;style&gt;]</span></dt>
+
+                        <dt><span class="term">&lt;type&gt; ::=
+                        self | this</span></dt>
+
+                        <dt><span class="term">&lt;style&gt; ::=
+                        exact | base | onelevel | subtree |
+                        children | regex | anonymous</span></dt>
+                      </dl>
+                    </div>
+                  </blockquote>
+                </div>
+
+                <p>DN type <em class="replaceable"><code>self</code></em> is the default
+                and means the bound user, while <em class="replaceable"><code>this</code></em> means the base
+                DN of the operation. The term <em class="replaceable"><code>anonymous</code></em> matches
+                all unauthenticated clients. The term <em class="replaceable"><code>users</code></em> matches all
+                authenticated clients; otherwise an <em class="replaceable"><code>exact</code></em> dn pattern is
+                assumed unless otherwise specified by qualifying
+                the (optional) key string <em class="replaceable"><code>dn</code></em> with <em class="replaceable"><code>exact</code></em> or <em class="replaceable"><code>base</code></em> (which are
+                synonyms), to require an exact match; with
+                <em class="replaceable"><code>onelevel</code></em>,
+                to require exactly one level of depth match; with
+                <em class="replaceable"><code>subtree</code></em>,
+                to allow any level of depth match, including the
+                exact match; with <em class="replaceable"><code>children</code></em>, to allow
+                any level of depth match, not including the exact
+                match; <span class="emphasis"><em>regex</em></span>
+                explicitly requires the (default) match based on
+                POSIX (''extended'') regular expression pattern.
+                Finally, <em class="replaceable"><code>anonymous</code></em> matches
+                unbound operations; the <em class="replaceable"><code>pattern</code></em> field is
+                ignored. The same behavior is obtained by using the
+                <em class="replaceable"><code>anonymous</code></em>
+                form of the <em class="replaceable"><code>&lt;selector&gt;</code></em>
+                clause. The term <em class="replaceable"><code>group</code></em>, with the
+                optional objectClass <em class="replaceable"><code>oc</code></em> and
+                attributeType <em class="replaceable"><code>at</code></em> fields, followed
+                by <em class="replaceable"><code>pattern</code></em>, sets the
+                limits for any DN listed in the values of the
+                <em class="replaceable"><code>at</code></em>
+                attribute (default <em class="replaceable"><code>member</code></em>) of the
+                <em class="replaceable"><code>oc</code></em> group
+                objectClass (default <em class="replaceable"><code>groupOfNames</code></em>) whose
+                DN exactly matches <em class="replaceable"><code>pattern</code></em>.</p>
+
+                <p>The currently supported limits are <em class="replaceable"><code>size</code></em> and <em class="replaceable"><code>time</code></em>.</p>
+
+                <p>The syntax for time limits is <em class="replaceable"><code>time[.{soft|hard}]=&lt;integer&gt;</code></em>,
+                where <em class="replaceable"><code>integer</code></em> is the
+                number of seconds slapd will spend answering a
+                search request. If no time limit is explicitly
+                requested by the client, the <em class="replaceable"><code>soft</code></em> limit is used;
+                if the requested time limit exceeds the <em class="replaceable"><code>hard</code></em> limit, the
+                value of the limit is used instead. If the
+                <em class="replaceable"><code>hard</code></em>
+                limit is set to the keyword <em class="replaceable"><code>soft</code></em>, the soft
+                limit is used in either case; if it is set to the
+                keyword <em class="replaceable"><code>unlimited</code></em>, no hard
+                limit is enforced. Explicit requests for time
+                limits smaller or equal to the <em class="replaceable"><code>hard</code></em> limit are
+                honored. If no limit specifier is set, the value is
+                assigned to the <em class="replaceable"><code>soft</code></em> limit, and the
+                <em class="replaceable"><code>hard</code></em>
+                limit is set to <em class="replaceable"><code>soft</code></em>, to preserve
+                the original behavior.</p>
+
+                <p>The syntax for size limits is <em class="replaceable"><code>size[.{soft|hard|unchecked}]=&lt;integer&gt;</code></em>,
+                where <em class="replaceable"><code>integer</code></em> is the
+                maximum number of entries slapd will return
+                answering a search request. If no size limit is
+                explicitly requested by the client, the <em class="replaceable"><code>soft</code></em> limit is used;
+                if the requested size limit exceeds the <em class="replaceable"><code>hard</code></em> limit, the
+                value of the limit is used instead. If the
+                <em class="replaceable"><code>hard</code></em>
+                limit is set to the keyword <em class="replaceable"><code>soft</code></em>, the soft
+                limit is used in either case; if it is set to the
+                keyword <em class="replaceable"><code>unlimited</code></em>, no hard
+                limit is enforced. Explicit requests for size
+                limits smaller or equal to the <em class="replaceable"><code>hard</code></em> limit are
+                honored. The <em class="replaceable"><code>unchecked</code></em> specifier
+                sets a limit on the number of candidates a search
+                request is allowed to examine. The rationale behind
+                it is that searches for non-properly indexed
+                attributes may result in large sets of candidates,
+                which must be examined by <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a> to
+                determine whether they match the search filter or
+                not. The <em class="replaceable"><code>unchecked</code></em> limit
+                provides a means to drop such operations before
+                they are even started. If the selected candidates
+                exceed the <em class="replaceable"><code>unchecked</code></em> limit,
+                the search will abort with <span class="emphasis"><em>Unwilling to perform</em></span>. If
+                it is set to the keyword <em class="replaceable"><code>unlimited</code></em>, no limit
+                is applied (the default). If it is set to
+                <em class="replaceable"><code>disable</code></em>,
+                the search is not even performed; this can be used
+                to disallow searches for a specific set of users.
+                If no limit specifier is set, the value is assigned
+                to the <em class="replaceable"><code>soft</code></em> limit, and the
+                <em class="replaceable"><code>hard</code></em>
+                limit is set to <em class="replaceable"><code>soft</code></em>, to preserve
+                the original behavior.</p>
+
+                <p>In case of no match, the global limits are used.
+                The default values are the same as for <em class="replaceable"><code>olcSizeLimit</code></em> and
+                <em class="replaceable"><code>olcTimeLimit</code></em>; no
+                limit is set on <em class="replaceable"><code>unchecked</code></em>.</p>
+
+                <p>If <em class="replaceable"><code>pagedResults</code></em>
+                control is requested, the <em class="replaceable"><code>hard</code></em> size limit is
+                used by default, because the request of a specific
+                page size is considered an explicit request for a
+                limitation on the number of entries to be returned.
+                However, the size limit applies to the total count
+                of entries returned within the search, and not to a
+                single page. Additional size limits may be
+                enforced; the syntax is <em class="replaceable"><code>size.pr={&lt;integer&gt;|noEstimate|unlimited}</code></em>,
+                where <em class="replaceable"><code>integer</code></em> is the max
+                page size if no explicit limit is set; the keyword
+                <em class="replaceable"><code>noEstimate</code></em> inhibits
+                the server from returning an estimate of the total
+                number of entries that might be returned (note: the
+                current implementation does not return any
+                estimate). The keyword <em class="replaceable"><code>unlimited</code></em> indicates
+                that no limit is applied to the pagedResults
+                control page size. The syntax <em class="replaceable"><code>size.prtotal={&lt;integer&gt;|unlimited|disabled}</code></em>
+                allows to set a limit on the total number of
+                entries that a pagedResults control allows to
+                return. By default it is set to the <em class="replaceable"><code>hard</code></em> limit. When
+                set, <em class="replaceable"><code>integer</code></em> is the max
+                number of entries that the whole search with
+                pagedResults control can return. Use <em class="replaceable"><code>unlimited</code></em> to allow
+                unlimited number of entries to be returned, e.g. to
+                allow the use of the pagedResults control as a
+                means to circumvent size limitations on regular
+                searches; the keyword <em class="replaceable"><code>disabled</code></em> disables
+                the control, i.e. no paged results can be returned.
+                Note that the total number of entries returned when
+                the pagedResults control is requested cannot exceed
+                the <em class="replaceable"><code>hard</code></em>
+                size limit of regular searches unless extended by
+                the <em class="replaceable"><code>prtotal</code></em> switch.</p>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term">lcMaxDerefDepth:
+          &lt;depth&gt;</span></dt>
+
+          <dd>
+            <p>Specifies the maximum number of aliases to
+            dereference when trying to resolve an entry, used to
+            avoid infinite alias loops. The default is 15.</p>
+          </dd>
+
+          <dt><span class="term">lcMirrorMode: TRUE |
+          FALSE</span></dt>
+
+          <dd>
+            <p>This option puts a replica database into "mirror"
+            mode. Update operations will be accepted from any user,
+            not just the updatedn. The database must already be
+            configured as syncrepl consumer before this keyword may
+            be set. This mode also requires a <em class="replaceable"><code>olcServerID</code></em> (see above)
+            to be configured. By default, this setting is
+            FALSE.</p>
+          </dd>
+
+          <dt><span class="term">lcPlugin: &lt;plugin_type&gt;
+          &lt;lib_path&gt; &lt;init_function&gt;
+          [&lt;arguments&gt;]</span></dt>
+
+          <dd>
+            <p>Configure a SLAPI plugin. See the <a class="link" href="../htmlman5/slapd.plugin.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.plugin</span>(5)</span></a>
+            manpage for more details.</p>
+          </dd>
+
+          <dt><span class="term">lcRootDN: &lt;dn&gt;</span></dt>
+
+          <dd>
+            <p>Specify the distinguished name that is not subject
+            to access control or administrative limit restrictions
+            for operations on this database. This DN may or may not
+            be associated with an entry. An empty root DN (the
+            default) specifies no root access is to be granted. It
+            is recommended that the rootdn only be specified when
+            needed (such as when initially populating a database).
+            If the rootdn is within a namingContext (suffix) of the
+            database, a simple bind password may also be provided
+            using the <em class="replaceable"><code>olcRootPW</code></em> directive.
+            Note that the rootdn is always needed when using
+            syncrepl. The <em class="replaceable"><code>olcRootDN</code></em> of the
+            <em class="replaceable"><code>cn=config</code></em>
+            database defaults to <em class="replaceable"><code>cn=config</code></em> itself.</p>
+          </dd>
+
+          <dt><span class="term">lcRootPW:
+          &lt;password&gt;</span></dt>
+
+          <dd>
+            <p>Specify a password (or hash of the password) for the
+            rootdn. The password can only be set if the rootdn is
+            within the namingContext (suffix) of the database. This
+            option accepts all RFC 2307 userPassword formats known
+            to the server (see <em class="replaceable"><code>olcPasswordHash</code></em>
+            description) as well as cleartext. <a class="link" href="../htmlman8/slappasswd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slappasswd</span>(8)</span></a> may be
+            used to generate a hash of a password. Cleartext and
+            <em class="replaceable"><code>{CRYPT}</code></em>
+            passwords are not recommended. If empty (the default),
+            authentication of the root DN is by other means (e.g.
+            SASL). Use of SASL is encouraged.</p>
+          </dd>
+
+          <dt><span class="term">lcSubordinate: [TRUE | FALSE |
+          advertise]</span></dt>
+
+          <dd>
+            <p>Specify that the current backend database is a
+            subordinate of another backend database. A subordinate
+            database may have only one suffix. This option may be
+            used to glue multiple databases into a single
+            namingContext. If the suffix of the current database is
+            within the namingContext of a superior database,
+            searches against the superior database will be
+            propagated to the subordinate as well. All of the
+            databases associated with a single namingContext should
+            have identical rootdns. Behavior of other LDAP
+            operations is unaffected by this setting. In
+            particular, it is not possible to use moddn to move an
+            entry from one subordinate to another subordinate
+            within the namingContext.</p>
+
+            <p>If the optional <em class="replaceable"><code>advertise</code></em> flag is
+            supplied, the naming context of this database is
+            advertised in the root DSE. The default is to hide this
+            database context, so that only the superior context is
+            visible.</p>
+
+            <p>If the slap tools <a class="link" href="../htmlman8/slapcat.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapcat</span>(8)</span></a>, <a class="link" href="../htmlman8/slapadd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapadd</span>(8)</span></a>, or
+            <a class="link" href="../htmlman8/slapindex.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapindex</span>(8)</span></a> are used
+            on the superior database, any glued subordinates that
+            support these tools are opened as well.</p>
+
+            <p>Databases that are glued together should usually be
+            configured with the same indices (assuming they support
+            indexing), even for attributes that only exist in some
+            of these databases. In general, all of the glued
+            databases should be configured as similarly as
+            possible, since the intent is to provide the appearance
+            of a single directory.</p>
+
+            <p>Note that the subordinate functionality is
+            implemented internally by the <em class="replaceable"><code>glue</code></em> overlay and as
+            such its behavior will interact with other overlays in
+            use. By default, the glue overlay is automatically
+            configured as the last overlay on the superior
+            database. Its position on the database can be
+            explicitly configured by setting an <span class="emphasis"><em>overlay glue</em></span> directive at
+            the desired position. This explicit configuration is
+            necessary e.g. when using the <em class="replaceable"><code>syncprov</code></em> overlay, which
+            needs to follow <em class="replaceable"><code>glue</code></em> in order to work
+            over all of the glued databases. E.g.</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="informalexample">
+                  <pre class="programlisting" xml:space="preserve">
+        dn: olcDatabase={1}bdb,cn=config
+        olcSuffix: dc=example,dc=com
+        ...
+
+        dn: olcOverlay={0}glue,olcDatabase={1}bdb,cn=config
+        ...
+
+        dn: olcOverlay={1}syncprov,olcDatabase={1}bdb,cn=config
+        ...
+</pre>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>See the Overlays section below for more details.</p>
+          </dd>
+
+          <dt><span class="term">lcSuffix: &lt;dn
+          suffix&gt;</span></dt>
+
+          <dd>
+            <p>Specify the DN suffix of queries that will be passed
+            to this backend database. Multiple suffix lines can be
+            given and at least one is required for each database
+            definition.</p>
+
+            <p>If the suffix of one database is "inside" that of
+            another, the database with the inner suffix must come
+            first in the configuration file. You may also want to
+            glue such databases together with the <em class="replaceable"><code>olcSubordinate</code></em>
+            attribute.</p>
+          </dd>
+
+          <dt><span class="term">lcSyncUseSubentry: TRUE |
+          FALSE</span></dt>
+
+          <dd>
+            <p>Store the syncrepl contextCSN in a subentry instead
+            of the context entry of the database. The subentry's
+            RDN will be "cn=ldapsync". The default is FALSE,
+            meaning the contextCSN is stored in the context
+            entry.</p>
+
+            <p><span class="emphasis"><em>olcSyncrepl:
+            rid=&lt;replica ID&gt;</em></span> <em class="replaceable"><code>provider=ldap[s]://&lt;hostname&gt;[:port]</code></em>
+            <span class="emphasis"><em>searchbase=&lt;base
+            DN&gt;</em></span> <em class="replaceable"><code>[type=refreshOnly|refreshAndPersist]</code></em>
+            <em class="replaceable"><code>[interval=dd:hh:mm:ss]</code></em>
+            <span class="emphasis"><em>[retry=[&lt;retry
+            interval&gt; &lt;# of retries&gt;]+]</em></span>
+            <span class="emphasis"><em>[filter=&lt;filter
+            str&gt;]</em></span> <em class="replaceable"><code>[scope=sub|one|base|subord]</code></em>
+            <span class="emphasis"><em>[attrs=&lt;attr
+            list&gt;]</em></span> <span class="emphasis"><em>[exattrs=&lt;attr list&gt;]</em></span>
+            <em class="replaceable"><code>[attrsonly]</code></em>
+            <em class="replaceable"><code>[sizelimit=&lt;limit&gt;]</code></em>
+            <em class="replaceable"><code>[timelimit=&lt;limit&gt;]</code></em>
+            <em class="replaceable"><code>[schemachecking=on|off]</code></em>
+            <em class="replaceable"><code>[network−timeout=&lt;seconds&gt;]</code></em>
+            <em class="replaceable"><code>[timeout=&lt;seconds&gt;]</code></em>
+            <em class="replaceable"><code>[bindmethod=simple|sasl]</code></em>
+            <em class="replaceable"><code>[binddn=&lt;dn&gt;]</code></em>
+            <em class="replaceable"><code>[saslmech=&lt;mech&gt;]</code></em>
+            <em class="replaceable"><code>[authcid=&lt;identity&gt;]</code></em>
+            <em class="replaceable"><code>[authzid=&lt;identity&gt;]</code></em>
+            <em class="replaceable"><code>[credentials=&lt;passwd&gt;]</code></em>
+            <em class="replaceable"><code>[realm=&lt;realm&gt;]</code></em>
+            <em class="replaceable"><code>[secprops=&lt;properties&gt;]</code></em>
+            <em class="replaceable"><code>[keepalive=&lt;idle&gt;:&lt;probes&gt;:&lt;interval&gt;]</code></em>
+            <em class="replaceable"><code>[starttls=yes|critical]</code></em>
+            <em class="replaceable"><code>[tls_cert=&lt;file&gt;]</code></em>
+            <em class="replaceable"><code>[tls_key=&lt;file&gt;]</code></em>
+            <em class="replaceable"><code>[tls_cacert=&lt;file&gt;]</code></em>
+            <em class="replaceable"><code>[tls_cacertdir=&lt;path&gt;]</code></em>
+            <em class="replaceable"><code>[tls_reqcert=never|allow|try|demand]</code></em>
+            <em class="replaceable"><code>[tls_ciphersuite=&lt;ciphers&gt;]</code></em>
+            <em class="replaceable"><code>[tls_crlcheck=none|peer|all]</code></em>
+            <em class="replaceable"><code>[tls_protocol_min=&lt;major&gt;[.&lt;minor&gt;]]</code></em>
+            <span class="emphasis"><em>[suffixmassage=&lt;real
+            DN&gt;]</em></span> <span class="emphasis"><em>[logbase=&lt;base DN&gt;]</em></span>
+            <span class="emphasis"><em>[logfilter=&lt;filter
+            str&gt;]</em></span> <em class="replaceable"><code>[syncdata=default|accesslog|changelog]</code></em></p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <p>Specify the current database as a replica which
+                is kept up-to-date with the master content by
+                establishing the current <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a> as a
+                replication consumer site running a <em class="replaceable"><code>syncrepl</code></em>
+                replication engine. The replica content is kept
+                synchronized to the master content using the LDAP
+                Content Synchronization protocol. Refer to the
+                "OpenLDAP Administrator's Guide" for detailed
+                information on setting up a replicated <em class="replaceable"><code>slapd</code></em> directory
+                service using the <em class="replaceable"><code>syncrepl</code></em>
+                replication engine.</p>
+
+                <p><em class="replaceable"><code>rid</code></em>
+                identifies the current <em class="replaceable"><code>syncrepl</code></em> directive
+                within the replication consumer site. It is a
+                non-negative integer having no more than three
+                decimal digits.</p>
+
+                <p><em class="replaceable"><code>provider</code></em> specifies
+                the replication provider site containing the master
+                content as an LDAP URI. If &lt;port&gt; is not
+                given, the standard LDAP port number (389 or 636)
+                is used.</p>
+
+                <p>The content of the <em class="replaceable"><code>syncrepl</code></em> replica is
+                defined using a search specification as its result
+                set. The consumer <em class="replaceable"><code>slapd</code></em> will send
+                search requests to the provider <em class="replaceable"><code>slapd</code></em> according to
+                the search specification. The search specification
+                includes <span class="emphasis"><em>searchbase,
+                scope, filter, attrs, attrsonly,
+                sizelimit,</em></span> and <em class="replaceable"><code>timelimit</code></em>
+                parameters as in the normal search specification.
+                The <em class="replaceable"><code>exattrs</code></em> option may
+                also be used to specify attributes that should be
+                omitted from incoming entries. The <em class="replaceable"><code>scope</code></em> defaults to
+                <em class="replaceable"><code>sub</code></em>, the
+                <em class="replaceable"><code>filter</code></em>
+                defaults to <em class="replaceable"><code>(objectclass=*)</code></em>,
+                and there is no default <em class="replaceable"><code>searchbase</code></em>. The
+                <em class="replaceable"><code>attrs</code></em>
+                list defaults to <em class="replaceable"><code>"*,+"</code></em> to return all
+                user and operational attributes, and <em class="replaceable"><code>attrsonly</code></em> and
+                <em class="replaceable"><code>exattrs</code></em>
+                are unset by default. The <em class="replaceable"><code>sizelimit</code></em> and
+                <em class="replaceable"><code>timelimit</code></em>
+                only accept "unlimited" and positive integers, and
+                both default to "unlimited". Note, however, that
+                any provider-side limits for the replication
+                identity will be enforced by the provider
+                regardless of the limits requested by the LDAP
+                Content Synchronization operation, much like for
+                any other search operation.</p>
+
+                <p>The LDAP Content Synchronization protocol has
+                two operation types. In the <em class="replaceable"><code>refreshOnly</code></em>
+                operation, the next synchronization search
+                operation is periodically rescheduled at an
+                interval time (specified by <em class="replaceable"><code>interval</code></em> parameter;
+                1 day by default) after each synchronization
+                operation finishes. In the <em class="replaceable"><code>refreshAndPersist</code></em>
+                operation, a synchronization search remains
+                persistent in the provider slapd. Further updates
+                to the master replica will generate <em class="replaceable"><code>searchResultEntry</code></em>
+                to the consumer slapd as the search responses to
+                the persistent synchronization search.</p>
+
+                <p>If an error occurs during replication, the
+                consumer will attempt to reconnect according to the
+                <em class="replaceable"><code>retry</code></em>
+                parameter which is a list of the &lt;retry
+                interval&gt; and &lt;# of retries&gt; pairs. For
+                example, retry="60 10 300 3" lets the consumer
+                retry every 60 seconds for the first 10 times and
+                then retry every 300 seconds for the next 3 times
+                before stop retrying. The `+' in &lt;# of
+                retries&gt; means indefinite number of retries
+                until success.</p>
+
+                <p>The schema checking can be enforced at the LDAP
+                Sync consumer site by turning on the <em class="replaceable"><code>schemachecking</code></em>
+                parameter. The default is off.</p>
+
+                <p>The <em class="replaceable"><code>network−timeout</code></em>
+                parameter sets how long the consumer will wait to
+                establish a network connection to the provider.
+                Once a connection is established, the <em class="replaceable"><code>timeout</code></em> parameter
+                determines how long the consumer will wait for the
+                initial Bind request to complete. The defaults for
+                these parameters come from <a class="link" href="../htmlman5/ldap.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldap.conf</span>(5)</span></a>.</p>
+
+                <p>A <em class="replaceable"><code>bindmethod</code></em> of
+                <em class="replaceable"><code>simple</code></em>
+                requires the options <em class="replaceable"><code>binddn</code></em> and
+                <em class="replaceable"><code>credentials</code></em> and
+                should only be used when adequate security services
+                (e.g. TLS or IPSEC) are in place. A <em class="replaceable"><code>bindmethod</code></em> of
+                <em class="replaceable"><code>sasl</code></em>
+                requires the option <em class="replaceable"><code>saslmech.</code></em> Depending
+                on the mechanism, an authentication identity and/or
+                credentials can be specified using <em class="replaceable"><code>authcid</code></em> and
+                <em class="replaceable"><code>credentials.</code></em> The
+                <em class="replaceable"><code>authzid</code></em>
+                parameter may be used to specify an authorization
+                identity. Specific security properties (as with the
+                <em class="replaceable"><code>sasl−secprops</code></em>
+                keyword above) for a SASL bind can be set with the
+                <em class="replaceable"><code>secprops</code></em>
+                option. A non default SASL realm can be set with
+                the <em class="replaceable"><code>realm</code></em>
+                option. The provider, other than allow
+                authentication of the syncrepl identity, should
+                grant that identity appropriate access privileges
+                to the data that is being replicated (<em class="replaceable"><code>access</code></em> directive),
+                and appropriate time and size limits (<em class="replaceable"><code>limits</code></em>
+                directive).</p>
+
+                <p>The <em class="replaceable"><code>keepalive</code></em> parameter
+                sets the values of <em class="replaceable"><code>idle</code></em>, <em class="replaceable"><code>probes</code></em>, and
+                <em class="replaceable"><code>interval</code></em>
+                used to check whether a socket is alive; <em class="replaceable"><code>idle</code></em> is the number
+                of seconds a connection needs to remain idle before
+                TCP starts sending keepalive probes; <em class="replaceable"><code>probes</code></em> is the
+                maximum number of keepalive probes TCP should send
+                before dropping the connection; <em class="replaceable"><code>interval</code></em> is
+                interval in seconds between individual keepalive
+                probes. Only some systems support the customization
+                of these values; the <em class="replaceable"><code>keepalive</code></em> parameter
+                is ignored otherwise, and system-wide settings are
+                used.</p>
+
+                <p>The <em class="replaceable"><code>starttls</code></em> parameter
+                specifies use of the StartTLS extended operation to
+                establish a TLS session before Binding to the
+                provider. If the <em class="replaceable"><code>critical</code></em> argument
+                is supplied, the session will be aborted if the
+                StartTLS request fails. Otherwise the syncrepl
+                session continues without TLS. The tls_reqcert
+                setting defaults to "demand" and the other TLS
+                settings default to the same as the main slapd TLS
+                settings.</p>
+
+                <p>The <em class="replaceable"><code>suffixmassage</code></em>
+                parameter allows the consumer to pull entries from
+                a remote directory whose DN suffix differs from the
+                local directory. The portion of the remote entries'
+                DNs that matches the <em class="replaceable"><code>searchbase</code></em> will be
+                replaced with the suffixmassage DN.</p>
+
+                <p>Rather than replicating whole entries, the
+                consumer can query logs of data modifications. This
+                mode of operation is referred to as <em class="replaceable"><code>deltasyncrepl</code></em>. In
+                addition to the above parameters, the <em class="replaceable"><code>logbase</code></em> and
+                <em class="replaceable"><code>logfilter</code></em>
+                parameters must be set appropriately for the log
+                that will be used. The <em class="replaceable"><code>syncdata</code></em> parameter
+                must be set to either "accesslog" if the log
+                conforms to the <a class="link" href="../htmlman5/slapo-accesslog.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapo-accesslog</span>(5)</span></a>
+                log format, or "changelog" if the log conforms to
+                the obsolete <em class="replaceable"><code>changelog</code></em> format.
+                If the <em class="replaceable"><code>syncdata</code></em> parameter
+                is omitted or set to "default" then the log
+                parameters are ignored.</p>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term">lcUpdateDN: &lt;dn&gt;</span></dt>
+
+          <dd>
+            <p>This option is only applicable in a slave database.
+            It specifies the DN permitted to update (subject to
+            access controls) the replica. It is only needed in
+            certain push-mode replication scenarios. Generally,
+            this DN <span class="emphasis"><em>should
+            not</em></span> be the same as the <em class="replaceable"><code>rootdn</code></em> used at the
+            master.</p>
+          </dd>
+
+          <dt><span class="term">lcUpdateRef:
+          &lt;url&gt;</span></dt>
+
+          <dd>
+            <p>Specify the referral to pass back when <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a> is asked to
+            modify a replicated local database. If multiple values
+            are specified, each url is provided.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-config-5_sect10" name="slapd-config-5_sect10" shape="rect"> </a>
+
+      <h2>DATABASE-SPECIFIC OPTIONS</h2>
+
+      <p>Each database may allow specific configuration options;
+      they are documented separately in the backends' manual pages.
+      See the <a class="link" href="../htmlman5/slapd.backends.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.backends</span>(5)</span></a> manual
+      page for an overview of available backends.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-config-5_sect11" name="slapd-config-5_sect11" shape="rect"> </a>
+
+      <h2>OVERLAYS</h2>
+
+      <p>An overlay is a piece of code that intercepts database
+      operations in order to extend or change them. Overlays are
+      pushed onto a stack over the database, and so they will
+      execute in the reverse of the order in which they were
+      configured and the database itself will receive control last
+      of all.</p>
+
+      <p>Overlays must be configured as child entries of a specific
+      database. The entry's RDN must be of the form <em class="replaceable"><code>olcOverlay={x}&lt;overlaytype&gt;</code></em>
+      and the entry must have the olcOverlayConfig objectClass.
+      Normally the config engine generates the "{x}" index in the
+      RDN automatically, so it can be omitted when initially
+      loading these entries.</p>
+
+      <p>See the <a class="link" href="../htmlman5/slapd.overlays.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.overlays</span>(5)</span></a> manual
+      page for an overview of available overlays.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-config-5_sect12" name="slapd-config-5_sect12" shape="rect"> </a>
+
+      <h2>EXAMPLES</h2>
+
+      <p>Here is a short example of a configuration in LDIF
+      suitable for use with <a class="link" href="../htmlman8/slapadd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapadd</span>(8)</span></a> :</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+dn: cn=config
+objectClass: olcGlobal
+cn: config
+olcPidFile: LOCALSTATEDIR/run/slapd.pid
+olcAttributeOptions: x−hidden lang−
+
+dn: cn=schema,cn=config
+objectClass: olcSchemaConfig
+cn: schema
+
+include: file://SYSCONFDIR/schema/core.ldif
+
+dn: olcDatabase=frontend,cn=config
+objectClass: olcDatabaseConfig
+objectClass: olcFrontendConfig
+olcDatabase: frontend
+# Subtypes of "name" (e.g. "cn" and "ou") with the
+# option ";x−hidden" can be searched for/compared,
+# but are not shown.  See 
+<a class="link" href="../htmlman5/slapd.access.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.access</span>(5)</span></a>.
+olcAccess: to attrs=name;x−hidden by * =cs
+# Protect passwords.  See 
+<a class="link" href="../htmlman5/slapd.access.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.access</span>(5)</span></a>.
+olcAccess: to attrs=userPassword  by * auth
+# Read access to other attributes and entries.
+olcAccess: to * by * read
+
+# set a rootpw for the config database so we can bind.
+# deny access to everyone else.
+dn: olcDatabase=config,cn=config
+objectClass: olcDatabaseConfig
+olcDatabase: config
+olcRootPW: {SSHA}XKYnrjvGT3wZFQrDD5040US592LxsdLy
+olcAccess: to * by * none
+
+dn: olcDatabase=bdb,cn=config
+objectClass: olcDatabaseConfig
+objectClass: olcBdbConfig
+olcDatabase: bdb
+olcSuffix: "dc=our−domain,dc=com"
+# The database directory MUST exist prior to
+# running slapd AND should only be accessible
+# by the slapd/tools. Mode 0700 recommended.
+olcDbDirectory: LOCALSTATEDIR/openldap−data
+# Indices to maintain
+olcDbIndex:     objectClass  eq
+olcDbIndex:     cn,sn,mail   pres,eq,approx,sub
+
+# We serve small clients that do not handle referrals,
+# so handle remote lookups on their behalf.
+dn: olcDatabase=ldap,cn=config
+objectClass: olcDatabaseConfig
+objectClass: olcLdapConfig
+olcDatabase: ldap
+olcSuffix: ""
+olcDbUri: ldap://ldap.some−server.com/
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>Assuming the above data was saved in a file named
+      "config.ldif" and the ETCDIR/slapd.d directory has been
+      created, this command will initialize the configuration:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+slapadd −F ETCDIR/slapd.d −n 0 −l config.ldif
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>"OpenLDAP Administrator's Guide" contains a longer
+      annotated example of a slapd configuration.</p>
+
+      <p>Alternatively, an existing slapd.conf file can be
+      converted to the new format using slapd or any of the slap
+      tools:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+slaptest −f ETCDIR/slapd.conf −F ETCDIR/slapd.d
+</pre>
+          </div>
+        </blockquote>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-config-5_sect13" name="slapd-config-5_sect13" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">ETCDIR/slapd.conf</span></dt>
+
+          <dd>
+            <p>default slapd configuration file</p>
+          </dd>
+
+          <dt><span class="term">ETCDIR/slapd.d</span></dt>
+
+          <dd>
+            <p>default slapd configuration directory</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-config-5_sect14" name="slapd-config-5_sect14" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/ldap.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldap</span>(3)</span></a>, <a class="link" href="../htmlman5/ldif.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldif</span>(5)</span></a>, <a class="link" href="../htmlman1/gnutls-cli.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gnutls-cli</span>(1)</span></a>, <a class="link" href="../htmlman5/slapd.access.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.access</span>(5)</span></a>, <a class="link" href="../htmlman5/slapd.backends.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.backends</span>(5)</span></a>,
+      <a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a>, <a class="link" href="../htmlman5/slapd.overlays.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.overlays</span>(5)</span></a>,
+      <a class="link" href="../htmlman5/slapd.plugin.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.plugin</span>(5)</span></a>, <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a>, <a class="link" href="../htmlman8/slapacl.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapacl</span>(8)</span></a>, <a class="link" href="../htmlman8/slapadd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapadd</span>(8)</span></a>, <a class="link" href="../htmlman8/slapauth.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapauth</span>(8)</span></a>, <a class="link" href="../htmlman8/slapcat.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapcat</span>(8)</span></a>, <a class="link" href="../htmlman8/slapdn.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapdn</span>(8)</span></a>, <a class="link" href="../htmlman8/slapindex.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapindex</span>(8)</span></a>, <a class="link" href="../htmlman8/slappasswd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slappasswd</span>(8)</span></a>, <a class="link" href="../htmlman8/slaptest.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slaptest</span>(8)</span></a>.</p>
+
+      <p>"OpenLDAP Administrator's Guide"
+      (http://www.OpenLDAP.org/doc/admin/)</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-config-5_sect15" name="slapd-config-5_sect15" shape="rect"> </a>
+
+      <h2>ACKNOWLEDGEMENTS</h2>
+
+      <p><span class="emphasis"><em>OpenLDAP Software</em></span>
+      is developed and maintained by The OpenLDAP Project
+      &lt;<a class="literalurl" href="http://www.openldap.org/" target="_top" shape="rect">http://www.openldap.org/</a>&gt;. <span class="emphasis"><em>OpenLDAP Software</em></span> is derived from
+      University of Michigan LDAP 3.3 Release.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                  See the following documents: <a class="ulink" href="../openldap-COPYRIGHT.html" target="_top" shape="rect">COPYRIGHT</a>, <a class="ulink" href="../openldap-LICENSE.html" target="_top" shape="rect">LICENSE</a><br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

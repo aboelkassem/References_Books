@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>umount(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="umount(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="umount.2" name="umount.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>umount, umount2 — unmount filesystem</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;sys/mount.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>umount</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">target</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>umount2</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">target</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">flags</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="umount-2_sect1" name="umount-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">umount</code>() and <code class="function">umount2</code>() remove the attachment of the
+      (topmost) filesystem mounted on <em class="parameter"><code>target</code></em>.</p>
+
+      <p>Appropriate privilege (Linux: the <code class="constant">CAP_SYS_ADMIN</code> capability) is required to
+      unmount filesystems.</p>
+
+      <p>Linux 2.1.116 added the <code class="function">umount2</code>() system call, which, like
+      <code class="function">umount</code>(), unmounts a target,
+      but allows additional <em class="parameter"><code>flags</code></em> controlling the behavior
+      of the operation:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">MNT_FORCE</code> (since Linux
+          2.1.116)</span></dt>
+
+          <dd>
+            <p>Force unmount even if busy. This can cause data
+            loss. (Only for NFS mounts.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MNT_DETACH</code> (since Linux
+          2.4.11)</span></dt>
+
+          <dd>
+            <p>Perform a lazy unmount: make the mount point
+            unavailable for new accesses, immediately disconnect
+            the filesystem and all filesystems mounted below it
+            from each other and from the mount table, and actually
+            perform the unmount when the mount point ceases to be
+            busy.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MNT_EXPIRE</code> (since Linux
+          2.6.8)</span></dt>
+
+          <dd>
+            <p>Mark the mount point as expired. If a mount point is
+            not currently in use, then an initial call to
+            <code class="function">umount2</code>() with this flag
+            fails with the error <span class="errorname">EAGAIN</span>, but marks the mount point as
+            expired. The mount point remains expired as long as it
+            isn't accessed by any process. A second <code class="function">umount2</code>() call specifying
+            <code class="constant">MNT_EXPIRE</code> unmounts an
+            expired mount point. This flag cannot be specified with
+            either <code class="constant">MNT_FORCE</code> or
+            <code class="constant">MNT_DETACH</code>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">UMOUNT_NOFOLLOW</code> (since Linux
+          2.6.34)</span></dt>
+
+          <dd>
+            <p>Don't dereference <em class="parameter"><code>target</code></em> if it is a
+            symbolic link. This flag allows security problems to be
+            avoided in set-user-ID-<em class="replaceable"><code>root</code></em> programs that
+            allow unprivileged users to unmount filesystems.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="umount-2_sect2" name="umount-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, zero is returned. On error, −1 is
+      returned, and <code class="varname">errno</code> is set
+      appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="umount-2_sect3" name="umount-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <p>The error values given below result from filesystem type
+      independent errors. Each filesystem type may have its own
+      special errors and its own special behavior. See the Linux
+      kernel source code for details.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EAGAIN</span></span></dt>
+
+          <dd>
+            <p>A call to <code class="function">umount2</code>()
+            specifying <code class="constant">MNT_EXPIRE</code>
+            successfully marked an unbusy filesystem as
+            expired.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EBUSY</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>target</code></em> could
+            not be unmounted because it is busy.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>target</code></em>
+            points outside the user address space.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>target</code></em> is
+            not a mount point.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><code class="function">umount2</code>() was called
+            with <code class="constant">MNT_EXPIRE</code> and
+            either <code class="constant">MNT_DETACH</code> or
+            <code class="constant">MNT_FORCE</code>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span> (since Linux
+          2.6.34)</span></dt>
+
+          <dd>
+            <p><code class="function">umount2</code>() was called
+            with an invalid flag value in <em class="parameter"><code>flags</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENAMETOOLONG</span></span></dt>
+
+          <dd>
+            <p>A pathname was longer than <code class="constant">MAXPATHLEN</code>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOENT</span></span></dt>
+
+          <dd>
+            <p>A pathname was empty or had a nonexistent
+            component.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>The kernel could not allocate a free page to copy
+            filenames or data into.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The caller does not have the required
+            privileges.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="umount-2_sect4" name="umount-2_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p><code class="constant">MNT_DETACH</code> and <code class="constant">MNT_EXPIRE</code> are available in glibc since
+      version 2.11.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="umount-2_sect5" name="umount-2_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>These functions are Linux-specific and should not be used
+      in programs intended to be portable.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="umount-2_sect6" name="umount-2_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <div class="refsect2">
+        <a id="umount-2_sect7" name="umount-2_sect7" shape="rect"> </a>
+
+        <h3>umount() and shared mount points</h3>
+
+        <p>Shared mount points cause any mount activity on a mount
+        point, including <a class="link" href="../htmlman2/umount.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">umount</span>(2)</span></a> operations, to
+        be forwarded to every shared mount point in the peer group
+        and every slave mount of that peer group. This means that
+        <a class="link" href="../htmlman2/umount.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">umount</span>(2)</span></a> of any peer in
+        a set of shared mounts will cause all of its peers to be
+        unmounted and all of their slaves to be unmounted as
+        well.</p>
+
+        <p>This propagation of unmount activity can be particularly
+        surprising on systems where every mount point is shared by
+        default. On such systems, recursively bind mounting the
+        root directory of the filesystem onto a subdirectory and
+        then later unmounting that subdirectory with <code class="constant">MNT_DETACH</code> will cause every mount in the
+        mount namespace to be lazily unmounted.</p>
+
+        <p>To ensure <a class="link" href="../htmlman2/umount.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">umount</span>(2)</span></a> does not
+        propagate in this fashion, the mount point may be remounted
+        using a <a class="link" href="../htmlman2/mount.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mount</span>(2)</span></a> call with a
+        <em class="replaceable"><code>mount_flags</code></em>
+        argument that includes both <code class="constant">MS_REC</code> and <code class="constant">MS_PRIVATE</code> prior to <a class="link" href="../htmlman2/umount.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">umount</span>(2)</span></a> being
+        called.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="umount-2_sect8" name="umount-2_sect8" shape="rect"> </a>
+
+        <h3>Historical details</h3>
+
+        <p>The original <code class="function">umount</code>()
+        function was called as <em class="replaceable"><code>umount(device)</code></em> and would
+        return <span class="errorname">ENOTBLK</span> when called
+        with something other than a block device. In Linux 0.98p4,
+        a call <em class="replaceable"><code>umount(dir)</code></em> was added, in
+        order to support anonymous devices. In Linux 2.3.99-pre7,
+        the call <em class="replaceable"><code>umount(device)</code></em> was removed,
+        leaving only <em class="replaceable"><code>umount(dir)</code></em> (since now
+        devices can be mounted in more than one place, so
+        specifying the device does not suffice).</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="umount-2_sect9" name="umount-2_sect9" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/mount.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mount</span>(2)</span></a>, <a class="link" href="../htmlman7/path_resolution.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">path_resolution</span>(7)</span></a>,
+      <a class="link" href="../htmlman8/mount.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mount</span>(8)</span></a>, <a class="link" href="../htmlman8/umount.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">umount</span>(8)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="umount-2_sect10" name="umount-2_sect10" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 1993 Rickard E. Faith &lt;faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu&gt;<br />
+
+                  and Copyright (C) 1994 Andries E. Brouwer &lt;aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl&gt;<br />
+
+                  and Copyright (C) 2002, 2005 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  2008-10-06, mtk: Created this as a new page by splitting<br />
+
+                      umount/umount2 material out of mount.2<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

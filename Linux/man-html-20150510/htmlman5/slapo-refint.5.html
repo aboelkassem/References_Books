@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>slapo-refint(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="slapo-refint(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="slapo-refint.5" name="slapo-refint.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>slapo−refint — Referential Integrity overlay
+      to slapd</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ETCDIR/slapd.conf
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-refint-5_sect1" name="slapo-refint-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The Referential Integrity overlay can be used with a
+      backend database such as <a class="link" href="../htmlman5/slapd-bdb.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-bdb</span>(5)</span></a> to maintain
+      the cohesiveness of a schema which utilizes reference
+      attributes.</p>
+
+      <p>Integrity is maintained by updating database records which
+      contain the named attributes to match the results of a
+      <em class="replaceable"><code>modrdn</code></em> or
+      <em class="replaceable"><code>delete</code></em> operation.
+      For example, if the integrity attribute were configured as
+      <em class="replaceable"><code>manager</code></em>, deletion
+      of the record "uid=robert,ou=people,dc=example,dc=com" would
+      trigger a search for all other records which have a
+      <em class="replaceable"><code>manager</code></em> attribute
+      containing that DN. Entries matching that search would have
+      their <em class="replaceable"><code>manager</code></em>
+      attribute removed. Or, renaming the same record into
+      "uid=george,ou=people,dc=example,dc=com" would trigger a
+      search for all other records which have a <em class="replaceable"><code>manager</code></em> attribute containing
+      that DN. Entries matching that search would have their
+      <em class="replaceable"><code>manager</code></em> attribute
+      deleted and replaced by the new DN.</p>
+
+      <p><em class="replaceable"><code>rootdn</code></em> must be
+      set for the database. refint runs as the rootdn to gain
+      access to make its updates. <em class="replaceable"><code>rootpw</code></em> is not needed.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-refint-5_sect2" name="slapo-refint-5_sect2" shape="rect"> </a>
+
+      <h2>CONFIGURATION</h2>
+
+      <p>These <em class="replaceable"><code>slapd.conf</code></em>
+      options apply to the Referential Integrity overlay. They
+      should appear after the <em class="replaceable"><code>overlay</code></em> directive.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>refint_attributes &lt;attribute&gt;
+          [...]</em></span></span></dt>
+
+          <dd>
+            <p>Specify one or more attributes for which integrity
+            will be maintained as described above.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>refint_nothing
+          &lt;string&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specify an arbitrary value to be used as a
+            placeholder when the last value would otherwise be
+            deleted from an attribute. This can be useful in cases
+            where the schema requires the existence of an attribute
+            for which referential integrity is enforced. The
+            attempted deletion of a required attribute will
+            otherwise result in an Object Class Violation, causing
+            the request to fail. The string must be a valid DN.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>refint_modifiersname
+          &lt;DN&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specify the DN to be used as the modifiersName of
+            the internal modifications performed by the overlay. It
+            defaults to "<span class="emphasis"><em>cn=Referential
+            Integrity Overlay</em></span>".</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>Modifications performed by this overlay are not propagated
+      during replication. This overlay must be configured
+      identically on replication consumers in order to maintain
+      full synchronization with the provider.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-refint-5_sect3" name="slapo-refint-5_sect3" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">ETCDIR/slapd.conf</span></dt>
+
+          <dd>
+            <p>default slapd configuration file</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-refint-5_sect4" name="slapo-refint-5_sect4" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a>, <a class="link" href="../htmlman5/slapd-config.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-config</span>(5)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-refint-5_sect5" name="slapo-refint-5_sect5" shape="rect"> </a>
+
+      <h2>ACKNOWLEDGEMENTS</h2>
+
+      <p><span class="emphasis"><em>OpenLDAP Software</em></span>
+      is developed and maintained by The OpenLDAP Project
+      &lt;<a class="literalurl" href="http://www.openldap.org/" target="_top" shape="rect">http://www.openldap.org/</a>&gt;. <span class="emphasis"><em>OpenLDAP Software</em></span> is derived from
+      University of Michigan LDAP 3.3 Release.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                  See the following documents: <a class="ulink" href="../openldap-COPYRIGHT.html" target="_top" shape="rect">COPYRIGHT</a>, <a class="ulink" href="../openldap-LICENSE.html" target="_top" shape="rect">LICENSE</a><br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

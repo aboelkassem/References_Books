@@ -1,0 +1,588 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>zic(8) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="zic(8) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index8.html" shape="rect">Section 8</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="zic.8" name="zic.8" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>zic — timezone compiler</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">zic</code> [<code class="option">−v</code>] [ <code class="option">−d</code> directory ] [ <code class="option">−l</code> localtime ] [ <code class="option">−p</code> posixrules ] [ <code class="option">−L</code> leapsecondfilename ] [<code class="option">−s</code>] [ <code class="option">−y</code> command ] [filename...]</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="zic-8_sect1" name="zic-8_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><span class="command"><strong>Zic</strong></span> reads
+      text from the file(s) named on the command line and creates
+      the time conversion information files specified in this
+      input. If a <em class="parameter"><code>filename</code></em>
+      is <span class="emphasis"><em>−</em></span>, the
+      standard input is read.</p>
+
+      <p>These options are available:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="option">−d
+          directory</code></span></dt>
+
+          <dd>
+            <p>Create time conversion information files in the
+            named directory rather than in the standard directory
+            named below.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−l
+          timezone</code></span></dt>
+
+          <dd>
+            <p>Use the given timezone as local time. <span class="command"><strong>Zic</strong></span> will act as if
+            the input contained a link line of the form</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+Link    <em class="replaceable"><code>timezone</code></em>        localtime
+</pre>
+            </div>
+          </dd>
+
+          <dt><span class="term"><code class="option">−p
+          timezone</code></span></dt>
+
+          <dd>
+            <p>Use the given timezone's rules when handling
+            POSIX-format timezone environment variables.
+            <span class="command"><strong>Zic</strong></span> will
+            act as if the input contained a link line of the
+            form</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+Link    <em class="replaceable"><code>timezone</code></em>        posixrules
+</pre>
+            </div>
+          </dd>
+
+          <dt><span class="term"><code class="option">−L
+          leapsecondfilename</code></span></dt>
+
+          <dd>
+            <p>Read leap second information from the file with the
+            given name. If this option is not used, no leap second
+            information appears in output files.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−v</code></span></dt>
+
+          <dd>
+            <p>Complain if a year that appears in a data file is
+            outside the range of years representable by <a class="link" href="../htmlman2/time.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">time</span>(2)</span></a> values.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−s</code></span></dt>
+
+          <dd>
+            <p>Limit time values stored in output files to values
+            that are the same whether they're taken to be signed or
+            unsigned. You can use this option to generate
+            SVVS-compatible files.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−y
+          command</code></span></dt>
+
+          <dd>
+            <p>Use the given <em class="parameter"><code>command</code></em> rather than
+            <em class="replaceable"><code>yearistype</code></em>
+            when checking year types (see below).</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>Input lines are made up of fields. Fields are separated
+      from one another by any number of white space characters.
+      Leading and trailing white space on input lines is ignored.
+      An unquoted sharp character (#) in the input introduces a
+      comment which extends to the end of the line the sharp
+      character appears on. White space characters and sharp
+      characters may be enclosed in double quotes (") if they're to
+      be used as part of a field. Any line that is blank (after
+      comment stripping) is ignored. Nonblank lines are expected to
+      be of one of three types: rule lines, zone lines, and link
+      lines.</p>
+
+      <p>A rule line has the form</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+Rule   NAME   FROM   TO     TYPE   IN    ON        AT     SAVE   LETTER/S
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>For example:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+Rule   US     1967   1973          Apr   lastSun   2:00   1:00   D       
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>The fields that make up a rule line are:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">NAME</code></span></dt>
+
+          <dd>
+            <p>Gives the (arbitrary) name of the set of rules this
+            rule is part of.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FROM</code></span></dt>
+
+          <dd>
+            <p>Gives the first year in which the rule applies. Any
+            integer year can be supplied; the Gregorian calendar is
+            assumed. The word <code class="literal">minimum</code>
+            (or an abbreviation) means the minimum year
+            representable as an integer. The word <code class="literal">maximum</code> (or an abbreviation) means the
+            maximum year representable as an integer. Rules can
+            describe times that are not representable as time
+            values, with the unrepresentable times ignored; this
+            allows rules to be portable among hosts with differing
+            time value types.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">TO</code></span></dt>
+
+          <dd>
+            <p>Gives the final year in which the rule applies. In
+            addition to <code class="literal">minimum</code> and
+            <code class="literal">maximum</code> (as above), the
+            word <code class="literal">only</code> (or an
+            abbreviation) may be used to repeat the value of the
+            <code class="constant">FROM</code> field.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">TYPE</code></span></dt>
+
+          <dd>
+            <p>Gives the type of year in which the rule applies. If
+            <code class="constant">TYPE</code> is <span class="emphasis"><em>−</em></span>, then the rule
+            applies in all years between <code class="constant">FROM</code> and <code class="constant">TO</code> inclusive. If <code class="constant">TYPE</code> is something else, then
+            <span class="command"><strong>zic</strong></span>
+            executes the command</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+<em class="replaceable"><code>yearistype</code></em>
+</pre>
+            </div>
+
+            <p><em class="replaceable"><code>year</code></em>
+            <em class="replaceable"><code>type</code></em></p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>to check the type of a year: an exit status of zero is
+      taken to mean that the year is of the given type; an exit
+      status of one is taken to mean that the year is not of the
+      given type.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">IN</code></span></dt>
+
+          <dd>
+            <p>Names the month in which the rule takes effect.
+            Month names may be abbreviated.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">ON</code></span></dt>
+
+          <dd>
+            <p>Gives the day on which the rule takes effect.
+            Recognized forms include:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><code class="literal">5</code></span></dt>
+
+                    <dd>the fifth of the month</dd>
+
+                    <dt><span class="term"><code class="literal">lastSun</code></span></dt>
+
+                    <dd>the last Sunday in the month</dd>
+
+                    <dt><span class="term"><code class="literal">lastMon</code></span></dt>
+
+                    <dd>the last Monday in the month</dd>
+
+                    <dt><span class="term"><code class="literal">Sun&gt;=8</code></span></dt>
+
+                    <dd>first Sunday on or after the eighth</dd>
+
+                    <dt><span class="term"><code class="literal">Sun&lt;=25</code></span></dt>
+
+                    <dd>last Sunday on or before the 25th</dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>Names of days of the week may be abbreviated or
+            spelled out in full. Note that there must be no spaces
+            within the <code class="constant">ON</code> field.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">AT</code></span></dt>
+
+          <dd>
+            <p>Gives the time of day at which the rule takes
+            effect. Recognized forms include:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><code class="literal">2</code></span></dt>
+
+                    <dd>time in hours</dd>
+
+                    <dt><span class="term"><code class="literal">2:00</code></span></dt>
+
+                    <dd>time in hours and minutes</dd>
+
+                    <dt><span class="term"><code class="literal">15:00</code></span></dt>
+
+                    <dd>24-hour format time (for times after
+                    noon)</dd>
+
+                    <dt><span class="term"><code class="literal">1:28:14</code></span></dt>
+
+                    <dd>time in hours, minutes, and seconds</dd>
+
+                    <dt><span class="term"><code class="literal">−</code></span></dt>
+
+                    <dd>equivalent to 0</dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>where hour 0 is midnight at the start of the day,
+            and hour 24 is midnight at the end of the day. Any of
+            these forms may be followed by the letter <code class="literal">w</code> if the given time is local
+            <span class="quote">“<span class="quote">wall
+            clock</span>”</span> time, <code class="option">s</code> if the given time is local
+            <span class="quote">“<span class="quote">standard</span>”</span> time, or
+            <code class="literal">u</code> (or <code class="literal">g</code> or <code class="literal">z</code>)
+            if the given time is universal time; in the absence of
+            an indicator, wall clock time is assumed.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">SAVE</code></span></dt>
+
+          <dd>
+            <p>Gives the amount of time to be added to local
+            standard time when the rule is in effect. This field
+            has the same format as the <code class="constant">AT</code> field (although, of course, the
+            <code class="literal">w</code> and <code class="option">s</code> suffixes are not used).</p>
+          </dd>
+
+          <dt><span class="term"><span class="command"><strong>LETTER/S</strong></span></span></dt>
+
+          <dd>
+            <p>Gives the <span class="quote">“<span class="quote">variable part</span>”</span> (for
+            example, the <span class="quote">“<span class="quote">S</span>”</span> or <span class="quote">“<span class="quote">D</span>”</span> in <span class="quote">“<span class="quote">EST</span>”</span> or <span class="quote">“<span class="quote">EDT</span>”</span>) of timezone
+            abbreviations to be used when this rule is in effect.
+            If this field is <span class="emphasis"><em>−</em></span>, the variable part
+            is null.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>A zone line has the form</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+Zone   NAME                 UTCOFF   RULES/SAVE   FORMAT   [UNTIL]         
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>For example:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+Zone   Australia/Adelaide   9:30     Aus          CST      1971 Oct 31 2:00
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>The fields that make up a zone line are:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">NAME</code></span></dt>
+
+          <dd>
+            <p>The name of the timezone. This is the name used in
+            creating the time conversion information file for the
+            zone.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">UTCOFF</code></span></dt>
+
+          <dd>
+            <p>The amount of time to add to UTC to get standard
+            time in this zone. This field has the same format as
+            the <code class="constant">AT</code> and <code class="constant">SAVE</code> fields of rule lines; begin the
+            field with a minus sign if time must be subtracted from
+            UTC.</p>
+          </dd>
+
+          <dt><span class="term"><span class="command"><strong>RULES/SAVE</strong></span></span></dt>
+
+          <dd>
+            <p>The name of the rule(s) that apply in the timezone
+            or, alternately, an amount of time to add to local
+            standard time. If this field is <span class="emphasis"><em>−</em></span>, then standard time
+            always applies in the timezone.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FORMAT</code></span></dt>
+
+          <dd>
+            <p>The format for timezone abbreviations in this
+            timezone. The pair of characters <em class="replaceable"><code>%s</code></em> is used to show
+            where the <span class="quote">“<span class="quote">variable part</span>”</span> of the
+            timezone abbreviation goes. Alternately, a slash (/)
+            separates standard and daylight abbreviations.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">UNTIL</code></span></dt>
+
+          <dd>
+            <p>The time at which the UTC offset or the rule(s)
+            change for a location. It is specified as a year, a
+            month, a day, and a time of day. If this is specified,
+            the timezone information is generated from the given
+            UTC offset and rule change until the time specified.
+            The month, day, and time of day have the same format as
+            the IN, ON, and AT columns of a rule; trailing columns
+            can be omitted, and default to the earliest possible
+            value for the missing columns.</p>
+
+            <p>The next line must be a <span class="quote">“<span class="quote">continuation</span>”</span> line; this
+            has the same form as a zone line except that the string
+            <span class="quote">“<span class="quote">Zone</span>”</span> and the name are
+            omitted, as the continuation line will place
+            information starting at the time specified as the
+            <code class="constant">UNTIL</code> field in the
+            previous line in the file used by the previous line.
+            Continuation lines may contain an <code class="constant">UNTIL</code> field, just as zone lines do,
+            indicating that the next line is a further
+            continuation.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>A link line has the form</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+Link   LINK-FROM         LINK-TO      
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>For example:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+Link   Europe/Istanbul   Asia/Istanbul
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>The <em class="replaceable"><code>LINK-FROM</code></em>
+      field should appear as the <code class="constant">NAME</code>
+      field in some zone line; the <em class="replaceable"><code>LINK-TO</code></em> field is used as an
+      alternate name for that zone.</p>
+
+      <p>Except for continuation lines, lines may appear in any
+      order in the input.</p>
+
+      <p>Lines in the file that describes leap seconds have the
+      following form:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+Leap   YEAR   MONTH   DAY   HH:MM:SS   CORR   R/S
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>For example:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+Leap   1974   Dec     31    23:59:60   +      S  
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>The <code class="constant">YEAR</code>, <code class="constant">MONTH</code>, <code class="constant">DAY</code>,
+      and <em class="replaceable"><code>HH:MM:SS</code></em> fields
+      tell when the leap second happened. The <code class="constant">CORR</code> field should be <span class="quote">“<span class="quote">+</span>”</span> if
+      a second was added or <span class="quote">“<span class="quote">-</span>”</span> if a second was skipped. The
+      <span class="command"><strong>R/S</strong></span> field
+      should be (an abbreviation of) <span class="quote">“<span class="quote">Stationary</span>”</span> if the leap second
+      time given by the other fields should be interpreted as UTC
+      or (an abbreviation of) <span class="quote">“<span class="quote">Rolling</span>”</span> if the leap second time
+      given by the other fields should be interpreted as local wall
+      clock time.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="zic-8_sect2" name="zic-8_sect2" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="filename">/usr/local/etc/zoneinfo</code></span></dt>
+
+          <dd>
+            <p>Standard directory used for created files.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="zic-8_sect3" name="zic-8_sect3" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>For areas with more than two types of local time, you may
+      need to use local standard time in the <code class="constant">AT</code> field of the earliest transition time's
+      rule to ensure that the earliest transition time recorded in
+      the compiled file is correct.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="zic-8_sect4" name="zic-8_sect4" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman5/tzfile.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tzfile</span>(5)</span></a>, <a class="link" href="../htmlman8/zdump.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">zdump</span>(8)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="zic-8_sect5" name="zic-8_sect5" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    %%%LICENSE_START(PUBLIC_DOMAIN)<br />
+                  This page is in the public domain<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

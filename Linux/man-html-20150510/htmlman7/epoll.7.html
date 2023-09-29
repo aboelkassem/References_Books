@@ -1,0 +1,693 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>epoll(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="epoll(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="epoll.7" name="epoll.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>epoll — I/O event notification facility</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;sys/epoll.h&gt;
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="epoll-7_sect1" name="epoll-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="systemitem">epoll</code> API performs a
+      similar task to <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a>: monitoring
+      multiple file descriptors to see if I/O is possible on any of
+      them. The <code class="systemitem">epoll</code> API can be
+      used either as an edge-triggered or a level-triggered
+      interface and scales well to large numbers of watched file
+      descriptors. The following system calls are provided to
+      create and manage an <code class="systemitem">epoll</code>
+      instance:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p><a class="link" href="../htmlman2/epoll_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_create</span>(2)</span></a>
+            creates an <code class="systemitem">epoll</code>
+            instance and returns a file descriptor referring to
+            that instance. (The more recent <a class="link" href="../htmlman2/epoll_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_create1</span>(2)</span></a>
+            extends the functionality of <a class="link" href="../htmlman2/epoll_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_create</span>(2)</span></a>.)</p>
+          </li>
+
+          <li class="listitem">
+            <p>Interest in particular file descriptors is then
+            registered via <a class="link" href="../htmlman2/epoll_ctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_ctl</span>(2)</span></a>. The set
+            of file descriptors currently registered on an
+            <code class="systemitem">epoll</code> instance is
+            sometimes called an <code class="systemitem">epoll</code> set.</p>
+          </li>
+
+          <li class="listitem">
+            <p><a class="link" href="../htmlman2/epoll_wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_wait</span>(2)</span></a> waits
+            for I/O events, blocking the calling thread if no
+            events are currently available.</p>
+          </li>
+        </ul>
+      </div>
+
+      <div class="refsect2">
+        <a id="epoll-7_sect2" name="epoll-7_sect2" shape="rect"> </a>
+
+        <h3>Level-triggered and edge-triggered</h3>
+
+        <p>The <code class="systemitem">epoll</code> event
+        distribution interface is able to behave both as
+        edge-triggered (ET) and as level-triggered (LT). The
+        difference between the two mechanisms can be described as
+        follows. Suppose that this scenario happens:</p>
+
+        <div class="orderedlist">
+          <ol class="orderedlist" type="1">
+            <li class="listitem">
+              <p>The file descriptor that represents the read side
+              of a pipe (<em class="replaceable"><code>rfd</code></em>) is registered on
+              the <code class="systemitem">epoll</code>
+              instance.</p>
+            </li>
+
+            <li class="listitem">
+              <p>A pipe writer writes 2 kB of data on the write
+              side of the pipe.</p>
+            </li>
+
+            <li class="listitem">
+              <p>A call to <a class="link" href="../htmlman2/epoll_wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_wait</span>(2)</span></a> is
+              done that will return <em class="replaceable"><code>rfd</code></em> as a ready file
+              descriptor.</p>
+            </li>
+
+            <li class="listitem">
+              <p>The pipe reader reads 1 kB of data from <em class="replaceable"><code>rfd</code></em>.</p>
+            </li>
+
+            <li class="listitem">
+              <p>A call to <a class="link" href="../htmlman2/epoll_wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_wait</span>(2)</span></a> is
+              done.</p>
+            </li>
+          </ol>
+        </div>
+
+        <p>If the <em class="replaceable"><code>rfd</code></em>
+        file descriptor has been added to the <code class="systemitem">epoll</code> interface using the <code class="constant">EPOLLET</code> (edge-triggered) flag, the call
+        to <a class="link" href="../htmlman2/epoll_wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_wait</span>(2)</span></a> done in
+        step <code class="constant">5</code> will probably hang
+        despite the available data still present in the file input
+        buffer; meanwhile the remote peer might be expecting a
+        response based on the data it already sent. The reason for
+        this is that edge-triggered mode delivers events only when
+        changes occur on the monitored file descriptor. So, in step
+        <code class="constant">5</code> the caller might end up
+        waiting for some data that is already present inside the
+        input buffer. In the above example, an event on <em class="replaceable"><code>rfd</code></em> will be generated
+        because of the write done in <code class="constant">2</code> and the event is consumed in
+        <code class="constant">3</code>. Since the read operation
+        done in <code class="constant">4</code> does not consume
+        the whole buffer data, the call to <a class="link" href="../htmlman2/epoll_wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_wait</span>(2)</span></a> done in
+        step <code class="constant">5</code> might block
+        indefinitely.</p>
+
+        <p>An application that employs the <code class="constant">EPOLLET</code> flag should use nonblocking file
+        descriptors to avoid having a blocking read or write starve
+        a task that is handling multiple file descriptors. The
+        suggested way to use <code class="systemitem">epoll</code>
+        as an edge-triggered (<code class="constant">EPOLLET</code>) interface is as follows:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="variablelist">
+              <dl class="variablelist">
+                <dt><span class="term">i</span></dt>
+
+                <dd>
+                  <p>with nonblocking file descriptors; and</p>
+                </dd>
+
+                <dt><span class="term">ii</span></dt>
+
+                <dd>
+                  <p>by waiting for an event only after <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> or
+                  <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a> return
+                  <span class="errorname">EAGAIN</span>.</p>
+                </dd>
+              </dl>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>By contrast, when used as a level-triggered interface
+        (the default, when <code class="constant">EPOLLET</code> is
+        not specified), <code class="systemitem">epoll</code> is
+        simply a faster <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a>, and can be used
+        wherever the latter is used since it shares the same
+        semantics.</p>
+
+        <p>Since even with edge-triggered <code class="systemitem">epoll</code>, multiple events can be generated
+        upon receipt of multiple chunks of data, the caller has the
+        option to specify the <code class="constant">EPOLLONESHOT</code> flag, to tell <code class="systemitem">epoll</code> to disable the associated file
+        descriptor after the receipt of an event with <a class="link" href="../htmlman2/epoll_wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_wait</span>(2)</span></a>. When the
+        <code class="constant">EPOLLONESHOT</code> flag is
+        specified, it is the caller's responsibility to rearm the
+        file descriptor using <a class="link" href="../htmlman2/epoll_ctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_ctl</span>(2)</span></a> with
+        <code class="constant">EPOLL_CTL_MOD</code>.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="epoll-7_sect3" name="epoll-7_sect3" shape="rect"> </a>
+
+        <h3>Interaction with autosleep</h3>
+
+        <p>If the system is in <em class="replaceable"><code>autosleep</code></em> mode via
+        <code class="filename">/sys/power/autosleep</code> and an
+        event happens which wakes the device from sleep, the device
+        driver will keep the device awake only until that event is
+        queued. To keep the device awake until the event has been
+        processed, it is necessary to use the <a class="link" href="../htmlman7/epoll.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll</span>(7)</span></a> <code class="constant">EPOLLWAKEUP</code> flag.</p>
+
+        <p>When the <code class="constant">EPOLLWAKEUP</code> flag
+        is set in the <em class="replaceable"><code>events</code></em> field for a
+        <span class="emphasis"><em>struct epoll_event</em></span>,
+        the system will be kept awake from the moment the event is
+        queued, through the <a class="link" href="../htmlman2/epoll_wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_wait</span>(2)</span></a> call which
+        returns the event until the subsequent <a class="link" href="../htmlman2/epoll_wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_wait</span>(2)</span></a> call. If
+        the event should keep the system awake beyond that time,
+        then a separate <em class="replaceable"><code>wake_lock</code></em> should be taken
+        before the second <a class="link" href="../htmlman2/epoll_wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_wait</span>(2)</span></a> call.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="epoll-7_sect4" name="epoll-7_sect4" shape="rect"> </a>
+
+        <h3>/proc interfaces</h3>
+
+        <p>The following interfaces can be used to limit the amount
+        of kernel memory consumed by epoll:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="filename">/proc/sys/fs/epoll/max_user_watches</code>
+            (since Linux 2.6.28)</span></dt>
+
+            <dd>
+              <p>This specifies a limit on the total number of file
+              descriptors that a user can register across all epoll
+              instances on the system. The limit is per real user
+              ID. Each registered file descriptor costs roughly 90
+              bytes on a 32-bit kernel, and roughly 160 bytes on a
+              64-bit kernel. Currently, the default value for
+              <em class="replaceable"><code>max_user_watches</code></em> is
+              1/25 (4%) of the available low memory, divided by the
+              registration cost in bytes.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="epoll-7_sect5" name="epoll-7_sect5" shape="rect"> </a>
+
+        <h3>Example for suggested usage</h3>
+
+        <p>While the usage of <code class="systemitem">epoll</code>
+        when employed as a level-triggered interface does have the
+        same semantics as <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a>, the
+        edge-triggered usage requires more clarification to avoid
+        stalls in the application event loop. In this example,
+        listener is a nonblocking socket on which <a class="link" href="../htmlman2/listen.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">listen</span>(2)</span></a> has been
+        called. The function <code class="function">do_use_fd</code>() uses the new ready file
+        descriptor until <span class="errorname">EAGAIN</span> is
+        returned by either <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> or <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a>. An event-driven
+        state machine application should, after having received
+        <span class="errorname">EAGAIN</span>, record its current
+        state so that at the next call to <code class="function">do_use_fd</code>() it will continue to <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> or <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a> from where it
+        stopped before.</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+#define MAX_EVENTS 10
+struct epoll_event ev, events[MAX_EVENTS];
+int listen_sock, conn_sock, nfds, epollfd;
+
+/* Code to set up listening socket, 'listen_sock',
+   (socket(), bind(), listen()) omitted */
+
+epollfd = epoll_create1(0);
+if (epollfd == −1) {
+    perror("epoll_create1");
+    exit(EXIT_FAILURE);
+}
+
+ev.events = EPOLLIN;
+ev.data.fd = listen_sock;
+if (epoll_ctl(epollfd, EPOLL_CTL_ADD, listen_sock, &amp;ev) == −1) {
+    perror("epoll_ctl: listen_sock");
+    exit(EXIT_FAILURE);
+}
+
+for (;;) {
+    nfds = epoll_wait(epollfd, events, MAX_EVENTS, −1);
+    if (nfds == −1) {
+        perror("epoll_pwait");
+        exit(EXIT_FAILURE);
+    }
+
+    for (n = 0; n &lt; nfds; ++n) {
+        if (events[n].data.fd == listen_sock) {
+            conn_sock = accept(listen_sock,
+                            (struct sockaddr *) &amp;local, &amp;addrlen);
+            if (conn_sock == −1) {
+                perror("accept");
+                exit(EXIT_FAILURE);
+            }
+            setnonblocking(conn_sock);
+            ev.events = EPOLLIN | EPOLLET;
+            ev.data.fd = conn_sock;
+            if (epoll_ctl(epollfd, EPOLL_CTL_ADD, conn_sock,
+                        &amp;ev) == −1) {
+                perror("epoll_ctl: conn_sock");
+                exit(EXIT_FAILURE);
+            }
+        } else {
+            do_use_fd(events[n].data.fd);
+        }
+    }
+}
+</pre>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>When used as an edge-triggered interface, for
+        performance reasons, it is possible to add the file
+        descriptor inside the <code class="systemitem">epoll</code>
+        interface (<code class="constant">EPOLL_CTL_ADD</code>)
+        once by specifying (<code class="constant">EPOLLIN</code>|<code class="constant">EPOLLOUT</code>). This allows you to avoid
+        continuously switching between <code class="constant">EPOLLIN</code> and <code class="constant">EPOLLOUT</code> calling <a class="link" href="../htmlman2/epoll_ctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_ctl</span>(2)</span></a> with
+        <code class="constant">EPOLL_CTL_MOD</code>.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="epoll-7_sect6" name="epoll-7_sect6" shape="rect"> </a>
+
+        <h3>Questions and answers</h3>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">Q0</code></span></dt>
+
+            <dd>
+              <p>What is the key used to distinguish the file
+              descriptors registered in an <code class="systemitem">epoll</code> set?</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">A0</code></span></dt>
+
+            <dd>
+              <p>The key is the combination of the file descriptor
+              number and the open file description (also known as
+              an "open file handle", the kernel's internal
+              representation of an open file).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">Q1</code></span></dt>
+
+            <dd>
+              <p>What happens if you register the same file
+              descriptor on an <code class="systemitem">epoll</code> instance twice?</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">A1</code></span></dt>
+
+            <dd>
+              <p>You will probably get <span class="errorname">EEXIST</span>. However, it is possible to
+              add a duplicate (<a class="link" href="../htmlman2/dup.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">dup</span>(2)</span></a>, <a class="link" href="../htmlman2/dup.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">dup2</span>(2)</span></a>, <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a>
+              <code class="constant">F_DUPFD</code>) descriptor to
+              the same <code class="systemitem">epoll</code>
+              instance. This can be a useful technique for
+              filtering events, if the duplicate file descriptors
+              are registered with different <em class="replaceable"><code>events</code></em> masks.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">Q2</code></span></dt>
+
+            <dd>
+              <p>Can two <code class="systemitem">epoll</code>
+              instances wait for the same file descriptor? If so,
+              are events reported to both <code class="systemitem">epoll</code> file descriptors?</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">A2</code></span></dt>
+
+            <dd>
+              <p>Yes, and events would be reported to both.
+              However, careful programming may be needed to do this
+              correctly.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">Q3</code></span></dt>
+
+            <dd>
+              <p>Is the <code class="systemitem">epoll</code> file
+              descriptor itself poll/epoll/selectable?</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">A3</code></span></dt>
+
+            <dd>
+              <p>Yes. If an <code class="systemitem">epoll</code>
+              file descriptor has events waiting, then it will
+              indicate as being readable.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">Q4</code></span></dt>
+
+            <dd>
+              <p>What happens if one attempts to put an
+              <code class="systemitem">epoll</code> file descriptor
+              into its own file descriptor set?</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">A4</code></span></dt>
+
+            <dd>
+              <p>The <a class="link" href="../htmlman2/epoll_ctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_ctl</span>(2)</span></a> call
+              will fail (<span class="errorname">EINVAL</span>).
+              However, you can add an <code class="systemitem">epoll</code> file descriptor inside
+              another <code class="systemitem">epoll</code> file
+              descriptor set.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">Q5</code></span></dt>
+
+            <dd>
+              <p>Can I send an <code class="systemitem">epoll</code> file descriptor over a UNIX
+              domain socket to another process?</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">A5</code></span></dt>
+
+            <dd>
+              <p>Yes, but it does not make sense to do this, since
+              the receiving process would not have copies of the
+              file descriptors in the <code class="systemitem">epoll</code> set.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">Q6</code></span></dt>
+
+            <dd>
+              <p>Will closing a file descriptor cause it to be
+              removed from all <code class="systemitem">epoll</code> sets automatically?</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">A6</code></span></dt>
+
+            <dd>
+              <p>Yes, but be aware of the following point. A file
+              descriptor is a reference to an open file description
+              (see <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>). Whenever
+              a descriptor is duplicated via <a class="link" href="../htmlman2/dup.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">dup</span>(2)</span></a>, <a class="link" href="../htmlman2/dup.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">dup2</span>(2)</span></a>, <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a>
+              <code class="constant">F_DUPFD</code>, or <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a>, a new file
+              descriptor referring to the same open file
+              description is created. An open file description
+              continues to exist until all file descriptors
+              referring to it have been closed. A file descriptor
+              is removed from an <code class="systemitem">epoll</code> set only after all the file
+              descriptors referring to the underlying open file
+              description have been closed (or before if the
+              descriptor is explicitly removed using <a class="link" href="../htmlman2/epoll_ctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_ctl</span>(2)</span></a>
+              <code class="constant">EPOLL_CTL_DEL</code>). This
+              means that even after a file descriptor that is part
+              of an <code class="systemitem">epoll</code> set has
+              been closed, events may be reported for that file
+              descriptor if other file descriptors referring to the
+              same underlying file description remain open.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">Q7</code></span></dt>
+
+            <dd>
+              <p>If more than one event occurs between <a class="link" href="../htmlman2/epoll_wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_wait</span>(2)</span></a>
+              calls, are they combined or reported separately?</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">A7</code></span></dt>
+
+            <dd>
+              <p>They will be combined.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">Q8</code></span></dt>
+
+            <dd>
+              <p>Does an operation on a file descriptor affect the
+              already collected but not yet reported events?</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">A8</code></span></dt>
+
+            <dd>
+              <p>You can do two operations on an existing file
+              descriptor. Remove would be meaningless for this
+              case. Modify will reread available I/O.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">Q9</code></span></dt>
+
+            <dd>
+              <p>Do I need to continuously read/write a file
+              descriptor until <span class="errorname">EAGAIN</span> when using the <code class="constant">EPOLLET</code> flag (edge-triggered
+              behavior) ?</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">A9</code></span></dt>
+
+            <dd>
+              <p>Receiving an event from <a class="link" href="../htmlman2/epoll_wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_wait</span>(2)</span></a>
+              should suggest to you that such file descriptor is
+              ready for the requested I/O operation. You must
+              consider it ready until the next (nonblocking)
+              read/write yields <span class="errorname">EAGAIN</span>. When and how you will use
+              the file descriptor is entirely up to you.</p>
+
+              <p>For packet/token-oriented files (e.g., datagram
+              socket, terminal in canonical mode), the only way to
+              detect the end of the read/write I/O space is to
+              continue to read/write until <span class="errorname">EAGAIN</span>.</p>
+
+              <p>For stream-oriented files (e.g., pipe, FIFO,
+              stream socket), the condition that the read/write I/O
+              space is exhausted can also be detected by checking
+              the amount of data read from / written to the target
+              file descriptor. For example, if you call <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> by asking
+              to read a certain amount of data and <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> returns a
+              lower number of bytes, you can be sure of having
+              exhausted the read I/O space for the file descriptor.
+              The same is true when writing using <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a>. (Avoid
+              this latter technique if you cannot guarantee that
+              the monitored file descriptor always refers to a
+              stream-oriented file.)</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="epoll-7_sect7" name="epoll-7_sect7" shape="rect"> </a>
+
+        <h3>Possible pitfalls and ways to avoid them</h3>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term">Starvation
+            (edge-triggered)</span></dt>
+
+            <dd>
+              <p>If there is a large amount of I/O space, it is
+              possible that by trying to drain it the other files
+              will not get processed causing starvation. (This
+              problem is not specific to <code class="systemitem">epoll</code>.)</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>The solution is to maintain a ready list and mark the
+        file descriptor as ready in its associated data structure,
+        thereby allowing the application to remember which files
+        need to be processed but still round robin amongst all the
+        ready files. This also supports ignoring subsequent events
+        you receive for file descriptors that are already
+        ready.</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term">If using an event
+            cache...</span></dt>
+
+            <dd>
+              <p>If you use an event cache or store all the file
+              descriptors returned from <a class="link" href="../htmlman2/epoll_wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_wait</span>(2)</span></a>, then
+              make sure to provide a way to mark its closure
+              dynamically (i.e., caused by a previous event's
+              processing). Suppose you receive 100 events from
+              <a class="link" href="../htmlman2/epoll_wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_wait</span>(2)</span></a>, and
+              in event #47 a condition causes event #13 to be
+              closed. If you remove the structure and <a class="link" href="../htmlman2/close.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">close</span>(2)</span></a> the file
+              descriptor for event #13, then your event cache might
+              still say there are events waiting for that file
+              descriptor causing confusion.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>One solution for this is to call, during the processing
+        of event 47, <code class="function">epoll_ctl</code>(<code class="constant">EPOLL_CTL_DEL</code>) to delete file descriptor
+        13 and <a class="link" href="../htmlman2/close.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">close</span>(2)</span></a>, then mark its
+        associated data structure as removed and link it to a
+        cleanup list. If you find another event for file descriptor
+        13 in your batch processing, you will discover the file
+        descriptor had been previously removed and there will be no
+        confusion.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="epoll-7_sect8" name="epoll-7_sect8" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p>The <code class="systemitem">epoll</code> API was
+      introduced in Linux kernel 2.5.44. Support was added to glibc
+      in version 2.3.2.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="epoll-7_sect9" name="epoll-7_sect9" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>The <code class="systemitem">epoll</code> API is
+      Linux-specific. Some other systems provide similar
+      mechanisms, for example, FreeBSD has <em class="replaceable"><code>kqueue</code></em>, and Solaris has
+      <code class="filename">/dev/poll</code>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="epoll-7_sect10" name="epoll-7_sect10" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/epoll_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_create</span>(2)</span></a>, <a class="link" href="../htmlman2/epoll_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_create</span>(2)</span></a>, <a class="link" href="../htmlman2/epoll_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_create1</span>(2)</span></a>, <a class="link" href="../htmlman2/epoll_ctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_ctl</span>(2)</span></a>, <a class="link" href="../htmlman2/epoll_wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_wait</span>(2)</span></a>, <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a>, <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="epoll-7_sect11" name="epoll-7_sect11" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                     Copyright (C) 2003  Davide Libenzi<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_SW_3_PARA)<br />
+                   This program is free software; you can redistribute it and/or modify<br />
+
+                   it under the terms of the GNU General Public License as published by<br />
+
+                   the Free Software Foundation; either version 2 of the License, or<br />
+
+                   (at your option) any later version.<br />
+
+                  <br />
+                   This program is distributed in the hope that it will be useful,<br />
+
+                   but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+
+                   GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                   Davide Libenzi &lt;davidel<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>xmailserver.org&gt;<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

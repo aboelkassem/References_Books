@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>slapo-constraint(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="slapo-constraint(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="slapo-constraint.5" name="slapo-constraint.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>slapo−constraint — Attribute Constraint
+      Overlay to slapd</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ETCDIR/slapd.conf
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-constraint-5_sect1" name="slapo-constraint-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The constraint overlay is used to ensure that attribute
+      values match some constraints beyond basic LDAP syntax.
+      Attributes can have multiple constraints placed upon them,
+      and all must be satisfied when modifying an attribute value
+      under constraint.</p>
+
+      <p>This overlay is intended to be used to force syntactic
+      regularity upon certain string represented data which have
+      well known canonical forms, like telephone numbers, post
+      codes, FQDNs, etc.</p>
+
+      <p>It constrains only LDAP <em class="replaceable"><code>add</code></em>, <em class="replaceable"><code>modify</code></em> and <em class="replaceable"><code>rename</code></em> commands and only
+      seeks to control the <em class="replaceable"><code>add</code></em> and <em class="replaceable"><code>replace</code></em> values of <em class="replaceable"><code>modify</code></em> and <em class="replaceable"><code>rename</code></em> requests.</p>
+
+      <p>No constraints are applied for operations performed with
+      the <em class="replaceable"><code>relax</code></em> control
+      set.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-constraint-5_sect2" name="slapo-constraint-5_sect2" shape="rect"> </a>
+
+      <h2>CONFIGURATION</h2>
+
+      <p>This <em class="replaceable"><code>slapd.conf</code></em>
+      option applies to the constraint overlay. It should appear
+      after the <em class="replaceable"><code>overlay</code></em>
+      directive.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>constraint_attribute
+          &lt;attribute_name&gt;[,...] &lt;type&gt; &lt;value&gt;
+          [&lt;extra&gt; [...]]</em></span></span></dt>
+
+          <dd>
+            <p>Specifies the constraint which should apply to the
+            comma-separated attribute list named as the first
+            parameter. Five types of constraint are currently
+            supported - <span class="emphasis"><em>regex</em></span>, <em class="replaceable"><code>size</code></em>, <em class="replaceable"><code>count</code></em>, <em class="replaceable"><code>uri</code></em>, and <em class="replaceable"><code>set</code></em>.</p>
+
+            <p>The parameter following the <span class="emphasis"><em>regex</em></span> type is a Unix style
+            regular expression (See <a class="link" href="../htmlman7/regex.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">regex</span>(7)</span></a> ). The
+            parameter following the <em class="replaceable"><code>uri</code></em> type is an LDAP
+            URI. The URI will be evaluated using an internal
+            search. It must not include a hostname, and it must
+            include a list of attributes to evaluate.</p>
+
+            <p>The parameter following the <em class="replaceable"><code>set</code></em> type is a string
+            that is interpreted according to the syntax in use for
+            ACL sets. This allows to construct constraints based on
+            the contents of the entry.</p>
+
+            <p>The <em class="replaceable"><code>size</code></em>
+            type can be used to enforce a limit on an attribute
+            length, and the <em class="replaceable"><code>count</code></em> type limits the
+            number of values of an attribute.</p>
+
+            <p>Extra parameters can occur in any order after those
+            described above.</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><span class="emphasis"><em>&lt;extra&gt; :
+                    restrict=&lt;uri&gt;</em></span></span></dt>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <p>This extra parameter allows to restrict the
+                application of the corresponding constraint only to
+                entries that match the <em class="replaceable"><code>base</code></em>, <em class="replaceable"><code>scope</code></em> and
+                <em class="replaceable"><code>filter</code></em>
+                portions of the LDAP URI. The <em class="replaceable"><code>base</code></em>, if present,
+                must be within the naming context of the database.
+                The <em class="replaceable"><code>scope</code></em>
+                is only used when the <em class="replaceable"><code>base</code></em> is present; it
+                defaults to <em class="replaceable"><code>base</code></em>. The other
+                parameters of the URI are not allowed.</p>
+              </blockquote>
+            </div>
+
+            <p>Any attempt to add or modify an attribute named as
+            part of the constraint overlay specification which does
+            not fit the constraint listed will fail with a
+            LDAP_CONSTRAINT_VIOLATION error.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-constraint-5_sect3" name="slapo-constraint-5_sect3" shape="rect"> </a>
+
+      <h2>EXAMPLES</h2>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+overlay constraint
+constraint_attribute jpegPhoto size 131072
+constraint_attribute userPassword count 3
+constraint_attribute mail regex ^[[:alnum:]]+@mydomain.com$
+constraint_attribute title uri
+  ldap:///dc=catalog,dc=example,dc=com?title?sub?(objectClass=titleCatalog)
+constraint_attribute cn,sn,givenName set
+  "(this/givenName + [ ] + this/sn) &amp; this/cn"
+  restrict="ldap:///ou=People,dc=example,dc=com??sub?(objectClass=inetOrgPerson)"
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>A specification like the above would reject any <em class="replaceable"><code>mail</code></em> attribute which did not
+      look like <span class="emphasis"><em>&lt;alpha-numeric
+      string&gt;@mydomain.com</em></span>. It would also reject any
+      <em class="replaceable"><code>title</code></em> attribute
+      whose values were not listed in the <em class="replaceable"><code>title</code></em> attribute of any
+      <em class="replaceable"><code>titleCatalog</code></em>
+      entries in the given scope. (Note that the
+      "dc=catalog,dc=example,dc=com" subtree ought to reside in a
+      separate database, otherwise the initial set of titleCatalog
+      entries could not be populated while the constraint is in
+      effect.) Finally, it requires the values of the attribute
+      <em class="replaceable"><code>cn</code></em> to be
+      constructed by pairing values of the attributes <em class="replaceable"><code>sn</code></em> and <em class="replaceable"><code>givenName</code></em>, separated by a
+      space, but only for entries derived from the objectClass
+      <em class="replaceable"><code>inetOrgPerson</code></em>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-constraint-5_sect4" name="slapo-constraint-5_sect4" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">ETCDIR/slapd.conf</span></dt>
+
+          <dd>
+            <p>default slapd configuration file</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-constraint-5_sect5" name="slapo-constraint-5_sect5" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a>, <a class="link" href="../htmlman5/slapd-config.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-config</span>(5)</span></a>,</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-constraint-5_sect6" name="slapo-constraint-5_sect6" shape="rect"> </a>
+
+      <h2>ACKNOWLEDGEMENTS</h2>
+
+      <p>This module was written in 2005 by Neil Dunbar of
+      Hewlett-Packard and subsequently extended by Howard Chu and
+      Emmanuel Dreyfus. <span class="emphasis"><em>OpenLDAP
+      Software</em></span> is developed and maintained by The
+      OpenLDAP Project &lt;<a class="literalurl" href="http://www.openldap.org/" target="_top" shape="rect">http://www.openldap.org/</a>&gt;. <span class="emphasis"><em>OpenLDAP Software</em></span> is derived from
+      University of Michigan LDAP 3.3 Release.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                  See the following documents: <a class="ulink" href="../openldap-COPYRIGHT.html" target="_top" shape="rect">COPYRIGHT</a>, <a class="ulink" href="../openldap-LICENSE.html" target="_top" shape="rect">LICENSE</a><br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

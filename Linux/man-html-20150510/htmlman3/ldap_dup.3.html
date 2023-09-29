@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>ldap_open(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="ldap_open(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="ldap-dup.3" name="ldap-dup.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>ldap_dup, ldap_destroy — Duplicate and destroy LDAP
+      session handles</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;ldap.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">LDAP
+            *<strong>ldap_dup</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">LDAP *<var class="pdparam">old</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>ldap_destroy</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">LDAP *<var class="pdparam">old</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ldap-dup-3_sect1" name="ldap-dup-3_sect1" shape="rect"> </a>
+
+      <h2>LIBRARY</h2>
+
+      <p>OpenLDAP LDAP (libldap, −lldap)</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ldap-dup-3_sect2" name="ldap-dup-3_sect2" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">ldap_dup</code>() duplicates an
+      existing LDAP (<span class="emphasis"><em>LDAP *</em></span>)
+      session handle. The new session handle may be used
+      concurrently with the original session handle. In a threaded
+      environment, different threads may execute concurrent
+      requests on the same connection/session without fear of
+      contamination. Each session handle manages its own private
+      error results.</p>
+
+      <p><code class="function">ldap_destroy</code>() destroys an
+      existing session handle.</p>
+
+      <p>The <code class="function">ldap_dup</code>() and
+      <code class="function">ldap_destroy</code>() functions are
+      used in conjunction with a "thread safe" version of
+      <code class="function">libldap</code> (<code class="function">libldap_r</code>) to enable operation thread safe
+      API calls, so that a single session may be simultaneously
+      used across multiple threads with consistent error
+      handling.</p>
+
+      <p>When a session is created through the use of one of the
+      session creation functions including <a class="link" href="../htmlman3/ldap_open.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldap_open</span>(3)</span></a>, <a class="link" href="../htmlman3/ldap_open.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldap_init</span>(3)</span></a>, <a class="link" href="../htmlman3/ldap_open.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldap_initialize</span>(3)</span></a> or
+      <span class="citerefentry"><span class="refentrytitle">ldap_init_fd</span>(3)</span> an <span class="emphasis"><em>LDAP *</em></span> session handle is returned
+      to the application. The session handle may be shared amongst
+      threads, however the error codes are unique to a session
+      handle. Multiple threads performing different operations
+      using the same session handle will result in inconsistent
+      error codes and return values.</p>
+
+      <p>To prevent this confusion, <code class="function">ldap_dup</code>() is used duplicate an existing
+      session handle so that multiple threads can share the
+      session, and maintain consistent error information and
+      results.</p>
+
+      <p>The message queues for a session are shared between
+      sibling session handles. Results of operations on a sibling
+      session handles are accessible to all the sibling session
+      handles. Applications desiring results associated with a
+      specific operation should provide the appropriate msgid to
+      <code class="function">ldap_result</code><code class="literal">(</code><code class="literal">)</code>.
+      Applications should avoid calling <code class="function">ldap_result</code>() with <code class="constant">LDAP_RES_ANY</code> as that may "steal" and return
+      results in the calling thread that another operation in a
+      different thread, using a different session handle, may
+      require to complete.</p>
+
+      <p>When <code class="function">ldap_unbind</code>() is called
+      on a session handle with siblings, all the siblings become
+      invalid.</p>
+
+      <p>Siblings must be destroyed using <code class="function">ldap_destroy</code><code class="literal">(</code><code class="literal">)</code>. Session
+      handle resources associated with the original (<span class="emphasis"><em>LDAP *</em></span>) will be freed when the
+      last session handle is destroyed or when <code class="function">ldap_unbind</code>() is called, if no other
+      session handles currently exist.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ldap-dup-3_sect3" name="ldap-dup-3_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <p>If an error occurs, <code class="function">ldap_dup</code>() will return NULL and
+      <code class="varname">errno</code> should be set
+      appropriately. <code class="function">ldap_destroy</code>()
+      will directly return the LDAP code associated to the error
+      (or <code class="constant">LDAP_SUCCESS</code> in case of
+      success); <code class="varname">errno</code> should be set as
+      well whenever appropriate.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ldap-dup-3_sect4" name="ldap-dup-3_sect4" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/ldap_open.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldap_open</span>(3)</span></a>, <a class="link" href="../htmlman3/ldap_open.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldap_init</span>(3)</span></a>, <a class="link" href="../htmlman3/ldap_open.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldap_initialize</span>(3)</span></a>,
+      <span class="citerefentry"><span class="refentrytitle">ldap_init_fd</span>(3)</span>, <a class="link" href="../htmlman3/errno.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">errno</span>(3)</span></a></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ldap-dup-3_sect5" name="ldap-dup-3_sect5" shape="rect"> </a>
+
+      <h2>ACKNOWLEDGEMENTS</h2>
+
+      <p>This work is based on the previously proposed <span class="emphasis"><em>LDAP C API Concurrency Extensions</em></span>
+      draft <code class="literal">(</code>draft-zeilenga-ldap-c-api-concurrency-00.txt<code class="literal">)</code>
+      effort. <span class="emphasis"><em>OpenLDAP
+      Software</em></span> is developed and maintained by The
+      OpenLDAP Project &lt;<a class="literalurl" href="http://www.openldap.org/" target="_top" shape="rect">http://www.openldap.org/</a>&gt;. <span class="emphasis"><em>OpenLDAP Software</em></span> is derived from
+      University of Michigan LDAP 3.3 Release.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                  See the following documents: <a class="ulink" href="../openldap-COPYRIGHT.html" target="_top" shape="rect">COPYRIGHT</a>, <a class="ulink" href="../openldap-LICENSE.html" target="_top" shape="rect">LICENSE</a><br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

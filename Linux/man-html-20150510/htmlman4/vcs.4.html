@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>vcs(4) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="vcs(4) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index4.html" shape="rect">Section 4</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="vcs.4" name="vcs.4" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>vcs, vcsa — virtual console memory</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="vcs-4_sect1" name="vcs-4_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="filename">/dev/vcs0</code> is a character
+      device with major number 7 and minor number 0, usually of
+      mode 0644 and owner root.tty. It refers to the memory of the
+      currently displayed virtual console terminal.</p>
+
+      <p><code class="filename">/dev/vcs[1−63]</code> are
+      character devices for virtual console terminals, they have
+      major number 7 and minor number 1 to 63, usually mode 0644
+      and owner root.tty. <code class="filename">/dev/vcsa[0−63]</code> are the same, but
+      using <span class="type">unsigned short</span>s (in host byte
+      order) that include attributes, and prefixed with four bytes
+      giving the screen dimensions and cursor position:
+      <code class="function">lines</code>, <code class="function">columns</code>, <code class="literal">x</code>,
+      <code class="literal">y</code>. (<code class="literal">x</code> = <code class="literal">y</code> = 0 at
+      the top left corner of the screen.)</p>
+
+      <p>When a 512-character font is loaded, the 9th bit position
+      can be fetched by applying the <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> <code class="constant">VT_GETHIFONTMASK</code> operation (available in
+      Linux kernels 2.6.18 and above) on <code class="filename">/dev/tty[1−63]</code>; the value is returned
+      in the <span class="type">unsigned short</span> pointed to by
+      the third <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> argument.</p>
+
+      <p>These devices replace the screendump <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> operations of
+      <a class="link" href="../htmlman4/console.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">console</span>(4)</span></a>, so the system
+      administrator can control access using filesystem
+      permissions.</p>
+
+      <p>The devices for the first eight virtual consoles may be
+      created by:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+    for x in 0 1 2 3 4 5 6 7 8; do
+        mknod −m 644 /dev/vcs$x c 7 $x;
+        mknod −m 644 /dev/vcsa$x c 7 $[$x+128];
+    done
+    chown root:tty /dev/vcs*
+</pre>
+      </div>
+
+      <p>No <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> requests are
+      supported.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="vcs-4_sect2" name="vcs-4_sect2" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <p>/dev/vcs[0−63]</p>
+
+      <p>/dev/vcsa[0−63]</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="vcs-4_sect3" name="vcs-4_sect3" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p>Introduced with version 1.1.92 of the Linux kernel.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="vcs-4_sect4" name="vcs-4_sect4" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>You may do a screendump on vt3 by switching to vt1 and
+      typing</p>
+
+      <p>cat /dev/vcs3 &gt;foo</p>
+
+      <p>Note that the output does not contain newline characters,
+      so some processing may be required, like in</p>
+
+      <p>old −w 81 /dev/vcs3 | lpr</p>
+
+      <p>or (horrors)</p>
+
+      <p>xetterm −dump 3 −file /proc/self/fd/1</p>
+
+      <p>The <code class="filename">/dev/vcsa0</code> device is
+      used for Braille support.</p>
+
+      <p>This program displays the character and screen attributes
+      under the cursor of the second virtual console, then changes
+      the background color there:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;unistd.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;sys/ioctl.h&gt;
+#include &lt;linux/vt.h&gt;
+
+int
+main(void)
+{
+    int fd;
+    char *device = "/dev/vcsa2";
+    char *console = "/dev/tty2";
+    struct {unsigned char lines, cols, x, y;} scrn;
+    unsigned short s;
+    unsigned short mask;
+    unsigned char ch, attrib;
+
+    fd = open(console, O_RDWR);
+    if (fd &lt; 0) {
+        perror(console);
+        exit(EXIT_FAILURE);
+    }
+    if (ioctl(fd, VT_GETHIFONTMASK, &amp;mask) &lt; 0) {
+        perror("VT_GETHIFONTMASK");
+        exit(EXIT_FAILURE);
+    }
+    (void) close(fd);
+    fd = open(device, O_RDWR);
+    if (fd &lt; 0) {
+        perror(device);
+        exit(EXIT_FAILURE);
+    }
+    (void) read(fd, &amp;scrn, 4);
+    (void) lseek(fd, 4 + 2*(scrn.y*scrn.cols + scrn.x), 0);
+    (void) read(fd, &amp;s, 2);
+    ch = s &amp; 0xff;
+    if (attrib &amp; mask)
+        ch |= 0x100;
+    attrib = ((s &amp; ~mask) &gt;&gt; 8);
+    printf("ch='%c' attrib=0x%02x\n", ch, attrib);
+    attrib ^= 0x10;
+    (void) lseek(fd, −1, 1);
+    (void) write(fd, &amp;attrib, 1);
+    exit(EXIT_SUCCESS);
+}
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="vcs-4_sect5" name="vcs-4_sect5" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman4/console.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">console</span>(4)</span></a>, <a class="link" href="../htmlman4/tty.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tty</span>(4)</span></a>, <a class="link" href="../htmlman4/ttyS.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ttyS</span>(4)</span></a>, <span class="citerefentry"><span class="refentrytitle">gpm</span>(8)</span></p>
+    </div>
+
+    <div class="colophon">
+      <a id="vcs-4_sect6" name="vcs-4_sect6" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 1995 James R. Van Zandt &lt;jrv<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>vanzandt.mv.com&gt;<br />
+
+                  Sat Feb 18 09:11:07 EST 1995<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_DOC_FULL)<br />
+                  This is free documentation; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License as<br />
+
+                  published by the Free Software Foundation; either version 2 of<br />
+
+                  the License, or (at your option) any later version.<br />
+
+                  <br />
+                  The GNU General Public License's references to "object code"<br />
+
+                  and "executables" are to be interpreted as the output of any<br />
+
+                  document formatting or typesetting system, including<br />
+
+                  intermediate and printed output.<br />
+
+                  <br />
+                  This manual is distributed in the hope that it will be useful,<br />
+
+                  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+
+                  GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Modified, Sun Feb 26 15:08:05 1995, faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu<br />
+
+                  2007-12-17, Samuel Thibault &lt;samuel.thibault<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>ens-lyon.org&gt;:<br />
+
+                      document the VT_GETHIFONTMASK ioctl<br />
+
+                  "<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,1336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>matherr(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="matherr(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="matherr.3" name="matherr.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>matherr — SVID math library exception handling</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#define _SVID_SOURCE              /* See feature_test_macros(7) */
+#include &lt;math.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>matherr</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">struct exception *<var class="pdparam">exc</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+extern _LIB_VERSION_TYPE _LIB_VERSION;
+Link with −lm.
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="matherr-3_sect1" name="matherr-3_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The System V Interface Definition (SVID) specifies that
+      various math functions should invoke a function called
+      <code class="function">matherr</code>() if a math exception
+      is detected. This function is called before the math function
+      returns; after <code class="function">matherr</code>()
+      returns, the system then returns to the math function, which
+      in turn returns to the caller.</p>
+
+      <p>The <code class="function">matherr</code>() mechanism is
+      supported by glibc, but is now obsolete: new applications
+      should use the techniques described in <a class="link" href="../htmlman7/math_error.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">math_error</span>(7)</span></a> and <a class="link" href="../htmlman3/fenv.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fenv</span>(3)</span></a>. This page
+      documents the glibc <code class="function">matherr</code>()
+      mechanism as an aid for maintaining and porting older
+      applications.</p>
+
+      <p>To employ <code class="function">matherr</code>(), the
+      programmer must define the <code class="constant">_SVID_SOURCE</code> feature test macro (before
+      including <code class="function">any</code> header files),
+      and assign the value <code class="constant">_SVID_</code> to
+      the external variable <code class="constant">_LIB_VERSION</code>.</p>
+
+      <p>The system provides a default version of <code class="function">matherr</code>(). This version does nothing, and
+      returns zero (see below for the significance of this). The
+      default <code class="function">matherr</code>() can be
+      overridden by a programmer-defined version, which will be
+      invoked when an exception occurs. The function is invoked
+      with one argument, a pointer to an <span class="structname">exception</span> structure, defined as
+      follows:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="structdef">
+            <table style="border-collapse: collapse;">
+              <colgroup span="1">
+                <col class="c1" span="1" />
+                <col class="c2" span="1" />
+                <col class="c3" span="1" />
+                <col class="c4" span="1" />
+                <col class="c5" span="1" />
+              </colgroup>
+
+              <tbody>
+                <tr>
+                  <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                  struct</td>
+
+                  <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">exception</span> {</td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>type</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      /* Exception type */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">char</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                  *</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>name</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      
+                      /* Name of function causing exception */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">double</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>arg1</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      
+                      /* 1st argument to function */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">double</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>arg2</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      
+                      /* 2nd argument to function */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">double</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>retval</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      
+                      /* Function return value */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>The <em class="parameter"><code>type</code></em> field has
+      one of the following values:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">DOMAIN</code></span></dt>
+
+          <dd>
+            <p>A domain error occurred (the function argument was
+            outside the range for which the function is defined).
+            The return value depends on the function; <code class="varname">errno</code> is set to <span class="errorname">EDOM</span>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">SING</code></span></dt>
+
+          <dd>
+            <p>A pole error occurred (the function result is an
+            infinity). The return value in most cases is
+            <code class="constant">HUGE</code> (the largest single
+            precision floating-point number), appropriately signed.
+            In most cases, <code class="varname">errno</code> is
+            set to <span class="errorname">EDOM</span>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">OVERFLOW</code></span></dt>
+
+          <dd>
+            <p>An overflow occurred. In most cases, the value
+            <code class="constant">HUGE</code> is returned, and
+            <code class="varname">errno</code> is set to
+            <span class="errorname">ERANGE</span>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">UNDERFLOW</code></span></dt>
+
+          <dd>
+            <p>An underflow occurred. 0.0 is returned, and
+            <code class="varname">errno</code> is set to
+            <span class="errorname">ERANGE</span>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">TLOSS</code></span></dt>
+
+          <dd>
+            <p>Total loss of significance. 0.0 is returned, and
+            <code class="varname">errno</code> is set to
+            <span class="errorname">ERANGE</span>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PLOSS</code></span></dt>
+
+          <dd>
+            <p>Partial loss of significance. This value is unused
+            on glibc (and many other systems).</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>The <em class="parameter"><code>arg1</code></em> and
+      <em class="parameter"><code>arg2</code></em> fields are the
+      arguments supplied to the function (<em class="parameter"><code>arg2</code></em> is undefined for functions
+      that take only one argument).</p>
+
+      <p>The <em class="parameter"><code>retval</code></em> field
+      specifies the return value that the math function will return
+      to its caller. The programmer-defined <code class="function">matherr</code>() can modify this field to change
+      the return value of the math function.</p>
+
+      <p>If the <code class="function">matherr</code>() function
+      returns zero, then the system sets <code class="varname">errno</code> as described above, and may print an
+      error message on standard error (see below).</p>
+
+      <p>If the <code class="function">matherr</code>() function
+      returns a nonzero value, then the system does not set
+      <code class="varname">errno</code>, and doesn't print an
+      error message.</p>
+
+      <div class="refsect2">
+        <a id="matherr-3_sect2" name="matherr-3_sect2" shape="rect"> </a>
+
+        <h3>Math functions that employ matherr()</h3>
+
+        <p>The table below lists the functions and circumstances in
+        which <code class="function">matherr</code>() is called.
+        The "Type" column indicates the value assigned to
+        <em class="replaceable"><code>exc−&gt;type</code></em>
+        when calling <code class="function">matherr</code>(). The
+        "Result" column is the default return value assigned to
+        <em class="replaceable"><code>exc−&gt;retval</code></em>.</p>
+
+        <p>The "Msg?" and "errno" columns describe the default
+        behavior if <code class="function">matherr</code>() returns
+        zero. If the "Msg?" columns contains "y", then the system
+        prints an error message on standard error.</p>
+
+        <p>The table uses the following notations and
+        abbreviations:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+x        first argument to function
+y        second argument to function
+fin      finite value for argument
+neg      negative value for argument
+int      integral value for argument
+o/f      result overflowed
+u/f      result underflowed
+|x|      absolute value of x
+X_TLOSS  is a constant defined in <code class="literal">&lt;</code><code class="filename">math.h</code><code class="literal">&gt;</code>
+</pre>
+            </div>
+          </blockquote>
+        </div>
+
+        <div class="informaltable">
+          <table style="border-collapse: collapse;">
+            <colgroup span="1">
+              <col class="c0" span="1" />
+              <col class="c1" span="1" />
+              <col class="c2" span="1" />
+              <col class="c3" span="1" />
+              <col class="c4" span="1" />
+            </colgroup>
+
+            <tbody>
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="function">Function</code></td>
+
+                <td style="" align="left" rowspan="1" colspan="1"><em class="parameter"><code>Type</code></em></td>
+
+                <td style="" align="left" rowspan="1" colspan="1"><code class="function">Result</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1"><code class="function">Msg?</code></td>
+
+                <td style="" align="left" rowspan="1" colspan="1"><code class="varname">errno</code></td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">acos(|x|&gt;1)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">DOMAIN</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">HUGE</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">EDOM</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">asin(|x|&gt;1)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">DOMAIN</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">HUGE</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">EDOM</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">atan2(0,0)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">DOMAIN</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">HUGE</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">EDOM</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">acosh(x&lt;1)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">DOMAIN</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">NAN</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">EDOM</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">atanh(|x|&gt;1)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">DOMAIN</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">NAN</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">EDOM</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">atanh(|x|==1)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">SING</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">(x&gt;0.0)?</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">EDOM</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"></td>
+
+                <td style="" align="left" rowspan="1" colspan="1"></td>
+
+                <td style="" align="left" rowspan="1" colspan="1">HUGE_VAL :</td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"></td>
+
+                <td style="" align="left" rowspan="1" colspan="1"></td>
+
+                <td style="" align="left" rowspan="1" colspan="1">−HUGE_VAL</td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">cosh(fin) o/f</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">OVERFLOW</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">HUGE</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">n</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">ERANGE</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">sinh(fin) o/f</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">OVERFLOW</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">(x&gt;0.0) ?</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">n</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">ERANGE</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"></td>
+
+                <td style="" align="left" rowspan="1" colspan="1"></td>
+
+                <td style="" align="left" rowspan="1" colspan="1">HUGE : −HUGE</td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">sqrt(x&lt;0)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">DOMAIN</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">0.0</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">EDOM</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">hypot(fin,fin) o/f</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">OVERFLOW</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">HUGE</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">n</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">ERANGE</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">exp(fin) o/f</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">OVERFLOW</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">HUGE</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">n</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">ERANGE</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">exp(fin) u/f</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">UNDERFLOW</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">0.0</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">n</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">ERANGE</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">exp2(fin) o/f</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">OVERFLOW</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">HUGE</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">n</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">ERANGE</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">exp2(fin) u/f</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">UNDERFLOW</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">0.0</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">n</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">ERANGE</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">exp10(fin) o/f</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">OVERFLOW</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">HUGE</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">n</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">ERANGE</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">exp10(fin) u/f</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">UNDERFLOW</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">0.0</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">n</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">ERANGE</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">j0(|x|&gt;X_TLOSS)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">TLOSS</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">0.0</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">ERANGE</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">j1(|x|&gt;X_TLOSS)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">TLOSS</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">0.0</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">ERANGE</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">jn(|x|&gt;X_TLOSS)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">TLOSS</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">0.0</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">ERANGE</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">y0(x&gt;X_TLOSS)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">TLOSS</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">0.0</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">ERANGE</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">y1(x&gt;X_TLOSS)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">TLOSS</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">0.0</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">ERANGE</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">yn(x&gt;X_TLOSS)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">TLOSS</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">0.0</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">ERANGE</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">y0(0)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">DOMAIN</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">−HUGE</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">EDOM</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">y0(x&lt;0)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">DOMAIN</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">−HUGE</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">EDOM</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">y1(0)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">DOMAIN</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">−HUGE</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">EDOM</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">y1(x&lt;0)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">DOMAIN</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">−HUGE</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">EDOM</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">yn(n,0)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">DOMAIN</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">−HUGE</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">EDOM</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">yn(x&lt;0)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">DOMAIN</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">−HUGE</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">EDOM</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">lgamma(fin) o/f</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">OVERFLOW</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">HUGE</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">n</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">ERANGE</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">lgamma(−int)
+                or</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">SING</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">HUGE</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">EDOM</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">lgamma(0)</td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">tgamma(fin) o/f</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">OVERFLOW</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">HUGE_VAL</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">n</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">ERANGE</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">tgamma(−int)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">SING</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">NAN</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">EDOM</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">tgamma(0)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">SING</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">copysign(</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">ERANGE</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"></td>
+
+                <td style="" align="left" rowspan="1" colspan="1"></td>
+
+                <td style="" align="left" rowspan="1" colspan="1">HUGE_VAL,x)</td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">log(0)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">SING</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">−HUGE</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">EDOM</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">log(x&lt;0)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">DOMAIN</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">−HUGE</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">EDOM</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">log2(0)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">SING</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">−HUGE</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">n</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">EDOM</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">log2(x&lt;0)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">DOMAIN</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">−HUGE</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">n</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">EDOM</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">log10(0)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">SING</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">−HUGE</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">EDOM</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">log10(x&lt;0)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">DOMAIN</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">−HUGE</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">EDOM</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">pow(0.0,0.0)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">DOMAIN</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">0.0</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">EDOM</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">pow(x,y) o/f</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">OVERFLOW</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">HUGE</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">n</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">ERANGE</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">pow(x,y) u/f</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">UNDERFLOW</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">0.0</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">n</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">ERANGE</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">pow(NaN,0.0)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">DOMAIN</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">x</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">n</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">EDOM</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">0**neg</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">DOMAIN</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">0.0</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">EDOM</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">neg**non-int</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">DOMAIN</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">0.0</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">EDOM</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">scalb() o/f</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">OVERFLOW</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">(x&gt;0.0) ?</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">n</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">ERANGE</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"></td>
+
+                <td style="" align="left" rowspan="1" colspan="1"></td>
+
+                <td style="" align="left" rowspan="1" colspan="1">HUGE_VAL :</td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"></td>
+
+                <td style="" align="left" rowspan="1" colspan="1"></td>
+
+                <td style="" align="left" rowspan="1" colspan="1">−HUGE_VAL</td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">scalb() u/f</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">UNDERFLOW</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">copysign(</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">n</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">ERANGE</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"></td>
+
+                <td style="" align="left" rowspan="1" colspan="1"></td>
+
+                <td style="" align="left" rowspan="1" colspan="1">0.0,x)</td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">fmod(x,0)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">DOMAIN</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">x</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">EDOM</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">remainder(x,0)</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">DOMAIN</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">NAN</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">y</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">EDOM</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="matherr-3_sect3" name="matherr-3_sect3" shape="rect"> </a>
+
+      <h2>ATTRIBUTES</h2>
+
+      <p>For an explanation of the terms used in this section, see
+      <a class="link" href="../htmlman7/attributes.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">attributes</span>(7)</span></a>.</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">Interface</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Attribute</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Value</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><code class="literal">matherr</code>()</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Thread safety</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">MT-Safe</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="matherr-3_sect4" name="matherr-3_sect4" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>The example program demonstrates the use of <code class="function">matherr</code>() when calling <a class="link" href="../htmlman3/log.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">log</span>(3)</span></a>. The program takes
+      up to three command-line arguments. The first argument is the
+      floating-point number to be given to <a class="link" href="../htmlman3/log.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">log</span>(3)</span></a>. If the optional
+      second argument is provided, then <code class="constant">_LIB_VERSION</code> is set to <code class="constant">_SVID_</code> so that <code class="function">matherr</code>() is called, and the integer
+      supplied in the command-line argument is used as the return
+      value from <code class="function">matherr</code>(). If the
+      optional third command-line argument is supplied, then it
+      specifies an alternative return value that <code class="function">matherr</code>() should assign as the return value
+      of the math function.</p>
+
+      <p>The following example run, where <a class="link" href="../htmlman3/log.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">log</span>(3)</span></a> is given an argument
+      of 0.0, does not use <code class="function">matherr</code>():</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$<span class="emphasis"><em> ./a.out 0.0</em></span>
+errno: Numerical result out of range
+x=-inf
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>In the following run, <code class="function">matherr</code>() is called, and returns 0:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$<span class="emphasis"><em> ./a.out 0.0 0</em></span>
+matherr SING exception in log() function
+        args:   0.000000, 0.000000
+        retval: −340282346638528859811704183484516925440.000000
+log: SING error
+errno: Numerical argument out of domain
+x=-340282346638528859811704183484516925440.000000
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>The message "log: SING error" was printed by the C
+      library.</p>
+
+      <p>In the following run, <code class="function">matherr</code>() is called, and returns a nonzero
+      value:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$<span class="emphasis"><em> ./a.out 0.0 1</em></span>
+matherr SING exception in log() function
+        args:   0.000000, 0.000000
+        retval: −340282346638528859811704183484516925440.000000
+x=-340282346638528859811704183484516925440.000000
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>In this case, the C library did not print a message, and
+      <code class="varname">errno</code> was not set.</p>
+
+      <p>In the following run, <code class="function">matherr</code>() is called, changes the return
+      value of the math function, and returns a nonzero value:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$<span class="emphasis"><em> ./a.out 0.0 1 12345.0</em></span>
+matherr SING exception in log() function
+        args:   0.000000, 0.000000
+        retval: −340282346638528859811704183484516925440.000000
+x=12345.000000
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="refsect2">
+        <a id="matherr-3_sect5" name="matherr-3_sect5" shape="rect"> </a>
+
+        <h3>Program source</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+#define _SVID_SOURCE
+#include &lt;errno.h&gt;
+#include &lt;math.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+static int matherr_ret = 0;     /* Value that matherr()
+                                   should return */
+static int change_retval = 0;   /* Should matherr() change
+                                   function's return value? */
+static double new_retval;       /* New function return value */
+
+int
+matherr(struct exception *exc)
+{
+    fprintf(stderr, "matherr %s exception in %s() function\n",
+           (exc−&gt;type == DOMAIN) ?    "DOMAIN" :
+           (exc−&gt;type == OVERFLOW) ?  "OVERFLOW" :
+           (exc−&gt;type == UNDERFLOW) ? "UNDERFLOW" :
+           (exc−&gt;type == SING) ?      "SING" :
+           (exc−&gt;type == TLOSS) ?     "TLOSS" :
+           (exc−&gt;type == PLOSS) ?     "PLOSS" : "???",
+            exc−&gt;name);
+    fprintf(stderr, "        args:   %f, %f\n",
+            exc−&gt;arg1, exc−&gt;arg2);
+    fprintf(stderr, "        retval: %f\n", exc−&gt;retval);
+
+    if (change_retval)
+        exc−&gt;retval = new_retval;
+
+    return matherr_ret;
+}
+
+int
+main(int argc, char *argv[])
+{
+    double x;
+
+    if (argc &lt; 2) {
+        fprintf(stderr, "Usage: %s &lt;argval&gt;"
+                " [&lt;matherr−ret&gt; [&lt;new−func−retval&gt;]]\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    if (argc &gt; 2) {
+        _LIB_VERSION = _SVID_;
+        matherr_ret = atoi(argv[2]);
+    }
+
+    if (argc &gt; 3) {
+        change_retval = 1;
+        new_retval = atof(argv[3]);
+    }
+
+    x = log(atof(argv[1]));
+    if (errno != 0)
+        perror("errno");
+
+    printf("x=%f\n", x);
+    exit(EXIT_SUCCESS);
+}
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="matherr-3_sect6" name="matherr-3_sect6" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/fenv.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fenv</span>(3)</span></a>, <a class="link" href="../htmlman7/math_error.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">math_error</span>(7)</span></a>, <a class="link" href="../htmlman7/standards.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">standards</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="matherr-3_sect7" name="matherr-3_sect7" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    t<br />
+                  Copyright (c) 2008, Linux Foundation, written by Michael Kerrisk<br />
+
+                      &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

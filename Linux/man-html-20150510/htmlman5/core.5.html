@@ -1,0 +1,626 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>core(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="core(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="core.5" name="core.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>core — core dump file</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="core-5_sect1" name="core-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The default action of certain signals is to cause a
+      process to terminate and produce a <span class="emphasis"><em>core dump file</em></span>, a disk file
+      containing an image of the process's memory at the time of
+      termination. This image can be used in a debugger (e.g.,
+      <span class="citerefentry"><span class="refentrytitle">gdb</span>(1)</span>) to inspect the state of
+      the program at the time that it terminated. A list of the
+      signals which cause a process to dump core can be found in
+      <a class="link" href="../htmlman7/signal.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(7)</span></a>.</p>
+
+      <p>A process can set its soft <code class="constant">RLIMIT_CORE</code> resource limit to place an
+      upper limit on the size of the core dump file that will be
+      produced if it receives a "core dump" signal; see <a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getrlimit</span>(2)</span></a> for
+      details.</p>
+
+      <p>There are various circumstances in which a core dump file
+      is not produced:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p>The process does not have permission to write the
+            core file. (By default, the core file is called
+            <em class="replaceable"><code>core</code></em> or
+            <em class="replaceable"><code>core.pid</code></em>,
+            where <em class="replaceable"><code>pid</code></em> is
+            the ID of the process that dumped core, and is created
+            in the current working directory. See below for details
+            on naming.) Writing the core file will fail if the
+            directory in which it is to be created is nonwritable,
+            or if a file with the same name exists and is not
+            writable or is not a regular file (e.g., it is a
+            directory or a symbolic link).</p>
+          </li>
+
+          <li class="listitem">
+            <p>A (writable, regular) file with the same name as
+            would be used for the core dump already exists, but
+            there is more than one hard link to that file.</p>
+          </li>
+
+          <li class="listitem">
+            <p>The filesystem where the core dump file would be
+            created is full; or has run out of inodes; or is
+            mounted read-only; or the user has reached their quota
+            for the filesystem.</p>
+          </li>
+
+          <li class="listitem">
+            <p>The directory in which the core dump file is to be
+            created does not exist.</p>
+          </li>
+
+          <li class="listitem">
+            <p>The <code class="constant">RLIMIT_CORE</code> (core
+            file size) or <code class="constant">RLIMIT_FSIZE</code> (file size) resource
+            limits for the process are set to zero; see <a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getrlimit</span>(2)</span></a> and the
+            documentation of the shell's <em class="replaceable"><code>ulimit</code></em> command
+            (<em class="replaceable"><code>limit</code></em> in
+            <span class="citerefentry"><span class="refentrytitle">csh</span>(1)</span>).</p>
+          </li>
+
+          <li class="listitem">
+            <p>The binary being executed by the process does not
+            have read permission enabled.</p>
+          </li>
+
+          <li class="listitem">
+            <p>The process is executing a set-user-ID
+            (set-group-ID) program that is owned by a user (group)
+            other than the real user (group) ID of the process, or
+            the process is executing a program that has file
+            capabilities (see <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>).
+            (However, see the description of the <a class="link" href="../htmlman2/prctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">prctl</span>(2)</span></a> <code class="constant">PR_SET_DUMPABLE</code> operation, and the
+            description of the <code class="filename">/proc/sys/fs/suid_dumpable</code> file in
+            <a class="link" href="../htmlman5/proc.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">proc</span>(5)</span></a>.)</p>
+          </li>
+
+          <li class="listitem">
+            <p>(Since Linux 3.7) The kernel was configured without
+            the <code class="constant">CONFIG_COREDUMP</code>
+            option.</p>
+          </li>
+        </ul>
+      </div>
+
+      <p>In addition, a core dump may exclude part of the address
+      space of the process if the <a class="link" href="../htmlman2/madvise.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">madvise</span>(2)</span></a> <code class="constant">MADV_DONTDUMP</code> flag was employed.</p>
+
+      <div class="refsect2">
+        <a id="core-5_sect2" name="core-5_sect2" shape="rect"> </a>
+
+        <h3>Naming of core dump files</h3>
+
+        <p>By default, a core dump file is named <em class="replaceable"><code>core</code></em>, but the <code class="filename">/proc/sys/kernel/core_pattern</code> file (since
+        Linux 2.6 and 2.4.21) can be set to define a template that
+        is used to name core dump files. The template can contain %
+        specifiers which are substituted by the following values
+        when a core file is created:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="variablelist">
+              <dl class="variablelist">
+                <dt><span class="term">%%</span></dt>
+
+                <dd>
+                  <p>a single % character</p>
+                </dd>
+
+                <dt><span class="term">%c</span></dt>
+
+                <dd>
+                  <p>core file size soft resource limit of crashing
+                  process (since Linux 2.6.24)</p>
+                </dd>
+
+                <dt><span class="term">%d</span></dt>
+
+                <dd>
+                  <p>dump mode—same as value returned by
+                  <a class="link" href="../htmlman2/prctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">prctl</span>(2)</span></a>
+                  <code class="constant">PR_GET_DUMPABLE</code>
+                  (since Linux 3.7)</p>
+                </dd>
+
+                <dt><span class="term">%e</span></dt>
+
+                <dd>
+                  <p>executable filename (without path prefix)</p>
+                </dd>
+
+                <dt><span class="term">%E</span></dt>
+
+                <dd>
+                  <p>pathname of executable, with slashes ('/')
+                  replaced by exclamation marks ('!') (since Linux
+                  3.0).</p>
+                </dd>
+
+                <dt><span class="term">%g</span></dt>
+
+                <dd>
+                  <p>(numeric) real GID of dumped process</p>
+                </dd>
+
+                <dt><span class="term">%h</span></dt>
+
+                <dd>
+                  <p>hostname (same as <em class="replaceable"><code>nodename</code></em> returned
+                  by <a class="link" href="../htmlman2/uname.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">uname</span>(2)</span></a>)</p>
+                </dd>
+
+                <dt><span class="term">%i</span></dt>
+
+                <dd>
+                  <p>TID of thread that triggered core dump, as
+                  seen in the PID namespace in which the thread
+                  resides (since Linux 3.18)</p>
+                </dd>
+
+                <dt><span class="term">%I</span></dt>
+
+                <dd>
+                  <p>TID of thread that triggered core dump, as
+                  seen in the initial PID namespace (since Linux
+                  3.18)</p>
+                </dd>
+
+                <dt><span class="term">%p</span></dt>
+
+                <dd>
+                  <p>PID of dumped process, as seen in the PID
+                  namespace in which the process resides</p>
+                </dd>
+
+                <dt><span class="term">%P</span></dt>
+
+                <dd>
+                  <p>PID of dumped process, as seen in the initial
+                  PID namespace (since Linux 3.12)</p>
+                </dd>
+
+                <dt><span class="term">%s</span></dt>
+
+                <dd>
+                  <p>number of signal causing dump</p>
+                </dd>
+
+                <dt><span class="term">%t</span></dt>
+
+                <dd>
+                  <p>time of dump, expressed as seconds since the
+                  Epoch, 1970-01-01 00:00:00 +0000 (UTC)</p>
+                </dd>
+
+                <dt><span class="term">%u</span></dt>
+
+                <dd>
+                  <p>(numeric) real UID of dumped process</p>
+                </dd>
+              </dl>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>A single % at the end of the template is dropped from
+        the core filename, as is the combination of a % followed by
+        any character other than those listed above. All other
+        characters in the template become a literal part of the
+        core filename. The template may include '/' characters,
+        which are interpreted as delimiters for directory names.
+        The maximum size of the resulting core filename is 128
+        bytes (64 bytes in kernels before 2.6.19). The default
+        value in this file is "core". For backward compatibility,
+        if <code class="filename">/proc/sys/kernel/core_pattern</code> does not
+        include "%p" and <code class="filename">/proc/sys/kernel/core_uses_pid</code> (see
+        below) is nonzero, then .PID will be appended to the core
+        filename.</p>
+
+        <p>Since version 2.4, Linux has also provided a more
+        primitive method of controlling the name of the core dump
+        file. If the <code class="filename">/proc/sys/kernel/core_uses_pid</code> file
+        contains the value 0, then a core dump file is simply named
+        <em class="replaceable"><code>core</code></em>. If this
+        file contains a nonzero value, then the core dump file
+        includes the process ID in a name of the form <em class="replaceable"><code>core.PID</code></em>.</p>
+
+        <p>Since Linux 3.6, if <code class="filename">/proc/sys/fs/suid_dumpable</code> is set to 2
+        ("suidsafe"), the pattern must be either an absolute
+        pathname (starting with a leading '/' character) or a pipe,
+        as defined below.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="core-5_sect3" name="core-5_sect3" shape="rect"> </a>
+
+        <h3>Piping core dumps to a program</h3>
+
+        <p>Since kernel 2.6.19, Linux supports an alternate syntax
+        for the <code class="filename">/proc/sys/kernel/core_pattern</code> file. If
+        the first character of this file is a pipe symbol
+        (<code class="literal">|</code>), then the remainder of the
+        line is interpreted as a program to be executed. Instead of
+        being written to a disk file, the core dump is given as
+        standard input to the program. Note the following
+        points:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>The program must be specified using an absolute
+              pathname (or a pathname relative to the root
+              directory, <code class="filename">/</code>), and must
+              immediately follow the '|' character.</p>
+            </li>
+
+            <li class="listitem">
+              <p>The process created to run the program runs as
+              user and group <em class="replaceable"><code>root</code></em>.</p>
+            </li>
+
+            <li class="listitem">
+              <p>Command-line arguments can be supplied to the
+              program (since Linux 2.6.24), delimited by white
+              space (up to a total line length of 128 bytes).</p>
+            </li>
+
+            <li class="listitem">
+              <p>The command-line arguments can include any of the
+              % specifiers listed above. For example, to pass the
+              PID of the process that is being dumped, specify
+              <em class="replaceable"><code>%p</code></em> in an
+              argument.</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="core-5_sect4" name="core-5_sect4" shape="rect"> </a>
+
+        <h3>Controlling which mappings are written to the core
+        dump</h3>
+
+        <p>Since kernel 2.6.23, the Linux-specific <code class="filename">/proc/PID/coredump_filter</code> file can be
+        used to control which memory segments are written to the
+        core dump file in the event that a core dump is performed
+        for the process with the corresponding process ID.</p>
+
+        <p>The value in the file is a bit mask of memory mapping
+        types (see <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>). If a bit is set
+        in the mask, then memory mappings of the corresponding type
+        are dumped; otherwise they are not dumped. The bits in this
+        file have the following meanings:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="variablelist">
+              <dl class="variablelist">
+                <dt><span class="term">bit 0</span></dt>
+
+                <dd>
+                  <p>Dump anonymous private mappings.</p>
+                </dd>
+
+                <dt><span class="term">bit 1</span></dt>
+
+                <dd>
+                  <p>Dump anonymous shared mappings.</p>
+                </dd>
+
+                <dt><span class="term">bit 2</span></dt>
+
+                <dd>
+                  <p>Dump file-backed private mappings.</p>
+                </dd>
+
+                <dt><span class="term">bit 3</span></dt>
+
+                <dd>
+                  <p>Dump file-backed shared mappings.</p>
+                </dd>
+
+                <dt><span class="term">bit 4 (since Linux
+                2.6.24)</span></dt>
+
+                <dd>
+                  <p>Dump ELF headers.</p>
+                </dd>
+
+                <dt><span class="term">bit 5 (since Linux
+                2.6.28)</span></dt>
+
+                <dd>
+                  <p>Dump private huge pages.</p>
+                </dd>
+
+                <dt><span class="term">bit 6 (since Linux
+                2.6.28)</span></dt>
+
+                <dd>
+                  <p>Dump shared huge pages.</p>
+                </dd>
+              </dl>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>By default, the following bits are set: 0, 1, 4 (if the
+        <code class="constant">CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS</code>
+        kernel configuration option is enabled), and 5. The value
+        of this file is displayed in hexadecimal. (The default
+        value is thus displayed as 33.)</p>
+
+        <p>Memory-mapped I/O pages such as frame buffer are never
+        dumped, and virtual DSO pages are always dumped, regardless
+        of the <em class="replaceable"><code>coredump_filter</code></em> value.</p>
+
+        <p>A child process created via <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> inherits its
+        parent's <em class="replaceable"><code>coredump_filter</code></em> value; the
+        <em class="replaceable"><code>coredump_filter</code></em>
+        value is preserved across an <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>.</p>
+
+        <p>It can be useful to set <em class="replaceable"><code>coredump_filter</code></em> in the
+        parent shell before running a program, for example:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+$<span class="emphasis"><em> echo 0x7 &gt; /proc/self/coredump_filter</em></span>
+$<span class="emphasis"><em> ./some_program</em></span>
+</pre>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>This file is provided only if the kernel was built with
+        the <code class="constant">CONFIG_ELF_CORE</code>
+        configuration option.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="core-5_sect5" name="core-5_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>The <span class="citerefentry"><span class="refentrytitle">gdb</span>(1)</span> <em class="replaceable"><code>gcore</code></em> command can be used to
+      obtain a core dump of a running process.</p>
+
+      <p>In Linux versions up to and including 2.6.27, if a
+      multithreaded process (or, more precisely, a process that
+      shares its memory with another process by being created with
+      the <code class="constant">CLONE_VM</code> flag of <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a>) dumps core, then
+      the process ID is always appended to the core filename,
+      unless the process ID was already included elsewhere in the
+      filename via a %p specification in <code class="filename">/proc/sys/kernel/core_pattern</code>. (This is
+      primarily useful when employing the obsolete LinuxThreads
+      implementation, where each thread of a process has a
+      different PID.)</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="core-5_sect6" name="core-5_sect6" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>The program below can be used to demonstrate the use of
+      the pipe syntax in the <code class="filename">/proc/sys/kernel/core_pattern</code> file. The
+      following shell session demonstrates the use of this program
+      (compiled to create an executable named <em class="replaceable"><code>core_pattern_pipe_test</code></em>):</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$<code class="filename"> cc −o core_pattern_pipe_test core_pattern_pipe_test.c</code>
+$<span class="emphasis"><em> su</em></span>
+Password:
+#<span class="emphasis"><em> echo "|$PWD/core_pattern_pipe_test %p UID=%u GID=%g sig=%s" &gt; \</em></span>
+<span class="emphasis"><em>    /proc/sys/kernel/core_pattern</em></span>
+#<span class="emphasis"><em> exit</em></span>
+$<span class="emphasis"><em> sleep 100</em></span>
+<code class="literal">^\</code>                     # type control-backslash
+Quit (core dumped)
+$<span class="emphasis"><em> cat core.info</em></span>
+argc=5
+argc[0]=&lt;/home/mtk/core_pattern_pipe_test&gt;
+argc[1]=&lt;20575&gt;
+argc[2]=&lt;UID=1000&gt;
+argc[3]=&lt;GID=100&gt;
+argc[4]=&lt;sig=3&gt;
+Total bytes in core dump: 282624
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="refsect2">
+        <a id="core-5_sect7" name="core-5_sect7" shape="rect"> </a>
+
+        <h3>Program source</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+/* core_pattern_pipe_test.c */
+
+#define _GNU_SOURCE
+#include &lt;sys/stat.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;limits.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+
+#define BUF_SIZE 1024
+
+int
+main(int argc, char *argv[])
+{
+    int tot, j;
+    ssize_t nread;
+    char buf[BUF_SIZE];
+    FILE *fp;
+    char cwd[PATH_MAX];
+
+    /* Change our current working directory to that of the
+       crashing process */
+
+    snprintf(cwd, PATH_MAX, "/proc/%s/cwd", argv[1]);
+    chdir(cwd);
+
+    /* Write output to file "core.info" in that directory */
+
+    fp = fopen("core.info", "w+");
+    if (fp == NULL)
+        exit(EXIT_FAILURE);
+
+    /* Display command−line arguments given to core_pattern
+       pipe program */
+
+    fprintf(fp, "argc=%d\n", argc);
+    for (j = 0; j &lt; argc; j++)
+        fprintf(fp, "argc[%d]=&lt;%s&gt;\n", j, argv[j]);
+
+    /* Count bytes in standard input (the core dump) */
+
+    tot = 0;
+    while ((nread = read(STDIN_FILENO, buf, BUF_SIZE)) &gt; 0)
+        tot += nread;
+    fprintf(fp, "Total bytes in core dump: %d\n", tot);
+
+    fclose(fp);
+    exit(EXIT_SUCCESS);
+}
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="core-5_sect8" name="core-5_sect8" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><span class="citerefentry"><span class="refentrytitle">bash</span>(1)</span>, <span class="citerefentry"><span class="refentrytitle">gdb</span>(1)</span>, <a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getrlimit</span>(2)</span></a>, <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>, <a class="link" href="../htmlman2/prctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">prctl</span>(2)</span></a>, <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a>, <a class="link" href="../htmlman5/elf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">elf</span>(5)</span></a>, <a class="link" href="../htmlman5/proc.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">proc</span>(5)</span></a>, <a class="link" href="../htmlman7/pthreads.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthreads</span>(7)</span></a>, <a class="link" href="../htmlman7/signal.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="core-5_sect9" name="core-5_sect9" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 2006, 2008 by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

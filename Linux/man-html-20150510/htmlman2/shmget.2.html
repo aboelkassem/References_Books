@@ -1,0 +1,588 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>shmget(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="shmget(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="shmget.2" name="shmget.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>shmget — allocates a System V shared memory
+      segment</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;sys/ipc.h&gt;
+#include &lt;sys/shm.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>shmget</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">key_t <var class="pdparam">key</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">size_t <var class="pdparam">size</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">shmflg</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="shmget-2_sect1" name="shmget-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">shmget</code>() returns the
+      identifier of the System V shared memory segment associated
+      with the value of the argument <em class="parameter"><code>key</code></em>. A new shared memory
+      segment, with size equal to the value of <em class="parameter"><code>size</code></em> rounded up to a multiple
+      of <code class="constant">PAGE_SIZE</code>, is created if
+      <em class="parameter"><code>key</code></em> has the value
+      <code class="constant">IPC_PRIVATE</code> or <em class="parameter"><code>key</code></em> isn't <code class="constant">IPC_PRIVATE</code>, no shared memory segment
+      corresponding to <em class="parameter"><code>key</code></em>
+      exists, and <code class="constant">IPC_CREAT</code> is
+      specified in <em class="parameter"><code>shmflg</code></em>.</p>
+
+      <p>If <em class="parameter"><code>shmflg</code></em>
+      specifies both <code class="constant">IPC_CREAT</code> and
+      <code class="constant">IPC_EXCL</code> and a shared memory
+      segment already exists for <em class="parameter"><code>key</code></em>, then <code class="function">shmget</code>() fails with <code class="varname">errno</code> set to <span class="errorname">EEXIST</span>. (This is analogous to the effect
+      of the combination <span class="emphasis"><em>O_CREAT |
+      O_EXCL</em></span> for <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>.)</p>
+
+      <p>The value <em class="parameter"><code>shmflg</code></em>
+      is composed of:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">IPC_CREAT</code></span></dt>
+
+          <dd>
+            <p>Create a new segment. If this flag is not used, then
+            <code class="function">shmget</code>() will find the
+            segment associated with <em class="parameter"><code>key</code></em> and check to see if
+            the user has permission to access the segment.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">IPC_EXCL</code></span></dt>
+
+          <dd>
+            <p>This flag is used with <code class="constant">IPC_CREAT</code> to ensure that this call
+            creates the segment. If the segment already exists, the
+            call fails.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">SHM_HUGETLB</code> (since Linux
+          2.6)</span></dt>
+
+          <dd>
+            <p>Allocate the segment using "huge pages." See the
+            Linux kernel source file <code class="filename">Documentation/vm/hugetlbpage.txt</code> for
+            further information.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">SHM_HUGE_2MB</code>, <code class="constant">SHM_HUGE_1GB</code> (since Linux
+          3.8)</span></dt>
+
+          <dd>
+            <p>Used in conjunction with <code class="constant">SHM_HUGETLB</code> to select alternative
+            hugetlb page sizes (respectively, 2 MB and 1 GB) on
+            systems that support multiple hugetlb page sizes.</p>
+
+            <p>More generally, the desired huge page size can be
+            configured by encoding the base-2 logarithm of the
+            desired page size in the six bits at the offset
+            <code class="constant">SHM_HUGE_SHIFT</code>. Thus, the
+            above two constants are defined as:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="informalexample">
+                  <pre class="programlisting" xml:space="preserve">
+#define SHM_HUGE_2MB    (21 &lt;&lt; SHM_HUGE_SHIFT)
+#define SHM_HUGE_1GB    (30 &lt;&lt; SHM_HUGE_SHIFT)
+</pre>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>For some additional details, see the discussion of
+            the similarly named constants in <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">SHM_NORESERVE</code> (since Linux
+          2.6.15)</span></dt>
+
+          <dd>
+            <p>This flag serves the same purpose as the <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a> <code class="constant">MAP_NORESERVE</code> flag. Do not reserve
+            swap space for this segment. When swap space is
+            reserved, one has the guarantee that it is possible to
+            modify the segment. When swap space is not reserved one
+            might get <code class="constant">SIGSEGV</code> upon a
+            write if no physical memory is available. See also the
+            discussion of the file <code class="filename">/proc/sys/vm/overcommit_memory</code> in
+            <a class="link" href="../htmlman5/proc.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">proc</span>(5)</span></a>.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>In addition to the above flags, the least significant 9
+      bits of <em class="parameter"><code>shmflg</code></em>
+      specify the permissions granted to the owner, group, and
+      others. These bits have the same format, and the same
+      meaning, as the <em class="replaceable"><code>mode</code></em> argument of <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>. Presently, execute
+      permissions are not used by the system.</p>
+
+      <p>When a new shared memory segment is created, its contents
+      are initialized to zero values, and its associated data
+      structure, <em class="replaceable"><code>shmid_ds</code></em>
+      (see <a class="link" href="../htmlman2/shmctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">shmctl</span>(2)</span></a>), is initialized
+      as follows:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p><em class="replaceable"><code>shm_perm.cuid</code></em> and
+            <em class="replaceable"><code>shm_perm.uid</code></em>
+            are set to the effective user ID of the calling
+            process.</p>
+          </li>
+
+          <li class="listitem">
+            <p><em class="replaceable"><code>shm_perm.cgid</code></em> and
+            <em class="replaceable"><code>shm_perm.gid</code></em>
+            are set to the effective group ID of the calling
+            process.</p>
+          </li>
+
+          <li class="listitem">
+            <p>The least significant 9 bits of <em class="replaceable"><code>shm_perm.mode</code></em> are set
+            to the least significant 9 bit of <em class="parameter"><code>shmflg</code></em>.</p>
+          </li>
+
+          <li class="listitem">
+            <p><em class="replaceable"><code>shm_segsz</code></em>
+            is set to the value of <em class="parameter"><code>size</code></em>.</p>
+          </li>
+
+          <li class="listitem">
+            <p><em class="replaceable"><code>shm_lpid</code></em>,
+            <em class="replaceable"><code>shm_nattch</code></em>,
+            <em class="replaceable"><code>shm_atime</code></em>,
+            and <em class="replaceable"><code>shm_dtime</code></em>
+            are set to 0.</p>
+          </li>
+
+          <li class="listitem">
+            <p><em class="replaceable"><code>shm_ctime</code></em>
+            is set to the current time.</p>
+          </li>
+        </ul>
+      </div>
+
+      <p>If the shared memory segment already exists, the
+      permissions are verified, and a check is made to see if it is
+      marked for destruction.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="shmget-2_sect2" name="shmget-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, a valid shared memory identifier is returned.
+      On error, −1 is returned, and <code class="varname">errno</code> is set to indicate the error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="shmget-2_sect3" name="shmget-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <p>On failure, <code class="varname">errno</code> is set to
+      one of the following:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EACCES</span></span></dt>
+
+          <dd>
+            <p>The user does not have permission to access the
+            shared memory segment, and does not have the
+            <code class="constant">CAP_IPC_OWNER</code>
+            capability.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EEXIST</span></span></dt>
+
+          <dd>
+            <p><code class="constant">IPC_CREAT</code> and
+            <code class="constant">IPC_EXCL</code> were specified
+            in <em class="parameter"><code>shmflg</code></em>, but
+            a shared memory segment already exists for <em class="parameter"><code>key</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>A new segment was to be created and <em class="parameter"><code>size</code></em> is less than
+            <code class="constant">SHMMIN</code> or greater than
+            <code class="constant">SHMMAX</code>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>A segment for the given <em class="parameter"><code>key</code></em> exists, but
+            <em class="parameter"><code>size</code></em> is greater
+            than the size of that segment.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENFILE</span></span></dt>
+
+          <dd>
+            <p>The system limit on the total number of open files
+            has been reached.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOENT</span></span></dt>
+
+          <dd>
+            <p>No segment exists for the given <em class="parameter"><code>key</code></em>, and <code class="constant">IPC_CREAT</code> was not specified.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>No memory could be allocated for segment
+            overhead.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOSPC</span></span></dt>
+
+          <dd>
+            <p>All possible shared memory IDs have been taken
+            (<code class="constant">SHMMNI</code>), or allocating a
+            segment of the requested <em class="parameter"><code>size</code></em> would cause the
+            system to exceed the system-wide limit on shared memory
+            (<code class="constant">SHMALL</code>).</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The <code class="constant">SHM_HUGETLB</code> flag
+            was specified, but the caller was not privileged (did
+            not have the <code class="constant">CAP_IPC_LOCK</code>
+            capability).</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="shmget-2_sect4" name="shmget-2_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>SVr4, POSIX.1-2001.</p>
+
+      <p><code class="constant">SHM_HUGETLB</code> and <code class="constant">SHM_NORESERVE</code> are Linux extensions.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="shmget-2_sect5" name="shmget-2_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>The inclusion of <code class="literal">&lt;</code><code class="filename">sys/types.h</code><code class="literal">&gt;</code> and <code class="literal">&lt;</code><code class="filename">sys/ipc.h</code><code class="literal">&gt;</code>
+      isn't required on Linux or by any version of POSIX. However,
+      some old implementations required the inclusion of these
+      header files, and the SVID also documented their inclusion.
+      Applications intended to be portable to such old systems may
+      need to include these header files.</p>
+
+      <p><code class="constant">IPC_PRIVATE</code> isn't a flag
+      field but a <span class="type">key_t</span> type. If this
+      special value is used for <em class="parameter"><code>key</code></em>, the system call ignores
+      all but the least significant 9 bits of <em class="parameter"><code>shmflg</code></em> and creates a new shared
+      memory segment.</p>
+
+      <div class="refsect2">
+        <a id="shmget-2_sect6" name="shmget-2_sect6" shape="rect"> </a>
+
+        <h3>Shared memory limits</h3>
+
+        <p>The following limits on shared memory segment resources
+        affect the <code class="function">shmget</code>() call:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">SHMALL</code></span></dt>
+
+            <dd>
+              <p>System-wide limit on the total amount of shared
+              memory, measured in units of the system page
+              size.</p>
+
+              <p>On Linux, this limit can be read and modified via
+              <code class="filename">/proc/sys/kernel/shmall</code>. Since
+              Linux 3.16, the default value for this limit is:</p>
+
+              <p>ULONG_MAX - 2^24</p>
+
+              <p>The effect of this value (which is suitable for
+              both 32-bit and 64-bit systems) is to impose no
+              limitation on allocations. This value, rather than
+              <code class="constant">ULONG_MAX</code>, was chosen
+              as the default to prevent some cases where historical
+              applications simply raised the existing limit without
+              first checking its current value. Such applications
+              would cause the value to overflow if the limit was
+              set at <code class="constant">ULONG_MAX</code>.</p>
+
+              <p>From Linux 2.4 up to Linux 3.15, the default value
+              for this limit was:</p>
+
+              <p>SHMMAX / PAGE_SIZE * (SHMMNI / 16)</p>
+
+              <p>If <code class="constant">SHMMAX</code> and
+              <code class="constant">SHMMNI</code> were not
+              modified, then multiplying the result of this formula
+              by the page size (to get a value in bytes) yielded a
+              value of 8 GB as the limit on the total memory used
+              by all shared memory segments.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SHMMAX</code></span></dt>
+
+            <dd>
+              <p>Maximum size in bytes for a shared memory
+              segment.</p>
+
+              <p>On Linux, this limit can be read and modified via
+              <code class="filename">/proc/sys/kernel/shmmax</code>. Since
+              Linux 3.16, the default value for this limit is:</p>
+
+              <p>ULONG_MAX - 2^24</p>
+
+              <p>The effect of this value (which is suitable for
+              both 32-bit and 64-bit systems) is to impose no
+              limitation on allocations. See the description of
+              <code class="constant">SHMALL</code> for a discussion
+              of why this default value (rather than <code class="constant">ULONG_MAX</code>) is used.</p>
+
+              <p>From Linux 2.2 up to Linux 3.15, the default value
+              of this limit was 0x2000000 (32MB).</p>
+
+              <p>Because it is not possible to map just part of a
+              shared memory segment, the amount of virtual memory
+              places another limit on the maximum size of a usable
+              segment: for example, on i386 the largest segments
+              that can be mapped have a size of around 2.8 GB, and
+              on x86_64 the limit is around 127 TB.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SHMMIN</code></span></dt>
+
+            <dd>
+              <p>Minimum size in bytes for a shared memory segment:
+              implementation dependent (currently 1 byte, though
+              <code class="constant">PAGE_SIZE</code> is the
+              effective minimum size).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SHMMNI</code></span></dt>
+
+            <dd>
+              <p>System-wide limit on the number of shared memory
+              segments. In Linux 2.2, the default value for this
+              limit was 128; since Linux 2.4, the default value is
+              4096.</p>
+
+              <p>On Linux, this limit can be read and modified via
+              <code class="filename">/proc/sys/kernel/shmmni</code>.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>The implementation has no specific limits for the
+        per-process maximum number of shared memory segments
+        (<code class="constant">SHMSEG</code>).</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="shmget-2_sect7" name="shmget-2_sect7" shape="rect"> </a>
+
+        <h3>Linux notes</h3>
+
+        <p>Until version 2.3.30, Linux would return <span class="errorname">EIDRM</span> for a <code class="function">shmget</code>() on a shared memory segment
+        scheduled for deletion.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="shmget-2_sect8" name="shmget-2_sect8" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>The name choice <code class="constant">IPC_PRIVATE</code>
+      was perhaps unfortunate, <code class="constant">IPC_NEW</code> would more clearly show its
+      function.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="shmget-2_sect9" name="shmget-2_sect9" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/memfd_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">memfd_create</span>(2)</span></a>, <a class="link" href="../htmlman2/shmop.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">shmat</span>(2)</span></a>, <a class="link" href="../htmlman2/shmctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">shmctl</span>(2)</span></a>, <a class="link" href="../htmlman2/shmop.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">shmdt</span>(2)</span></a>, <a class="link" href="../htmlman3/ftok.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ftok</span>(3)</span></a>, <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>, <a class="link" href="../htmlman7/shm_overview.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">shm_overview</span>(7)</span></a>, <a class="link" href="../htmlman7/svipc.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">svipc</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="shmget-2_sect10" name="shmget-2_sect10" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 1993 Luigi P. Bai (lpb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>softint.com) July 28, 1993<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Modified Wed Jul 28 10:57:35 1993, Rik Faith &lt;faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu&gt;<br />
+
+                  Modified Sun Nov 28 16:43:30 1993, Rik Faith &lt;faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu&gt;<br />
+
+                           with material from Giorgio Ciucci &lt;giorgio<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>crcc.it&gt;<br />
+
+                  Portions Copyright 1993 Giorgio Ciucci &lt;giorgio<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>crcc.it&gt;<br />
+
+                  Modified Tue Oct 22 22:03:17 1996 by Eric S. Raymond &lt;esr<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>thyrsus.com&gt;<br />
+
+                  Modified, 8 Jan 2003, Michael Kerrisk, &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  Removed EIDRM from errors - that can't happen...<br />
+
+                  Modified, 27 May 2004, Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                      Added notes on capability requirements<br />
+
+                  Modified, 11 Nov 2004, Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  Language and formatting clean-ups<br />
+
+                  Added notes on /proc files<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

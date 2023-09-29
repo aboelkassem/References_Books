@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>attributes(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="attributes(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="attributes.7" name="attributes.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>attributes — POSIX safety concepts</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="attributes-7_sect1" name="attributes-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <p>the text of this man page is based on the material
+              taken from the "POSIX Safety Concepts" section of the
+              GNU C Library manual. Further details on the topics
+              described here can be found in that manual.</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <p>Various function manual pages include a section ATTRIBUTES
+      that describes the safety of calling the function in various
+      contexts. This section annotates functions with the following
+      safety markings:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><em class="replaceable"><code>MT-Safe</code></em></span></dt>
+
+          <dd>
+            <p><em class="replaceable"><code>MT-Safe</code></em> or
+            Thread-Safe functions are safe to call in the presence
+            of other threads. MT, in MT-Safe, stands for Multi
+            Thread.</p>
+
+            <p>Being MT-Safe does not imply a function is atomic,
+            nor that it uses any of the memory synchronization
+            mechanisms POSIX exposes to users. It is even possible
+            that calling MT-Safe functions in sequence does not
+            yield an MT-Safe combination. For example, having a
+            thread call two MT-Safe functions one right after the
+            other does not guarantee behavior equivalent to atomic
+            execution of a combination of both functions, since
+            concurrent calls in other threads may interfere in a
+            destructive way.</p>
+
+            <p>Whole-program optimizations that could inline
+            functions across library interfaces may expose unsafe
+            reordering, and so performing inlining across the GNU C
+            Library interface is not recommended. The documented
+            MT-Safety status is not guaranteed under whole-program
+            optimization. However, functions defined in
+            user-visible headers are designed to be safe for
+            inlining.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>MT-Unsafe</code></em></span></dt>
+
+          <dd>
+            <p><em class="replaceable"><code>MT-Unsafe</code></em>
+            functions are not safe to call in a multithreaded
+            programs.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>Other keywords that appear in safety notes are defined in
+      subsequent sections.</p>
+
+      <div class="refsect2">
+        <a id="attributes-7_sect2" name="attributes-7_sect2" shape="rect"> </a>
+
+        <h3>Conditionally safe features</h3>
+
+        <p>For some features that make functions unsafe to call in
+        certain contexts, there are known ways to avoid the safety
+        problem other than refraining from calling the function
+        altogether. The keywords that follow refer to such
+        features, and each of their definitions indicates how the
+        whole program needs to be constrained in order to remove
+        the safety problem indicated by the keyword. Only when all
+        the reasons that make a function unsafe are observed and
+        addressed, by applying the documented constraints, does the
+        function become safe to call in a context.</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><em class="replaceable"><code>init</code></em></span></dt>
+
+            <dd>
+              <p>Functions marked with <em class="replaceable"><code>init</code></em> as an MT-Unsafe
+              feature perform MT-Unsafe initialization when they
+              are first called.</p>
+
+              <p>Calling such a function at least once in
+              single-threaded mode removes this specific cause for
+              the function to be regarded as MT-Unsafe. If no other
+              cause for that remains, the function can then be
+              safely called after other threads are started.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>race</code></em></span></dt>
+
+            <dd>
+              <p>Functions annotated with <em class="replaceable"><code>race</code></em> as an MT-Safety
+              issue operate on objects in ways that may cause data
+              races or similar forms of destructive interference
+              out of concurrent execution. In some cases, the
+              objects are passed to the functions by users; in
+              others, they are used by the functions to return
+              values to users; in others, they are not even exposed
+              to users.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>const</code></em></span></dt>
+
+            <dd>
+              <p>Functions marked with <em class="replaceable"><code>const</code></em> as an MT-Safety
+              issue non-atomically modify internal objects that are
+              better regarded as constant, because a substantial
+              portion of the GNU C Library accesses them without
+              synchronization. Unlike <em class="replaceable"><code>race</code></em>, which causes
+              both readers and writers of internal objects to be
+              regarded as MT-Unsafe, this mark is applied to
+              writers only. Writers remain MT-Unsafe to call, but
+              the then-mandatory constness of objects they modify
+              enables readers to be regarded as MT-Safe (as long as
+              no other reasons for them to be unsafe remain), since
+              the lack of synchronization is not a problem when the
+              objects are effectively constant.</p>
+
+              <p>The identifier that follows the <em class="replaceable"><code>const</code></em> mark will
+              appear by itself as a safety note in readers.
+              Programs that wish to work around this safety issue,
+              so as to call writers, may use a non-recursive
+              read-write lock associated with the identifier, and
+              guard <em class="replaceable"><code>all</code></em>
+              calls to functions marked with <em class="replaceable"><code>const</code></em> followed by the
+              identifier with a write lock, and <em class="replaceable"><code>all</code></em> calls to
+              functions marked with the identifier by itself with a
+              read lock.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>sig</code></em></span></dt>
+
+            <dd>
+              <p>Functions marked with <em class="replaceable"><code>sig</code></em> as a MT-Safety
+              issue may temporarily install a signal handler for
+              internal purposes, which may interfere with other
+              uses of the signal, identified after a colon.</p>
+
+              <p>This safety problem can be worked around by
+              ensuring that no other uses of the signal will take
+              place for the duration of the call. Holding a
+              non-recursive mutex while calling all functions that
+              use the same temporary signal; blocking that signal
+              before the call and resetting its handler afterwards
+              is recommended.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>term</code></em></span></dt>
+
+            <dd>
+              <p>Functions marked with <em class="replaceable"><code>term</code></em> as an MT-Safety
+              issue may change the terminal settings in the
+              recommended way, namely: call <a class="link" href="../htmlman3/termios.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tcgetattr</span>(3)</span></a>,
+              modify some flags, and then call <a class="link" href="../htmlman3/termios.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tcsetattr</span>(3)</span></a>, this
+              creates a window in which changes made by other
+              threads are lost. Thus, functions marked with
+              <em class="replaceable"><code>term</code></em> are
+              MT-Unsafe.</p>
+
+              <p>It is thus advisable for applications using the
+              terminal to avoid concurrent and reentrant
+              interactions with it, by not using it in signal
+              handlers or blocking signals that might use it, and
+              holding a lock while calling these functions and
+              interacting with the terminal. This lock should also
+              be used for mutual exclusion with functions marked
+              with <em class="replaceable"><code>race:tcattr(fd)</code></em>,
+              where <em class="replaceable"><code>fd</code></em> is
+              a file descriptor for the controlling terminal. The
+              caller may use a single mutex for simplicity, or use
+              one mutex per terminal, even if referenced by
+              different file descriptors.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="attributes-7_sect3" name="attributes-7_sect3" shape="rect"> </a>
+
+        <h3>Other safety remarks</h3>
+
+        <p>Additional keywords may be attached to functions,
+        indicating features that do not make a function unsafe to
+        call, but that may need to be taken into account in certain
+        classes of programs:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><em class="replaceable"><code>locale</code></em></span></dt>
+
+            <dd>
+              <p>Functions annotated with <em class="replaceable"><code>locale</code></em> as an
+              MT-Safety issue read from the locale object without
+              any form of synchronization. Functions annotated with
+              <em class="replaceable"><code>locale</code></em>
+              called concurrently with locale changes may behave in
+              ways that do not correspond to any of the locales
+              active during their execution, but an unpredictable
+              mix thereof.</p>
+
+              <p>We do not mark these functions as MT-Unsafe,
+              however, because functions that modify the locale
+              object are marked with <em class="replaceable"><code>const:locale</code></em> and
+              regarded as unsafe. Being unsafe, the latter are not
+              to be called when multiple threads are running or
+              asynchronous signals are enabled, and so the locale
+              can be considered effectively constant in these
+              contexts, which makes the former safe.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>env</code></em></span></dt>
+
+            <dd>
+              <p>Functions marked with <em class="replaceable"><code>env</code></em> as an MT-Safety
+              issue access the environment with <a class="link" href="../htmlman3/getenv.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getenv</span>(3)</span></a> or
+              similar, without any guards to ensure safety in the
+              presence of concurrent modifications.</p>
+
+              <p>We do not mark these functions as MT-Unsafe,
+              however, because functions that modify the
+              environment are all marked with <em class="replaceable"><code>const:env</code></em> and
+              regarded as unsafe. Being unsafe, the latter are not
+              to be called when multiple threads are running or
+              asynchronous signals are enabled, and so the
+              environment can be considered effectively constant in
+              these contexts, which makes the former safe.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>hostid</code></em></span></dt>
+
+            <dd>
+              <p>The function marked with <em class="replaceable"><code>hostid</code></em> as an
+              MT-Safety issue reads from the system-wide data
+              structures that hold the "host ID" of the machine.
+              These data structures cannot generally be modified
+              atomically. Since it is expected that the "host ID"
+              will not normally change, the function that reads
+              from it (<a class="link" href="../htmlman3/gethostid.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gethostid</span>(3)</span></a>) is
+              regarded as safe, whereas the function that modifies
+              it (<a class="link" href="../htmlman3/gethostid.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sethostid</span>(3)</span></a>) is
+              marked with <em class="replaceable"><code>const:hostid</code></em>,
+              indicating it may require special care if it is to be
+              called. In this specific case, the special care
+              amounts to system-wide (not merely intra-process)
+              coordination.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>sigintr</code></em></span></dt>
+
+            <dd>
+              <p>Functions marked with <em class="replaceable"><code>sigintr</code></em> as an
+              MT-Safety issue access the GNU C Library <em class="replaceable"><code>_sigintr</code></em> internal
+              data structure without any guards to ensure safety in
+              the presence of concurrent modifications.</p>
+
+              <p>We do not mark these functions as MT-Unsafe,
+              however, because functions that modify this data
+              structure are all marked with <em class="replaceable"><code>const:sigintr</code></em> and
+              regarded as unsafe. Being unsafe, the latter are not
+              to be called when multiple threads are running or
+              asynchronous signals are enabled, and so the data
+              structure can be considered effectively constant in
+              these contexts, which makes the former safe.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>cwd</code></em></span></dt>
+
+            <dd>
+              <p>Functions marked with <em class="replaceable"><code>cwd</code></em> as an MT-Safety
+              issue may temporarily change the current working
+              directory during their execution, which may cause
+              relative pathnames to be resolved in unexpected ways
+              in other threads or within asynchronous signal or
+              cancellation handlers.</p>
+
+              <p>This is not enough of a reason to mark so-marked
+              functions as MT-Unsafe, but when this behavior is
+              optional (e.g., <a class="link" href="../htmlman3/ftw.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">nftw</span>(3)</span></a> with
+              <code class="constant">FTW_CHDIR</code>), avoiding
+              the option may be a good alternative to using full
+              pathnames or file descriptor-relative (e.g.,
+              <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">openat</span>(2)</span></a>) system
+              calls.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>:identifier</code></em></span></dt>
+
+            <dd>
+              <p>Annotations may sometimes be followed by
+              identifiers, intended to group several functions
+              that, for example, access the data structures in an
+              unsafe way, as in <em class="replaceable"><code>race</code></em> and <em class="replaceable"><code>const</code></em>, or to provide
+              more specific information, such as naming a signal in
+              a function marked with <em class="replaceable"><code>sig</code></em>. It is envisioned
+              that it may be applied to <em class="replaceable"><code>lock</code></em> and <em class="replaceable"><code>corrupt</code></em> as well in
+              the future.</p>
+
+              <p>In most cases, the identifier will name a set of
+              functions, but it may name global objects or function
+              arguments, or identifiable properties or logical
+              components associated with them, with a notation such
+              as, for example, <em class="replaceable"><code>:buf(arg)</code></em> to denote a
+              buffer associated with the argument <em class="replaceable"><code>arg</code></em>, or <em class="replaceable"><code>:tcattr(fd)</code></em> to denote
+              the terminal attributes of a file descriptor
+              <em class="replaceable"><code>fd</code></em>.</p>
+
+              <p>The most common use for identifiers is to provide
+              logical groups of functions and arguments that need
+              to be protected by the same synchronization primitive
+              in order to ensure safe operation in a given
+              context.</p>
+            </dd>
+
+            <dt><span class="term"><code class="filename">/condition</code></span></dt>
+
+            <dd>
+              <p>Some safety annotations may be conditional, in
+              that they only apply if a boolean expression
+              involving arguments, global variables or even the
+              underlying kernel evaluates to true. For example,
+              <code class="filename">/!ps</code> and <code class="filename">/one_per_line</code> indicate the
+              preceding marker only applies when argument
+              <em class="replaceable"><code>ps</code></em> is NULL,
+              or global variable <em class="replaceable"><code>one_per_line</code></em> is
+              nonzero.</p>
+
+              <p>When all marks that render a function unsafe are
+              adorned with such conditions, and none of the named
+              conditions hold, then the function can be regarded as
+              safe.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="attributes-7_sect4" name="attributes-7_sect4" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman7/pthreads.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthreads</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="attributes-7_sect5" name="attributes-7_sect5" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 2014, Red Hat, Inc<br />
+
+                      Written by Alexandre Oliva &lt;aoliva<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>redhat.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_DOC_FULL)<br />
+                  This is free documentation; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License as<br />
+
+                  published by the Free Software Foundation; either version 2 of<br />
+
+                  the License, or (at your option) any later version.<br />
+
+                  <br />
+                  The GNU General Public License's references to "object code"<br />
+
+                  and "executables" are to be interpreted as the output of any<br />
+
+                  document formatting or typesetting system, including<br />
+
+                  intermediate and printed output.<br />
+
+                  <br />
+                  This manual is distributed in the hope that it will be useful,<br />
+
+                  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+
+                  GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

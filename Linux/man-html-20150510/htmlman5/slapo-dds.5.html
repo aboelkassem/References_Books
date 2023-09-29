@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>slapo-dds(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="slapo-dds(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="slapo-dds.5" name="slapo-dds.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>slapo−dds — Dynamic Directory Services overlay
+      to slapd</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ETCDIR/slapd.conf
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-dds-5_sect1" name="slapo-dds-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <em class="replaceable"><code>dds</code></em> overlay
+      to <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a> implements dynamic
+      objects as per RFC 2589. The name <em class="replaceable"><code>dds</code></em> stands for Dynamic
+      Directory Services. It allows to define dynamic objects,
+      characterized by the <em class="replaceable"><code>dynamicObject</code></em>
+      objectClass.</p>
+
+      <p>Dynamic objects have a limited lifetime, determined by a
+      time-to-live (TTL) that can be refreshed by means of a
+      specific <em class="replaceable"><code>refresh</code></em>
+      extended operation. This operation allows to set the Client
+      Refresh Period (CRP), namely the period between refreshes
+      that is required to preserve the dynamic object from
+      expiration. The expiration time is computed by adding the
+      requested TTL to the current time. When dynamic objects reach
+      the end of their lifetime without being further refreshed,
+      they are automatically deleted. There is no guarantee of
+      immediate deletion, so clients should not count on it.</p>
+
+      <p>Dynamic objects can have subordinates, provided these also
+      are dynamic objects. RFC 2589 does not specify what the
+      behavior of a dynamic directory service should be when a
+      dynamic object with (dynamic) subordinates expires. In this
+      implementation, the lifetime of dynamic objects with
+      subordinates is prolonged until all the dynamic subordinates
+      expire.</p>
+
+      <p>This <a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a> directive
+      adds the <em class="replaceable"><code>dds</code></em>
+      overlay to the current database:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">verlay dds</span></dt>
+
+          <dd>
+            <p>The database must have a <em class="replaceable"><code>rootdn</code></em> specified,
+            otherwise, the <em class="replaceable"><code>dds</code></em> overlay will not be
+            able to delete expired objects. The <em class="replaceable"><code>dds</code></em> overlay may be used
+            with any backend that implements the <em class="replaceable"><code>add</code></em>, <em class="replaceable"><code>modify</code></em>, <em class="replaceable"><code>search</code></em>, and <em class="replaceable"><code>delete</code></em> operations.
+            Since its use may result in many internal entry
+            lookups, adds and deletes, it should be best used in
+            conjunction with backends that have reasonably good
+            write performances.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>The config directives that are specific to the <em class="replaceable"><code>dds</code></em> overlay are prefixed by
+      <em class="replaceable"><code>dds−</code></em>, to
+      avoid potential conflicts with directives specific to the
+      underlying database or to other stacked overlays.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>dds−max−ttl
+          &lt;ttl&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies the max TTL value. This is also the
+            default TTL newly created dynamic objects receive,
+            unless <em class="replaceable"><code>dds−default−ttl</code></em>
+            is set. When the client with a refresh extended
+            operation requests a TTL higher than it,
+            sizeLimitExceeded is returned. This value must be
+            between 86400 (1 day, the default) and 31557600 (1 year
+            plus 6 hours, as per RFC 2589).</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>dds−min−ttl
+          &lt;ttl&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies the min TTL value; clients requesting a
+            lower TTL by means of the refresh extended operation
+            actually obtain this value as CRP. If set to 0 (the
+            default), no lower limit is set.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>dds−default−ttl
+          &lt;ttl&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies the default TTL value that newly created
+            dynamic objects get. If set to 0 (the default), the
+            <em class="replaceable"><code>dds−max−ttl</code></em>
+            is used.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>dds−interval
+          &lt;ttl&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies the interval between expiration checks;
+            defaults to 1 hour.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>dds−tolerance
+          &lt;ttl&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies an extra time that is added to the timer
+            that actually wakes up the thread that will delete an
+            expired dynamic object. So the nominal lifetime of the
+            entry is that specified in the <em class="replaceable"><code>entryTtl</code></em> attribute, but
+            its lifetime will actually be <span class="emphasis"><em>entryTtl + tolerance</em></span>. Note
+            that there is no guarantee that the lifetime of a
+            dynamic object will be <em class="replaceable"><code>exactly</code></em> the requested
+            TTL; due to implementation details, it may be longer,
+            which is allowed by RFC 2589. By default, tolerance is
+            0.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>dds−max−dynamicObjects
+          &lt;num&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies the maximum number of dynamic objects that
+            can simultaneously exist within a naming context. This
+            allows to limit the amount of resources (mostly in
+            terms of run-queue size) that are used by dynamic
+            objects. By default, no limit is set.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>dds−state
+          {TRUE|false}</em></span></span></dt>
+
+          <dd>
+            <p>Specifies if the Dynamic Directory Services feature
+            is enabled or not. By default it is; however, a proxy
+            does not need to keep track of dynamic objects itself,
+            it only needs to inform the frontend that support for
+            dynamic objects is available.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-dds-5_sect2" name="slapo-dds-5_sect2" shape="rect"> </a>
+
+      <h2>ACCESS CONTROL</h2>
+
+      <p>The <em class="replaceable"><code>dds</code></em> overlay
+      restricts the refresh operation by requiring <em class="replaceable"><code>manage</code></em> access to the
+      <em class="replaceable"><code>entryTtl</code></em> attribute
+      (see <a class="link" href="../htmlman5/slapd.access.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.access</span>(5)</span></a> for details
+      about the <em class="replaceable"><code>manage</code></em>
+      access privilege). Since the <em class="replaceable"><code>entryTtl</code></em> is an operational,
+      NO-USER-MODIFICATION attribute, no direct write access to it
+      is possible. So the <em class="replaceable"><code>dds</code></em> overlay turns refresh
+      extended operation into an internal modification to the value
+      of the <em class="replaceable"><code>entryTtl</code></em>
+      attribute with the <em class="replaceable"><code>relax</code></em> control set.</p>
+
+      <p>RFC 2589 recommends that anonymous clients should not be
+      allowed to refresh a dynamic object. This can be implemented
+      by appropriately crafting access control to obtain the
+      desired effect.</p>
+
+      <p>Example: restrict refresh to authenticated clients</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+access to attrs=entryTtl
+        by users manage
+        by * read
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>Example: restrict refresh to the creator of the dynamic
+      object</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+access to attrs=entryTtl
+        by dnattr=creatorsName manage
+        by * read
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>Another suggested usage of dynamic objects is to implement
+      dynamic meetings; in this case, all the participants to the
+      meeting are allowed to refresh the meeting object, but only
+      the creator can delete it (otherwise it will be deleted when
+      the TTL expires)</p>
+
+      <p>Example: assuming <em class="replaceable"><code>participant</code></em> is a valid
+      DN-valued attribute, allow users to start a meeting and to
+      join it; restrict refresh to the participants; restrict
+      delete to the creator</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+access to dn.base="cn=Meetings"
+                attrs=children
+        by users write
+
+access to dn.onelevel="cn=Meetings"
+                attrs=entry
+        by dnattr=creatorsName write
+        by * read
+
+access to dn.onelevel="cn=Meetings"
+                attrs=participant
+        by dnattr=creatorsName write
+        by users selfwrite
+        by * read
+
+access to dn.onelevel="cn=Meetings"
+                attrs=entryTtl
+        by dnattr=participant manage
+        by * read
+</pre>
+          </div>
+        </blockquote>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-dds-5_sect3" name="slapo-dds-5_sect3" shape="rect"> </a>
+
+      <h2>REPLICATION</h2>
+
+      <p>This implementation of RFC 2589 provides a restricted
+      interpretation of how dynamic objects replicate. Only the
+      master takes care of handling dynamic object expiration,
+      while replicas simply see the dynamic object as a plain
+      object.</p>
+
+      <p>When replicating these objects, one needs to explicitly
+      exclude the <em class="replaceable"><code>dynamicObject</code></em> class and the
+      <em class="replaceable"><code>entryTtl</code></em> attribute.
+      This implementation of RFC 2589 introduces a new operational
+      attribute, <em class="replaceable"><code>entryExpireTimestamp</code></em>, that
+      contains the expiration timestamp. This must be excluded from
+      replication as well.</p>
+
+      <p>The quick and dirty solution is to set <em class="replaceable"><code>schemacheck=off</code></em> in the
+      syncrepl configuration and, optionally, exclude the
+      operational attributes from replication, using</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+syncrepl ...
+        exattrs=entryTtl,entryExpireTimestamp
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>In any case the overlay must be either statically built in
+      or run-time loaded by the consumer, so that it is aware of
+      the <em class="replaceable"><code>entryExpireTimestamp</code></em>
+      operational attribute; however, it must not be configured in
+      the shadow database. Currently, there is no means to remove
+      the <em class="replaceable"><code>dynamicObject</code></em>
+      class from the entry; this may be seen as a feature, since it
+      allows to see the dynamic properties of the object.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-dds-5_sect4" name="slapo-dds-5_sect4" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">ETCDIR/slapd.conf</span></dt>
+
+          <dd>
+            <p>default slapd configuration file</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-dds-5_sect5" name="slapo-dds-5_sect5" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a>, <a class="link" href="../htmlman5/slapd-config.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-config</span>(5)</span></a>, <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-dds-5_sect6" name="slapo-dds-5_sect6" shape="rect"> </a>
+
+      <h2>AUTHOR</h2>
+
+      <p>Implemented by Pierangelo Masarati.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                  See the following documents: <a class="ulink" href="../openldap-COPYRIGHT.html" target="_top" shape="rect">COPYRIGHT</a>, <a class="ulink" href="../openldap-LICENSE.html" target="_top" shape="rect">LICENSE</a><br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,560 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>pthread_create(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="pthread_create(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="pthread-create.3" name="pthread-create.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>pthread_create — create a new thread</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;pthread.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>pthread_create</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">pthread_t *<var class="pdparam">thread</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const pthread_attr_t *<var class="pdparam">attr</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">void *<var class="pdparam">(*start_routine)</var><code>(</code>void
+            *<code>)</code>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">void *<var class="pdparam">arg</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <p>Compile and link with <code class="option">−pthread</code>.</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pthread-create-3_sect1" name="pthread-create-3_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">pthread_create</code>()
+      function starts a new thread in the calling process. The new
+      thread starts execution by invoking <em class="parameter"><code>start_routine</code></em>(); <em class="parameter"><code>arg</code></em> is passed as the sole
+      argument of <em class="parameter"><code>start_routine</code></em>().</p>
+
+      <p>The new thread terminates in one of the following
+      ways:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p>It calls <a class="link" href="../htmlman3/pthread_exit.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_exit</span>(3)</span></a>,
+            specifying an exit status value that is available to
+            another thread in the same process that calls <a class="link" href="../htmlman3/pthread_join.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_join</span>(3)</span></a>.</p>
+          </li>
+
+          <li class="listitem">
+            <p>It returns from <em class="parameter"><code>start_routine</code></em>(). This is
+            equivalent to calling <a class="link" href="../htmlman3/pthread_exit.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_exit</span>(3)</span></a> with
+            the value supplied in the <code class="function">return</code> statement.</p>
+          </li>
+
+          <li class="listitem">
+            <p>It is canceled (see <a class="link" href="../htmlman3/pthread_cancel.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_cancel</span>(3)</span></a>).</p>
+          </li>
+
+          <li class="listitem">
+            <p>Any of the threads in the process calls <a class="link" href="../htmlman3/exit.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">exit</span>(3)</span></a>, or the main
+            thread performs a return from <code class="function">main</code>(). This causes the termination
+            of all threads in the process.</p>
+          </li>
+        </ul>
+      </div>
+
+      <p>The <em class="parameter"><code>attr</code></em> argument
+      points to a <span class="type">pthread_attr_t</span>
+      structure whose contents are used at thread creation time to
+      determine attributes for the new thread; this structure is
+      initialized using <a class="link" href="../htmlman3/pthread_attr_init.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_attr_init</span>(3)</span></a> and
+      related functions. If <em class="parameter"><code>attr</code></em> is NULL, then the thread
+      is created with default attributes.</p>
+
+      <p>Before returning, a successful call to <code class="function">pthread_create</code>() stores the ID of the new
+      thread in the buffer pointed to by <em class="parameter"><code>thread</code></em>; this identifier is used
+      to refer to the thread in subsequent calls to other pthreads
+      functions.</p>
+
+      <p>The new thread inherits a copy of the creating thread's
+      signal mask (<a class="link" href="../htmlman3/pthread_sigmask.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_sigmask</span>(3)</span></a>). The
+      set of pending signals for the new thread is empty (<a class="link" href="../htmlman2/sigpending.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigpending</span>(2)</span></a>). The new
+      thread does not inherit the creating thread's alternate
+      signal stack (<a class="link" href="../htmlman2/sigaltstack.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaltstack</span>(2)</span></a>).</p>
+
+      <p>The new thread inherits the calling thread's
+      floating-point environment (<a class="link" href="../htmlman3/fenv.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fenv</span>(3)</span></a>).</p>
+
+      <p>The initial value of the new thread's CPU-time clock is 0
+      (see <a class="link" href="../htmlman3/pthread_getcpuclockid.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_getcpuclockid</span>(3)</span></a>).</p>
+
+      <div class="refsect2">
+        <a id="pthread-create-3_sect2" name="pthread-create-3_sect2" shape="rect"> </a>
+
+        <h3>Linux-specific details</h3>
+
+        <p>The new thread inherits copies of the calling thread's
+        capability sets (see <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>) and CPU
+        affinity mask (see <a class="link" href="../htmlman2/sched_setaffinity.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_setaffinity</span>(2)</span></a>).</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pthread-create-3_sect3" name="pthread-create-3_sect3" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">pthread_create</code>()
+      returns 0; on error, it returns an error number, and the
+      contents of *<em class="parameter"><code>thread</code></em>
+      are undefined.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pthread-create-3_sect4" name="pthread-create-3_sect4" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EAGAIN</span></span></dt>
+
+          <dd>
+            <p>Insufficient resources to create another thread.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EAGAIN</span></span></dt>
+
+          <dd>
+            <p>A system-imposed limit on the number of threads was
+            encountered. There are a number of limits that may
+            trigger this error: the <code class="constant">RLIMIT_NPROC</code> soft resource limit (set
+            via <a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setrlimit</span>(2)</span></a>), which
+            limits the number of processes and threads for a real
+            user ID, was reached; the kernel's system-wide limit on
+            the number of processes and threads, <code class="filename">/proc/sys/kernel/threads-max</code>, was
+            reached (see <a class="link" href="../htmlman5/proc.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">proc</span>(5)</span></a>); or the
+            maximum number of PIDs, <code class="filename">/proc/sys/kernel/pid_max</code>, was reached
+            (see <a class="link" href="../htmlman5/proc.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">proc</span>(5)</span></a>).</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>Invalid settings in <em class="parameter"><code>attr</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>No permission to set the scheduling policy and
+            parameters specified in <em class="parameter"><code>attr</code></em>.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pthread-create-3_sect5" name="pthread-create-3_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>POSIX.1-2001.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pthread-create-3_sect6" name="pthread-create-3_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>See <a class="link" href="../htmlman3/pthread_self.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_self</span>(3)</span></a> for further
+      information on the thread ID returned in *<em class="parameter"><code>thread</code></em> by <code class="function">pthread_create</code>(). Unless real-time
+      scheduling policies are being employed, after a call to
+      <code class="function">pthread_create</code>(), it is
+      indeterminate which thread—the caller or the new
+      thread—will next execute.</p>
+
+      <p>A thread may either be <code class="function">joinable</code> or <code class="function">detached</code>. If a thread is joinable, then
+      another thread can call <a class="link" href="../htmlman3/pthread_join.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_join</span>(3)</span></a> to wait for
+      the thread to terminate and fetch its exit status. Only when
+      a terminated joinable thread has been joined are the last of
+      its resources released back to the system. When a detached
+      thread terminates, its resources are automatically released
+      back to the system: it is not possible to join with the
+      thread in order to obtain its exit status. Making a thread
+      detached is useful for some types of daemon threads whose
+      exit status the application does not need to care about. By
+      default, a new thread is created in a joinable state, unless
+      <em class="parameter"><code>attr</code></em> was set to
+      create the thread in a detached state (using <a class="link" href="../htmlman3/pthread_attr_setdetachstate.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_attr_setdetachstate</span>(3)</span></a>).</p>
+
+      <p>On Linux/x86-32, the default stack size for a new thread
+      is 2 megabytes. Under the NPTL threading implementation, if
+      the <code class="constant">RLIMIT_STACK</code> soft resource
+      limit <span class="emphasis"><em>at the time the program
+      started</em></span> has any value other than "unlimited",
+      then it determines the default stack size of new threads.
+      Using <a class="link" href="../htmlman3/pthread_attr_setstacksize.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_attr_setstacksize</span>(3)</span></a>,
+      the stack size attribute can be explicitly set in the
+      <em class="parameter"><code>attr</code></em> argument used to
+      create a thread, in order to obtain a stack size other than
+      the default.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pthread-create-3_sect7" name="pthread-create-3_sect7" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>In the obsolete LinuxThreads implementation, each of the
+      threads in a process has a different process ID. This is in
+      violation of the POSIX threads specification, and is the
+      source of many other nonconformances to the standard; see
+      <a class="link" href="../htmlman7/pthreads.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthreads</span>(7)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pthread-create-3_sect8" name="pthread-create-3_sect8" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>The program below demonstrates the use of <code class="function">pthread_create</code>(), as well as a number of
+      other functions in the pthreads API.</p>
+
+      <p>In the following run, on a system providing the NPTL
+      threading implementation, the stack size defaults to the
+      value given by the "stack size" resource limit:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$<span class="emphasis"><em> ulimit −s</em></span>
+8192            # The stack size limit is 8 MB (0x800000 bytes)
+$<span class="emphasis"><em> ./a.out hola salut servus</em></span>
+Thread 1: top of stack near 0xb7dd03b8; argv_string=hola
+Thread 2: top of stack near 0xb75cf3b8; argv_string=salut
+Thread 3: top of stack near 0xb6dce3b8; argv_string=servus
+Joined with thread 1; returned value was HOLA
+Joined with thread 2; returned value was SALUT
+Joined with thread 3; returned value was SERVUS
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>In the next run, the program explicitly sets a stack size
+      of 1MB (using <a class="link" href="../htmlman3/pthread_attr_setstacksize.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_attr_setstacksize</span>(3)</span></a>)
+      for the created threads:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$<span class="emphasis"><em> ./a.out −s 0x100000 hola salut servus</em></span>
+Thread 1: top of stack near 0xb7d723b8; argv_string=hola
+Thread 2: top of stack near 0xb7c713b8; argv_string=salut
+Thread 3: top of stack near 0xb7b703b8; argv_string=servus
+Joined with thread 1; returned value was HOLA
+Joined with thread 2; returned value was SALUT
+Joined with thread 3; returned value was SERVUS
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="refsect2">
+        <a id="pthread-create-3_sect9" name="pthread-create-3_sect9" shape="rect"> </a>
+
+        <h3>Program source</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+#include &lt;pthread.h&gt;
+#include &lt;string.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;ctype.h&gt;
+
+#define handle_error_en(en, msg) \
+        do { errno = en; perror(msg); exit(EXIT_FAILURE); } while (0)
+
+#define handle_error(msg) \
+        do { perror(msg); exit(EXIT_FAILURE); } while (0)
+
+struct thread_info {    /* Used as argument to thread_start() */
+    pthread_t thread_id;        /* ID returned by pthread_create() */
+    int       thread_num;       /* Application−defined thread # */
+    char     *argv_string;      /* From command−line argument */
+};
+
+/* Thread start function: display address near top of our stack,
+   and return upper−cased copy of argv_string */
+
+static void *
+thread_start(void *arg)
+{
+    struct thread_info *tinfo = arg;
+    char *uargv, *p;
+
+    printf("Thread %d: top of stack near %p; argv_string=%s\n",
+            tinfo−&gt;thread_num, &amp;p, tinfo−&gt;argv_string);
+
+    uargv = strdup(tinfo−&gt;argv_string);
+    if (uargv == NULL)
+        handle_error("strdup");
+
+    for (p = uargv; *p != '\0'; p++)
+        *p = toupper(*p);
+
+    return uargv;
+}
+
+int
+main(int argc, char *argv[])
+{
+    int s, tnum, opt, num_threads;
+    struct thread_info *tinfo;
+    pthread_attr_t attr;
+    int stack_size;
+    void *res;
+
+    /* The "−s" option specifies a stack size for our threads */
+
+    stack_size = −1;
+    while ((opt = getopt(argc, argv, "s:")) != −1) {
+        switch (opt) {
+        case 's':
+            stack_size = strtoul(optarg, NULL, 0);
+            break;
+
+        default:
+            fprintf(stderr, "Usage: %s [−s stack-size] arg...\n",
+                    argv[0]);
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    num_threads = argc − optind;
+
+    /* Initialize thread creation attributes */
+
+    s = pthread_attr_init(&amp;attr);
+    if (s != 0)
+        handle_error_en(s, "pthread_attr_init");
+
+    if (stack_size &gt; 0) {
+        s = pthread_attr_setstacksize(&amp;attr, stack_size);
+        if (s != 0)
+            handle_error_en(s, "pthread_attr_setstacksize");
+    }
+
+    /* Allocate memory for pthread_create() arguments */
+
+    tinfo = calloc(num_threads, sizeof(struct thread_info));
+    if (tinfo == NULL)
+        handle_error("calloc");
+
+    /* Create one thread for each command−line argument */
+
+    for (tnum = 0; tnum &lt; num_threads; tnum++) {
+        tinfo[tnum].thread_num = tnum + 1;
+        tinfo[tnum].argv_string = argv[optind + tnum];
+
+        /* The pthread_create() call stores the thread ID into
+           corresponding element of tinfo[] */
+
+        s = pthread_create(&amp;tinfo[tnum].thread_id, &amp;attr,
+                           &amp;thread_start, &amp;tinfo[tnum]);
+        if (s != 0)
+            handle_error_en(s, "pthread_create");
+    }
+
+    /* Destroy the thread attributes object, since it is no
+       longer needed */
+
+    s = pthread_attr_destroy(&amp;attr);
+    if (s != 0)
+        handle_error_en(s, "pthread_attr_destroy");
+
+    /* Now join with each thread, and display its returned value */
+
+    for (tnum = 0; tnum &lt; num_threads; tnum++) {
+        s = pthread_join(tinfo[tnum].thread_id, &amp;res);
+        if (s != 0)
+            handle_error_en(s, "pthread_join");
+
+        printf("Joined with thread %d; returned value was %s\n",
+                tinfo[tnum].thread_num, (char *) res);
+        free(res);      /* Free memory allocated by thread */
+    }
+
+    free(tinfo);
+    exit(EXIT_SUCCESS);
+}
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pthread-create-3_sect10" name="pthread-create-3_sect10" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getrlimit</span>(2)</span></a>, <a class="link" href="../htmlman3/pthread_attr_init.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_attr_init</span>(3)</span></a>,
+      <a class="link" href="../htmlman3/pthread_cancel.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_cancel</span>(3)</span></a>,
+      <a class="link" href="../htmlman3/pthread_detach.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_detach</span>(3)</span></a>,
+      <a class="link" href="../htmlman3/pthread_equal.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_equal</span>(3)</span></a>, <a class="link" href="../htmlman3/pthread_exit.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_exit</span>(3)</span></a>, <a class="link" href="../htmlman3/pthread_getattr_np.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_getattr_np</span>(3)</span></a>,
+      <a class="link" href="../htmlman3/pthread_join.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_join</span>(3)</span></a>, <a class="link" href="../htmlman3/pthread_self.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_self</span>(3)</span></a>, <a class="link" href="../htmlman7/pthreads.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthreads</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="pthread-create-3_sect11" name="pthread-create-3_sect11" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 2008 Linux Foundation, written by Michael Kerrisk<br />
+
+                      &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

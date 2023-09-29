@@ -1,0 +1,1877 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>pcre2test(1) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="pcre2test(1) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index1.html" shape="rect">Section 1</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="pcre2test.1" name="pcre2test.1" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>pcre2test — a program for testing Perl-compatible
+      regular expressions.</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">pcre2test</code> [options] [ input
+        file [ output file ] ]</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2test-1_sect1" name="pcre2test-1_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><span class="command"><strong>pcre2test</strong></span> is
+      a test program for the PCRE2 regular expression libraries,
+      but it can also be used for experimenting with regular
+      expressions. This document describes the features of the test
+      program; for details of the regular expressions themselves,
+      see the <a class="link" href="../htmlman3/pcre2pattern.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2pattern</span>(3)</span></a>
+      documentation. For details of the PCRE2 library function
+      calls and their options, see the <a class="link" href="../htmlman3/pcre2api.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2api</span>(3)</span></a>
+      documentation.</p>
+
+      <p>The input for <span class="command"><strong>pcre2test</strong></span> is a sequence of
+      regular expression patterns and subject strings to be
+      matched. The output shows the result of each match attempt.
+      Modifiers on the command line, the patterns, and the subject
+      lines specify PCRE2 function options, control how the subject
+      is processed, and what output is produced.</p>
+
+      <p>As the original fairly simple PCRE library evolved, it
+      acquired many different features, and as a result, the
+      original <span class="command"><strong>pcretest</strong></span> program ended up
+      with a lot of options in a messy, arcane syntax, for testing
+      all the features. The move to the new PCRE2 API provided an
+      opportunity to re-implement the test program as <span class="command"><strong>pcre2test</strong></span>, with a cleaner
+      modifier syntax. Nevertheless, there are still many obscure
+      modifiers, some of which are specifically designed for use in
+      conjunction with the test script and data files that are
+      distributed as part of PCRE2. All the modifiers are
+      documented here, some without much justification, but many of
+      them are unlikely to be of use except when testing the
+      libraries.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2test-1_sect2" name="pcre2test-1_sect2" shape="rect"> </a>
+
+      <h2>PCRE2's 8-BIT, 16-BIT AND 32-BIT LIBRARIES</h2>
+
+      <p>Different versions of the PCRE2 library can be built to
+      support character strings that are encoded in 8-bit, 16-bit,
+      or 32-bit code units. One, two, or all three of these
+      libraries may be simultaneously installed. The <span class="command"><strong>pcre2test</strong></span> program can be
+      used to test all the libraries. However, its own input and
+      output are always in 8-bit format. When testing the 16-bit or
+      32-bit libraries, patterns and subject strings are converted
+      to 16- or 32-bit format before being passed to the library
+      functions. Results are converted back to 8-bit code units for
+      output.</p>
+
+      <p>In the rest of this document, the names of library
+      functions and structures are given in generic form, for
+      example, <code class="function">pcre_compile</code>(). The
+      actual names used in the libraries have a suffix _8, _16, or
+      _32, as appropriate.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2test-1_sect3" name="pcre2test-1_sect3" shape="rect"> </a>
+
+      <h2>INPUT ENCODING</h2>
+
+      <p>Input to <span class="command"><strong>pcre2test</strong></span> is processed line
+      by line, either by calling the C library's <code class="function">fgets</code>() function, or via the <span class="command"><strong>libreadline</strong></span> library (see
+      below). In Unix-like environments, <code class="function">fgets</code>() treats any bytes other than newline
+      as data characters. However, in some Windows environments
+      character 26 (hex 1A) causes an immediate end of file, and no
+      further data is read. For maximum portability, therefore, it
+      is safest to avoid non-printing characters in <span class="command"><strong>pcre2test</strong></span> input files.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2test-1_sect4" name="pcre2test-1_sect4" shape="rect"> </a>
+
+      <h2>COMMAND LINE OPTIONS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>-8</em></span></span></dt>
+
+          <dd>
+            <p>If the 8-bit library has been built, this option
+            causes it to be used (this is the default). If the
+            8-bit library has not been built, this option causes an
+            error.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>-16</em></span></span></dt>
+
+          <dd>
+            <p>If the 16-bit library has been built, this option
+            causes it to be used. If only the 16-bit library has
+            been built, this is the default. If the 16-bit library
+            has not been built, this option causes an error.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>-32</em></span></span></dt>
+
+          <dd>
+            <p>If the 32-bit library has been built, this option
+            causes it to be used. If only the 32-bit library has
+            been built, this is the default. If the 32-bit library
+            has not been built, this option causes an error.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−b</code></span></dt>
+
+          <dd>
+            <p>Behave as if each pattern has the <code class="filename">/fullbincode</code> modifier; the full
+            internal binary form of the pattern is output after
+            compilation.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−C</code></span></dt>
+
+          <dd>
+            <p>Output the version number of the PCRE2 library, and
+            all available information about the optional features
+            that are included, and then exit with zero exit code.
+            All other options are ignored.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−C</code> <span class="command"><strong>option</strong></span></span></dt>
+
+          <dd>
+            <p>Output information about a specific build-time
+            option, then exit. This functionality is intended for
+            use in scripts such as <span class="command"><strong>RunTest</strong></span>. The
+            following options output the value and set the exit
+            code as indicated:</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+ ebcdic-nl  the code for LF (= NL) in an EBCDIC environment:
+              0x15 or 0x25
+              0 if used in an ASCII environment
+              exit code is always 0
+ linksize   the configured internal link size (2, 3, or 4)
+              exit code is set to the link size
+ newline    the default newline setting:
+              CR, LF, CRLF, ANYCRLF, or ANY
+              exit code is always 0
+ bsr        the default setting for what \R matches:
+              ANYCRLF or ANY
+              exit code is always 0
+</pre>
+            </div>
+
+            <p>The following options output 1 for true or 0 for
+            false, and set the exit code to the same value:</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+ ebcdic     compiled for an EBCDIC environment
+ jit        just-in-time support is available
+ pcre2-16   the 16-bit library was built
+ pcre2-32   the 32-bit library was built
+ pcre2-8    the 8-bit library was built
+ unicode    Unicode support is available
+</pre>
+            </div>
+
+            <p>If an unknown option is given, an error message is
+            output; the exit code is 0.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−d</code></span></dt>
+
+          <dd>
+            <p>Behave as if each pattern has the <span class="command"><strong>debug</strong></span> modifier; the
+            internal form and information about the compiled
+            pattern is output after compilation; <code class="option">−d</code> is equivalent to <code class="option">−b −i</code>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−dfa</code></span></dt>
+
+          <dd>
+            <p>Behave as if each subject line has the <span class="command"><strong>dfa</strong></span> modifier;
+            matching is done using the <code class="function">pcre2_dfa_match</code>() function instead of
+            the default <code class="function">pcre2_match</code>().</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−help</code></span></dt>
+
+          <dd>
+            <p>Output a brief summary these options and then
+            exit.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−i</code></span></dt>
+
+          <dd>
+            <p>Behave as if each pattern has the <code class="filename">/info</code> modifier; information about the
+            compiled pattern is given after compilation.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−jit</code></span></dt>
+
+          <dd>
+            <p>Behave as if each pattern line has the <span class="command"><strong>jit</strong></span> modifier; after
+            successful compilation, each pattern is passed to the
+            just-in-time compiler, if available.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−pattern</code> <em class="replaceable"><code>modifier-list</code></em></span></dt>
+
+          <dd>
+            <p>Behave as if each pattern line contains the given
+            modifiers.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−q</code></span></dt>
+
+          <dd>
+            <p>Do not output the version number of <span class="command"><strong>pcre2test</strong></span> at the
+            start of execution.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−S</code> <span class="command"><strong>size</strong></span></span></dt>
+
+          <dd>
+            <p>On Unix-like systems, set the size of the run-time
+            stack to <span class="command"><strong>size</strong></span> megabytes.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−subject</code> <em class="replaceable"><code>modifier-list</code></em></span></dt>
+
+          <dd>
+            <p>Behave as if each subject line contains the given
+            modifiers.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−t</code></span></dt>
+
+          <dd>
+            <p>Run each compile and match many times with a timer,
+            and output the resulting times per compile or match.
+            When JIT is used, separate times are given for the
+            initial compile and the JIT compile. You can control
+            the number of iterations that are used for timing by
+            following <code class="option">−t</code> with a
+            number (as a separate item on the command line). For
+            example, "-t 1000" iterates 1000 times. The default is
+            to iterate 500,000 times.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−tm</code></span></dt>
+
+          <dd>
+            <p>This is like <code class="option">−t</code>
+            except that it times only the matching phase, not the
+            compile phase.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−T</code> <code class="option">−TM</code></span></dt>
+
+          <dd>
+            <p>These behave like <code class="option">−t</code> and <code class="option">−tm</code>, but in addition, at the end
+            of a run, the total times for all compiles and matches
+            are output.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−version</code></span></dt>
+
+          <dd>
+            <p>Output the PCRE2 version number and then exit.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2test-1_sect5" name="pcre2test-1_sect5" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>If <span class="command"><strong>pcre2test</strong></span>
+      is given two filename arguments, it reads from the first and
+      writes to the second. If the first name is "-", input is
+      taken from the standard input. If <span class="command"><strong>pcre2test</strong></span> is given only one
+      argument, it reads from that file and writes to stdout.
+      Otherwise, it reads from stdin and writes to stdout. When the
+      input is a terminal, it prompts for each line of input, using
+      "re&gt;" to prompt for regular expression patterns, and
+      "data&gt;" to prompt for subject lines.</p>
+
+      <p>When <span class="command"><strong>pcre2test</strong></span> is built, a
+      configuration option can specify that it should be linked
+      with the <span class="command"><strong>libreadline</strong></span> or <span class="command"><strong>libedit</strong></span> library. When this
+      is done, if the input is from a terminal, it is read using
+      the <code class="function">readline</code>() function. This
+      provides line-editing and history facilities. The output from
+      the <code class="option">−help</code> option states
+      whether or not <code class="function">readline</code>() will
+      be used.</p>
+
+      <p>The program handles any number of tests, each of which
+      consists of a set of input lines. Each set starts with a
+      regular expression pattern, followed by any number of subject
+      lines to be matched against that pattern. In between sets of
+      test data, command lines that begin with a hash (#) character
+      may appear. This file format, with some restrictions, can
+      also be processed by the <em class="replaceable"><code>perltest.sh</code></em> script that is
+      distributed with PCRE2 as a means of checking that the
+      behaviour of PCRE2 and Perl is the same.</p>
+
+      <p>Each subject line is matched separately and independently.
+      If you want to do multi-line matches, you have to use the \n
+      escape sequence (or \r or \r\n, etc., depending on the
+      newline setting) in a single line of input to encode the
+      newline sequences. There is no limit on the length of subject
+      lines; the input buffer is automatically extended if it is
+      too small. There is a replication feature that makes it
+      possible to generate long subject lines without having to
+      supply them explicitly.</p>
+
+      <p>An empty line or the end of the file signals the end of
+      the subject lines for a test, at which point a new pattern or
+      command line is expected if there is still input to be
+      read.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2test-1_sect6" name="pcre2test-1_sect6" shape="rect"> </a>
+
+      <h2>COMMAND LINES</h2>
+
+      <p>In between sets of test data, a line that begins with a
+      hash (#) character is interpreted as a command line. If the
+      first character is followed by white space or an exclamation
+      mark, the line is treated as a comment, and ignored.
+      Otherwise, the following commands are recognized:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#forbid_utf
+</pre>
+      </div>
+
+      <p>Subsequent patterns automatically have the PCRE2_NEVER_UTF
+      and PCRE2_NEVER_UCP options set, which locks out the use of
+      UTF and Unicode property features. This is a trigger guard
+      that is used in test files to ensure that UTF/Unicode tests
+      are not accidentally added to files that are used when UTF
+      support is not included in the library. This effect can also
+      be obtained by the use of <span class="command"><strong>#pattern</strong></span>; the difference is
+      that <span class="command"><strong>#forbid_utf</strong></span> cannot be
+      unset, and the automatic options are not displayed in pattern
+      information, to avoid cluttering up test output.</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#pattern &lt;modifier-list&gt;
+</pre>
+      </div>
+
+      <p>This command sets a default modifier list that applies to
+      all subsequent patterns. Modifiers on a pattern can change
+      these settings.</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#perltest
+</pre>
+      </div>
+
+      <p>The appearance of this line causes all subsequent modifier
+      settings to be checked for compatibility with the <em class="replaceable"><code>perltest.sh</code></em> script, which is
+      used to confirm that Perl gives the same results as PCRE2.
+      Also, apart from comment lines, none of the other command
+      lines are permitted, because they and many of the modifiers
+      are specific to <span class="command"><strong>pcre2test</strong></span>, and should not
+      be used in test files that are also processed by <em class="replaceable"><code>perltest.sh</code></em>. The <span class="command"><strong>#perltest</strong></span> command helps
+      detect tests that are accidentally put in the wrong file.</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#subject &lt;modifier-list&gt;
+</pre>
+      </div>
+
+      <p>This command sets a default modifier list that applies to
+      all subsequent subject lines. Modifiers on a subject line can
+      change these settings.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2test-1_sect7" name="pcre2test-1_sect7" shape="rect"> </a>
+
+      <h2>MODIFIER SYNTAX</h2>
+
+      <p>Modifier lists are used with both pattern and subject
+      lines. Items in a list are separated by commas and optional
+      white space. Some modifiers may be given for both patterns
+      and subject lines, whereas others are valid for one or the
+      other only. Each modifier has a long name, for example
+      "anchored", and some of them must be followed by an equals
+      sign and a value, for example, "offset=12". Modifiers that do
+      not take values may be preceded by a minus sign to turn off a
+      previous setting.</p>
+
+      <p>A few of the more common modifiers can also be specified
+      as single letters, for example "i" for "caseless". In
+      documentation, following the Perl convention, these are
+      written with a slash ("the /i modifier") for clarity.
+      Abbreviated modifiers must all be concatenated in the first
+      item of a modifier list. If the first item is not recognized
+      as a long modifier name, it is interpreted as a sequence of
+      these abbreviations. For example:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+/abc/ig,newline=cr,jit=3
+</pre>
+      </div>
+
+      <p>This is a pattern line whose modifier list starts with two
+      one-letter modifiers (/i and /g). The lower-case abbreviated
+      modifiers are the same as used in Perl.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2test-1_sect8" name="pcre2test-1_sect8" shape="rect"> </a>
+
+      <h2>PATTERN SYNTAX</h2>
+
+      <p>A pattern line must start with one of the following
+      characters (common symbols, excluding pattern
+      meta-characters):</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+/ ! " ' ` - = _ : ; , % &amp; @ ~
+</pre>
+      </div>
+
+      <p>This is interpreted as the pattern's delimiter. A regular
+      expression may be continued over several input lines, in
+      which case the newline characters are included within it. It
+      is possible to include the delimiter within the pattern by
+      escaping it with a backslash, for example</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+/abc\/def/
+</pre>
+      </div>
+
+      <p>If you do this, the escape and the delimiter form part of
+      the pattern, but since the delimiters are all
+      non-alphanumeric, this does not affect its interpretation. If
+      the terminating delimiter is immediately followed by a
+      backslash, for example,</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+/abc/\
+</pre>
+      </div>
+
+      <p>then a backslash is added to the end of the pattern. This
+      is done to provide a way of testing the error condition that
+      arises if a pattern finishes with a backslash, because</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+/abc\/
+</pre>
+      </div>
+
+      <p>is interpreted as the first line of a pattern that starts
+      with "abc/", causing pcre2test to read the next line as a
+      continuation of the regular expression.</p>
+
+      <p>A pattern can be followed by a modifier list (details
+      below).</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2test-1_sect9" name="pcre2test-1_sect9" shape="rect"> </a>
+
+      <h2>SUBJECT LINE SYNTAX</h2>
+
+      <p>Before each subject line is passed to <code class="function">pcre2_match</code>() or <code class="function">pcre2_dfa_match</code>(), leading and trailing
+      white space is removed, and the line is scanned for backslash
+      escapes. The following provide a means of encoding
+      non-printing characters in a visible way:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ \a         alarm (BEL, \x07)
+ \b         backspace (\x08)
+ \e         escape (\x27)
+ \f         form feed (\x0c)
+ \n         newline (\x0a)
+ \r         carriage return (\x0d)
+ \t         tab (\x09)
+ \v         vertical tab (\x0b)
+ \nnn       octal character (up to 3 octal digits); always
+              a byte unless &gt; 255 in UTF-8 or 16-bit or 32-bit mode
+ \o{dd...}  octal character (any number of octal digits}
+ \xhh       hexadecimal byte (up to 2 hex digits)
+ \x{hh...}  hexadecimal character (any number of hex digits)
+</pre>
+      </div>
+
+      <p>The use of \x{hh...} is not dependent on the use of the
+      <span class="command"><strong>utf</strong></span> modifier on
+      the pattern. It is recognized always. There may be any number
+      of hexadecimal digits inside the braces; invalid values
+      provoke error messages.</p>
+
+      <p>Note that \xhh specifies one byte rather than one
+      character in UTF-8 mode; this makes it possible to construct
+      invalid UTF-8 sequences for testing purposes. On the other
+      hand, \x{hh} is interpreted as a UTF-8 character in UTF-8
+      mode, generating more than one byte if the value is greater
+      than 127. When testing the 8-bit library not in UTF-8 mode,
+      \x{hh} generates one byte for values less than 256, and
+      causes an error for greater values.</p>
+
+      <p>In UTF-16 mode, all 4-digit \x{hhhh} values are accepted.
+      This makes it possible to construct invalid UTF-16 sequences
+      for testing purposes.</p>
+
+      <p>In UTF-32 mode, all 4- to 8-digit \x{...} values are
+      accepted. This makes it possible to construct invalid UTF-32
+      sequences for testing purposes.</p>
+
+      <p>There is a special backslash sequence that specifies
+      replication of one or more characters:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+\[&lt;characters&gt;]{&lt;count&gt;}
+</pre>
+      </div>
+
+      <p>This makes it possible to test long strings without having
+      to provide them as part of the file. For example:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+\[abc]{4}
+</pre>
+      </div>
+
+      <p>is converted to "abcabcabcabc". This feature does not
+      support nesting. To include a closing square bracket in the
+      characters, code it as \x5D.</p>
+
+      <p>A backslash followed by an equals sign marks the end of
+      the subject string and the start of a modifier list. For
+      example:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+abc\=notbol,notempty
+</pre>
+      </div>
+
+      <p>A backslash followed by any other non-alphanumeric
+      character just escapes that character. A backslash followed
+      by anything else causes an error. However, if the very last
+      character in the line is a backslash (and there is no
+      modifier list), it is ignored. This gives a way of passing an
+      empty line as data, since a real empty line terminates the
+      data input.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2test-1_sect10" name="pcre2test-1_sect10" shape="rect"> </a>
+
+      <h2>PATTERN MODIFIERS</h2>
+
+      <p>There are three types of modifier that can appear in
+      pattern lines, two of which may also be used in a
+      <span class="command"><strong>#pattern</strong></span>
+      command. A pattern's modifier list can add to or override
+      default modifiers that were set by a previous <span class="command"><strong>#pattern</strong></span> command.</p>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect11" name="pcre2test-1_sect11" shape="rect"> </a>
+
+        <h3>Setting compilation options</h3>
+
+        <p>The following modifiers set options for <code class="function">pcre2_compile</code>(). The most common ones
+        have single-letter abbreviations. See <span class="citerefentry"><span class="refentrytitle">pcreapi</span>(3)</span> for a description
+        of their effects.</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+     allow_empty_class         set PCRE2_ALLOW_EMPTY_CLASS
+     alt_bsux                  set PCRE2_ALT_BSUX
+     anchored                  set PCRE2_ANCHORED
+     auto_callout              set PCRE2_AUTO_CALLOUT
+ /i  caseless                  set PCRE2_CASELESS
+     dollar_endonly            set PCRE2_DOLLAR_ENDONLY
+ /s  dotall                    set PCRE2_DOTALL
+     dupnames                  set PCRE2_DUPNAMES
+ /x  extended                  set PCRE2_EXTENDED
+     firstline                 set PCRE2_FIRSTLINE
+     match_unset_backref       set PCRE2_MATCH_UNSET_BACKREF
+ /m  multiline                 set PCRE2_MULTILINE
+     never_ucp                 set PCRE2_NEVER_UCP
+     never_utf                 set PCRE2_NEVER_UTF
+     no_auto_capture           set PCRE2_NO_AUTO_CAPTURE
+     no_auto_possess           set PCRE2_NO_AUTO_POSSESS
+     no_dotstar_anchor         set PCRE2_NO_DOTSTAR_ANCHOR
+     no_start_optimize         set PCRE2_NO_START_OPTIMIZE
+     no_utf_check              set PCRE2_NO_UTF_CHECK
+     ucp                       set PCRE2_UCP
+     ungreedy                  set PCRE2_UNGREEDY
+     utf                       set PCRE2_UTF
+</pre>
+        </div>
+
+        <p>As well as turning on the PCRE2_UTF option, the
+        <span class="command"><strong>utf</strong></span> modifier
+        causes all non-printing characters in output strings to be
+        printed using the \x{hh...} notation. Otherwise, those less
+        than 0x100 are output in hex without the curly
+        brackets.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect12" name="pcre2test-1_sect12" shape="rect"> </a>
+
+        <h3>Setting compilation controls</h3>
+
+        <p>The following modifiers affect the compilation process
+        or request information about the pattern:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+     bsr=[anycrlf|unicode]     specify \R handling
+ /B  bincode                   show binary code without lengths
+     debug                     same as info,fullbincode
+     fullbincode               show binary code with lengths
+ /I  info                      show info about compiled pattern
+     hex                       pattern is coded in hexadecimal
+     jit[=&lt;number&gt;]            use JIT
+     jitfast                   use JIT fast path
+     jitverify                 verify JIT use
+     locale=&lt;name&gt;             use this locale
+     memory                    show memory used
+     newline=&lt;type&gt;            set newline type
+     parens_nest_limit=&lt;n&gt;     set maximum parentheses depth
+     perlcompat                lock out non-Perl modifiers
+     posix                     use the POSIX API
+     stackguard=&lt;number&gt;       test the stackguard feature
+     tables=[0|1|2]            select internal tables
+</pre>
+        </div>
+
+        <p>The effects of these modifiers are described in the
+        following sections.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect13" name="pcre2test-1_sect13" shape="rect"> </a>
+
+        <h3>Newline and \R handling</h3>
+
+        <p>The <span class="command"><strong>bsr</strong></span>
+        modifier specifies what \R in a pattern should match. If it
+        is set to "anycrlf", \R matches CR, LF, or CRLF only. If it
+        is set to "unicode", \R matches any Unicode newline
+        sequence. The default is specified when PCRE2 is built,
+        with the default default being Unicode.</p>
+
+        <p>The <span class="command"><strong>newline</strong></span> modifier
+        specifies which characters are to be interpreted as
+        newlines, both in the pattern and in subject lines. The
+        type must be one of CR, LF, CRLF, ANYCRLF, or ANY (in upper
+        or lower case).</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect14" name="pcre2test-1_sect14" shape="rect"> </a>
+
+        <h3>Information about a pattern</h3>
+
+        <p>The <span class="command"><strong>debug</strong></span>
+        modifier is a shorthand for <em class="replaceable"><code>info,fullbincode</code></em>,
+        requesting all available information.</p>
+
+        <p>The <span class="command"><strong>bincode</strong></span> modifier causes a
+        representation of the compiled code to be output after
+        compilation. This information does not contain length and
+        offset values, which ensures that the same output is
+        generated for different internal link sizes and different
+        code unit widths. By using <span class="command"><strong>bincode</strong></span>, the same
+        regression tests can be used in different environments.</p>
+
+        <p>The <span class="command"><strong>fullbincode</strong></span> modifier, by
+        contrast, <span class="command"><strong>does</strong></span> include length and
+        offset values. This is used in a few special tests that run
+        only for specific code unit widths and link sizes, and is
+        also useful for one-off tests.</p>
+
+        <p>The <span class="command"><strong>info</strong></span>
+        modifier requests information about the compiled pattern
+        (whether it is anchored, has a fixed first character, and
+        so on). The information is obtained from the <code class="function">pcre2_pattern_info</code>() function. Here are
+        some typical examples:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+   re&gt; /(?i)(^a|^b)/m,info
+ Capturing subpattern count = 1
+ Compile options: multiline
+ Overall options: caseless multiline
+ First code unit at start or follows newline
+ Subject length lower bound = 1
+</pre>
+        </div>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+   re&gt; /(?i)abc/info
+ Capturing subpattern count = 0
+ Compile options: &lt;none&gt;
+ Overall options: caseless
+ First code unit = 'a' (caseless)
+ Last code unit = 'c' (caseless)
+ Subject length lower bound = 3
+</pre>
+        </div>
+
+        <p>"Compile options" are those specified by modifiers;
+        "overall options" have added options that are taken or
+        deduced from the pattern. If both sets of options are the
+        same, just a single "options" line is output; if there are
+        no options, the line is omitted. "First code unit" is where
+        any match must start; if there is more than one they are
+        listed as "starting code units". "Last code unit" is the
+        last literal code unit that must be present in any match.
+        This is not necessarily the last character. These lines are
+        omitted if no starting or ending code units are
+        recorded.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect15" name="pcre2test-1_sect15" shape="rect"> </a>
+
+        <h3>Specifying a pattern in hex</h3>
+
+        <p>The <span class="command"><strong>hex</strong></span>
+        modifier specifies that the characters of the pattern are
+        to be interpreted as pairs of hexadecimal digits. White
+        space is permitted between pairs. For example:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+/ab 32 59/hex
+</pre>
+        </div>
+
+        <p>This feature is provided as a way of creating patterns
+        that contain binary zero and other non-printing characters.
+        By default, <span class="command"><strong>pcre2test</strong></span> passes patterns
+        as zero-terminated strings to <code class="function">pcre2_compile</code>(), giving the length as
+        PCRE2_ZERO_TERMINATED. However, for patterns specified in
+        hexadecimal, the actual length of the pattern is
+        passed.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect16" name="pcre2test-1_sect16" shape="rect"> </a>
+
+        <h3>JIT compilation</h3>
+
+        <p>The <code class="filename">/jit</code> modifier may
+        optionally be followed by an equals sign and a number in
+        the range 0 to 7:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+ 0  disable JIT
+ 1  use JIT for normal match only
+ 2  use JIT for soft partial match only
+ 3  use JIT for normal match and soft partial match
+ 4  use JIT for hard partial match only
+ 6  use JIT for soft and hard partial match
+ 7  all three modes
+</pre>
+        </div>
+
+        <p>If no number is given, 7 is assumed. If JIT compilation
+        is successful, the compiled JIT code will automatically be
+        used when <code class="function">pcre2_match</code>() is
+        run for the appropriate type of match, except when
+        incompatible run-time options are specified. For more
+        details, see the <a class="link" href="../htmlman3/pcre2jit.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2jit</span>(3)</span></a>
+        documentation. See also the <span class="command"><strong>jitstack</strong></span> modifier below
+        for a way of setting the size of the JIT stack.</p>
+
+        <p>If the <span class="command"><strong>jitfast</strong></span> modifier is
+        specified, matching is done using the JIT "fast path"
+        interface, <code class="function">pcre2_jit_match</code>(),
+        which skips some of the sanity checks that are done by
+        <code class="function">pcre2_match</code>(), and of course
+        does not work when JIT is not supported. If <span class="command"><strong>jitfast</strong></span> is specified
+        without <span class="command"><strong>jit</strong></span>,
+        jit=7 is assumed.</p>
+
+        <p>If the <span class="command"><strong>jitverify</strong></span> modifier is
+        specified, information about the compiled pattern shows
+        whether JIT compilation was or was not successful. If
+        <span class="command"><strong>jitverify</strong></span> is
+        specified without <span class="command"><strong>jit</strong></span>, jit=7 is assumed. If
+        JIT compilation is successful when <span class="command"><strong>jitverify</strong></span> is set, the
+        text "(JIT)" is added to the first output line after a
+        match or non match when JIT-compiled code was actually used
+        in the match.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect17" name="pcre2test-1_sect17" shape="rect"> </a>
+
+        <h3>Setting a locale</h3>
+
+        <p>The <code class="filename">/locale</code> modifier must
+        specify the name of a locale, for example:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+/pattern/locale=fr_FR
+</pre>
+        </div>
+
+        <p>The given locale is set, <code class="function">pcre2_maketables</code>() is called to build a
+        set of character tables for the locale, and this is then
+        passed to <code class="function">pcre2_compile</code>()
+        when compiling the regular expression. The same tables are
+        used when matching the following subject lines. The
+        <code class="filename">/locale</code> modifier applies only
+        to the pattern on which it appears, but can be given in a
+        <span class="command"><strong>#pattern</strong></span>
+        command if a default is needed. Setting a locale and
+        alternate character tables are mutually exclusive.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect18" name="pcre2test-1_sect18" shape="rect"> </a>
+
+        <h3>Showing pattern memory</h3>
+
+        <p>The <code class="filename">/memory</code> modifier
+        causes the size in bytes of the memory used to hold the
+        compiled pattern to be output. This does not include the
+        size of the <span class="command"><strong>pcre2_code</strong></span> block; it is
+        just the actual compiled data. If the pattern is
+        subsequently passed to the JIT compiler, the size of the
+        JIT compiled code is also output. Here is an example:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+   re&gt; /a(b)c/jit,memory
+ Memory allocation (code space): 21
+ Memory allocation (JIT code): 1910
+</pre>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect19" name="pcre2test-1_sect19" shape="rect"> </a>
+
+        <h3>Limiting nested parentheses</h3>
+
+        <p>The <span class="command"><strong>parens_nest_limit</strong></span>
+        modifier sets a limit on the depth of nested parentheses in
+        a pattern. Breaching the limit causes a compilation error.
+        The default for the library is set when PCRE2 is built, but
+        <span class="command"><strong>pcre2test</strong></span>
+        sets its own default of 220, which is required for running
+        the standard test suite.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect20" name="pcre2test-1_sect20" shape="rect"> </a>
+
+        <h3>Using the POSIX wrapper API</h3>
+
+        <p>The <code class="filename">/posix</code> modifier causes
+        <span class="command"><strong>pcre2test</strong></span> to
+        call PCRE2 via the POSIX wrapper API rather than its native
+        API. This supports only the 8-bit library. When the POSIX
+        API is being used, the following pattern modifiers set
+        options for the <code class="function">regcomp</code>()
+        function:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+ caseless           REG_ICASE
+ multiline          REG_NEWLINE
+ no_auto_capture    REG_NOSUB
+ dotall             REG_DOTALL     )
+ ungreedy           REG_UNGREEDY   ) These options are not part of
+ ucp                REG_UCP        )   the POSIX standard
+ utf                REG_UTF8       )
+</pre>
+        </div>
+
+        <p>The <span class="command"><strong>aftertext</strong></span> and
+        <span class="command"><strong>allaftertext</strong></span>
+        subject modifiers work as described below. All other
+        modifiers cause an error.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect21" name="pcre2test-1_sect21" shape="rect"> </a>
+
+        <h3>Testing the stack guard feature</h3>
+
+        <p>The <code class="filename">/stackguard</code> modifier
+        is used to test the use of <code class="function">pcre2_set_compile_recursion_guard</code>(), a
+        function that is provided to enable stack availability to
+        be checked during compilation (see the <a class="link" href="../htmlman3/pcre2api.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2api</span>(3)</span></a> documentation
+        for details). If the number specified by the modifier is
+        greater than zero, <code class="function">pcre2_set_compile_recursion_guard</code>() is
+        called to set up callback from <code class="function">pcre2_compile</code>() to a local function. The
+        argument it receives is the current nesting parenthesis
+        depth; if this is greater than the value given by the
+        modifier, non-zero is returned, causing the compilation to
+        be aborted.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect22" name="pcre2test-1_sect22" shape="rect"> </a>
+
+        <h3>Using alternative character tables</h3>
+
+        <p>The value specified for the <code class="filename">/tables</code> modifier must be one of the
+        digits 0, 1, or 2. It causes a specific set of built-in
+        character tables to be passed to <code class="function">pcre2_compile</code>(). This is used in the
+        PCRE2 tests to check behaviour with different character
+        tables. The digit specifies the tables as follows:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+ 0   do not pass any special character tables
+ 1   the default ASCII tables, as distributed in
+       pcre2_chartables.c.dist
+ 2   a set of tables defining ISO 8859 characters
+</pre>
+        </div>
+
+        <p>In table 2, some characters whose codes are greater than
+        128 are identified as letters, digits, spaces, etc. Setting
+        alternate character tables and a locale are mutually
+        exclusive.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect23" name="pcre2test-1_sect23" shape="rect"> </a>
+
+        <h3>Setting certain match controls</h3>
+
+        <p>The following modifiers are really subject modifiers,
+        and are described below. However, they may be included in a
+        pattern's modifier list, in which case they are applied to
+        every subject line that is processed with that pattern.
+        They do not affect the compilation process.</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+     aftertext           show text after match
+     allaftertext        show text after captures
+     allcaptures         show all captures
+     allusedtext         show all consulted text
+ /g  global              global matching
+     mark                show mark values
+     replace=&lt;string&gt;    specify a replacement string
+     startchar           show starting character when relevant
+</pre>
+        </div>
+
+        <p>These modifiers may not appear in a <span class="command"><strong>#pattern</strong></span> command. If you
+        want them as defaults, set them in a <span class="command"><strong>#subject</strong></span> command.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2test-1_sect24" name="pcre2test-1_sect24" shape="rect"> </a>
+
+      <h2>SUBJECT MODIFIERS</h2>
+
+      <p>The modifiers that can appear in subject lines and the
+      <span class="command"><strong>#subject</strong></span>
+      command are of two types.</p>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect25" name="pcre2test-1_sect25" shape="rect"> </a>
+
+        <h3>Setting match options</h3>
+
+        <p>The following modifiers set options for <code class="function">pcre2_match</code>() or <code class="function">pcre2_dfa_match</code>(). See <span class="citerefentry"><span class="refentrytitle">pcreapi</span>(3)</span> for a description
+        of their effects.</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+     anchored                  set PCRE2_ANCHORED
+     dfa_restart               set PCRE2_DFA_RESTART
+     dfa_shortest              set PCRE2_DFA_SHORTEST
+     no_utf_check              set PCRE2_NO_UTF_CHECK
+     notbol                    set PCRE2_NOTBOL
+     notempty                  set PCRE2_NOTEMPTY
+     notempty_atstart          set PCRE2_NOTEMPTY_ATSTART
+     noteol                    set PCRE2_NOTEOL
+     partial_hard (or ph)      set PCRE2_PARTIAL_HARD
+     partial_soft (or ps)      set PCRE2_PARTIAL_SOFT
+</pre>
+        </div>
+
+        <p>The partial matching modifiers are provided with
+        abbreviations because they appear frequently in tests.</p>
+
+        <p>If the <code class="filename">/posix</code> modifier was
+        present on the pattern, causing the POSIX wrapper API to be
+        used, the only option-setting modifiers that have any
+        effect are <span class="command"><strong>notbol</strong></span>, <span class="command"><strong>notempty</strong></span>, and
+        <span class="command"><strong>noteol</strong></span>,
+        causing REG_NOTBOL, REG_NOTEMPTY, and REG_NOTEOL,
+        respectively, to be passed to <code class="function">regexec</code>(). Any other modifiers cause an
+        error.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect26" name="pcre2test-1_sect26" shape="rect"> </a>
+
+        <h3>Setting match controls</h3>
+
+        <p>The following modifiers affect the matching process or
+        request additional information. Some of them may also be
+        specified on a pattern line (see above), in which case they
+        apply to every subject line that is matched against that
+        pattern.</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+     aftertext                 show text after match
+     allaftertext              show text after captures
+     allcaptures               show all captures
+     allusedtext               show all consulted text (non-JIT only)
+     altglobal                 alternative global matching
+     callout_capture           show captures at callout time
+     callout_data=&lt;n&gt;          set a value to pass via callouts
+     callout_fail=&lt;n&gt;[:&lt;m&gt;]    control callout failure
+     callout_none              do not supply a callout function
+     copy=&lt;number or name&gt;     copy captured substring
+     dfa                       use <code class="function">pcre2_dfa_match</code>()
+     find_limits               find match and recursion limits
+     get=&lt;number or name&gt;      extract captured substring
+     getall                    extract all captured substrings
+ /g  global                    global matching
+     jitstack=&lt;n&gt;              set size of JIT stack
+     mark                      show mark values
+     match_limit=&gt;n&gt;           set a match limit
+     memory                    show memory usage
+     offset=&lt;n&gt;                set starting offset
+     ovector=&lt;n&gt;               set size of output vector
+     recursion_limit=&lt;n&gt;       set a recursion limit
+     replace=&lt;string&gt;          specify a replacement string
+     startchar                 show startchar when relevant
+     zero_terminate            pass the subject as zero-terminated
+</pre>
+        </div>
+
+        <p>The effects of these modifiers are described in the
+        following sections.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect27" name="pcre2test-1_sect27" shape="rect"> </a>
+
+        <h3>Showing more text</h3>
+
+        <p>The <span class="command"><strong>aftertext</strong></span> modifier
+        requests that as well as outputting the part of the subject
+        string that matched the entire pattern, <span class="command"><strong>pcre2test</strong></span> should in
+        addition output the remainder of the subject string. This
+        is useful for tests where the subject contains multiple
+        copies of the same substring. The <span class="command"><strong>allaftertext</strong></span> modifier
+        requests the same action for captured substrings as well as
+        the main matched substring. In each case the remainder is
+        output on the following line with a plus character
+        following the capture number.</p>
+
+        <p>The <span class="command"><strong>allusedtext</strong></span> modifier
+        requests that all the text that was consulted during a
+        successful pattern match by the interpreter should be
+        shown. This feature is not supported for JIT matching, and
+        if requested with JIT it is ignored (with a warning
+        message). Setting this modifier affects the output if there
+        is a lookbehind at the start of a match, or a lookahead at
+        the end, or if \K is used in the pattern. Characters that
+        precede or follow the start and end of the actual match are
+        indicated in the output by '&lt;' or '&gt;' characters
+        underneath them. Here is an example:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+   re&gt; /(?&lt;=pqr)abc(?=xyz)/
+ data&gt; 123pqrabcxyz456\=allusedtext
+  0: pqrabcxyz
+     &lt;&lt;&lt;   &gt;&gt;&gt;
+</pre>
+        </div>
+
+        <p>This shows that the matched string is "abc", with the
+        preceding and following strings "pqr" and "xyz" having been
+        consulted during the match (when processing the
+        assertions).</p>
+
+        <p>The <span class="command"><strong>startchar</strong></span> modifier
+        requests that the starting character for the match be
+        indicated, if it is different to the start of the matched
+        string. The only time when this occurs is when \K has been
+        processed as part of the match. In this situation, the
+        output for the matched string is displayed from the
+        starting character instead of from the match point, with
+        circumflex characters under the earlier characters. For
+        example:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+   re&gt; /abc\Kxyz/
+ data&gt; abcxyz\=startchar
+  0: abcxyz
+     ^^^
+</pre>
+        </div>
+
+        <p>Unlike <span class="command"><strong>allusedtext</strong></span>, the
+        <span class="command"><strong>startchar</strong></span>
+        modifier can be used with JIT. However, these two modifiers
+        are mutually exclusive.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect28" name="pcre2test-1_sect28" shape="rect"> </a>
+
+        <h3>Showing the value of all capture groups</h3>
+
+        <p>The <span class="command"><strong>allcaptures</strong></span> modifier
+        requests that the values of all potential captured
+        parentheses be output after a match. By default, only those
+        up to the highest one actually used in the match are output
+        (corresponding to the return code from <code class="function">pcre2_match</code>()). Groups that did not take
+        part in the match are output as "&lt;unset&gt;".</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect29" name="pcre2test-1_sect29" shape="rect"> </a>
+
+        <h3>Testing callouts</h3>
+
+        <p>A callout function is supplied when <span class="command"><strong>pcre2test</strong></span> calls the
+        library matching functions, unless <span class="command"><strong>callout_none</strong></span> is
+        specified. If <span class="command"><strong>callout_capture</strong></span> is set,
+        the current captured groups are output when a callout
+        occurs.</p>
+
+        <p>The <span class="command"><strong>callout_fail</strong></span> modifier can
+        be given one or two numbers. If there is only one number, 1
+        is returned instead of 0 when a callout of that number is
+        reached. If two numbers are given, 1 is returned when
+        callout &lt;n&gt; is reached for the &lt;m&gt;th time.</p>
+
+        <p>The <span class="command"><strong>callout_data</strong></span> modifier can
+        be given an unsigned or a negative number. Any value other
+        than zero is used as a return from <span class="command"><strong>pcre2test</strong></span>'s callout
+        function.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect30" name="pcre2test-1_sect30" shape="rect"> </a>
+
+        <h3>Finding all matches in a string</h3>
+
+        <p>Searching for all possible matches within a subject can
+        be requested by the <span class="command"><strong>global</strong></span> or <code class="filename">/altglobal</code> modifier. After finding a
+        match, the matching function is called again to search the
+        remainder of the subject. The difference between
+        <span class="command"><strong>global</strong></span> and
+        <span class="command"><strong>altglobal</strong></span> is
+        that the former uses the <span class="command"><strong>start_offset</strong></span> argument to
+        <code class="function">pcre2_match</code>() or <code class="function">pcre2_dfa_match</code>() to start searching at a
+        new point within the entire string (which is what Perl
+        does), whereas the latter passes over a shortened subject.
+        This makes a difference to the matching process if the
+        pattern begins with a lookbehind assertion (including \b or
+        \B).</p>
+
+        <p>If an empty string is matched, the next match is done
+        with the PCRE2_NOTEMPTY_ATSTART and PCRE2_ANCHORED flags
+        set, in order to search for another, non-empty, match at
+        the same point in the subject. If this match fails, the
+        start offset is advanced, and the normal match is retried.
+        This imitates the way Perl handles such cases when using
+        the <code class="filename">/g</code> modifier or the
+        <code class="function">split</code>() function. Normally,
+        the start offset is advanced by one character, but if the
+        newline convention recognizes CRLF as a newline, and the
+        current character is CR followed by LF, an advance of two
+        characters occurs.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect31" name="pcre2test-1_sect31" shape="rect"> </a>
+
+        <h3>Testing substring extraction functions</h3>
+
+        <p>The <span class="command"><strong>copy</strong></span>
+        and <span class="command"><strong>get</strong></span>
+        modifiers can be used to test the <code class="function">pcre2_substring_copy_xxx</code>() and
+        <code class="function">pcre2_substring_get_xxx</code>()
+        functions. They can be given more than once, and each can
+        specify a group name or number, for example:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+abcd\=copy=1,copy=3,get=G1
+</pre>
+        </div>
+
+        <p>If the <span class="command"><strong>#subject</strong></span> command is used
+        to set default copy and/or get lists, these can be unset by
+        specifying a negative number to cancel all numbered groups
+        and an empty name to cancel all named groups.</p>
+
+        <p>The <span class="command"><strong>getall</strong></span>
+        modifier tests <code class="function">pcre2_substring_list_get</code>(), which
+        extracts all captured substrings.</p>
+
+        <p>If the subject line is successfully matched, the
+        substrings extracted by the convenience functions are
+        output with C, G, or L after the string number instead of a
+        colon. This is in addition to the normal full list. The
+        string length (that is, the return from the extraction
+        function) is given in parentheses after each substring,
+        followed by the name when the extraction was by name.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect32" name="pcre2test-1_sect32" shape="rect"> </a>
+
+        <h3>Testing the substitution function</h3>
+
+        <p>If the <span class="command"><strong>replace</strong></span> modifier is set,
+        the <code class="function">pcre2_substitute</code>()
+        function is called instead of one of the matching
+        functions. Unlike subject strings, <span class="command"><strong>pcre2test</strong></span> does not
+        process replacement strings for escape sequences. In UTF
+        mode, a replacement string is checked to see if it is a
+        valid UTF-8 string. If so, it is correctly converted to a
+        UTF string of the appropriate code unit width. If it is not
+        a valid UTF-8 string, the individual code units are copied
+        directly. This provides a means of passing an invalid UTF-8
+        string for testing purposes.</p>
+
+        <p>If the <span class="command"><strong>global</strong></span> modifier is set,
+        PCRE2_SUBSTITUTE_GLOBAL is passed to <code class="function">pcre2_substitute</code>(). After a successful
+        substitution, the modified string is output, preceded by
+        the number of replacements. This may be zero if there were
+        no matches. Here is a simple example of a substitution
+        test:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+ /abc/replace=xxx
+     =abc=abc=
+  1: =xxx=abc=
+     =abc=abc=\=global
+  2: =xxx=xxx=
+</pre>
+        </div>
+
+        <p>Subject and replacement strings should be kept
+        relatively short for substitution tests, as fixed-size
+        buffers are used. To make it easy to test for buffer
+        overflow, if the replacement string starts with a number in
+        square brackets, that number is passed to <code class="function">pcre2_substitute</code>() as the size of the
+        output buffer, with the replacement string starting at the
+        next character. Here is an example that tests the edge
+        case:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+ /abc/
+     123abc123\=replace=[10]XYZ
+  1: 123XYZ123
+     123abc123\=replace=[9]XYZ
+ Failed: error -47: no more memory
+</pre>
+        </div>
+
+        <p>A replacement string is ignored with POSIX and DFA
+        matching. Specifying partial matching provokes an error
+        return ("bad option value") from <code class="function">pcre2_substitute</code>().</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect33" name="pcre2test-1_sect33" shape="rect"> </a>
+
+        <h3>Setting the JIT stack size</h3>
+
+        <p>The <span class="command"><strong>jitstack</strong></span> modifier
+        provides a way of setting the maximum stack size that is
+        used by the just-in-time optimization code. It is ignored
+        if JIT optimization is not being used. The value is a
+        number of kilobytes. Providing a stack that is larger than
+        the default 32K is necessary only for very complicated
+        patterns.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect34" name="pcre2test-1_sect34" shape="rect"> </a>
+
+        <h3>Setting match and recursion limits</h3>
+
+        <p>The <span class="command"><strong>match_limit</strong></span> and
+        <span class="command"><strong>recursion_limit</strong></span> modifiers
+        set the appropriate limits in the match context. These
+        values are ignored when the <span class="command"><strong>find_limits</strong></span> modifier is
+        specified.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect35" name="pcre2test-1_sect35" shape="rect"> </a>
+
+        <h3>Finding minimum limits</h3>
+
+        <p>If the <span class="command"><strong>find_limits</strong></span> modifier is
+        present, <span class="command"><strong>pcre2test</strong></span> calls
+        <code class="function">pcre2_match</code>() several times,
+        setting different values in the match context via
+        <code class="function">pcre2_set_match_limit</code>() and
+        <code class="function">pcre2_set_recursion_limit</code>()
+        until it finds the minimum values for each parameter that
+        allow <code class="function">pcre2_match</code>() to
+        complete without error.</p>
+
+        <p>If JIT is being used, only the match limit is relevant.
+        If DFA matching is being used, neither limit is relevant,
+        and this modifier is ignored (with a warning message).</p>
+
+        <p>The <span class="command"><strong>match_limit</strong></span> number is a
+        measure of the amount of backtracking that takes place, and
+        learning the minimum value can be instructive. For most
+        simple matches, the number is quite small, but for patterns
+        with very large numbers of matching possibilities, it can
+        become large very quickly with increasing length of subject
+        string. The <span class="command"><strong>match_limit_recursion</strong></span>
+        number is a measure of how much stack (or, if PCRE2 is
+        compiled with NO_RECURSE, how much heap) memory is needed
+        to complete the match attempt.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect36" name="pcre2test-1_sect36" shape="rect"> </a>
+
+        <h3>Showing MARK names</h3>
+
+        <p>The <span class="command"><strong>mark</strong></span>
+        modifier causes the names from backtracking control verbs
+        that are returned from calls to <code class="function">pcre2_match</code>() to be displayed. If a mark
+        is returned for a match, non-match, or partial match,
+        <span class="command"><strong>pcre2test</strong></span>
+        shows it. For a match, it is on a line by itself, tagged
+        with "MK:". Otherwise, it is added to the non-match
+        message.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect37" name="pcre2test-1_sect37" shape="rect"> </a>
+
+        <h3>Showing memory usage</h3>
+
+        <p>The <span class="command"><strong>memory</strong></span>
+        modifier causes <span class="command"><strong>pcre2test</strong></span> to log all
+        memory allocation and freeing calls that occur during a
+        match operation.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect38" name="pcre2test-1_sect38" shape="rect"> </a>
+
+        <h3>Setting a starting offset</h3>
+
+        <p>The <span class="command"><strong>offset</strong></span>
+        modifier sets an offset in the subject string at which
+        matching starts. Its value is a number of code units, not
+        characters.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect39" name="pcre2test-1_sect39" shape="rect"> </a>
+
+        <h3>Setting the size of the output vector</h3>
+
+        <p>The <span class="command"><strong>ovector</strong></span> modifier applies
+        only to the subject line in which it appears, though of
+        course it can also be used to set a default in a
+        <span class="command"><strong>#subject</strong></span>
+        command. It specifies the number of pairs of offsets that
+        are available for storing matching information. The default
+        is 15.</p>
+
+        <p>A value of zero is useful when testing the POSIX API
+        because it causes <code class="function">regexec</code>()
+        to be called with a NULL capture vector. When not testing
+        the POSIX API, a value of zero is used to cause
+        <code class="function">pcre2_match_data_create_from_pattern</code>()
+        to be called, in order to create a match block of exactly
+        the right size for the pattern. (It is not possible to
+        create a match block with a zero-length ovector; there is
+        always at least one pair of offsets.)</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2test-1_sect40" name="pcre2test-1_sect40" shape="rect"> </a>
+
+        <h3>Passing the subject as zero-terminated</h3>
+
+        <p>By default, the subject string is passed to a native API
+        matching function with its correct length. In order to test
+        the facility for passing a zero-terminated string, the
+        <span class="command"><strong>zero_terminate</strong></span> modifier
+        is provided. It causes the length to be passed as
+        PCRE2_ZERO_TERMINATED. (When matching via the POSIX
+        interface, this modifier has no effect, as there is no
+        facility for passing a length.)</p>
+
+        <p>When testing <code class="function">pcre2_substitute</code>(), this modifier also
+        has the effect of passing the replacement string as
+        zero-terminated.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2test-1_sect41" name="pcre2test-1_sect41" shape="rect"> </a>
+
+      <h2>THE ALTERNATIVE MATCHING FUNCTION</h2>
+
+      <p>By default, <span class="command"><strong>pcre2test</strong></span> uses the standard
+      PCRE2 matching function, <code class="function">pcre2_match</code>() to match each subject line.
+      PCRE2 also supports an alternative matching function,
+      <code class="function">pcre2_dfa_match</code>(), which
+      operates in a different way, and has some restrictions. The
+      differences between the two functions are described in the
+      <a class="link" href="../htmlman3/pcre2matching.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2matching</span>(3)</span></a>
+      documentation.</p>
+
+      <p>If the <span class="command"><strong>dfa</strong></span>
+      modifier is set, the alternative matching function is used.
+      This function finds all possible matches at a given point in
+      the subject. If, however, the <span class="command"><strong>dfa_shortest</strong></span> modifier is
+      set, processing stops after the first match is found. This is
+      always the shortest possible match.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2test-1_sect42" name="pcre2test-1_sect42" shape="rect"> </a>
+
+      <h2>DEFAULT OUTPUT FROM pcre2test</h2>
+
+      <p>This section describes the output when the normal matching
+      function, <code class="function">pcre2_match</code>(), is
+      being used.</p>
+
+      <p>When a match succeeds, <span class="command"><strong>pcre2test</strong></span> outputs the list
+      of captured substrings, starting with number 0 for the string
+      that matched the whole pattern. Otherwise, it outputs "No
+      match" when the return is PCRE2_ERROR_NOMATCH, or "Partial
+      match:" followed by the partially matching substring when the
+      return is PCRE2_ERROR_PARTIAL. (Note that this is the entire
+      substring that was inspected during the partial match; it may
+      include characters before the actual match start if a
+      lookbehind assertion, \K, \b, or \B was involved.)</p>
+
+      <p>For any other return, <span class="command"><strong>pcre2test</strong></span> outputs the PCRE2
+      negative error number and a short descriptive phrase. If the
+      error is a failed UTF string check, the code unit offset of
+      the start of the failing character is also output. Here is an
+      example of an interactive <span class="command"><strong>pcre2test</strong></span> run.</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ $ pcre2test
+ PCRE2 version 9.00 2014-05-10
+</pre>
+      </div>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+   re&gt; /^abc(\d+)/
+ data&gt; abc123
+  0: abc123
+  1: 123
+ data&gt; xyz
+ No match
+</pre>
+      </div>
+
+      <p>Unset capturing substrings that are not followed by one
+      that is set are not shown by <span class="command"><strong>pcre2test</strong></span> unless the
+      <span class="command"><strong>allcaptures</strong></span>
+      modifier is specified. In the following example, there are
+      two capturing substrings, but when the first data line is
+      matched, the second, unset substring is not shown. An
+      "internal" unset substring is shown as "&lt;unset&gt;", as
+      for the second data line.</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+   re&gt; /(a)|(b)/
+ data&gt; a
+  0: a
+  1: a
+ data&gt; b
+  0: b
+  1: &lt;unset&gt;
+  2: b
+</pre>
+      </div>
+
+      <p>If the strings contain any non-printing characters, they
+      are output as \xhh escapes if the value is less than 256 and
+      UTF mode is not set. Otherwise they are output as \x{hh...}
+      escapes. See below for the definition of non-printing
+      characters. If the <code class="filename">/aftertext</code>
+      modifier is set, the output for substring 0 is followed by
+      the the rest of the subject string, identified by "0+" like
+      this:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+   re&gt; /cat/aftertext
+ data&gt; cataract
+  0: cat
+  0+ aract
+</pre>
+      </div>
+
+      <p>If global matching is requested, the results of successive
+      matching attempts are output in sequence, like this:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+   re&gt; /\Bi(\w\w)/g
+ data&gt; Mississippi
+  0: iss
+  1: ss
+  0: iss
+  1: ss
+  0: ipp
+  1: pp
+</pre>
+      </div>
+
+      <p>"No match" is output only if the first match attempt
+      fails. Here is an example of a failure message (the offset 4
+      that is specified by the <span class="command"><strong>offset</strong></span> modifier is past the
+      end of the subject string):</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+   re&gt; /xyz/
+ data&gt; xyz\=offset=4
+ Error -24 (bad offset value)
+</pre>
+      </div>
+
+      <p>Note that whereas patterns can be continued over several
+      lines (a plain "&gt;" prompt is used for continuations),
+      subject lines may not. However newlines can be included in a
+      subject by means of the \n escape (or \r, \r\n, etc.,
+      depending on the newline sequence setting).</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2test-1_sect43" name="pcre2test-1_sect43" shape="rect"> </a>
+
+      <h2>OUTPUT FROM THE ALTERNATIVE MATCHING FUNCTION</h2>
+
+      <p>When the alternative matching function, <code class="function">pcre2_dfa_match</code>(), is used, the output
+      consists of a list of all the matches that start at the first
+      point in the subject where there is at least one match. For
+      example:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+   re&gt; /(tang|tangerine|tan)/
+ data&gt; yellow tangerine\=dfa
+  0: tangerine
+  1: tang
+  2: tan
+</pre>
+      </div>
+
+      <p>Using the normal matching function on this data finds only
+      "tang". The longest matching string is always given first
+      (and numbered zero). After a PCRE2_ERROR_PARTIAL return, the
+      output is "Partial match:", followed by the partially
+      matching substring. Note that this is the entire substring
+      that was inspected during the partial match; it may include
+      characters before the actual match start if a lookbehind
+      assertion, \b, or \B was involved. (\K is not supported for
+      DFA matching.)</p>
+
+      <p>If global matching is requested, the search for further
+      matches resumes at the end of the longest match. For
+      example:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+   re&gt; /(tang|tangerine|tan)/g
+ data&gt; yellow tangerine and tangy sultana\=dfa
+  0: tangerine
+  1: tang
+  2: tan
+  0: tang
+  1: tan
+  0: tan
+</pre>
+      </div>
+
+      <p>The alternative matching function does not support
+      substring capture, so the modifiers that are concerned with
+      captured substrings are not relevant.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2test-1_sect44" name="pcre2test-1_sect44" shape="rect"> </a>
+
+      <h2>RESTARTING AFTER A PARTIAL MATCH</h2>
+
+      <p>When the alternative matching function has given the
+      PCRE2_ERROR_PARTIAL return, indicating that the subject
+      partially matched the pattern, you can restart the match with
+      additional subject data by means of the <span class="command"><strong>dfa_restart</strong></span> modifier. For
+      example:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+   re&gt; /^\d?\d(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\d\d$/
+ data&gt; 23ja\=P,dfa
+ Partial match: 23ja
+ data&gt; n05\=dfa,dfa_restart
+  0: n05
+</pre>
+      </div>
+
+      <p>For further information about partial matching, see the
+      <a class="link" href="../htmlman3/pcre2partial.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2partial</span>(3)</span></a>
+      documentation.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2test-1_sect45" name="pcre2test-1_sect45" shape="rect"> </a>
+
+      <h2>CALLOUTS</h2>
+
+      <p>If the pattern contains any callout requests, <span class="command"><strong>pcre2test</strong></span>'s callout
+      function is called during matching. This works with both
+      matching functions. By default, the called function displays
+      the callout number, the start and current positions in the
+      text at the callout time, and the next pattern item to be
+      tested. For example:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ ---&gt;pqrabcdef
+   0    ^  ^     \d
+</pre>
+      </div>
+
+      <p>This output indicates that callout number 0 occurred for a
+      match attempt starting at the fourth character of the subject
+      string, when the pointer was at the seventh character, and
+      when the next pattern item was \d. Just one circumflex is
+      output if the start and current positions are the same.</p>
+
+      <p>Callouts numbered 255 are assumed to be automatic
+      callouts, inserted as a result of the <code class="filename">/auto_callout</code> pattern modifier. In this
+      case, instead of showing the callout number, the offset in
+      the pattern, preceded by a plus, is output. For example:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+   re&gt; /\d?[A-E]\*/auto_callout
+ data&gt; E*
+ ---&gt;E*
+  +0 ^      \d?
+  +3 ^      [A-E]
+  +8 ^^     \*
+ +10 ^ ^
+  0: E*
+</pre>
+      </div>
+
+      <p>If a pattern contains (*MARK) items, an additional line is
+      output whenever a change of latest mark is passed to the
+      callout function. For example:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+   re&gt; /a(*MARK:X)bc/auto_callout
+ data&gt; abc
+ ---&gt;abc
+  +0 ^       a
+  +1 ^^      (*MARK:X)
+ +10 ^^      b
+ Latest Mark: X
+ +11 ^ ^     c
+ +12 ^  ^
+  0: abc
+</pre>
+      </div>
+
+      <p>The mark changes between matching "a" and "b", but stays
+      the same for the rest of the match, so nothing more is
+      output. If, as a result of backtracking, the mark reverts to
+      being unset, the text "&lt;unset&gt;" is output.</p>
+
+      <p>The callout function in <span class="command"><strong>pcre2test</strong></span> returns zero
+      (carry on matching) by default, but you can use a
+      <span class="command"><strong>callout_fail</strong></span>
+      modifier in a subject line (as described above) to change
+      this and other parameters of the callout.</p>
+
+      <p>Inserting callouts can be helpful when using <span class="command"><strong>pcre2test</strong></span> to check
+      complicated regular expressions. For further information
+      about callouts, see the <a class="link" href="../htmlman3/pcre2callout.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2callout</span>(3)</span></a>
+      documentation.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2test-1_sect46" name="pcre2test-1_sect46" shape="rect"> </a>
+
+      <h2>NON-PRINTING CHARACTERS</h2>
+
+      <p>When <span class="command"><strong>pcre2test</strong></span> is outputting
+      text in the compiled version of a pattern, bytes other than
+      32-126 are always treated as non-printing characters and are
+      therefore shown as hex escapes.</p>
+
+      <p>When <span class="command"><strong>pcre2test</strong></span> is outputting
+      text that is a matched part of a subject string, it behaves
+      in the same way, unless a different locale has been set for
+      the pattern (using the <code class="filename">/locale</code>
+      modifier). In this case, the <code class="function">isprint</code>() function is used to distinguish
+      printing and non-printing characters.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2test-1_sect47" name="pcre2test-1_sect47" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/pcre2.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2</span>(3)</span></a>, <a class="link" href="../htmlman3/pcre2api.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2api</span>(3)</span></a>, <a class="link" href="../htmlman3/pcre2callout.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2callout</span>(3)</span></a>,
+      <span class="command"><strong>pcre2jit</strong></span>,
+      <a class="link" href="../htmlman3/pcre2matching.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2matching</span>(3)</span></a>,
+      <code class="function">pcre2partial</code>(d), <a class="link" href="../htmlman3/pcre2pattern.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2pattern</span>(3)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2test-1_sect48" name="pcre2test-1_sect48" shape="rect"> </a>
+
+      <h2>AUTHOR</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+Philip Hazel
+University Computing Service
+Cambridge, England.
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2test-1_sect49" name="pcre2test-1_sect49" shape="rect"> </a>
+
+      <h2>REVISION</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+Last updated: 02 January 2015
+Copyright (c) 1997-2015 University of Cambridge.
+</pre>
+      </div>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <thead>
+            <tr>
+              <th style="" rowspan="1" colspan="1">COPYRIGHT</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <p>This manual page is taken from the <a class="ulink" href="http://www.PCRE.org/" target="_top" shape="rect">PCRE library</a>, which is distributed under
+                the BSD license.</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

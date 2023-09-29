@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>ttyslot(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="ttyslot(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="ttyslot.3" name="ttyslot.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>ttyslot — find the slot of the current user's
+      terminal in some file</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;unistd.h&gt;     /* on BSD-like systems, and Linux */
+#include &lt;stdlib.h&gt;     /* on System V-like systems */
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>ttyslot</strong>(</code></td>
+
+            <td rowspan="1" colspan="1"><code>void)</code>;</td>
+
+            <td rowspan="1" colspan="1"> </td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <div class="featuretests">
+                <table style="border-collapse: collapse;">
+                  <colgroup span="1">
+                    <col span="1" />
+                  </colgroup>
+
+                  <thead>
+                    <tr>
+                      <th style="" rowspan="1" colspan="1">Feature Test Macro Requirements
+                      for glibc (see <a class="link" href="../htmlman7/feature_test_macros.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">feature_test_macros</span>(7)</span></a>):</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"><code class="function">ttyslot</code>():</td>
+                    </tr>
+
+                    <tr>
+                      <td class="featuretestdef" style="" rowspan="1" colspan="1">
+                      <code class="constant">_BSD_SOURCE</code>
+                      ||</td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"><code class="constant">_XOPEN_SOURCE</code> &amp;&amp;
+                      <code class="constant">_XOPEN_SOURCE</code>_
+                      &lt; 500 &amp;&amp; <code class="constant">_XOPEN_SOURCE_EXTENDED</code></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ttyslot-3_sect1" name="ttyslot-3_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The legacy function <code class="function">ttyslot</code>() returns the index of the current
+      user's entry in some file.</p>
+
+      <p>Now "What file?" you ask. Well, let's first look at some
+      history.</p>
+
+      <div class="refsect2">
+        <a id="ttyslot-3_sect2" name="ttyslot-3_sect2" shape="rect"> </a>
+
+        <h3>Ancient history</h3>
+
+        <p>There used to be a file <code class="filename">/etc/ttys</code> in UNIX V6, that was read by
+        the <span class="citerefentry"><span class="refentrytitle">init</span>(1)</span> program to find out
+        what to do with each terminal line. Each line consisted of
+        three characters. The first character was either '0' or
+        '1', where '0' meant "ignore". The second character denoted
+        the terminal: '8' stood for "/dev/tty8". The third
+        character was an argument to <span class="citerefentry"><span class="refentrytitle">getty</span>(8)</span> indicating the
+        sequence of line speeds to try ('−' was: start trying
+        110 baud). Thus a typical line was "18−". A hang on
+        some line was solved by changing the '1' to a '0',
+        signaling init, changing back again, and signaling init
+        again.</p>
+
+        <p>In UNIX V7 the format was changed: here the second
+        character was the argument to <span class="citerefentry"><span class="refentrytitle">getty</span>(8)</span> indicating the
+        sequence of line speeds to try ('0' was: cycle through
+        300-1200-150-110 baud; '4' was for the on-line console
+        DECwriter) while the rest of the line contained the name of
+        the tty. Thus a typical line was "14console".</p>
+
+        <p>Later systems have more elaborate syntax. System V-like
+        systems have <code class="filename">/etc/inittab</code>
+        instead.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="ttyslot-3_sect3" name="ttyslot-3_sect3" shape="rect"> </a>
+
+        <h3>Ancient history (2)</h3>
+
+        <p>On the other hand, there is the file <code class="filename">/etc/utmp</code> listing the people currently
+        logged in. It is maintained by <a class="link" href="../htmlman1/login.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">login</span>(1)</span></a>. It has a fixed
+        size, and the appropriate index in the file was determined
+        by <a class="link" href="../htmlman1/login.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">login</span>(1)</span></a> using the
+        <code class="function">ttyslot</code>() call to find the
+        number of the line in <code class="filename">/etc/ttys</code> (counting from 1).</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="ttyslot-3_sect4" name="ttyslot-3_sect4" shape="rect"> </a>
+
+        <h3>The semantics of ttyslot</h3>
+
+        <p>Thus, the function <code class="function">ttyslot</code>() returns the index of the
+        controlling terminal of the calling process in the file
+        <code class="filename">/etc/ttys</code>, and that is
+        (usually) the same as the index of the entry for the
+        current user in the file <code class="filename">/etc/utmp</code>. BSD still has the <code class="filename">/etc/ttys</code> file, but System V-like systems
+        do not, and hence cannot refer to it. Thus, on such systems
+        the documentation says that <code class="function">ttyslot</code>() returns the current user's
+        index in the user accounting data base.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ttyslot-3_sect5" name="ttyslot-3_sect5" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>If successful, this function returns the slot number. On
+      error (e.g., if none of the file descriptors 0, 1 or 2 is
+      associated with a terminal that occurs in this data base) it
+      returns 0 on UNIX V6 and V7 and BSD-like systems, but
+      −1 on System V-like systems.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ttyslot-3_sect6" name="ttyslot-3_sect6" shape="rect"> </a>
+
+      <h2>ATTRIBUTES</h2>
+
+      <p>For an explanation of the terms used in this section, see
+      <a class="link" href="../htmlman7/attributes.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">attributes</span>(7)</span></a>.</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">Interface</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Attribute</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Value</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><code class="literal">ttyslot</code>()</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Thread safety</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">MT-Unsafe</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ttyslot-3_sect7" name="ttyslot-3_sect7" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>SUSv1; marked as LEGACY in SUSv2; removed in POSIX.1-2001.
+      SUSv2 requires −1 on error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ttyslot-3_sect8" name="ttyslot-3_sect8" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>The utmp file is found various places on various systems,
+      such as <code class="filename">/etc/utmp</code>, <code class="filename">/var/adm/utmp</code>, <code class="filename">/var/run/utmp</code>.</p>
+
+      <p>The glibc2 implementation of this function reads the file
+      <code class="constant">_PATH_TTYS</code>, defined in
+      <code class="literal">&lt;</code><code class="filename">ttyent.h</code><code class="literal">&gt;</code>
+      as "/etc/ttys". It returns 0 on error. Since Linux systems do
+      not usually have "/etc/ttys", it will always return 0.</p>
+
+      <p>Minix also has <code class="function">fttyslot</code>(<code class="function">fd</code>).</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ttyslot-3_sect9" name="ttyslot-3_sect9" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/getttyent.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getttyent</span>(3)</span></a>, <a class="link" href="../htmlman3/ttyname.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ttyname</span>(3)</span></a>, <a class="link" href="../htmlman5/utmp.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">utmp</span>(5)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="ttyslot-3_sect10" name="ttyslot-3_sect10" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2002 Andries Brouwer &lt;aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  This replaces an earlier man page written by Walter Harms<br />
+
+                  &lt;walter.harms<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>informatik.uni-oldenburg.de&gt;.<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

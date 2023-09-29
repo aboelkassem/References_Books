@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>alloc_hugepages(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="alloc_hugepages(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="alloc-hugepages.2" name="alloc-hugepages.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>alloc_hugepages, free_hugepages — allocate or free
+      huge pages</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">void
+            *<strong>alloc_hugepages</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">key</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">void *<var class="pdparam">addr</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">size_t <var class="pdparam">len</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">prot</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">flag</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>free_hugepages</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">void *<var class="pdparam">addr</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="alloc-hugepages-2_sect1" name="alloc-hugepages-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The system calls <code class="function">alloc_hugepages</code>() and <code class="function">free_hugepages</code>() were introduced in Linux
+      2.5.36 and removed again in 2.5.54. They existed only on i386
+      and ia64 (when built with <code class="constant">CONFIG_HUGETLB_PAGE</code>). In Linux 2.4.20, the
+      syscall numbers exist, but the calls fail with the error
+      <span class="errorname">ENOSYS</span>.</p>
+
+      <p>On i386 the memory management hardware knows about
+      ordinary pages (4 KiB) and huge pages (2 or 4 MiB). Similarly
+      ia64 knows about huge pages of several sizes. These system
+      calls serve to map huge pages into the process's memory or to
+      free them again. Huge pages are locked into memory, and are
+      not swapped.</p>
+
+      <p>The <em class="parameter"><code>key</code></em> argument
+      is an identifier. When zero the pages are private, and not
+      inherited by children. When positive the pages are shared
+      with other applications using the same <em class="parameter"><code>key</code></em>, and inherited by child
+      processes.</p>
+
+      <p>The <em class="parameter"><code>addr</code></em> argument
+      of <code class="function">free_hugepages</code>() tells which
+      page is being freed: it was the return value of a call to
+      <code class="function">alloc_hugepages</code>(). (The memory
+      is first actually freed when all users have released it.) The
+      <em class="parameter"><code>addr</code></em> argument of
+      <code class="function">alloc_hugepages</code>() is a hint,
+      that the kernel may or may not follow. Addresses must be
+      properly aligned.</p>
+
+      <p>The <em class="parameter"><code>len</code></em> argument
+      is the length of the required segment. It must be a multiple
+      of the huge page size.</p>
+
+      <p>The <em class="parameter"><code>prot</code></em> argument
+      specifies the memory protection of the segment. It is one of
+      <code class="constant">PROT_READ</code>, <code class="constant">PROT_WRITE</code>, <code class="constant">PROT_EXEC</code>.</p>
+
+      <p>The <em class="parameter"><code>flag</code></em> argument
+      is ignored, unless <em class="parameter"><code>key</code></em> is positive. In that case,
+      if <em class="parameter"><code>flag</code></em> is
+      <code class="constant">IPC_CREAT</code>, then a new huge page
+      segment is created when none with the given key existed. If
+      this flag is not set, then <span class="errorname">ENOENT</span> is returned when no segment with
+      the given key exists.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="alloc-hugepages-2_sect2" name="alloc-hugepages-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">alloc_hugepages</code>() returns the allocated
+      virtual address, and <code class="function">free_hugepages</code>() returns zero. On error,
+      −1 is returned, and <code class="varname">errno</code>
+      is set appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="alloc-hugepages-2_sect3" name="alloc-hugepages-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">ENOSYS</span></span></dt>
+
+          <dd>
+            <p>The system call is not supported on this kernel.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="alloc-hugepages-2_sect4" name="alloc-hugepages-2_sect4" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <p><code class="filename">/proc/sys/vm/nr_hugepages</code>
+      Number of configured hugetlb pages. This can be read and
+      written.</p>
+
+      <p><code class="filename">/proc/meminfo</code> Gives info on
+      the number of configured hugetlb pages and on their size in
+      the three variables HugePages_Total, HugePages_Free,
+      Hugepagesize.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="alloc-hugepages-2_sect5" name="alloc-hugepages-2_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>These calls are specific to Linux on Intel processors, and
+      should not be used in programs intended to be portable.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="alloc-hugepages-2_sect6" name="alloc-hugepages-2_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>These system calls are gone; they existed only in Linux
+      2.5.36 through to 2.5.54. Now the hugetlbfs filesystem can be
+      used instead. Memory backed by huge pages (if the CPU
+      supports them) is obtained by using <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a> to map files in
+      this virtual filesystem.</p>
+
+      <p>The maximal number of huge pages can be specified using
+      the <em class="replaceable"><code>hugepages=</code></em> boot
+      parameter.</p>
+    </div>
+
+    <div class="colophon">
+      <a id="alloc-hugepages-2_sect7" name="alloc-hugepages-2_sect7" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright 2003 Andries E. Brouwer (aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl)<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

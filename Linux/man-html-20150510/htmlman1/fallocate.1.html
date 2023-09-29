@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>fallocate(1) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="fallocate(1) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index1.html" shape="rect">Section 1</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="fallocate.1" name="fallocate.1" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>fallocate — preallocate or deallocate space to a
+      file</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">fallocate</code> [<code class="option">−c</code>] [<code class="option">−n</code>] [<code class="option">−p</code>] [<code class="option">−z</code>] [ <code class="option">−o</code> offset ] <code class="option">−l</code> length filename</p>
+      </div>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">fallocate \-d</code> [
+        <code class="option">−o</code> offset ] [
+        <code class="option">−l</code> length ] filename</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fallocate-1_sect1" name="fallocate-1_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><span class="command"><strong>fallocate</strong></span> is
+      used to manipulate the allocated disk space for a file,
+      either to deallocate or preallocate it. For filesystems which
+      support the fallocate system call, preallocation is done
+      quickly by allocating blocks and marking them as
+      uninitialized, requiring no IO to the data blocks. This is
+      much faster than creating a file by filling it with
+      zeros.</p>
+
+      <p>The exit code returned by <span class="command"><strong>fallocate</strong></span> is 0 on success
+      and 1 on failure.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="fallocate-1_sect2" name="fallocate-1_sect2" shape="rect"> </a>
+
+      <h2>OPTIONS</h2>
+
+      <p>The <em class="parameter"><code>length</code></em> and
+      <em class="parameter"><code>offset</code></em> arguments may
+      be followed by the multiplicative suffixes KiB (=1024), MiB
+      (=1024*1024), and so on for GiB, TiB, PiB, EiB, ZiB and YiB
+      (the "iB" is optional, e.g., "K" has the same meaning as
+      "KiB") or the suffixes KB (=1000), MB (=1000*1000), and so on
+      for GB, TB, PB, EB, ZB and YB.</p>
+
+      <p>The options <code class="option">−−collapse−range</code>,
+      <code class="option">−−dig−holes</code>,
+      <code class="option">−−punch−hole</code>
+      and <code class="option">−−zero−range</code> are mutually
+      exclusive.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="option">−c,
+          −−collapse−range</code></span></dt>
+
+          <dd>
+            <p>Removes a byte range from a file, without leaving a
+            hole. The byte range to be collapsed starts at
+            <em class="parameter"><code>offset</code></em> and
+            continues for <em class="parameter"><code>length</code></em> bytes. At the
+            completion of the operation, the contents of the file
+            starting at the location <em class="parameter"><code>offset</code></em>+<em class="parameter"><code>length</code></em> will be appended
+            at the location <em class="parameter"><code>offset</code></em>, and the file will
+            be <em class="parameter"><code>length</code></em> bytes
+            smaller. The option <code class="option">−−keep−size</code> may not
+            be specified for colapse range operation.</p>
+
+            <p>Available since Linux 3.15 for ext4 (only for
+            extent-based files) and XFS.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−d,
+          −−dig−holes</code></span></dt>
+
+          <dd>
+            <p>Detect and dig holes. This makes the file sparse
+            in-place, without using extra disk space. The minimum
+            size of the hole depends on filesystem I/O block size
+            (usually 4096 bytes). Also, when using this option,
+            <code class="option">−−keep−size</code> is
+            implied. If no range is specified by <code class="option">−−offset</code> and <code class="option">−−length</code>, then the entire
+            file is analyzed for holes.</p>
+
+            <p>You can think of this option as doing a
+            "<span class="emphasis"><em>cp --sparse</em></span>"
+            and then renaming the destination file to the original,
+            without the need for extra disk space.</p>
+
+            <p>See <code class="option">−−punch−hole</code> for a
+            list of supported filesystems.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−l,
+          −−length <em class="parameter"><code>length</code></em></code></span></dt>
+
+          <dd>
+            <p>Specifies the length of the range, in bytes.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−n,
+          −−keep−size</code></span></dt>
+
+          <dd>
+            <p>Do not modify the apparent length of the file. This
+            may effectively allocate blocks past EOF, which can be
+            removed with a truncate.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−o,
+          −−offset <em class="parameter"><code>offset</code></em></code></span></dt>
+
+          <dd>
+            <p>Specifies the beginning offset of the range, in
+            bytes.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−p,
+          −−punch−hole</code></span></dt>
+
+          <dd>
+            <p>Deallocates space (i.e., creates a hole) in the byte
+            range starting at <em class="parameter"><code>offset</code></em> and continuing for
+            <em class="parameter"><code>length</code></em> bytes.
+            Within the specified range, partial filesystem blocks
+            are zeroed, and whole filesystem blocks are removed
+            from the file. After a successful call, subsequent
+            reads from this range will return zeroes. This option
+            may not be specified at the same time as the
+            <code class="option">−−zero−range</code> option.
+            Also, when using this option, <code class="option">−−keep−size</code> is
+            implied.</p>
+
+            <p>Supported for XFS (since Linux 2.6.38), ext4 (since
+            Linux 3.0), Btrfs (since Linux 3.7) and tmpfs (since
+            Linux 3.5).</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−v,
+          −−verbose</code></span></dt>
+
+          <dd>
+            <p>Enable verbose mode.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−z,
+          −−zero−range</code></span></dt>
+
+          <dd>
+            <p>Zeroes space in the byte range starting at
+            <em class="parameter"><code>offset</code></em> and
+            continuing for <em class="parameter"><code>length</code></em> bytes. Within the
+            specified range, blocks are preallocated for the
+            regions that span the holes in the file. After a
+            successful call, subsequent reads from this range will
+            return zeroes.</p>
+
+            <p>Zeroing is done within the filesystem preferably by
+            converting the range into unwritten extents. This
+            approach means that the specified range will not be
+            physically zeroed out on the device (except for partial
+            blocks at the either end of the range), and I/O is
+            (otherwise) required only to update metadata.</p>
+
+            <p>Option <code class="option">−−keep−size</code> can be
+            specified to prevent file length modification.</p>
+
+            <p>Available since Linux 3.14 for ext4 (only for
+            extent-based files) and XFS.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−V,
+          −−version</code></span></dt>
+
+          <dd>
+            <p>Display version information and exit.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−h,
+          −−help</code></span></dt>
+
+          <dd>
+            <p>Display help text and exit.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fallocate-1_sect3" name="fallocate-1_sect3" shape="rect"> </a>
+
+      <h2>AUTHORS</h2>
+
+      <p><a class="literalurl" href="mailto:sandeen%20REMOVE%20@%20THIS%20redhat.com" target="_top" shape="rect">Eric Sandeen</a></p>
+
+      <p><a class="literalurl" href="mailto:kzak%20REMOVE%20@%20THIS%20redhat.com" target="_top" shape="rect">Karel Zak</a></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="fallocate-1_sect4" name="fallocate-1_sect4" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/fallocate.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fallocate</span>(2)</span></a>, <a class="link" href="../htmlman3/posix_fallocate.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">posix_fallocate</span>(3)</span></a>,
+      <a class="link" href="../htmlman1/truncate.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">truncate</span>(1)</span></a></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="fallocate-1_sect5" name="fallocate-1_sect5" shape="rect"> </a>
+
+      <h2>AVAILABILITY</h2>
+
+      <p>The fallocate command is part of the util-linux package
+      and is available from <a class="literalurl" href="ftp://ftp.kernel.org/pub/linux/utils/util-linux/" target="_top" shape="rect">Linux Kernel Archive</a></p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

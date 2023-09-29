@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>migrate_pages(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="migrate_pages(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="migrate-pages.2" name="migrate-pages.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>migrate_pages — move all pages in a process to
+      another set of nodes</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;numaif.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">long
+            <strong>migrate_pages</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">pid</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">unsigned long <var class="pdparam">maxnode</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const unsigned long *<var class="pdparam">old_nodes</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const unsigned long *<var class="pdparam">new_nodes</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <p>Link with <code class="option">−lnuma</code>.</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="migrate-pages-2_sect1" name="migrate-pages-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">migrate_pages</code>() attempts to
+      move all pages of the process <em class="parameter"><code>pid</code></em> that are in memory nodes
+      <em class="parameter"><code>old_nodes</code></em> to the
+      memory nodes in <em class="parameter"><code>new_nodes</code></em>. Pages not located in
+      any node in <em class="parameter"><code>old_nodes</code></em>
+      will not be migrated. As far as possible, the kernel
+      maintains the relative topology relationship inside
+      <em class="parameter"><code>old_nodes</code></em> during the
+      migration to <em class="parameter"><code>new_nodes</code></em>.</p>
+
+      <p>The <em class="parameter"><code>old_nodes</code></em> and
+      <em class="parameter"><code>new_nodes</code></em> arguments
+      are pointers to bit masks of node numbers, with up to
+      <em class="parameter"><code>maxnode</code></em> bits in each
+      mask. These masks are maintained as arrays of unsigned
+      <span class="type">long</span> integers (in the last
+      <span class="type">long</span> integer, the bits beyond those
+      specified by <em class="parameter"><code>maxnode</code></em>
+      are ignored). The <em class="parameter"><code>maxnode</code></em> argument is the maximum
+      node number in the bit mask plus one (this is the same as in
+      <a class="link" href="../htmlman2/mbind.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mbind</span>(2)</span></a>, but different
+      from <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a>).</p>
+
+      <p>The <em class="parameter"><code>pid</code></em> argument
+      is the ID of the process whose pages are to be moved. To move
+      pages in another process, the caller must be privileged
+      (<code class="constant">CAP_SYS_NICE</code>) or the real or
+      effective user ID of the calling process must match the real
+      or saved-set user ID of the target process. If <em class="parameter"><code>pid</code></em> is 0, then <code class="function">migrate_pages</code>() moves pages of the calling
+      process.</p>
+
+      <p>Pages shared with another process will be moved only if
+      the initiating process has the <code class="constant">CAP_SYS_NICE</code> privilege.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="migrate-pages-2_sect2" name="migrate-pages-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success <code class="function">migrate_pages</code>()
+      returns the number of pages that could not be moved (i.e., a
+      return of zero means that all pages were successfully moved).
+      On error, it returns −1, and sets <code class="varname">errno</code> to indicate the error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="migrate-pages-2_sect3" name="migrate-pages-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p>Part or all of the memory range specified by
+            <em class="parameter"><code>old_nodes</code></em>/<em class="parameter"><code>new_nodes</code></em> and <em class="parameter"><code>maxnode</code></em> points outside
+            your accessible address space.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>The value specified by <em class="parameter"><code>maxnode</code></em> exceeds a
+            kernel-imposed limit. Or, <em class="parameter"><code>old_nodes</code></em> or <em class="parameter"><code>new_nodes</code></em> specifies one
+            or more node IDs that are greater than the maximum
+            supported node ID. Or, none of the node IDs specified
+            by <em class="parameter"><code>new_nodes</code></em>
+            are on-line and allowed by the process's current cpuset
+            context, or none of the specified nodes contain
+            memory.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>Insufficient privilege (<code class="constant">CAP_SYS_NICE</code>) to move pages of the
+            process specified by <em class="parameter"><code>pid</code></em>, or insufficient
+            privilege (<code class="constant">CAP_SYS_NICE</code>)
+            to access the specified target nodes.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ESRCH</span></span></dt>
+
+          <dd>
+            <p>No process matching <em class="parameter"><code>pid</code></em> could be found.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="migrate-pages-2_sect4" name="migrate-pages-2_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p>The <code class="function">migrate_pages</code>() system
+      call first appeared on Linux in version 2.6.16.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="migrate-pages-2_sect5" name="migrate-pages-2_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>This system call is Linux-specific.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="migrate-pages-2_sect6" name="migrate-pages-2_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>For information on library support, see <a class="link" href="../htmlman7/numa.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">numa</span>(7)</span></a>.</p>
+
+      <p>Use <a class="link" href="../htmlman2/get_mempolicy.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">get_mempolicy</span>(2)</span></a> with the
+      <code class="constant">MPOL_F_MEMS_ALLOWED</code> flag to
+      obtain the set of nodes that are allowed by the calling
+      process's cpuset. Note that this information is subject to
+      change at any time by manual or automatic reconfiguration of
+      the cpuset.</p>
+
+      <p>Use of <code class="function">migrate_pages</code>() may
+      result in pages whose location (node) violates the memory
+      policy established for the specified addresses (see <a class="link" href="../htmlman2/mbind.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mbind</span>(2)</span></a>) and/or the
+      specified process (see <a class="link" href="../htmlman2/set_mempolicy.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">set_mempolicy</span>(2)</span></a>). That is,
+      memory policy does not constrain the destination nodes used
+      by <code class="function">migrate_pages</code>().</p>
+
+      <p>The <code class="literal">&lt;</code><code class="filename">numaif.h</code><code class="literal">&gt;</code>
+      header is not included with glibc, but requires installing
+      <em class="replaceable"><code>libnuma-devel</code></em> or a
+      similar package.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="migrate-pages-2_sect7" name="migrate-pages-2_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/get_mempolicy.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">get_mempolicy</span>(2)</span></a>, <a class="link" href="../htmlman2/mbind.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mbind</span>(2)</span></a>, <a class="link" href="../htmlman2/set_mempolicy.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">set_mempolicy</span>(2)</span></a>,
+      <span class="citerefentry"><span class="refentrytitle">numa</span>(3)</span>, <a class="link" href="../htmlman7/numa.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">numa_maps</span>(5)</span></a>, <a class="link" href="../htmlman7/cpuset.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">cpuset</span>(7)</span></a>, <a class="link" href="../htmlman7/numa.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">numa</span>(7)</span></a>, <span class="citerefentry"><span class="refentrytitle">migratepages</span>(8)</span>, <span class="citerefentry"><span class="refentrytitle">numastat</span>(8)</span></p>
+
+      <p><code class="filename">Documentation/vm/page_migration</code> in the
+      Linux kernel source tree</p>
+    </div>
+
+    <div class="colophon">
+      <a id="migrate-pages-2_sect8" name="migrate-pages-2_sect8" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright 2009 Intel Corporation<br />
+
+                                 Author: Andi Kleen<br />
+
+                  Based on the move_pages manpage which was<br />
+
+                  This manpage is Copyright (C) 2006 Silicon Graphics, Inc.<br />
+
+                                                Christoph Lameter<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM_TWO_PARA)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>makecontext(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="makecontext(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="makecontext.3" name="makecontext.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>makecontext, swapcontext — manipulate user
+      context</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;ucontext.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">void
+            <strong>makecontext</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">ucontext_t *<var class="pdparam">ucp</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">void <var class="pdparam">(*func)</var><code>(</code><code>)</code>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">argc</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1"><var class="pdparam">...</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>swapcontext</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">ucontext_t *<var class="pdparam">oucp</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const ucontext_t *<var class="pdparam">ucp</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="makecontext-3_sect1" name="makecontext-3_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>In a System V-like environment, one has the type
+      <span class="type">ucontext_t</span> defined in <code class="literal">&lt;</code><code class="filename">ucontext.h</code><code class="literal">&gt;</code>
+      and the four functions <a class="link" href="../htmlman3/getcontext.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getcontext</span>(3)</span></a>, <a class="link" href="../htmlman3/getcontext.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setcontext</span>(3)</span></a>, <code class="function">makecontext</code>() and <code class="function">swapcontext</code>() that allow user-level context
+      switching between multiple threads of control within a
+      process.</p>
+
+      <p>For the type and the first two functions, see <a class="link" href="../htmlman3/getcontext.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getcontext</span>(3)</span></a>.</p>
+
+      <p>The <code class="function">makecontext</code>() function
+      modifies the context pointed to by <em class="parameter"><code>ucp</code></em> (which was obtained from a
+      call to <a class="link" href="../htmlman3/getcontext.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getcontext</span>(3)</span></a>). Before
+      invoking <code class="function">makecontext</code>(), the
+      caller must allocate a new stack for this context and assign
+      its address to <em class="replaceable"><code>ucp−&gt;uc_stack</code></em>, and
+      define a successor context and assign its address to
+      <em class="replaceable"><code>ucp−&gt;uc_link</code></em>.</p>
+
+      <p>When this context is later activated (using <a class="link" href="../htmlman3/getcontext.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setcontext</span>(3)</span></a> or
+      <code class="function">swapcontext</code>()) the function
+      <em class="parameter"><code>func</code></em> is called, and
+      passed the series of integer (<span class="type">int</span>)
+      arguments that follow <em class="parameter"><code>argc</code></em>; the caller must specify
+      the number of these arguments in <em class="parameter"><code>argc</code></em>. When this function
+      returns, the successor context is activated. If the successor
+      context pointer is NULL, the thread exits.</p>
+
+      <p>The <code class="function">swapcontext</code>() function
+      saves the current context in the structure pointed to by
+      <em class="parameter"><code>oucp</code></em>, and then
+      activates the context pointed to by <em class="parameter"><code>ucp</code></em>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="makecontext-3_sect2" name="makecontext-3_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>When successful, <code class="function">swapcontext</code>() does not return. (But we may
+      return later, in case <em class="parameter"><code>oucp</code></em> is activated, in which
+      case it looks like <code class="function">swapcontext</code>() returns 0.) On error,
+      <code class="function">swapcontext</code>() returns −1
+      and sets <code class="varname">errno</code>
+      appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="makecontext-3_sect3" name="makecontext-3_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>Insufficient stack space left.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="makecontext-3_sect4" name="makecontext-3_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p><code class="function">makecontext</code>() and
+      <code class="function">swapcontext</code>() are provided in
+      glibc since version 2.1.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="makecontext-3_sect5" name="makecontext-3_sect5" shape="rect"> </a>
+
+      <h2>ATTRIBUTES</h2>
+
+      <p>For an explanation of the terms used in this section, see
+      <a class="link" href="../htmlman7/attributes.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">attributes</span>(7)</span></a>.</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">Interface</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Attribute</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Value</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><code class="literal">makecontext</code>()</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Thread safety</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">MT-Safe race:ucp</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><code class="literal">swapcontext</code>()</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Thread safety</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">MT-Safe race:oucp
+              race:ucp</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="makecontext-3_sect6" name="makecontext-3_sect6" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>SUSv2, POSIX.1-2001. POSIX.1-2008 removes the
+      specifications of <code class="function">makecontext</code>()
+      and <code class="function">swapcontext</code>(), citing
+      portability issues, and recommending that applications be
+      rewritten to use POSIX threads instead.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="makecontext-3_sect7" name="makecontext-3_sect7" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>The interpretation of <em class="replaceable"><code>ucp−&gt;uc_stack</code></em> is
+      just as in <a class="link" href="../htmlman2/sigaltstack.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaltstack</span>(2)</span></a>, namely,
+      this struct contains the start and length of a memory area to
+      be used as the stack, regardless of the direction of growth
+      of the stack. Thus, it is not necessary for the user program
+      to worry about this direction.</p>
+
+      <p>On architectures where <span class="type">int</span> and
+      pointer types are the same size (e.g., x86-32, where both
+      types are 32 bits), you may be able to get away with passing
+      pointers as arguments to <code class="function">makecontext</code>() following <em class="parameter"><code>argc</code></em>. However, doing this is
+      not guaranteed to be portable, is undefined according to the
+      standards, and won't work on architectures where pointers are
+      larger than <span class="type">int</span>s. Nevertheless,
+      starting with version 2.8, glibc makes some changes to
+      <code class="function">makecontext</code>(), to permit this
+      on some 64-bit architectures (e.g., x86-64).</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="makecontext-3_sect8" name="makecontext-3_sect8" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>The example program below demonstrates the use of
+      <a class="link" href="../htmlman3/getcontext.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getcontext</span>(3)</span></a>, <code class="function">makecontext</code>(), and <code class="function">swapcontext</code>(). Running the program produces
+      the following output:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$<span class="emphasis"><em> ./a.out</em></span>
+main: swapcontext(&amp;uctx_main, &amp;uctx_func2)
+func2: started
+func2: swapcontext(&amp;uctx_func2, &amp;uctx_func1)
+func1: started
+func1: swapcontext(&amp;uctx_func1, &amp;uctx_func2)
+func2: returning
+func1: returning
+main: exiting
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="refsect2">
+        <a id="makecontext-3_sect9" name="makecontext-3_sect9" shape="rect"> </a>
+
+        <h3>Program source</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+#include &lt;ucontext.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+static ucontext_t uctx_main, uctx_func1, uctx_func2;
+
+#define handle_error(msg) \
+    do { perror(msg); exit(EXIT_FAILURE); } while (0)
+
+static void
+func1(void)
+{
+    printf("func1: started\n");
+    printf("func1: swapcontext(&amp;uctx_func1, &amp;uctx_func2)\n");
+    if (swapcontext(&amp;uctx_func1, &amp;uctx_func2) == −1)
+        handle_error("swapcontext");
+    printf("func1: returning\n");
+}
+
+static void
+func2(void)
+{
+    printf("func2: started\n");
+    printf("func2: swapcontext(&amp;uctx_func2, &amp;uctx_func1)\n");
+    if (swapcontext(&amp;uctx_func2, &amp;uctx_func1) == −1)
+        handle_error("swapcontext");
+    printf("func2: returning\n");
+}
+
+int
+main(int argc, char *argv[])
+{
+    char func1_stack[16384];
+    char func2_stack[16384];
+
+    if (getcontext(&amp;uctx_func1) == −1)
+        handle_error("getcontext");
+    uctx_func1.uc_stack.ss_sp = func1_stack;
+    uctx_func1.uc_stack.ss_size = sizeof(func1_stack);
+    uctx_func1.uc_link = &amp;uctx_main;
+    makecontext(&amp;uctx_func1, func1, 0);
+
+    if (getcontext(&amp;uctx_func2) == −1)
+        handle_error("getcontext");
+    uctx_func2.uc_stack.ss_sp = func2_stack;
+    uctx_func2.uc_stack.ss_size = sizeof(func2_stack);
+    /* Successor context is f1(), unless argc &gt; 1 */
+    uctx_func2.uc_link = (argc &gt; 1) ? NULL : &amp;uctx_func1;
+    makecontext(&amp;uctx_func2, func2, 0);
+
+    printf("main: swapcontext(&amp;uctx_main, &amp;uctx_func2)\n");
+    if (swapcontext(&amp;uctx_main, &amp;uctx_func2) == −1)
+        handle_error("swapcontext");
+
+    printf("main: exiting\n");
+    exit(EXIT_SUCCESS);
+}
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="makecontext-3_sect10" name="makecontext-3_sect10" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a>, <a class="link" href="../htmlman2/sigaltstack.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaltstack</span>(2)</span></a>, <a class="link" href="../htmlman2/sigprocmask.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigprocmask</span>(2)</span></a>, <a class="link" href="../htmlman3/getcontext.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getcontext</span>(3)</span></a>, <a class="link" href="../htmlman3/setjmp.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigsetjmp</span>(3)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="makecontext-3_sect11" name="makecontext-3_sect11" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2001 Andries Brouwer (aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl)<br />
+
+                  and Copyright (C) 2006 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  2006-08-02, mtk, Added example program<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

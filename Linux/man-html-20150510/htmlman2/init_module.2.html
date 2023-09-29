@@ -1,0 +1,553 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>init_module(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="init_module(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="init-module.2" name="init-module.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>init_module, finit_module — load a kernel module</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>init_module</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">void *<var class="pdparam">module_image</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">unsigned long <var class="pdparam">len</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">param_values</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>finit_module</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">fd</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">param_values</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">flags</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">glibc provides no header
+            file declaration of</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+.BR init_module ()
+and no wrapper function for
+see NOTES.
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="init-module-2_sect1" name="init-module-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">init_module</code>() loads an ELF
+      image into kernel space, performs any necessary symbol
+      relocations, initializes module parameters to values provided
+      by the caller, and then runs the module's <em class="replaceable"><code>init</code></em> function. This system
+      call requires privilege.</p>
+
+      <p>The <em class="parameter"><code>module_image</code></em>
+      argument points to a buffer containing the binary image to be
+      loaded; <em class="parameter"><code>len</code></em> specifies
+      the size of that buffer. The module image should be a valid
+      ELF image, built for the running kernel.</p>
+
+      <p>The <em class="parameter"><code>param_values</code></em>
+      argument is a string containing space-delimited
+      specifications of the values for module parameters (defined
+      inside the module using <code class="function">module_param</code>() and <code class="function">module_param_array</code>()). The kernel parses
+      this string and initializes the specified parameters. Each of
+      the parameter specifications has the form:</p>
+
+      <p><em class="replaceable"><code>name</code></em>[
+      =<em class="replaceable"><code>value</code></em> [<em class="replaceable"><code>,</code></em> <em class="replaceable"><code>value</code></em>...]]</p>
+
+      <p>The parameter <em class="replaceable"><code>name</code></em> is one of those defined
+      within the module using <code class="function">module_param</code>() (see the Linux kernel source
+      file <code class="filename">include/linux/moduleparam.h</code>). The parameter
+      <em class="replaceable"><code>value</code></em> is optional
+      in the case of <em class="replaceable"><code>bool</code></em>
+      and <em class="replaceable"><code>invbool</code></em>
+      parameters. Values for array parameters are specified as a
+      comma-separated list.</p>
+
+      <div class="refsect2">
+        <a id="init-module-2_sect2" name="init-module-2_sect2" shape="rect"> </a>
+
+        <h3>finit_module()</h3>
+
+        <p>The <code class="function">finit_module</code>() system
+        call is like <code class="function">init_module</code>(),
+        but reads the module to be loaded from the file descriptor
+        <em class="parameter"><code>fd</code></em>. It is useful
+        when the authenticity of a kernel module can be determined
+        from its location in the filesystem; in cases where that is
+        possible, the overhead of using cryptographically signed
+        modules to determine the authenticity of a module can be
+        avoided. The <em class="parameter"><code>param_values</code></em> argument is as
+        for <code class="function">init_module</code>().</p>
+
+        <p>The <em class="parameter"><code>flags</code></em>
+        argument modifies the operation of <code class="function">finit_module</code>(). It is a bit mask value
+        created by ORing together zero or more of the following
+        flags:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">MODULE_INIT_IGNORE_MODVERSIONS</code></span></dt>
+
+            <dd>
+              <p>Ignore symbol version hashes.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">MODULE_INIT_IGNORE_VERMAGIC</code></span></dt>
+
+            <dd>
+              <p>Ignore kernel version magic.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>There are some safety checks built into a module to
+        ensure that it matches the kernel against which it is
+        loaded. These checks are recorded when the module is built
+        and verified when the module is loaded. First, the module
+        records a "vermagic" string containing the kernel version
+        number and prominent features (such as the CPU type).
+        Second, if the module was built with the <code class="constant">CONFIG_MODVERSIONS</code> configuration option
+        enabled, a version hash is recorded for each symbol the
+        module uses. This hash is based on the types of the
+        arguments and return value for the function named by the
+        symbol. In this case, the kernel version number within the
+        "vermagic" string is ignored, as the symbol version hashes
+        are assumed to be sufficiently reliable.</p>
+
+        <p>Using the <code class="constant">MODULE_INIT_IGNORE_VERMAGIC</code> flag
+        indicates that the "vermagic" string is to be ignored, and
+        the <code class="constant">MODULE_INIT_IGNORE_MODVERSIONS</code> flag
+        indicates that the symbol version hashes are to be ignored.
+        If the kernel is built to permit forced loading (i.e.,
+        configured with <code class="constant">CONFIG_MODULE_FORCE_LOAD</code>), then loading
+        will continue, otherwise it will fail with <span class="errorname">ENOEXEC</span> as expected for malformed
+        modules.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="init-module-2_sect3" name="init-module-2_sect3" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, these system calls return 0. On error,
+      −1 is returned and <code class="varname">errno</code>
+      is set appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="init-module-2_sect4" name="init-module-2_sect4" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EBADMSG</span> (since Linux 3.7)</span></dt>
+
+          <dd>
+            <p>Module signature is misformatted.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EBUSY</span></span></dt>
+
+          <dd>
+            <p>Timeout while trying to resolve a symbol reference
+            by this module.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p>An address argument referred to a location that is
+            outside the process's accessible address space.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOKEY</span> (since Linux 3.7)</span></dt>
+
+          <dd>
+            <p>Module signature is invalid or the kernel does not
+            have a key for this module. This error is returned only
+            if the kernel was configured with <code class="constant">CONFIG_MODULE_SIG_FORCE</code>; if the
+            kernel was not configured with this option, then an
+            invalid or unsigned module simply taints the
+            kernel.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>Out of memory.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The caller was not privileged (did not have the
+            <code class="constant">CAP_SYS_MODULE</code>
+            capability), or module loading is disabled (see
+            <code class="filename">/proc/sys/kernel/modules_disabled</code> in
+            <a class="link" href="../htmlman5/proc.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">proc</span>(5)</span></a>).</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>The following errors may additionally occur for
+      <code class="function">init_module</code>():</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EEXIST</span></span></dt>
+
+          <dd>
+            <p>A module with this name is already loaded.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>param_values</code></em>
+            is invalid, or some part of the ELF image in <em class="parameter"><code>module_image</code></em> contains
+            inconsistencies.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOEXEC</span></span></dt>
+
+          <dd>
+            <p>The binary image supplied in <em class="parameter"><code>module_image</code></em> is not an
+            ELF image, or is an ELF image that is invalid or for a
+            different architecture.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>The following errors may additionally occur for
+      <code class="function">finit_module</code>():</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EBADF</span></span></dt>
+
+          <dd>
+            <p>The file referred to by <em class="parameter"><code>fd</code></em> is not opened for
+            reading.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EFBIG</span></span></dt>
+
+          <dd>
+            <p>The file referred to by <em class="parameter"><code>fd</code></em> is too large.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>flags</code></em> is
+            invalid.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOEXEC</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>fd</code></em> does not
+            refer to an open file.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>In addition to the above errors, if the module's
+      <em class="replaceable"><code>init</code></em> function is
+      executed and returns an error, then <code class="function">init_module</code>() or <code class="function">finit_module</code>() fails and <code class="varname">errno</code> is set to the value returned by the
+      <em class="replaceable"><code>init</code></em> function.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="init-module-2_sect5" name="init-module-2_sect5" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p><code class="function">finit_module</code>() is available
+      since Linux 3.8.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="init-module-2_sect6" name="init-module-2_sect6" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p><code class="function">init_module</code>() and
+      <code class="function">finit_module</code>() are
+      Linux-specific.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="init-module-2_sect7" name="init-module-2_sect7" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>The <code class="function">init_module</code>() system
+      call is not supported by glibc. No declaration is provided in
+      glibc headers, but, through a quirk of history, glibc does
+      export an ABI for this system call. Therefore, in order to
+      employ this system call, it is sufficient to manually declare
+      the interface in your code; alternatively, you can invoke the
+      system call using <a class="link" href="../htmlman2/syscall.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">syscall</span>(2)</span></a>.</p>
+
+      <p>Glibc does not provide a wrapper for <code class="function">finit_module</code>(); call it using <a class="link" href="../htmlman2/syscall.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">syscall</span>(2)</span></a>.</p>
+
+      <p>Information about currently loaded modules can be found in
+      <code class="filename">/proc/modules</code> and in the file
+      trees under the per-module subdirectories under <code class="filename">/sys/module</code>.</p>
+
+      <p>See the Linux kernel source file <code class="filename">include/linux/module.h</code> for some useful
+      background information.</p>
+
+      <div class="refsect2">
+        <a id="init-module-2_sect8" name="init-module-2_sect8" shape="rect"> </a>
+
+        <h3>Linux 2.4 and earlier</h3>
+
+        <p>In Linux 2.4 and earlier, the <code class="function">init_module</code>() system call was rather
+        different:</p>
+
+        <p><span class="emphasis"><em>#include
+        &lt;linux/module.h&gt;</em></span></p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+  <code class="function">    int init_module</code>(<em class="parameter"><code>const char *name</code></em>, <em class="parameter"><code>struct module *image</code></em>);
+</pre>
+        </div>
+
+        <p>(User-space applications can detect which version of
+        <code class="function">init_module</code>() is available by
+        calling <code class="function">query_module</code>(); the
+        latter call fails with the error <span class="errorname">ENOSYS</span> on Linux 2.6 and later.)</p>
+
+        <p>The older version of the system call loads the relocated
+        module image pointed to by <em class="replaceable"><code>image</code></em> into kernel space and
+        runs the module's <em class="replaceable"><code>init</code></em> function. The caller
+        is responsible for providing the relocated image (since
+        Linux 2.6, the <code class="function">init_module</code>()
+        system call does the relocation).</p>
+
+        <p>The module image begins with a module structure and is
+        followed by code and data as appropriate. Since Linux 2.2,
+        the module structure is defined as follows:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+struct module {
+    unsigned long         size_of_struct;
+    struct module        *next;
+    const char           *name;
+    unsigned long         size;
+    long                  usecount;
+    unsigned long         flags;
+    unsigned int          nsyms;
+    unsigned int          ndeps;
+    struct module_symbol *syms;
+    struct module_ref    *deps;
+    struct module_ref    *refs;
+    int                 (*init)(void);
+    void                (*cleanup)(void);
+    const struct exception_table_entry *ex_table_start;
+    const struct exception_table_entry *ex_table_end;
+#ifdef __alpha__
+    unsigned long gp;
+#endif
+};
+</pre>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>All of the pointer fields, with the exception of
+        <em class="replaceable"><code>next</code></em> and
+        <em class="replaceable"><code>refs</code></em>, are
+        expected to point within the module body and be initialized
+        as appropriate for kernel space, that is, relocated with
+        the rest of the module.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="init-module-2_sect9" name="init-module-2_sect9" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/create_module.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">create_module</span>(2)</span></a>, <a class="link" href="../htmlman2/delete_module.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">delete_module</span>(2)</span></a>, <a class="link" href="../htmlman2/query_module.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">query_module</span>(2)</span></a>,
+      <span class="citerefentry"><span class="refentrytitle">lsmod</span>(8)</span>, <span class="citerefentry"><span class="refentrytitle">modprobe</span>(8)</span></p>
+    </div>
+
+    <div class="colophon">
+      <a id="init-module-2_sect10" name="init-module-2_sect10" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2012 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  A few fragments remain from a version<br />
+
+                  Copyright (C) 1996 Free Software Foundation, Inc.<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

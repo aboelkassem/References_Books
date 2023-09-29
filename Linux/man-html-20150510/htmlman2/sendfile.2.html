@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>sendfile(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="sendfile(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="sendfile.2" name="sendfile.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>sendfile — transfer data between file
+      descriptors</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;sys/sendfile.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">ssize_t
+            <strong>sendfile</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">out_fd</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">in_fd</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">off_t *<var class="pdparam">offset</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">size_t <var class="pdparam">count</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sendfile-2_sect1" name="sendfile-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">sendfile</code>() copies data
+      between one file descriptor and another. Because this copying
+      is done within the kernel, <code class="function">sendfile</code>() is more efficient than the
+      combination of <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> and <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a>, which would
+      require transferring data to and from user space.</p>
+
+      <p><em class="parameter"><code>in_fd</code></em> should be a
+      file descriptor opened for reading and <em class="parameter"><code>out_fd</code></em> should be a descriptor
+      opened for writing.</p>
+
+      <p>If <em class="parameter"><code>offset</code></em> is not
+      NULL, then it points to a variable holding the file offset
+      from which <code class="function">sendfile</code>() will
+      start reading data from <em class="parameter"><code>in_fd</code></em>. When <code class="function">sendfile</code>() returns, this variable will be
+      set to the offset of the byte following the last byte that
+      was read. If <em class="parameter"><code>offset</code></em>
+      is not NULL, then <code class="function">sendfile</code>()
+      does not modify the current file offset of <em class="parameter"><code>in_fd</code></em>; otherwise the current
+      file offset is adjusted to reflect the number of bytes read
+      from <em class="parameter"><code>in_fd</code></em>.</p>
+
+      <p>If <em class="parameter"><code>offset</code></em> is NULL,
+      then data will be read from <em class="parameter"><code>in_fd</code></em> starting at the current
+      file offset, and the file offset will be updated by the
+      call.</p>
+
+      <p><em class="parameter"><code>count</code></em> is the
+      number of bytes to copy between the file descriptors.</p>
+
+      <p>The <em class="parameter"><code>in_fd</code></em> argument
+      must correspond to a file which supports <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>-like operations
+      (i.e., it cannot be a socket).</p>
+
+      <p>In Linux kernels before 2.6.33, <em class="parameter"><code>out_fd</code></em> must refer to a socket.
+      Since Linux 2.6.33 it can be any file. If it is a regular
+      file, then <code class="function">sendfile</code>() changes
+      the file offset appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sendfile-2_sect2" name="sendfile-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>If the transfer was successful, the number of bytes
+      written to <em class="parameter"><code>out_fd</code></em> is
+      returned. Note that a successful call to <code class="function">sendfile</code>() may write fewer bytes than
+      requested; the caller should be prepared to retry the call if
+      there were unsent bytes.</p>
+
+      <p>On error, −1 is returned, and <code class="varname">errno</code> is set appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sendfile-2_sect3" name="sendfile-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EAGAIN</span></span></dt>
+
+          <dd>
+            <p>Nonblocking I/O has been selected using <code class="constant">O_NONBLOCK</code> and the write would
+            block.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EBADF</span></span></dt>
+
+          <dd>
+            <p>The input file was not opened for reading or the
+            output file was not opened for writing.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p>Bad address.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>Descriptor is not valid or locked, or an <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>-like
+            operation is not available for <em class="parameter"><code>in_fd</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>out_fd</code></em> was
+            has the <code class="constant">O_APPEND</code> flag
+            set. This is not currently supported by <code class="function">sendfile</code>().</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EIO</span></span></dt>
+
+          <dd>
+            <p>Unspecified error while reading from <em class="parameter"><code>in_fd</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>Insufficient memory to read from <em class="parameter"><code>in_fd</code></em>.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sendfile-2_sect4" name="sendfile-2_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p><code class="function">sendfile</code>() first appeared in
+      Linux 2.2. The include file <code class="literal">&lt;</code><code class="filename">sys/sendfile.h</code><code class="literal">&gt;</code> is present since glibc 2.1.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sendfile-2_sect5" name="sendfile-2_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>Not specified in POSIX.1-2001, nor in other standards.</p>
+
+      <p>Other UNIX systems implement <code class="function">sendfile</code>() with different semantics and
+      prototypes. It should not be used in portable programs.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sendfile-2_sect6" name="sendfile-2_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>If you plan to use <code class="function">sendfile</code>() for sending files to a TCP
+      socket, but need to send some header data in front of the
+      file contents, you will find it useful to employ the
+      <code class="constant">TCP_CORK</code> option, described in
+      <a class="link" href="../htmlman7/tcp.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tcp</span>(7)</span></a>, to minimize the
+      number of packets and to tune performance.</p>
+
+      <p>In Linux 2.4 and earlier, <em class="parameter"><code>out_fd</code></em> could also refer to a
+      regular file; this possibility went away in the Linux 2.6.x
+      kernel series, but was restored in Linux 2.6.33.</p>
+
+      <p>The original Linux <code class="function">sendfile</code>() system call was not designed to
+      handle large file offsets. Consequently, Linux 2.4 added
+      <code class="function">sendfile64</code>(), with a wider type
+      for the <em class="parameter"><code>offset</code></em>
+      argument. The glibc <code class="function">sendfile</code>()
+      wrapper function transparently deals with the kernel
+      differences.</p>
+
+      <p>Applications may wish to fall back to <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>/<a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a> in the case where
+      <code class="function">sendfile</code>() fails with
+      <span class="errorname">EINVAL</span> or <span class="errorname">ENOSYS</span>.</p>
+
+      <p>If <em class="parameter"><code>out_fd</code></em> refers
+      to a socket or pipe with zero-copy support, callers must
+      ensure the transferred portions of the file referred to by
+      <em class="parameter"><code>in_fd</code></em> remain
+      unmodified until the reader on the other end of <em class="parameter"><code>out_fd</code></em> has consumed the
+      transferred data.</p>
+
+      <p>The Linux-specific <a class="link" href="../htmlman2/splice.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">splice</span>(2)</span></a> call supports
+      transferring data between arbitrary files (e.g., a pair of
+      sockets).</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sendfile-2_sect7" name="sendfile-2_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>, <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>, <a class="link" href="../htmlman2/socket.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">socket</span>(2)</span></a>, <a class="link" href="../htmlman2/splice.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">splice</span>(2)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="sendfile-2_sect8" name="sendfile-2_sect8" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    This man page is Copyright (C) 1998 Pawel Krawczyk.<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM_ONE_PARA)<br />
+                  Permission is granted to distribute possibly modified copies<br />
+
+                  of this page provided the header is included verbatim,<br />
+
+                  and in case of nontrivial modification author and date<br />
+
+                  of the modification is added to the header.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  $Id: sendfile.2,v 1.5 1999/05/18 11:54:11 freitag Exp $<br />
+
+                  2000-11-19 bert hubert &lt;ahu<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>ds9a.nl&gt;: in_fd cannot be socket<br />
+
+                  <br />
+                  2004-12-17, mtk<br />
+                  updated description of in_fd and out_fd for 2.6<br />
+
+                  Various wording and formatting changes<br />
+
+                  <br />
+                  2005-03-31 Martin Pool &lt;mbp<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>sourcefrog.net&gt; mmap() improvements<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

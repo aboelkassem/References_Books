@@ -1,0 +1,1244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>packet(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="packet(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="packet.7" name="packet.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>packet — packet interface on device level</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;sys/socket.h&gt;
+#include &lt;linux/if_packet.h&gt;
+#include &lt;net/ethernet.h&gt; /* the L2 protocols */
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">packet_socket =
+            <strong>socket</strong>(</code></td>
+
+            <td rowspan="1" colspan="1"><var class="pdparam">AF_PACKET</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">socket_type</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">protocol</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="packet-7_sect1" name="packet-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>Packet sockets are used to receive or send raw packets at
+      the device driver (OSI Layer 2) level. They allow the user to
+      implement protocol modules in user space on top of the
+      physical layer.</p>
+
+      <p>The <em class="parameter"><code>socket_type</code></em> is
+      either <code class="constant">SOCK_RAW</code> for raw packets
+      including the link-level header or <code class="constant">SOCK_DGRAM</code> for cooked packets with the
+      link-level header removed. The link-level header information
+      is available in a common format in a <em class="replaceable"><code>sockaddr_ll</code></em> structure.
+      <em class="parameter"><code>protocol</code></em> is the IEEE
+      802.3 protocol number in network byte order. See the
+      <code class="literal">&lt;</code><code class="filename">linux/if_ether.h</code><code class="literal">&gt;</code> include file for a list of allowed
+      protocols. When protocol is set to <code class="function">htons</code><code class="literal">(</code><em class="parameter"><code>ETH_P_ALL</code></em><code class="literal">)</code>, then all protocols are received. All
+      incoming packets of that protocol type will be passed to the
+      packet socket before they are passed to the protocols
+      implemented in the kernel.</p>
+
+      <p>Only processes with the <code class="constant">CAP_NET_RAW</code> capability may open packet
+      sockets.</p>
+
+      <p><code class="constant">SOCK_RAW</code> packets are passed
+      to and from the device driver without any changes in the
+      packet data. When receiving a packet, the address is still
+      parsed and passed in a standard <em class="replaceable"><code>sockaddr_ll</code></em> address
+      structure. When transmitting a packet, the user-supplied
+      buffer should contain the physical-layer header. That packet
+      is then queued unmodified to the network driver of the
+      interface defined by the destination address. Some device
+      drivers always add other headers. <code class="constant">SOCK_RAW</code> is similar to but not compatible
+      with the obsolete <em class="replaceable"><code>AF_INET/SOCK_PACKET</code></em> of Linux
+      2.0.</p>
+
+      <p><code class="constant">SOCK_DGRAM</code> operates on a
+      slightly higher level. The physical header is removed before
+      the packet is passed to the user. Packets sent through a
+      <code class="constant">SOCK_DGRAM</code> packet socket get a
+      suitable physical-layer header based on the information in
+      the <em class="replaceable"><code>sockaddr_ll</code></em>
+      destination address before they are queued.</p>
+
+      <p>By default, all packets of the specified protocol type are
+      passed to a packet socket. To get packets only from a
+      specific interface use <a class="link" href="../htmlman2/bind.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">bind</span>(2)</span></a> specifying an
+      address in a <span class="emphasis"><em>struct
+      sockaddr_ll</em></span> to bind the packet socket to an
+      interface. Only the <em class="replaceable"><code>sll_protocol</code></em> and the
+      <em class="replaceable"><code>sll_ifindex</code></em> address
+      fields are used for purposes of binding.</p>
+
+      <p>The <a class="link" href="../htmlman2/connect.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">connect</span>(2)</span></a> operation is not
+      supported on packet sockets.</p>
+
+      <p>When the <code class="constant">MSG_TRUNC</code> flag is
+      passed to <a class="link" href="../htmlman2/recv.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">recvmsg</span>(2)</span></a>, <a class="link" href="../htmlman2/recv.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">recv</span>(2)</span></a>, or <a class="link" href="../htmlman2/recv.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">recvfrom</span>(2)</span></a>, the real
+      length of the packet on the wire is always returned, even
+      when it is longer than the buffer.</p>
+
+      <div class="refsect2">
+        <a id="packet-7_sect2" name="packet-7_sect2" shape="rect"> </a>
+
+        <h3>Address types</h3>
+
+        <p>The <em class="replaceable"><code>sockaddr_ll</code></em> structure is a
+        device-independent physical-layer address.</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="structdef">
+              <table style="border-collapse: collapse;">
+                <colgroup span="1">
+                  <col class="c1" span="1" />
+                  <col class="c2" span="1" />
+                  <col class="c3" span="1" />
+                  <col class="c4" span="1" />
+                  <col class="c5" span="1" />
+                </colgroup>
+
+                <tbody>
+                  <tr>
+                    <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                    struct</td>
+
+                    <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">sockaddr_ll</span> {</td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sll_family</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Always AF_PACKET */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sll_protocol</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Physical-layer protocol */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sll_ifindex</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Interface number */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sll_hatype</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* ARP hardware type */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sll_pkttype</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        /* Packet type */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sll_halen</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Length of address */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sll_addr</code></em>[8];</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Physical-layer address */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>The fields of this structure are as follows:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p><em class="parameter"><code>sll_protocol</code></em> is the
+              standard ethernet protocol type in network byte order
+              as defined in the <code class="literal">&lt;</code><code class="filename">linux/if_ether.h</code><code class="literal">&gt;</code> include file. It defaults to
+              the socket's protocol.</p>
+            </li>
+
+            <li class="listitem">
+              <p><em class="parameter"><code>sll_ifindex</code></em> is the
+              interface index of the interface (see <a class="link" href="../htmlman7/netdevice.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">netdevice</span>(7)</span></a>); 0
+              matches any interface (only permitted for binding).
+              <em class="parameter"><code>sll_hatype</code></em> is
+              an ARP type as defined in the <code class="literal">&lt;</code><code class="filename">linux/if_arp.h</code><code class="literal">&gt;</code> include file.</p>
+            </li>
+
+            <li class="listitem">
+              <p><em class="parameter"><code>sll_pkttype</code></em> contains
+              the packet type. Valid types are <code class="constant">PACKET_HOST</code> for a packet addressed
+              to the local host, <code class="constant">PACKET_BROADCAST</code> for a
+              physical-layer broadcast packet, <code class="constant">PACKET_MULTICAST</code> for a packet sent
+              to a physical-layer multicast address, <code class="constant">PACKET_OTHERHOST</code> for a packet to
+              some other host that has been caught by a device
+              driver in promiscuous mode, and <code class="constant">PACKET_OUTGOING</code> for a packet
+              originating from the local host that is looped back
+              to a packet socket. These types make sense only for
+              receiving.</p>
+            </li>
+
+            <li class="listitem">
+              <p><em class="parameter"><code>sll_addr</code></em>
+              and <em class="parameter"><code>sll_halen</code></em>
+              contain the physical-layer (e.g., IEEE 802.3) address
+              and its length. The exact interpretation depends on
+              the device.</p>
+            </li>
+          </ul>
+        </div>
+
+        <p>When you send packets, it is enough to specify
+        <em class="parameter"><code>sll_family</code></em>,
+        <em class="parameter"><code>sll_addr</code></em>,
+        <em class="parameter"><code>sll_halen</code></em>,
+        <em class="parameter"><code>sll_ifindex</code></em>, and
+        <em class="parameter"><code>sll_protocol</code></em>. The
+        other fields should be 0. <em class="parameter"><code>sll_hatype</code></em> and <em class="parameter"><code>sll_pkttype</code></em> are set on
+        received packets for your information. For bind, only
+        <em class="parameter"><code>sll_protocol</code></em> and
+        <em class="parameter"><code>sll_ifindex</code></em> are
+        used.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="packet-7_sect3" name="packet-7_sect3" shape="rect"> </a>
+
+        <h3>Socket options</h3>
+
+        <p>Packet socket options are configured by calling
+        <a class="link" href="../htmlman2/getsockopt.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setsockopt</span>(2)</span></a> with level
+        <code class="constant">SOL_PACKET</code>.</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">PACKET_ADD_MEMBERSHIP</code></span></dt>
+
+            <dt><span class="term"><code class="constant">PACKET_DROP_MEMBERSHIP</code></span></dt>
+
+            <dd>
+              <p>Packet sockets can be used to configure
+              physical-layer multicasting and promiscuous mode.
+              <code class="constant">PACKET_ADD_MEMBERSHIP</code>
+              adds a binding and <code class="constant">PACKET_DROP_MEMBERSHIP</code> drops it.
+              They both expect a <em class="replaceable"><code>packet_mreq</code></em> structure
+              as argument:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="structdef">
+                    <table style="border-collapse: collapse;">
+                      <colgroup span="1">
+                        <col class="c1" span="1" />
+                        <col class="c2" span="1" />
+                        <col class="c3" span="1" />
+                        <col class="c4" span="1" />
+                        <col class="c5" span="1" />
+                      </colgroup>
+
+                      <tbody>
+                        <tr>
+                          <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                          <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">packet_mreq</span> {</td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>mr_ifindex</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1">
+                            <div class="literallayout">
+                              
+                              /* interface index */
+                            </div>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>mr_type</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1">
+                            <div class="literallayout">
+                              /* action */
+                            </div>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>mr_alen</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1">
+                            <div class="literallayout">
+                              
+                              /* address length */
+                            </div>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>mr_address</code></em>[8];</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1">
+                            <div class="literallayout">
+                              
+                              /* physical-layer address */
+                            </div>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </blockquote>
+              </div>
+
+              <p><em class="parameter"><code>mr_ifindex</code></em>
+              contains the interface index for the interface whose
+              status should be changed. The <em class="parameter"><code>mr_type</code></em> field specifies
+              which action to perform. <code class="constant">PACKET_MR_PROMISC</code> enables receiving
+              all packets on a shared medium (often known as
+              "promiscuous mode"), <code class="constant">PACKET_MR_MULTICAST</code> binds the
+              socket to the physical-layer multicast group
+              specified in <em class="parameter"><code>mr_address</code></em> and
+              <em class="parameter"><code>mr_alen</code></em>, and
+              <code class="constant">PACKET_MR_ALLMULTI</code> sets
+              the socket up to receive all multicast packets
+              arriving at the interface.</p>
+
+              <p>In addition, the traditional ioctls <code class="constant">SIOCSIFFLAGS</code>, <code class="constant">SIOCADDMULTI</code>, <code class="constant">SIOCDELMULTI</code> can be used for the
+              same purpose.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">PACKET_AUXDATA</code> (since Linux
+            2.6.21)</span></dt>
+
+            <dd>
+              <p>If this binary option is enabled, the packet
+              socket passes a metadata structure along with each
+              packet in the <a class="link" href="../htmlman2/recv.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">recvmsg</span>(2)</span></a> control
+              field. The structure can be read with <a class="link" href="../htmlman3/cmsg.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">cmsg</span>(3)</span></a>. It is
+              defined as</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="structdef">
+                    <table style="border-collapse: collapse;">
+                      <colgroup span="1">
+                        <col class="c1" span="1" />
+                        <col class="c2" span="1" />
+                        <col class="c3" span="1" />
+                        <col class="c4" span="1" />
+                        <col class="c5" span="1" />
+                      </colgroup>
+
+                      <tbody>
+                        <tr>
+                          <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                          <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">tpacket_auxdata</span> {</td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u32</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>tp_status</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u32</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>tp_len</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1">
+                            <div class="literallayout">
+                              
+                              /* packet length */
+                            </div>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u32</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>tp_snaplen</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1">
+                            <div class="literallayout">
+                              
+                              /* captured length */
+                            </div>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u16</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>tp_mac</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u16</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>tp_net</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u16</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>tp_vlan_tci</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u16</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>tp_padding</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="constant">PACKET_FANOUT</code> (since Linux
+            3.1)</span></dt>
+
+            <dd>
+              <p>To scale processing across threads, packet sockets
+              can form a fanout group. In this mode, each matching
+              packet is enqueued onto only one socket in the group.
+              A socket joins a fanout group by calling <a class="link" href="../htmlman2/getsockopt.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setsockopt</span>(2)</span></a> with
+              level <code class="constant">SOL_PACKET</code> and
+              option <code class="constant">PACKET_FANOUT</code>.
+              Each network namespace can have up to 65536
+              independent groups. A socket selects a group by
+              encoding the ID in the first 16 bits of the integer
+              option value. The first packet socket to join a group
+              implicitly creates it. To successfully join an
+              existing group, subsequent packet sockets must have
+              the same protocol, device settings, fanout mode and
+              flags (see below). Packet sockets can leave a fanout
+              group only by closing the socket. The group is
+              deleted when the last socket is closed.</p>
+
+              <p>Fanout supports multiple algorithms to spread
+              traffic between sockets, as follows:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="itemizedlist">
+                    <ul class="itemizedlist" style="list-style-type: disc;">
+                      <li class="listitem">
+                        <p>The default mode, <code class="constant">PACKET_FANOUT_HASH</code>, sends
+                        packets from the same flow to the same
+                        socket to maintain per-flow ordering. For
+                        each packet, it chooses a socket by taking
+                        the packet flow hash modulo the number of
+                        sockets in the group, where a flow hash is
+                        a hash over network-layer address and
+                        optional transport-layer port fields.</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>The load-balance mode <code class="constant">PACKET_FANOUT_LB</code>
+                        implements a round-robin algorithm.</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p><code class="constant">PACKET_FANOUT_CPU</code> selects
+                        the socket based on the CPU that the packet
+                        arrived on.</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p><code class="constant">PACKET_FANOUT_ROLLOVER</code>
+                        processes all data on a single socket,
+                        moving to the next when one becomes
+                        backlogged.</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p><code class="constant">PACKET_FANOUT_RND</code> selects
+                        the socket using a pseudo-random number
+                        generator.</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p><code class="constant">PACKET_FANOUT_QM</code>
+                        (available since Linux 3.14) selects the
+                        socket using the recorded queue_mapping of
+                        the received skb.</p>
+                      </li>
+                    </ul>
+                  </div>
+                </blockquote>
+              </div>
+
+              <p>Fanout modes can take additional options. IP
+              fragmentation causes packets from the same flow to
+              have different flow hashes. The flag <code class="constant">PACKET_FANOUT_FLAG_DEFRAG</code>, if set,
+              causes packets to be defragmented before fanout is
+              applied, to preserve order even in this case. Fanout
+              mode and options are communicated in the second 16
+              bits of the integer option value. The flag
+              <code class="constant">PACKET_FANOUT_FLAG_ROLLOVER</code> enables
+              the roll over mechanism as a backup strategy: if the
+              original fanout algorithm selects a backlogged
+              socket, the packet rolls over to the next available
+              one.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">PACKET_LOSS</code> (with <code class="constant">PACKET_TX_RING</code>)</span></dt>
+
+            <dd>
+              <p>When a malformed packet is encountered on a
+              transmit ring, the default is to reset its <em class="parameter"><code>tp_status</code></em> to
+              <code class="constant">TP_STATUS_WRONG_FORMAT</code>
+              and abort the transmission immediately. The malformed
+              packet blocks itself and subsequently enqueued
+              packets from being sent. The format error must be
+              fixed, the associated <em class="parameter"><code>tp_status</code></em> reset to
+              <code class="constant">TP_STATUS_SEND_REQUEST</code>,
+              and the transmission process restarted via <a class="link" href="../htmlman2/send.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">send</span>(2)</span></a>. However,
+              if <code class="constant">PACKET_LOSS</code> is set,
+              any malformed packet will be skipped, its <em class="parameter"><code>tp_status</code></em> reset to
+              <code class="constant">TP_STATUS_AVAILABLE</code>,
+              and the transmission process continued.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">PACKET_RESERVE</code> (with <code class="constant">PACKET_RX_RING</code>)</span></dt>
+
+            <dd>
+              <p>By default, a packet receive ring writes packets
+              immediately following the metadata structure and
+              alignment padding. This integer option reserves
+              additional headroom.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">PACKET_RX_RING</code></span></dt>
+
+            <dd>
+              <p>Create a memory-mapped ring buffer for
+              asynchronous packet reception. The packet socket
+              reserves a contiguous region of application address
+              space, lays it out into an array of packet slots and
+              copies packets (up to <em class="parameter"><code>tp_snaplen</code></em>) into
+              subsequent slots. Each packet is preceded by a
+              metadata structure similar to <em class="replaceable"><code>tpacket_auxdata</code></em>. The
+              protocol fields encode the offset to the data from
+              the start of the metadata header. <em class="parameter"><code>tp_net</code></em> stores the
+              offset to the network layer. If the packet socket is
+              of type <code class="constant">SOCK_DGRAM</code>,
+              then <em class="parameter"><code>tp_mac</code></em>
+              is the same. If it is of type <code class="constant">SOCK_RAW</code>, then that field stores
+              the offset to the link-layer frame. Packet socket and
+              application communicate the head and tail of the ring
+              through the <em class="parameter"><code>tp_status</code></em> field. The
+              packet socket owns all slots with <em class="parameter"><code>tp_status</code></em> equal to
+              <code class="constant">TP_STATUS_KERNEL</code>. After
+              filling a slot, it changes the status of the slot to
+              transfer ownership to the application. During normal
+              operation, the new <em class="parameter"><code>tp_status</code></em> value has at
+              least the <code class="constant">TP_STATUS_USER</code> bit set to signal
+              that a received packet has been stored. When the
+              application has finished processing a packet, it
+              transfers ownership of the slot back to the socket by
+              setting <em class="parameter"><code>tp_status</code></em> equal to
+              <code class="constant">TP_STATUS_KERNEL</code>.</p>
+
+              <p>Packet sockets implement multiple variants of the
+              packet ring. The implementation details are described
+              in <code class="filename">Documentation/networking/packet_mmap.txt</code>
+              in the Linux kernel source tree.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">PACKET_STATISTICS</code></span></dt>
+
+            <dd>
+              <p>Retrieve packet socket statistics in the form of a
+              structure</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="structdef">
+                    <table style="border-collapse: collapse;">
+                      <colgroup span="1">
+                        <col class="c1" span="1" />
+                        <col class="c2" span="1" />
+                        <col class="c3" span="1" />
+                        <col class="c4" span="1" />
+                        <col class="c5" span="1" />
+                      </colgroup>
+
+                      <tbody>
+                        <tr>
+                          <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                          <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">tpacket_stats</span> {</td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned int</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>tp_packets</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1">
+                            <div class="literallayout">
+                              
+                              /* Total packet count */
+                            </div>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned int</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>tp_drops</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1">
+                            <div class="literallayout">
+                              
+                              /* Dropped packet count */
+                            </div>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </blockquote>
+              </div>
+
+              <p>Receiving statistics resets the internal counters.
+              The statistics structure differs when using a ring of
+              variant <code class="constant">TPACKET_V3</code>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">PACKET_TIMESTAMP</code> (with <code class="constant">PACKET_RX_RING</code>; since Linux
+            2.6.36)</span></dt>
+
+            <dd>
+              <p>The packet receive ring always stores a timestamp
+              in the metadata header. By default, this is a
+              software generated timestamp generated when the
+              packet is copied into the ring. This integer option
+              selects the type of timestamp. Besides the default,
+              it support the two hardware formats described in
+              <code class="filename">Documentation/networking/timestamping.txt</code>
+              in the Linux kernel source tree.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">PACKET_TX_RING</code> (since Linux
+            2.6.31)</span></dt>
+
+            <dd>
+              <p>Create a memory-mapped ring buffer for packet
+              transmission. This option is similar to <code class="constant">PACKET_RX_RING</code> and takes the same
+              arguments. The application writes packets into slots
+              with <em class="parameter"><code>tp_status</code></em> equal to
+              <code class="constant">TP_STATUS_AVAILABLE</code> and
+              schedules them for transmission by changing
+              <em class="parameter"><code>tp_status</code></em> to
+              <code class="constant">TP_STATUS_SEND_REQUEST</code>.
+              When packets are ready to be transmitted, the
+              application calls <a class="link" href="../htmlman2/send.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">send</span>(2)</span></a> or a
+              variant thereof. The <em class="replaceable"><code>buf</code></em> and <em class="replaceable"><code>len</code></em> fields of this
+              call are ignored. If an address is passed using
+              <a class="link" href="../htmlman2/send.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sendto</span>(2)</span></a> or
+              <a class="link" href="../htmlman2/send.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sendmsg</span>(2)</span></a>, then
+              that overrides the socket default. On successful
+              transmission, the socket resets <em class="parameter"><code>tp_status</code></em> to
+              <code class="constant">TP_STATUS_AVAILABLE</code>. It
+              immediately aborts the transmission on error unless
+              <code class="constant">PACKET_LOSS</code> is set.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">PACKET_VERSION</code> (with <code class="constant">PACKET_RX_RING</code>; since Linux
+            2.6.27)</span></dt>
+
+            <dd>
+              <p>By default, <code class="constant">PACKET_RX_RING</code> creates a packet
+              receive ring of variant <code class="constant">TPACKET_V1</code>. To create another
+              variant, configure the desired variant by setting
+              this integer option before creating the ring.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">PACKET_QDISC_BYPASS</code> (since Linux
+            3.14)</span></dt>
+
+            <dd>
+              <p>By default, packets sent through packet sockets
+              pass through the kernel's qdisc (traffic control)
+              layer, which is fine for the vast majority of use
+              cases. For traffic generator appliances using packet
+              sockets that intend to brute-force flood the
+              network—for example, to test devices under load
+              in a similar fashion to pktgen—this layer can
+              be bypassed by setting this integer option to 1. A
+              side effect is that packet buffering in the qdisc
+              layer is avoided, which will lead to increased drops
+              when network device transmit queues are busy;
+              therefore, use at your own risk.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="packet-7_sect4" name="packet-7_sect4" shape="rect"> </a>
+
+        <h3>Ioctls</h3>
+
+        <p><code class="constant">SIOCGSTAMP</code> can be used to
+        receive the timestamp of the last received packet. Argument
+        is a <span class="emphasis"><em>struct timeval</em></span>
+        variable.</p>
+
+        <p>In addition, all standard ioctls defined in <a class="link" href="../htmlman7/netdevice.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">netdevice</span>(7)</span></a> and
+        <a class="link" href="../htmlman7/socket.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">socket</span>(7)</span></a> are valid on
+        packet sockets.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="packet-7_sect5" name="packet-7_sect5" shape="rect"> </a>
+
+        <h3>Error handling</h3>
+
+        <p>Packet sockets do no error handling other than errors
+        occurred while passing the packet to the device driver.
+        They don't have the concept of a pending error.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="packet-7_sect6" name="packet-7_sect6" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EADDRNOTAVAIL</span></span></dt>
+
+          <dd>
+            <p>Unknown multicast group address passed.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p>User passed invalid memory address.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>Invalid argument.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EMSGSIZE</span></span></dt>
+
+          <dd>
+            <p>Packet is bigger than interface MTU.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENETDOWN</span></span></dt>
+
+          <dd>
+            <p>Interface is not up.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOBUFS</span></span></dt>
+
+          <dd>
+            <p>Not enough memory to allocate the packet.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENODEV</span></span></dt>
+
+          <dd>
+            <p>Unknown device name or interface index specified in
+            interface address.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOENT</span></span></dt>
+
+          <dd>
+            <p>No packet received.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOTCONN</span></span></dt>
+
+          <dd>
+            <p>No interface address passed.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENXIO</span></span></dt>
+
+          <dd>
+            <p>Interface address contained an invalid interface
+            index.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>User has insufficient privileges to carry out this
+            operation.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>In addition, other errors may be generated by the
+      low-level driver.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="packet-7_sect7" name="packet-7_sect7" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p><em class="parameter"><code>AF_PACKET</code></em> is a new
+      feature in Linux 2.2. Earlier Linux versions supported only
+      <code class="constant">SOCK_PACKET</code>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="packet-7_sect8" name="packet-7_sect8" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>For portable programs it is suggested to use <em class="parameter"><code>AF_PACKET</code></em> via <span class="citerefentry"><span class="refentrytitle">pcap</span>(3)</span>; although this covers
+      only a subset of the <em class="parameter"><code>AF_PACKET</code></em> features.</p>
+
+      <p>The <code class="constant">SOCK_DGRAM</code> packet
+      sockets make no attempt to create or parse the IEEE 802.2 LLC
+      header for a IEEE 802.3 frame. When <code class="constant">ETH_P_802_3</code> is specified as protocol for
+      sending the kernel creates the 802.3 frame and fills out the
+      length field; the user has to supply the LLC header to get a
+      fully conforming packet. Incoming 802.3 packets are not
+      multiplexed on the DSAP/SSAP protocol fields; instead they
+      are supplied to the user as protocol <code class="constant">ETH_P_802_2</code> with the LLC header prefixed.
+      It is thus not possible to bind to <code class="constant">ETH_P_802_3</code>; bind to <code class="constant">ETH_P_802_2</code> instead and do the protocol
+      multiplex yourself. The default for sending is the standard
+      Ethernet DIX encapsulation with the protocol filled in.</p>
+
+      <p>Packet sockets are not subject to the input or output
+      firewall chains.</p>
+
+      <div class="refsect2">
+        <a id="packet-7_sect9" name="packet-7_sect9" shape="rect"> </a>
+
+        <h3>Compatibility</h3>
+
+        <p>In Linux 2.0, the only way to get a packet socket was
+        with the call:</p>
+
+        <p>socket(AF_INET, SOCK_PACKET, protocol)</p>
+
+        <p>This is still supported, but deprecated and strongly
+        discouraged. The main difference between the two methods is
+        that <code class="constant">SOCK_PACKET</code> uses the old
+        <span class="emphasis"><em>struct sockaddr_pkt</em></span>
+        to specify an interface, which doesn't provide
+        physical-layer independence.</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="structdef">
+              <table style="border-collapse: collapse;">
+                <colgroup span="1">
+                  <col class="c1" span="1" />
+                  <col class="c2" span="1" />
+                  <col class="c3" span="1" />
+                  <col class="c4" span="1" />
+                  <col class="c5" span="1" />
+                </colgroup>
+
+                <tbody>
+                  <tr>
+                    <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                    struct</td>
+
+                    <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">sockaddr_pkt</span> {</td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>spkt_family</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"> </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>spkt_device</code></em>[14];</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"> </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>spkt_protocol</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"> </td>
+                  </tr>
+
+                  <tr>
+                    <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </blockquote>
+        </div>
+
+        <p><em class="parameter"><code>spkt_family</code></em>
+        contains the device type, <em class="parameter"><code>spkt_protocol</code></em> is the IEEE
+        802.3 protocol type as defined in <code class="literal">&lt;</code><code class="filename">sys/if_ether.h</code><code class="literal">&gt;</code> and <em class="parameter"><code>spkt_device</code></em> is the device
+        name as a null-terminated string, for example, eth0.</p>
+
+        <p>This structure is obsolete and should not be used in new
+        code.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="packet-7_sect10" name="packet-7_sect10" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>The IEEE 802.2/803.3 LLC handling could be considered as a
+      bug.</p>
+
+      <p>Socket filters are not documented.</p>
+
+      <p>The <code class="constant">MSG_TRUNC</code> <a class="link" href="../htmlman2/recv.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">recvmsg</span>(2)</span></a> extension is an
+      ugly hack and should be replaced by a control message. There
+      is currently no way to get the original destination address
+      of packets via <code class="constant">SOCK_DGRAM</code>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="packet-7_sect11" name="packet-7_sect11" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/socket.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">socket</span>(2)</span></a>, <span class="citerefentry"><span class="refentrytitle">pcap</span>(3)</span>, <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>, <a class="link" href="../htmlman7/ip.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ip</span>(7)</span></a>, <a class="link" href="../htmlman7/raw.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">raw</span>(7)</span></a>, <a class="link" href="../htmlman7/socket.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">socket</span>(7)</span></a></p>
+
+      <p>RFC 894 for the standard IP Ethernet encapsulation. RFC
+      1700 for the IEEE 802.3 IP encapsulation.</p>
+
+      <p>The <code class="literal">&lt;</code><code class="filename">linux/if_ether.h</code><code class="literal">&gt;</code> include file for physical-layer
+      protocols.</p>
+
+      <p>The Linux kernel source tree. <code class="filename">/Documentation/networking/filter.txt</code>
+      describes how to apply Berkeley Packet Filters to packet
+      sockets. <code class="filename">/tools/testing/selftests/net/psock_tpacket.c</code>
+      contains example source code for all available versions of
+      <code class="constant">PACKET_RX_RING</code> and <code class="constant">PACKET_TX_RING</code>.</p>
+    </div>
+
+    <div class="colophon">
+      <a id="packet-7_sect12" name="packet-7_sect12" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    This man page is Copyright (C) 1999 Andi Kleen &lt;ak<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>muc.de&gt;.<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM_ONE_PARA)<br />
+                  Permission is granted to distribute possibly modified copies<br />
+
+                  of this page provided the header is included verbatim,<br />
+
+                  and in case of nontrivial modification author and date<br />
+
+                  of the modification is added to the header.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  $Id: packet.7,v 1.13 2000/08/14 08:03:45 ak Exp $<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

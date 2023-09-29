@@ -1,0 +1,929 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>slapo_ppolicy(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="slapo_ppolicy(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="slapo-ppolicy.5" name="slapo-ppolicy.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>slapo−ppolicy — Password Policy overlay to
+      slapd</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ETCDIR/slapd.conf
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-ppolicy-5_sect1" name="slapo-ppolicy-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <em class="replaceable"><code>ppolicy</code></em>
+      overlay is an implementation of the most recent IETF Password
+      Policy proposal for LDAP. When instantiated, it intercepts,
+      decodes and applies specific password policy controls to
+      overall use of a backend database, changes to user password
+      fields, etc.</p>
+
+      <p>The overlay provides a variety of password control
+      mechanisms. They include password aging -- both minimum and
+      maximum ages, password reuse and duplication control, account
+      time-outs, mandatory password resets, acceptable password
+      content, and even grace logins. Different groups of users may
+      be associated with different password policies, and there is
+      no limit to the number of password policies that may be
+      created.</p>
+
+      <p>Note that some of the policies do not take effect when the
+      operation is performed with the <em class="replaceable"><code>rootdn</code></em> identity; all the
+      operations, when performed with any other identity, may be
+      subjected to constraints, like access control.</p>
+
+      <p>Note that the IETF Password Policy proposal for LDAP makes
+      sense when considering a single-valued password attribute,
+      while the userPassword attribute allows multiple values. This
+      implementation enforces a single value for the userPassword
+      attribute, despite its specification.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-ppolicy-5_sect2" name="slapo-ppolicy-5_sect2" shape="rect"> </a>
+
+      <h2>CONFIGURATION</h2>
+
+      <p>These <em class="replaceable"><code>slapd.conf</code></em>
+      configuration options apply to the ppolicy overlay. They
+      should appear after the <em class="replaceable"><code>overlay</code></em> directive.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>ppolicy_default
+          &lt;policyDN&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specify the DN of the pwdPolicy object to use when
+            no specific policy is set on a given user's entry. If
+            there is no specific policy for an entry and no default
+            is given, then no policies will be enforced.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>ppolicy_forward_updates</code></em></span></dt>
+
+          <dd>
+            <p>Specify that policy state changes that result from
+            Bind operations (such as recording failures, lockout,
+            etc.) on a consumer should be forwarded to a master
+            instead of being written directly into the consumer's
+            local database. This setting is only useful on a
+            replication consumer, and also requires the <em class="replaceable"><code>updateref</code></em> setting and
+            <em class="replaceable"><code>chain</code></em> overlay
+            to be appropriately configured.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>ppolicy_hash_cleartext</code></em></span></dt>
+
+          <dd>
+            <p>Specify that cleartext passwords present in Add and
+            Modify requests should be hashed before being stored in
+            the database. This violates the X.500/LDAP information
+            model, but may be needed to compensate for LDAP clients
+            that don't use the Password Modify extended operation
+            to manage passwords. It is recommended that when this
+            option is used that compare, search, and read access be
+            denied to all directory users.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>ppolicy_use_lockout</code></em></span></dt>
+
+          <dd>
+            <p>A client will always receive an LDAP <em class="replaceable"><code>InvalidCredentials</code></em>
+            response when Binding to a locked account. By default,
+            when a Password Policy control was provided on the Bind
+            request, a Password Policy response will be included
+            with no special error code set. This option changes the
+            Password Policy response to include the <em class="replaceable"><code>AccountLocked</code></em> error
+            code. Note that sending the <em class="replaceable"><code>AccountLocked</code></em> error
+            code provides useful information to an attacker; sites
+            that are sensitive to security issues should not enable
+            this option.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-ppolicy-5_sect3" name="slapo-ppolicy-5_sect3" shape="rect"> </a>
+
+      <h2>OBJECT CLASS</h2>
+
+      <p>The <em class="replaceable"><code>ppolicy</code></em>
+      overlay depends on the <em class="replaceable"><code>pwdPolicy</code></em> object class. The
+      definition of that class is as follows:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>( 1.3.6.1.4.1.42.2.27.8.2.1 NAME 'pwdPolicy' AUXILIARY
+          SUP top MUST ( pwdAttribute ) MAY ( pwdMinAge $ pwdMaxAge
+          $ pwdInHistory $ pwdCheckQuality $ pwdMinLength $
+          pwdExpireWarning $ pwdGraceAuthnLimit $ pwdLockout $
+          pwdLockoutDuration $ pwdMaxFailure $
+          pwdFailureCountInterval $ pwdMustChange $
+          pwdAllowUserChange $ pwdSafeModify ) )</p>
+        </blockquote>
+      </div>
+
+      <p>This implementation also provides an additional <em class="replaceable"><code>pwdPolicyChecker</code></em> objectclass,
+      used for password quality checking (see below).</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>( 1.3.6.1.4.1.4754.2.99.1 NAME 'pwdPolicyChecker'
+          AUXILIARY SUP top MAY ( pwdCheckModule ) )</p>
+        </blockquote>
+      </div>
+
+      <p>Every account that should be subject to password policy
+      control should have a <em class="replaceable"><code>pwdPolicySubentry</code></em> attribute
+      containing the DN of a valid <em class="replaceable"><code>pwdPolicy</code></em> entry, or they can
+      simply use the configured default. In this way different
+      users may be managed according to different policies.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-ppolicy-5_sect4" name="slapo-ppolicy-5_sect4" shape="rect"> </a>
+
+      <h2>OBJECT CLASS ATTRIBUTES</h2>
+
+      <p>Each one of the sections below details the meaning and use
+      of a particular attribute of this <em class="replaceable"><code>pwdPolicy</code></em> object class.</p>
+
+      <p><em class="replaceable"><code>pwdAttribute</code></em></p>
+
+      <p>This attribute contains the name of the attribute to which
+      the password policy is applied. For example, the password
+      policy may be applied to the <em class="replaceable"><code>userPassword</code></em> attribute.</p>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <p>In this implementation, the only value accepted
+              for <em class="replaceable"><code>pwdAttribute</code></em> is
+              <span class="emphasis"><em>userPassword</em></span>.</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>( 1.3.6.1.4.1.42.2.27.8.1.1 NAME 'pwdAttribute'
+          EQUALITY objectIdentifierMatch SYNTAX
+          1.3.6.1.4.1.1466.115.121.1.38 )</p>
+        </blockquote>
+      </div>
+
+      <p><em class="replaceable"><code>pwdMinAge</code></em></p>
+
+      <p>This attribute contains the number of seconds that must
+      elapse between modifications allowed to the password. If this
+      attribute is not present, zero seconds is assumed (i.e. the
+      password may be modified whenever and however often is
+      desired).</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>( 1.3.6.1.4.1.42.2.27.8.1.2 NAME 'pwdMinAge' EQUALITY
+          integerMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+          SINGLE−VALUE )</p>
+        </blockquote>
+      </div>
+
+      <p><em class="replaceable"><code>pwdMaxAge</code></em></p>
+
+      <p>This attribute contains the number of seconds after which
+      a modified password will expire. If this attribute is not
+      present, or if its value is zero (0), then passwords will not
+      expire.</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>( 1.3.6.1.4.1.42.2.27.8.1.3 NAME 'pwdMaxAge' EQUALITY
+          integerMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+          SINGLE−VALUE )</p>
+        </blockquote>
+      </div>
+
+      <p><em class="replaceable"><code>pwdInHistory</code></em></p>
+
+      <p>This attribute is used to specify the maximum number of
+      used passwords that will be stored in the <em class="replaceable"><code>pwdHistory</code></em> attribute. If the
+      <em class="replaceable"><code>pwdInHistory</code></em>
+      attribute is not present, or if its value is zero (0), used
+      passwords will not be stored in <em class="replaceable"><code>pwdHistory</code></em> and thus any
+      previously-used password may be reused. No history checking
+      occurs if the password is being modified by the <em class="replaceable"><code>rootdn</code></em>, although the password
+      is saved in the history.</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>( 1.3.6.1.4.1.42.2.27.8.1.4 NAME 'pwdInHistory'
+          EQUALITY integerMatch SYNTAX
+          1.3.6.1.4.1.1466.115.121.1.27 SINGLE−VALUE )</p>
+        </blockquote>
+      </div>
+
+      <p><em class="replaceable"><code>pwdCheckQuality</code></em></p>
+
+      <p>This attribute indicates if and how password syntax will
+      be checked while a password is being modified or added. If
+      this attribute is not present, or its value is zero (0), no
+      syntax checking will be done. If its value is one (1), the
+      server will check the syntax, and if the server is unable to
+      check the syntax, whether due to a client-side hashed
+      password or some other reason, it will be accepted. If its
+      value is two (2), the server will check the syntax, and if
+      the server is unable to check the syntax it will return an
+      error refusing the password.</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>( 1.3.6.1.4.1.42.2.27.8.1.5 NAME 'pwdCheckQuality'
+          EQUALITY integerMatch SYNTAX
+          1.3.6.1.4.1.1466.115.121.1.27 SINGLE−VALUE )</p>
+        </blockquote>
+      </div>
+
+      <p><em class="replaceable"><code>pwdMinLength</code></em></p>
+
+      <p>When syntax checking is enabled (see also the <em class="replaceable"><code>pwdCheckQuality</code></em> attribute),
+      this attribute contains the minimum number of characters that
+      will be accepted in a password. If this attribute is not
+      present, minimum password length is not enforced. If the
+      server is unable to check the length of the password, whether
+      due to a client-side hashed password or some other reason,
+      the server will, depending on the value of <em class="replaceable"><code>pwdCheckQuality</code></em>, either
+      accept the password without checking it (if <em class="replaceable"><code>pwdCheckQuality</code></em> is zero (0)
+      or one (1)) or refuse it (if <em class="replaceable"><code>pwdCheckQuality</code></em> is two
+      (2)).</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>( 1.3.6.1.4.1.42.2.27.8.1.6 NAME 'pwdMinLength'
+          EQUALITY integerMatch SYNTAX
+          1.3.6.1.4.1.1466.115.121.1.27 SINGLE−VALUE )</p>
+        </blockquote>
+      </div>
+
+      <p><em class="replaceable"><code>pwdExpireWarning</code></em></p>
+
+      <p>This attribute contains the maximum number of seconds
+      before a password is due to expire that expiration warning
+      messages will be returned to a user who is authenticating to
+      the directory. If this attribute is not present, or if the
+      value is zero (0), no warnings will be sent.</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>( 1.3.6.1.4.1.42.2.27.8.1.7 NAME 'pwdExpireWarning'
+          EQUALITY integerMatch SYNTAX
+          1.3.6.1.4.1.1466.115.121.1.27 SINGLE−VALUE )</p>
+        </blockquote>
+      </div>
+
+      <p><em class="replaceable"><code>pwdGraceAuthnLimit</code></em></p>
+
+      <p>This attribute contains the number of times that an
+      expired password may be used to authenticate a user to the
+      directory. If this attribute is not present or if its value
+      is zero (0), users with expired passwords will not be allowed
+      to authenticate to the directory.</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>( 1.3.6.1.4.1.42.2.27.8.1.8 NAME 'pwdGraceAuthnLimit'
+          EQUALITY integerMatch SYNTAX
+          1.3.6.1.4.1.1466.115.121.1.27 SINGLE−VALUE )</p>
+        </blockquote>
+      </div>
+
+      <p><em class="replaceable"><code>pwdLockout</code></em></p>
+
+      <p>This attribute specifies the action that should be taken
+      by the directory when a user has made a number of failed
+      attempts to authenticate to the directory. If <em class="replaceable"><code>pwdLockout</code></em> is set (its value
+      is "TRUE"), the user will not be allowed to attempt to
+      authenticate to the directory after there have been a
+      specified number of consecutive failed bind attempts. The
+      maximum number of consecutive failed bind attempts allowed is
+      specified by the <em class="replaceable"><code>pwdMaxFailure</code></em> attribute. If
+      <em class="replaceable"><code>pwdLockout</code></em> is not
+      present, or if its value is "FALSE", the password may be used
+      to authenticate no matter how many consecutive failed bind
+      attempts have been made.</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>( 1.3.6.1.4.1.42.2.27.8.1.9 NAME 'pwdLockout' EQUALITY
+          booleanMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+          SINGLE−VALUE )</p>
+        </blockquote>
+      </div>
+
+      <p><em class="replaceable"><code>pwdLockoutDuration</code></em></p>
+
+      <p>This attribute contains the number of seconds during which
+      the password cannot be used to authenticate the user to the
+      directory due to too many consecutive failed bind attempts.
+      (See also <em class="replaceable"><code>pwdLockout</code></em> and <em class="replaceable"><code>pwdMaxFailure</code></em>.) If <em class="replaceable"><code>pwdLockoutDuration</code></em> is not
+      present, or if its value is zero (0), the password cannot be
+      used to authenticate the user to the directory again until it
+      is reset by an administrator.</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>( 1.3.6.1.4.1.42.2.27.8.1.10 NAME 'pwdLockoutDuration'
+          EQUALITY integerMatch SYNTAX
+          1.3.6.1.4.1.1466.115.121.1.27 SINGLE−VALUE )</p>
+        </blockquote>
+      </div>
+
+      <p><em class="replaceable"><code>pwdMaxFailure</code></em></p>
+
+      <p>This attribute contains the number of consecutive failed
+      bind attempts after which the password may not be used to
+      authenticate a user to the directory. If <em class="replaceable"><code>pwdMaxFailure</code></em> is not present,
+      or its value is zero (0), then a user will be allowed to
+      continue to attempt to authenticate to the directory, no
+      matter how many consecutive failed bind attempts have
+      occurred with that user's DN. (See also <em class="replaceable"><code>pwdLockout</code></em> and <em class="replaceable"><code>pwdLockoutDuration</code></em>.)</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>( 1.3.6.1.4.1.42.2.27.8.1.11 NAME 'pwdMaxFailure'
+          EQUALITY integerMatch SYNTAX
+          1.3.6.1.4.1.1466.115.121.1.27 SINGLE−VALUE )</p>
+        </blockquote>
+      </div>
+
+      <p><em class="replaceable"><code>pwdFailureCountInterval</code></em></p>
+
+      <p>This attribute contains the number of seconds after which
+      old consecutive failed bind attempts are purged from the
+      failure counter, even though no successful authentication has
+      occurred. If <em class="replaceable"><code>pwdFailureCountInterval</code></em> is
+      not present, or its value is zero (0), the failure counter
+      will only be reset by a successful authentication.</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>( 1.3.6.1.4.1.42.2.27.8.1.12 NAME
+          'pwdFailureCountInterval' EQUALITY integerMatch SYNTAX
+          1.3.6.1.4.1.1466.115.121.1.27 SINGLE−VALUE )</p>
+        </blockquote>
+      </div>
+
+      <p><em class="replaceable"><code>pwdMustChange</code></em></p>
+
+      <p>This attribute specifies whether users must change their
+      passwords when they first bind to the directory after a
+      password is set or reset by the administrator, or not. If
+      <em class="replaceable"><code>pwdMustChange</code></em> has a
+      value of "TRUE", users must change their passwords when they
+      first bind to the directory after a password is set or reset
+      by the administrator. If <em class="replaceable"><code>pwdMustChange</code></em> is not present,
+      or its value is "FALSE", users are not required to change
+      their password upon binding after the administrator sets or
+      resets the password.</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>( 1.3.6.1.4.1.42.2.27.8.1.13 NAME 'pwdMustChange'
+          EQUALITY booleanMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+          SINGLE−VALUE )</p>
+        </blockquote>
+      </div>
+
+      <p><em class="replaceable"><code>pwdAllowUserChange</code></em></p>
+
+      <p>This attribute specifies whether users are allowed to
+      change their own passwords or not. If <em class="replaceable"><code>pwdAllowUserChange</code></em> is set to
+      "TRUE", or if the attribute is not present, users will be
+      allowed to change their own passwords. If its value is
+      "FALSE", users will not be allowed to change their own
+      passwords.</p>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <p>This implies that when <em class="replaceable"><code>pwdAllowUserChange</code></em> is
+              set to "TRUE", users will still be able to change the
+              password of another user, subjected to access
+              control. This restriction only applies to
+              modifications of ones's own password. It should also
+              be noted that <em class="replaceable"><code>pwdAllowUserChange</code></em>
+              was defined in the specification to provide rough
+              access control to the password attribute in
+              implementations that do not allow fine-grain access
+              control. Since OpenLDAP provides fine-grain access
+              control, the use of this attribute is discouraged;
+              ACLs should be used instead (see <a class="link" href="../htmlman5/slapd.access.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.access</span>(5)</span></a> for
+              details).</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>( 1.3.6.1.4.1.42.2.27.8.1.14 NAME 'pwdAllowUserChange'
+          EQUALITY booleanMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+          SINGLE−VALUE )</p>
+        </blockquote>
+      </div>
+
+      <p><em class="replaceable"><code>pwdSafeModify</code></em></p>
+
+      <p>This attribute denotes whether the user's existing
+      password must be sent along with their new password when
+      changing a password. If <em class="replaceable"><code>pwdSafeModify</code></em> is set to
+      "TRUE", the existing password must be sent along with the new
+      password. If the attribute is not present, or its value is
+      "FALSE", the existing password need not be sent along with
+      the new password.</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>( 1.3.6.1.4.1.42.2.27.8.1.15 NAME 'pwdSafeModify'
+          EQUALITY booleanMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+          SINGLE−VALUE )</p>
+        </blockquote>
+      </div>
+
+      <p><em class="replaceable"><code>pwdCheckModule</code></em></p>
+
+      <p>This attribute names a user-defined loadable module that
+      must instantiate the check_password() function. This function
+      will be called to further check a new password if <em class="replaceable"><code>pwdCheckQuality</code></em> is set to one
+      (1) or two (2), after all of the built-in password compliance
+      checks have been passed. This function will be called
+      according to this function prototype:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>int <em class="replaceable"><code>check_password</code></em> (char
+          *pPasswd, char **ppErrStr, Entry *pEntry);</p>
+        </blockquote>
+      </div>
+
+      <p>The <em class="replaceable"><code>pPasswd</code></em>
+      parameter contains the clear-text user password, the
+      <em class="replaceable"><code>ppErrStr</code></em> parameter
+      contains a double pointer that allows the function to return
+      human-readable details about any error it encounters. The
+      optional <em class="replaceable"><code>pEntry</code></em>
+      parameter, if non-NULL, carries a pointer to the entry whose
+      password is being checked. If <em class="replaceable"><code>ppErrStr</code></em> is NULL, then
+      <em class="replaceable"><code>funcName</code></em> must NOT
+      attempt to use it/them. A return value of LDAP_SUCCESS from
+      the called function indicates that the password is ok, any
+      other value indicates that the password is unacceptable. If
+      the password is unacceptable, the server will return an error
+      to the client, and <em class="replaceable"><code>ppErrStr</code></em> may be used to
+      return a human-readable textual explanation of the error. The
+      error string must be dynamically allocated as it will be
+      free()'d by slapd.</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>( 1.3.6.1.4.1.4754.1.99.1 NAME 'pwdCheckModule'
+          EQUALITY caseExactIA5Match SYNTAX
+          1.3.6.1.4.1.1466.115.121.1.26 SINGLE−VALUE )</p>
+        </blockquote>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <p>The user-defined loadable module named by
+              <em class="replaceable"><code>pwdCheckModule</code></em> must
+              be in <em class="replaceable"><code>slapd's</code></em> standard
+              executable search PATH.</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <p><em class="replaceable"><code>pwdCheckModule</code></em> is a
+              non-standard extension to the LDAP password policy
+              proposal.</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-ppolicy-5_sect5" name="slapo-ppolicy-5_sect5" shape="rect"> </a>
+
+      <h2>OPERATIONAL ATTRIBUTES</h2>
+
+      <p>The operational attributes used by the <em class="replaceable"><code>ppolicy</code></em> module are stored in
+      the user's entry. Most of these attributes are not intended
+      to be changed directly by users; they are there to track user
+      activity. They have been detailed here so that administrators
+      and users can both understand the workings of the <em class="replaceable"><code>ppolicy</code></em> module.</p>
+
+      <p>Note that the current IETF Password Policy proposal does
+      not define how these operational attributes are expected to
+      behave in a replication environment. In general,
+      authentication attempts on a slave server only affect the
+      copy of the operational attributes on that slave and will not
+      affect any attributes for a user's entry on the master
+      server. Operational attribute changes resulting from
+      authentication attempts on a master server will usually
+      replicate to the slaves (and also overwrite any changes that
+      originated on the slave). These behaviors are not guaranteed
+      and are subject to change when a formal specification
+      emerges.</p>
+
+      <p><em class="replaceable"><code>userPassword</code></em></p>
+
+      <p>The <em class="replaceable"><code>userPassword</code></em>
+      attribute is not strictly part of the <em class="replaceable"><code>ppolicy</code></em> module. It is,
+      however, the attribute that is tracked and controlled by the
+      module. Please refer to the standard OpenLDAP schema for its
+      definition.</p>
+
+      <p><em class="replaceable"><code>pwdPolicySubentry</code></em></p>
+
+      <p>This attribute refers directly to the <em class="replaceable"><code>pwdPolicy</code></em> subentry that is to
+      be used for this particular directory user. If <em class="replaceable"><code>pwdPolicySubentry</code></em> exists, it
+      must contain the DN of a valid <em class="replaceable"><code>pwdPolicy</code></em> object. If it does
+      not exist, the <em class="replaceable"><code>ppolicy</code></em> module will enforce
+      the default password policy rules on the user associated with
+      this authenticating DN. If there is no default, or the
+      referenced subentry does not exist, then no policy rules will
+      be enforced.</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>( 1.3.6.1.4.1.42.2.27.8.1.23 NAME 'pwdPolicySubentry'
+          DESC 'The pwdPolicy subentry in effect for this object'
+          EQUALITY distinguishedNameMatch SYNTAX
+          1.3.6.1.4.1.1466.115.121.1.12 SINGLE−VALUE
+          NO−USER−MODIFICATION USAGE
+          directoryOperation)</p>
+        </blockquote>
+      </div>
+
+      <p><em class="replaceable"><code>pwdChangedTime</code></em></p>
+
+      <p>This attribute denotes the last time that the entry's
+      password was changed. This value is used by the password
+      expiration policy to determine whether the password is too
+      old to be allowed to be used for user authentication. If
+      <em class="replaceable"><code>pwdChangedTime</code></em> does
+      not exist, the user's password will not expire.</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>( 1.3.6.1.4.1.42.2.27.8.1.16 NAME 'pwdChangedTime'
+          DESC 'The time the password was last changed' SYNTAX
+          1.3.6.1.4.1.1466.115.121.1.24 EQUALITY
+          generalizedTimeMatch ORDERING
+          generalizedTimeOrderingMatch SINGLE−VALUE
+          NO−USER−MODIFICATION USAGE
+          directoryOperation)</p>
+        </blockquote>
+      </div>
+
+      <p><em class="replaceable"><code>pwdAccountLockedTime</code></em></p>
+
+      <p>This attribute contains the time that the user's account
+      was locked. If the account has been locked, the password may
+      no longer be used to authenticate the user to the directory.
+      If <em class="replaceable"><code>pwdAccountLockedTime</code></em> is set
+      to 000001010000Z, the user's account has been permanently
+      locked and may only be unlocked by an administrator. Note
+      that account locking only takes effect when the <em class="replaceable"><code>pwdLockout</code></em> password policy
+      attribute is set to "TRUE".</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>( 1.3.6.1.4.1.42.2.27.8.1.17 NAME
+          'pwdAccountLockedTime' DESC 'The time an user account was
+          locked' SYNTAX 1.3.6.1.4.1.1466.115.121.1.24 EQUALITY
+          generalizedTimeMatch ORDERING
+          generalizedTimeOrderingMatch SINGLE−VALUE
+          NO−USER−MODIFICATION USAGE
+          directoryOperation)</p>
+        </blockquote>
+      </div>
+
+      <p><em class="replaceable"><code>pwdFailureTime</code></em></p>
+
+      <p>This attribute contains the timestamps of each of the
+      consecutive authentication failures made upon attempted
+      authentication to this DN (i.e. account). If too many
+      timestamps accumulate here (refer to the <em class="replaceable"><code>pwdMaxFailure</code></em> password policy
+      attribute for details), and the <em class="replaceable"><code>pwdLockout</code></em> password policy
+      attribute is set to "TRUE", the account may be locked.
+      (Please also refer to the <em class="replaceable"><code>pwdLockout</code></em> password policy
+      attribute.) Excess timestamps beyond those allowed by
+      <em class="replaceable"><code>pwdMaxFailure</code></em> may
+      also be purged. If a successful authentication is made to
+      this DN (i.e. to this user account), then <em class="replaceable"><code>pwdFailureTime</code></em> will be
+      cleansed of entries.</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>( 1.3.6.1.4.1.42.2.27.8.1.19 NAME 'pwdFailureTime'
+          DESC 'The timestamps of the last consecutive
+          authentication failures' SYNTAX
+          1.3.6.1.4.1.1466.115.121.1.24 EQUALITY
+          generalizedTimeMatch ORDERING
+          generalizedTimeOrderingMatch
+          NO−USER−MODIFICATION USAGE directoryOperation
+          )</p>
+        </blockquote>
+      </div>
+
+      <p><em class="replaceable"><code>pwdHistory</code></em></p>
+
+      <p>This attribute contains the history of previously used
+      passwords for this DN (i.e. for this user account). The
+      values of this attribute are stored in string format as
+      follows:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>pwdHistory=</p>
+
+          <div class="blockquote">
+            <blockquote class="blockquote">
+              <p>time "#" syntaxOID "#" length "#" data</p>
+            </blockquote>
+          </div>
+
+          <p>time=</p>
+
+          <div class="blockquote">
+            <blockquote class="blockquote">
+              <p>GeneralizedTime as specified in section 3.3.13 of
+              [RFC4517]</p>
+            </blockquote>
+          </div>
+
+          <p>syntaxOID = numericoid</p>
+
+          <div class="blockquote">
+            <blockquote class="blockquote">
+              <p>This is the string representation of the
+              dotted-decimal OID that defines the syntax used to
+              store the password. numericoid is described in
+              section 1.4 of [RFC4512].</p>
+            </blockquote>
+          </div>
+
+          <p>length = NumericString</p>
+
+          <div class="blockquote">
+            <blockquote class="blockquote">
+              <p>The number of octets in the data. NumericString is
+              described in section 3.3.23 of [RFC4517].</p>
+            </blockquote>
+          </div>
+
+          <p>data =</p>
+
+          <div class="blockquote">
+            <blockquote class="blockquote">
+              <p>Octets representing the password in the format
+              specified by syntaxOID.</p>
+            </blockquote>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>This format allows the server to store and transmit a
+      history of passwords that have been used. In order for
+      equality matching on the values in this attribute to function
+      properly, the time field is in GMT format.</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>( 1.3.6.1.4.1.42.2.27.8.1.20 NAME 'pwdHistory' DESC
+          'The history of user passwords' SYNTAX
+          1.3.6.1.4.1.1466.115.121.1.40 EQUALITY octetStringMatch
+          NO−USER−MODIFICATION USAGE
+          directoryOperation)</p>
+        </blockquote>
+      </div>
+
+      <p><em class="replaceable"><code>pwdGraceUseTime</code></em>
+      This attribute contains the list of timestamps of logins made
+      after the user password in the DN has expired. These
+      post-expiration logins are known as "<span class="emphasis"><em>grace logins</em></span>". If too many
+      <span class="emphasis"><em>grace logins</em></span> have been
+      used (please refer to the <em class="replaceable"><code>pwdGraceLoginLimit</code></em> password
+      policy attribute), then the DN will no longer be allowed to
+      be used to authenticate the user to the directory until the
+      administrator changes the DN's <em class="replaceable"><code>userPassword</code></em> attribute.</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>( 1.3.6.1.4.1.42.2.27.8.1.21 NAME 'pwdGraceUseTime'
+          DESC 'The timestamps of the grace login once the password
+          has expired' SYNTAX 1.3.6.1.4.1.1466.115.121.1.24
+          EQUALITY generalizedTimeMatch
+          NO−USER−MODIFICATION USAGE
+          directoryOperation)</p>
+        </blockquote>
+      </div>
+
+      <p><em class="replaceable"><code>pwdReset</code></em></p>
+
+      <p>This attribute indicates whether the user's password has
+      been reset by the administrator and thus must be changed upon
+      first use of this DN for authentication to the directory. If
+      <em class="replaceable"><code>pwdReset</code></em> is set to
+      "TRUE", then the password was reset and the user must change
+      it upon first authentication. If the attribute does not
+      exist, or is set to "FALSE", the user need not change their
+      password due to administrative reset.</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>( 1.3.6.1.4.1.42.2.27.8.1.22 NAME 'pwdReset' DESC 'The
+          indication that the password has been reset' EQUALITY
+          booleanMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+          SINGLE−VALUE USAGE directoryOperation)</p>
+        </blockquote>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-ppolicy-5_sect6" name="slapo-ppolicy-5_sect6" shape="rect"> </a>
+
+      <h2>EXAMPLES</h2>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+database bdb
+suffix dc=example,dc=com
+...
+overlay ppolicy
+ppolicy_default "cn=Standard,ou=Policies,dc=example,dc=com"
+</pre>
+          </div>
+        </blockquote>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-ppolicy-5_sect7" name="slapo-ppolicy-5_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/ldap.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldap</span>(3)</span></a>, <a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a>, <a class="link" href="../htmlman5/slapd-config.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-config</span>(5)</span></a>, <a class="link" href="../htmlman5/slapo-chain.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapo-chain</span>(5)</span></a>.</p>
+
+      <p>"OpenLDAP Administrator's Guide"
+      (http://www.OpenLDAP.org/doc/admin/)</p>
+
+      <p>IETF LDAP password policy proposal by P. Behera, L. Poitou
+      and J. Sermersheim: documented in IETF document
+      "draft-behera-ldap-password-policy-09.txt".</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-ppolicy-5_sect8" name="slapo-ppolicy-5_sect8" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>The LDAP Password Policy specification is not yet an
+      approved standard, and it is still evolving. This code will
+      continue to be in flux until the specification is
+      finalized.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-ppolicy-5_sect9" name="slapo-ppolicy-5_sect9" shape="rect"> </a>
+
+      <h2>ACKNOWLEDGEMENTS</h2>
+
+      <p>This module was written in 2004 by Howard Chu of Symas
+      Corporation with significant input from Neil Dunbar and
+      Kartik Subbarao of Hewlett-Packard.</p>
+
+      <p>This manual page borrows heavily and shamelessly from the
+      specification upon which the password policy module it
+      describes is based. This source is the IETF LDAP password
+      policy proposal by P. Behera, L. Poitou and J. Sermersheim.
+      The proposal is fully documented in the IETF document named
+      draft-behera-ldap-password-policy-09.txt, written in July of
+      2005.</p>
+
+      <p><span class="emphasis"><em>OpenLDAP Software</em></span>
+      is developed and maintained by The OpenLDAP Project
+      &lt;<a class="literalurl" href="http://www.openldap.org/" target="_top" shape="rect">http://www.openldap.org/</a>&gt;. <span class="emphasis"><em>OpenLDAP Software</em></span> is derived from
+      University of Michigan LDAP 3.3 Release.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                  See the following documents: <a class="ulink" href="../openldap-COPYRIGHT.html" target="_top" shape="rect">COPYRIGHT</a>, <a class="ulink" href="../openldap-LICENSE.html" target="_top" shape="rect">LICENSE</a><br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

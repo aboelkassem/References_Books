@@ -1,0 +1,697 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>mouse(4) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="mouse(4) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index4.html" shape="rect">Section 4</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="mouse.4" name="mouse.4" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>mouse — serial mouse interface</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mouse-4_sect1" name="mouse-4_sect1" shape="rect"> </a>
+
+      <h2>CONFIGURATION</h2>
+
+      <p>Serial mice are connected to a serial RS232/V24 dialout
+      line, see <a class="link" href="../htmlman4/ttyS.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ttyS</span>(4)</span></a> for a
+      description.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mouse-4_sect2" name="mouse-4_sect2" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <div class="refsect2">
+        <a id="mouse-4_sect3" name="mouse-4_sect3" shape="rect"> </a>
+
+        <h3>Introduction</h3>
+
+        <p>The pinout of the usual 9 pin plug as used for serial
+        mice is:</p>
+
+        <div class="informaltable">
+          <table style="border-collapse: collapse;">
+            <colgroup span="1">
+              <col class="c0" span="1" />
+              <col class="c1" span="1" />
+              <col class="c2" span="1" />
+            </colgroup>
+
+            <tbody>
+              <tr>
+                <td style="" align="right" rowspan="1" colspan="1">pin</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">name</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">used for</td>
+              </tr>
+
+              <tr>
+                <td style="" align="right" rowspan="1" colspan="1">2</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">RX</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Data</td>
+              </tr>
+
+              <tr>
+                <td style="" align="right" rowspan="1" colspan="1">3</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">TX</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">−12 V, Imax = 10
+                mA</td>
+              </tr>
+
+              <tr>
+                <td style="" align="right" rowspan="1" colspan="1">4</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">DTR</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">+12 V, Imax = 10 mA</td>
+              </tr>
+
+              <tr>
+                <td style="" align="right" rowspan="1" colspan="1">7</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">RTS</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">+12 V, Imax = 10 mA</td>
+              </tr>
+
+              <tr>
+                <td style="" align="right" rowspan="1" colspan="1">5</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">GND</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Ground</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>This is the specification, in fact 9 V suffices with
+        most mice.</p>
+
+        <p>The mouse driver can recognize a mouse by dropping RTS
+        to low and raising it again. About 14 ms later the mouse
+        will send 0x4D ('M') on the data line. After a further 63
+        ms, a Microsoft-compatible 3-button mouse will send 0x33
+        ('3').</p>
+
+        <p>The relative mouse movement is sent as <code class="function">dx</code> (positive means right) and
+        <code class="function">dy</code> (positive means down).
+        Various mice can operate at different speeds. To select
+        speeds, cycle through the speeds 9600, 4800, 2400, and 1200
+        bit/s, each time writing the two characters from the table
+        below and waiting 0.1 seconds. The following table shows
+        available speeds and the strings that select them:</p>
+
+        <div class="informaltable">
+          <table style="border-collapse: collapse;">
+            <colgroup span="1">
+              <col class="c0" span="1" />
+              <col class="c1" span="1" />
+            </colgroup>
+
+            <tbody>
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">bit/s</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">string</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">9600</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">*q</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">4800</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">*p</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">2400</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">*o</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">1200</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">*n</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>The first byte of a data packet can be used to
+        synchronization purposes.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="mouse-4_sect4" name="mouse-4_sect4" shape="rect"> </a>
+
+        <h3>Microsoft protocol</h3>
+
+        <p>The <code class="function">Microsoft</code> protocol
+        uses 1 start bit, 7 data bits, no parity and one stop bit
+        at the speed of 1200 bits/sec. Data is sent to RxD in
+        3-byte packets. The <code class="function">dx</code> and
+        <code class="function">dy</code> movements are sent as
+        two's-complement, <code class="function">lb</code>
+        (<code class="function">rb</code>) are set when the left
+        (right) button is pressed:</p>
+
+        <div class="informaltable">
+          <table style="border-collapse: collapse;">
+            <colgroup span="1">
+              <col class="c0" span="1" />
+              <col class="c1" span="1" />
+              <col class="c2" span="1" />
+              <col class="c3" span="1" />
+              <col class="c4" span="1" />
+              <col class="c5" span="1" />
+              <col class="c6" span="1" />
+              <col class="c7" span="1" />
+            </colgroup>
+
+            <tbody>
+              <tr>
+                <td style="" align="right" rowspan="1" colspan="1">byte</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">d6</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">d5</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">d4</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">d3</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">d2</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">d1</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">d0</td>
+              </tr>
+
+              <tr>
+                <td style="" align="right" rowspan="1" colspan="1">1</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">1</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">lb</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">rb</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dy7</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dy6</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dx7</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dx6</td>
+              </tr>
+
+              <tr>
+                <td style="" align="right" rowspan="1" colspan="1">2</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">0</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dx5</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dx4</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dx3</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dx2</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dx1</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dx0</td>
+              </tr>
+
+              <tr>
+                <td style="" align="right" rowspan="1" colspan="1">3</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">0</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dy5</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dy4</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dy3</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dy2</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dy1</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dy0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="mouse-4_sect5" name="mouse-4_sect5" shape="rect"> </a>
+
+        <h3>3-button Microsoft protocol</h3>
+
+        <p>Original Microsoft mice only have two buttons. However,
+        there are some three button mice which also use the
+        Microsoft protocol. Pressing or releasing the middle button
+        is reported by sending a packet with zero movement and no
+        buttons pressed. (Thus, unlike for the other two buttons,
+        the status of the middle button is not reported in each
+        packet.)</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="mouse-4_sect6" name="mouse-4_sect6" shape="rect"> </a>
+
+        <h3>Logitech protocol</h3>
+
+        <p>Logitech serial 3-button mice use a different extension
+        of the Microsoft protocol: when the middle button is up,
+        the above 3-byte packet is sent. When the middle button is
+        down a 4-byte packet is sent, where the 4th byte has value
+        0x20 (or at least has the 0x20 bit set). In particular, a
+        press of the middle button is reported as 0,0,0,0x20 when
+        no other buttons are down.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="mouse-4_sect7" name="mouse-4_sect7" shape="rect"> </a>
+
+        <h3>Mousesystems protocol</h3>
+
+        <p>The <code class="function">Mousesystems</code> protocol
+        uses 1 start bit, 8 data bits, no parity and two stop bits
+        at the speed of 1200 bits/sec. Data is sent to RxD in
+        5-byte packets. <code class="function">dx</code> is sent as
+        the sum of the two two's-complement values, <code class="function">dy</code> is send as negated sum of the two
+        two's-complement values. <code class="function">lb</code>
+        (<code class="function">mb</code>, <code class="function">rb</code>) are cleared when the left (middle,
+        right) button is pressed:</p>
+
+        <div class="informaltable">
+          <table style="border-collapse: collapse;">
+            <colgroup span="1">
+              <col class="c0" span="1" />
+              <col class="c1" span="1" />
+              <col class="c2" span="1" />
+              <col class="c3" span="1" />
+              <col class="c4" span="1" />
+              <col class="c5" span="1" />
+              <col class="c6" span="1" />
+              <col class="c7" span="1" />
+              <col class="c8" span="1" />
+            </colgroup>
+
+            <tbody>
+              <tr>
+                <td style="" align="right" rowspan="1" colspan="1">byte</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">d7</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">d6</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">d5</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">d4</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">d3</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">d2</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">d1</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">d0</td>
+              </tr>
+
+              <tr>
+                <td style="" align="right" rowspan="1" colspan="1">1</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">1</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">0</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">0</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">0</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">0</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">lb</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">mb</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">rb</td>
+              </tr>
+
+              <tr>
+                <td style="" align="right" rowspan="1" colspan="1">2</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">0</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dxa6</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dxa5</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dxa4</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dxa3</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dxa2</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dxa1</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dxa0</td>
+              </tr>
+
+              <tr>
+                <td style="" align="right" rowspan="1" colspan="1">3</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">0</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dya6</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dya5</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dya4</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dya3</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dya2</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dya1</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dya0</td>
+              </tr>
+
+              <tr>
+                <td style="" align="right" rowspan="1" colspan="1">4</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">0</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dxb6</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dxb5</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dxb4</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dxb3</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dxb2</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dxb1</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dxb0</td>
+              </tr>
+
+              <tr>
+                <td style="" align="right" rowspan="1" colspan="1">5</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">0</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dyb6</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dyb5</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dyb4</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dyb3</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dyb2</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dyb1</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dyb0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>Bytes 4 and 5 describe the change that occurred since
+        bytes 2 and 3 were transmitted.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="mouse-4_sect8" name="mouse-4_sect8" shape="rect"> </a>
+
+        <h3>Sun protocol</h3>
+
+        <p>The <code class="function">Sun</code> protocol is the
+        3-byte version of the above 5-byte Mousesystems protocol:
+        the last two bytes are not sent.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="mouse-4_sect9" name="mouse-4_sect9" shape="rect"> </a>
+
+        <h3>MM protocol</h3>
+
+        <p>The <code class="constant">MM</code> protocol uses 1
+        start bit, 8 data bits, odd parity and one stop bit at the
+        speed of 1200 bits/sec. Data is sent to RxD in 3-byte
+        packets. <code class="function">dx</code> and <code class="function">dy</code> are sent as single signed values, the
+        sign bit indicating a negative value. <code class="function">lb</code> (<code class="function">mb</code>,
+        <code class="function">rb</code>) are set when the left
+        (middle, right) button is pressed:</p>
+
+        <div class="informaltable">
+          <table style="border-collapse: collapse;">
+            <colgroup span="1">
+              <col class="c0" span="1" />
+              <col class="c1" span="1" />
+              <col class="c2" span="1" />
+              <col class="c3" span="1" />
+              <col class="c4" span="1" />
+              <col class="c5" span="1" />
+              <col class="c6" span="1" />
+              <col class="c7" span="1" />
+              <col class="c8" span="1" />
+            </colgroup>
+
+            <tbody>
+              <tr>
+                <td style="" align="right" rowspan="1" colspan="1">byte</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">d7</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">d6</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">d5</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">d4</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">d3</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">d2</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">d1</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">d0</td>
+              </tr>
+
+              <tr>
+                <td style="" align="right" rowspan="1" colspan="1">1</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">1</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">0</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">0</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dxs</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dys</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">lb</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">mb</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">rb</td>
+              </tr>
+
+              <tr>
+                <td style="" align="right" rowspan="1" colspan="1">2</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">0</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dx6</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dx5</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dx4</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dx3</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dx2</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dx1</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dx0</td>
+              </tr>
+
+              <tr>
+                <td style="" align="right" rowspan="1" colspan="1">3</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">0</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dy6</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dy5</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dy4</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dy3</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dy2</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dy1</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">dy0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mouse-4_sect10" name="mouse-4_sect10" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="filename">/dev/mouse</code></span></dt>
+
+          <dd>
+            <p>A commonly used symlink pointing to a mouse
+            device.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mouse-4_sect11" name="mouse-4_sect11" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman4/ttyS.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ttyS</span>(4)</span></a>, <span class="citerefentry"><span class="refentrytitle">gpm</span>(8)</span></p>
+    </div>
+
+    <div class="colophon">
+      <a id="mouse-4_sect12" name="mouse-4_sect12" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    t<br />
+                  This manpage is Copyright (C) 1996 Michael Haardt.<br />
+
+                  Updates Nov 1998, Andries Brouwer<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

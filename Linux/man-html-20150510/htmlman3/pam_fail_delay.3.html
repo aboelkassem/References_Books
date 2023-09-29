@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>pam_fail_delay(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="pam_fail_delay(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry" title="pam_fail_delay(3) — Linux manual pages">
+    <a id="pam-fail-delay.3" name="pam-fail-delay.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <a id="pam_fail_delay-name" name="pam_fail_delay-name" shape="rect"> </a>
+
+      <h2>Name</h2>
+
+      <p>pam_fail_delay — request a delay on failure</p>
+    </div>
+
+    <div class="refsynopsisdiv" title="Synopsis">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <a id="pam_fail_delay-synopsis" name="pam_fail_delay-synopsis" shape="rect"> </a>
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;security/pam_appl.h&gt;
+</pre>
+
+        <table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>pam_fail_delay</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">pam_handle_t *<var class="pdparam">pamh</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">unsigned int <var class="pdparam">usec</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1" title="DESCRIPTION">
+      <a id="pam_fail_delay-description" name="pam_fail_delay-description" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">pam_fail_delay</code> function
+      provides a mechanism by which an application or module can
+      suggest a minimum delay of <span class="emphasis"><em>usec</em></span> micro-seconds. The function
+      keeps a record of the longest time requested with this
+      function. Should <a class="link" href="../htmlman3/pam_authenticate.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_authenticate</span>(3)</span></a> fail,
+      the failing return to the application is delayed by an amount
+      of time randomly distributed (by up to 25%) about this
+      longest value.</p>
+
+      <p>Independent of success, the delay time is reset to its
+      zero default value when the PAM service module returns
+      control to the application. The delay occurs <span class="emphasis"><em>after</em></span> all authentication modules
+      have been called, but <span class="emphasis"><em>before</em></span> control is returned to the
+      service application.</p>
+
+      <p>When using this function the programmer should check if it
+      is available with:</p>
+      <pre class="programlisting" xml:space="preserve">
+#ifdef HAVE_PAM_FAIL_DELAY
+    ....
+#endif /* HAVE_PAM_FAIL_DELAY */
+      
+</pre>
+
+      <p>For applications written with a single thread that are
+      event driven in nature, generating this delay may be
+      undesirable. Instead, the application may want to register
+      the delay in some other way. For example, in a single
+      threaded server that serves multiple authentication requests
+      from a single event loop, the application might want to
+      simply mark a given connection as blocked until an
+      application timer expires. For this reason the delay function
+      can be changed with the <span class="emphasis"><em>PAM_FAIL_DELAY</em></span> item. It can be
+      queried and set with <a class="link" href="../htmlman3/pam_get_item.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_get_item</span>(3)</span></a> and
+      <span class="citerefentry"><span class="refentrytitle">pam_set_item</span> (3)</span> respectively.
+      The value used to set it should be a function pointer of the
+      following prototype:</p>
+      <pre class="programlisting" xml:space="preserve">
+void (*delay_fn)(int retval, unsigned usec_delay, void *appdata_ptr);
+      
+</pre>
+
+      <p>The arguments being the <span class="emphasis"><em>retval</em></span> return code of the module
+      stack, the <span class="emphasis"><em>usec_delay</em></span>
+      micro-second delay that libpam is requesting and the
+      <span class="emphasis"><em>appdata_ptr</em></span> that the
+      application has associated with the current <span class="emphasis"><em>pamh</em></span>. This last value was set by
+      the application when it called <a class="link" href="../htmlman3/pam_start.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_start</span>(3)</span></a> or explicitly
+      with <a class="link" href="../htmlman3/pam_set_item.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_set_item</span>(3)</span></a>. Note, if
+      PAM_FAIL_DELAY item is unset (or set to NULL), then no delay
+      will be performed.</p>
+    </div>
+
+    <div class="refsect1" title="RATIONALE">
+      <a id="pam_fail_delay-rationale" name="pam_fail_delay-rationale" shape="rect"> </a>
+
+      <h2>RATIONALE</h2>
+
+      <p>It is often possible to attack an authentication scheme by
+      exploiting the time it takes the scheme to deny access to an
+      applicant user. In cases of <span class="emphasis"><em>short</em></span> timeouts, it may prove
+      possible to attempt a <span class="emphasis"><em>brute
+      force</em></span> dictionary attack -- with an automated
+      process, the attacker tries all possible passwords to gain
+      access to the system. In other cases, where individual
+      failures can take measurable amounts of time (indicating the
+      nature of the failure), an attacker can obtain useful
+      information about the authentication process. These latter
+      attacks make use of procedural delays that constitute a
+      <span class="emphasis"><em>covert channel</em></span> of
+      useful information.</p>
+
+      <p>To minimize the effectiveness of such attacks, it is
+      desirable to introduce a random delay in a failed
+      authentication process. Preferable this value should be set
+      by the application or a special PAM module. Standard PAM
+      modules should not modify the delay unconditional.</p>
+    </div>
+
+    <div class="refsect1" title="EXAMPLE">
+      <a id="pam_fail_delay-example" name="pam_fail_delay-example" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>For example, a login application may require a failure
+      delay of roughly 3 seconds. It will contain the following
+      code:</p>
+      <pre class="programlisting" xml:space="preserve">
+    pam_fail_delay (pamh, 3000000 /* micro-seconds */ );
+    pam_authenticate (pamh, 0);
+    
+</pre>
+
+      <p>if the modules do not request a delay, the failure delay
+      will be between 2.25 and 3.75 seconds.</p>
+
+      <p>However, the modules, invoked in the authentication
+      process, may also request delays:</p>
+      <pre class="programlisting" xml:space="preserve">
+module #1:    pam_fail_delay (pamh, 2000000);
+module #2:    pam_fail_delay (pamh, 4000000);
+    
+</pre>
+
+      <p>in this case, it is the largest requested value that is
+      used to compute the actual failed delay: here between 3 and 5
+      seconds.</p>
+    </div>
+
+    <div class="refsect1" title="RETURN VALUES">
+      <a id="pam_fail_delay-return_values" name="pam_fail_delay-return_values" shape="rect"> </a>
+
+      <h2>RETURN VALUES</h2>
+
+      <div class="variablelist">
+        <dl>
+          <dt><span class="term">PAM_SUCCESS</span></dt>
+
+          <dd>
+            <p>Delay was successful adjusted.</p>
+          </dd>
+
+          <dt><span class="term">PAM_SYSTEM_ERR</span></dt>
+
+          <dd>
+            <p>A NULL pointer was submitted as PAM handle.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1" title="SEE ALSO">
+      <a id="pam_fail_delay-see_also" name="pam_fail_delay-see_also" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/pam_start.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_start</span>(3)</span></a>, <a class="link" href="../htmlman3/pam_get_item.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_get_item</span>(3)</span></a>, <a class="link" href="../htmlman3/pam_strerror.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_strerror</span>(3)</span></a></p>
+    </div>
+
+    <div class="refsect1" title="STANDARDS">
+      <a id="pam_fail_delay-standards" name="pam_fail_delay-standards" shape="rect"> </a>
+
+      <h2>STANDARDS</h2>
+
+      <p>The <code class="function">pam_fail_delay</code> function
+      is an Linux-PAM extension.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  See <a class="ulink" href="../linuxpam-copyright.html" target="_top" shape="rect">Linux-PAM copyright notice</a> for more information.
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

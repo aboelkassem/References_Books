@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>slabinfo(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="slabinfo(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="slabinfo.5" name="slabinfo.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>/proc/slabinfo — kernel slab allocator
+      statistics</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+cat /proc/slabinfo
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slabinfo-5_sect1" name="slabinfo-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>Frequently used objects in the Linux kernel (buffer heads,
+      inodes, dentries, etc.) have their own cache. The file
+      <code class="filename">/proc/slabinfo</code> gives
+      statistics. For example:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+% cat /proc/slabinfo
+slabinfo − version: 1.1
+kmem_cache            60     78    100    2    2    1
+blkdev_requests     5120   5120     96  128  128    1
+mnt_cache             20     40     96    1    1    1
+inode_cache         7005  14792    480 1598 1849    1
+dentry_cache        5469   5880    128  183  196    1
+filp                 726    760     96   19   19    1
+buffer_head        67131  71240     96 1776 1781    1
+vm_area_struct      1204   1652     64   23   28    1
+...
+size-8192              1     17   8192    1   17    2
+size-4096             41     73   4096   41   73    1
+...
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>For each slab cache, the cache name, the number of
+      currently active objects, the total number of available
+      objects, the size of each object in bytes, the number of
+      pages with at least one active object, the total number of
+      allocated pages, and the number of pages per slab are
+      given.</p>
+
+      <p>Note that because of object alignment and slab cache
+      overhead, objects are not normally packed tightly into pages.
+      Pages with even one in-use object are considered in-use and
+      cannot be freed.</p>
+
+      <p>Kernels compiled with slab cache statistics will also have
+      "(statistics)" in the first line of output, and will have 5
+      additional columns, namely: the high water mark of active
+      objects; the number of times objects have been allocated; the
+      number of times the cache has grown (new pages added to this
+      cache); the number of times the cache has been reaped (unused
+      pages removed from this cache); and the number of times there
+      was an error allocating new pages to this cache. If slab
+      cache statistics are not enabled for this kernel, these
+      columns will not be shown.</p>
+
+      <p>SMP systems will also have "(SMP)" in the first line of
+      output, and will have two additional columns for each slab,
+      reporting the slab allocation policy for the CPU-local cache
+      (to reduce the need for inter-CPU synchronization when
+      allocating objects from the cache). The first column is the
+      per-CPU limit: the maximum number of objects that will be
+      cached for each CPU. The second column is the batchcount: the
+      maximum number of free objects in the global cache that will
+      be transferred to the per-CPU cache if it is empty, or the
+      number of objects to be returned to the global cache if the
+      per-CPU cache is full.</p>
+
+      <p>If both slab cache statistics and SMP are defined, there
+      will be four additional columns, reporting the per-CPU cache
+      statistics. The first two are the per-CPU cache allocation
+      hit and miss counts: the number of times an object was or was
+      not available in the per-CPU cache for allocation. The next
+      two are the per-CPU cache free hit and miss counts: the
+      number of times a freed object could or could not fit within
+      the per-CPU cache limit, before flushing objects to the
+      global cache.</p>
+
+      <p>It is possible to tune the SMP per-CPU slab cache limit
+      and batchcount via:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+echo "<span class="emphasis"><em>cache_name limit batchcount</em></span>" &gt; /proc/slabinfo
+</pre>
+          </div>
+        </blockquote>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slabinfo-5_sect2" name="slabinfo-5_sect2" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <p><code class="literal">&lt;</code><code class="filename">linux/slab.h</code><code class="literal">&gt;</code></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slabinfo-5_sect3" name="slabinfo-5_sect3" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p><code class="filename">/proc/slabinfo</code> exists since
+      Linux 2.1.23. SMP per-CPU caches exist since Linux
+      2.4.0-test3.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slabinfo-5_sect4" name="slabinfo-5_sect4" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Since Linux 2.6.16 the file <code class="filename">/proc/slabinfo</code> is present only if the
+      <code class="constant">CONFIG_SLAB</code> kernel
+      configuration option is enabled.</p>
+    </div>
+
+    <div class="colophon">
+      <a id="slabinfo-5_sect5" name="slabinfo-5_sect5" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 2001 Andreas Dilger (adilger<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>turbolinux.com)<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  FIXME Over time, the slabinfo format has gone through<br />
+
+                  version changes. These should be documented:<br />
+
+                  <br />
+                      slabinfo 1.0 - Linux 2.2 (precisely: 2.1.23)<br />
+
+                      slabinfo 1.1 - Linux 2.4 (precisely: 2.4.0-test3)<br />
+
+                      slabinfo 1.2 - Linux 2.5.45<br />
+
+                      slabinfo 2.0 - Linux 2.6 (precisely: 2.5.71)<br />
+
+                      slabinfo 2.1 - Linux 2.6.10<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

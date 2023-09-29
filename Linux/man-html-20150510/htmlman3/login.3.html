@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>login(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="login(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="login.3" name="login.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>login, logout — write utmp and wtmp entries</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;utmp.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">void
+            <strong>login</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">const struct utmp *<var class="pdparam">ut</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>logout</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">ut_line</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <p>Link with <code class="option">−lutil</code>.</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="login-3_sect1" name="login-3_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The utmp file records who is currently using the system.
+      The wtmp file records all logins and logouts. See <a class="link" href="../htmlman5/utmp.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">utmp</span>(5)</span></a>.</p>
+
+      <p>The function <code class="function">login</code>() takes
+      the supplied <span class="emphasis"><em>struct
+      utmp</em></span>, <em class="parameter"><code>ut</code></em>,
+      and writes it to both the utmp and the wtmp file.</p>
+
+      <p>The function <code class="function">logout</code>() clears
+      the entry in the utmp file again.</p>
+
+      <div class="refsect2">
+        <a id="login-3_sect2" name="login-3_sect2" shape="rect"> </a>
+
+        <h3>GNU details</h3>
+
+        <p>More precisely, <code class="function">login</code>()
+        takes the argument <em class="parameter"><code>ut</code></em> struct, fills the field
+        <em class="replaceable"><code>ut−&gt;ut_type</code></em> (if
+        there is such a field) with the value <code class="constant">USER_PROCESS</code>, and fills the field
+        <em class="replaceable"><code>ut−&gt;ut_pid</code></em> (if
+        there is such a field) with the process ID of the calling
+        process. Then it tries to fill the field <em class="replaceable"><code>ut−&gt;ut_line</code></em>. It
+        takes the first of <code class="varname">stdin</code>,
+        <code class="varname">stdout</code>, <code class="varname">stderr</code> that is a terminal, and stores the
+        corresponding pathname minus a possible leading
+        <code class="filename">/dev/</code> into this field, and
+        then writes the struct to the utmp file. On the other hand,
+        if no terminal name was found, this field is filled with
+        "???" and the struct is not written to the utmp file. After
+        this, the struct is written to the wtmp file.</p>
+
+        <p>The <code class="function">logout</code>() function
+        searches the utmp file for an entry matching the <em class="parameter"><code>ut_line</code></em> argument. If a record
+        is found, it is updated by zeroing out the <code class="varname">ut_name</code> and <code class="varname">ut_host</code> fields, updating the <code class="varname">ut_tv</code> timestamp field and setting
+        <code class="varname">ut_type</code> (if there is such a
+        field) to <code class="constant">DEAD_PROCESS</code>.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="login-3_sect3" name="login-3_sect3" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>The <code class="function">logout</code>() function
+      returns 1 if the entry was successfully written to the
+      database, or 0 if an error occurred.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="login-3_sect4" name="login-3_sect4" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="filename">/var/run/utmp</code></span></dt>
+
+          <dd>
+            <p>user accounting database, configured through
+            <code class="constant">_PATH_UTMP</code> in
+            <code class="literal">&lt;</code><code class="filename">paths.h</code><code class="literal">&gt;</code></p>
+          </dd>
+
+          <dt><span class="term"><code class="filename">/var/log/wtmp</code></span></dt>
+
+          <dd>
+            <p>user accounting log file, configured through
+            <code class="constant">_PATH_WTMP</code> in
+            <code class="literal">&lt;</code><code class="filename">paths.h</code><code class="literal">&gt;</code></p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="login-3_sect5" name="login-3_sect5" shape="rect"> </a>
+
+      <h2>ATTRIBUTES</h2>
+
+      <p>For an explanation of the terms used in this section, see
+      <a class="link" href="../htmlman7/attributes.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">attributes</span>(7)</span></a>.</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">Interface</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Attribute</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Value</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">
+                <p><code class="literal">login</code>(),</p>
+
+                <p><code class="literal">logout</code>()</p>
+              </td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Thread safety</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+                <p>MT-Unsafe race:utent</p>
+
+                <p>sig:ALRM timer</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>In the above table, <code class="function">utent</code> in
+      <em class="replaceable"><code>race:utent</code></em>
+      signifies that if any of the functions <a class="link" href="../htmlman3/getutent.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setutent</span>(3)</span></a>, <a class="link" href="../htmlman3/getutent.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getutent</span>(3)</span></a>, or <a class="link" href="../htmlman3/getutent.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">endutent</span>(3)</span></a> are used in
+      parallel in different threads of a program, then data races
+      could occur. <a class="link" href="../htmlman3/login.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">login</span>(3)</span></a> and <a class="link" href="../htmlman3/login.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">logout</span>(3)</span></a> calls those
+      functions, so we use race:utent to remind users.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="login-3_sect6" name="login-3_sect6" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>Not in POSIX.1-2001. Present on the BSDs.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="login-3_sect7" name="login-3_sect7" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Note that the member <code class="varname">ut_user</code>
+      of <span class="emphasis"><em>struct utmp</em></span> is
+      called <code class="varname">ut_name</code> in BSD.
+      Therefore, <code class="varname">ut_name</code> is defined as
+      an alias for <code class="varname">ut_user</code> in
+      <code class="literal">&lt;</code><code class="filename">utmp.h</code><code class="literal">&gt;</code></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="login-3_sect8" name="login-3_sect8" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/getutent.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getutent</span>(3)</span></a>, <a class="link" href="../htmlman5/utmp.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">utmp</span>(5)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="login-3_sect9" name="login-3_sect9" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Derived from text written by Martin Schulze (or taken from glibc.info)<br />
+
+                  and text written by Paul Thompson - both copyright 2002.<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_DOC_FULL)<br />
+                  This is free documentation; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License as<br />
+
+                  published by the Free Software Foundation; either version 2 of<br />
+
+                  the License, or (at your option) any later version.<br />
+
+                  <br />
+                  The GNU General Public License's references to "object code"<br />
+
+                  and "executables" are to be interpreted as the output of any<br />
+
+                  document formatting or typesetting system, including<br />
+
+                  intermediate and printed output.<br />
+
+                  <br />
+                  This manual is distributed in the hope that it will be useful,<br />
+
+                  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+
+                  GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

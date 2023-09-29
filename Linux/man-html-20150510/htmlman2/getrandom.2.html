@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>getrandom(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="getrandom(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="getrandom.2" name="getrandom.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>getrandom — obtain a series of random bytes</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;linux/random.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>getrandom</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">void *<var class="pdparam">buf</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">size_t <var class="pdparam">buflen</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">unsigned int <var class="pdparam">flags</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="getrandom-2_sect1" name="getrandom-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">getrandom</code>() system call
+      fills the buffer pointed to by <em class="parameter"><code>buf</code></em> with up to <em class="parameter"><code>buflen</code></em> random bytes. These
+      bytes can be used to seed user-space random number generators
+      or for cryptographic purposes.</p>
+
+      <p><code class="function">getrandom</code>() relies on
+      entropy gathered from device drivers and other sources of
+      environmental noise. Unnecessarily reading large quantities
+      of data will have a negative impact on other users of the
+      <code class="filename">/dev/random</code> and <code class="filename">/dev/urandom</code> devices. Therefore,
+      <code class="function">getrandom</code>() should not be used
+      for Monte Carlo simulations or other programs/algorithms
+      which are doing probabilistic sampling.</p>
+
+      <p>By default, <code class="function">getrandom</code>()
+      draws entropy from the <code class="filename">/dev/urandom</code> pool. This behavior can be
+      changed via the <em class="parameter"><code>flags</code></em>
+      argument. If the <code class="filename">/dev/urandom</code>
+      pool has been initialized, reads of up to 256 bytes will
+      always return as many bytes as requested and will not be
+      interrupted by signals. No such guarantees apply for larger
+      buffer sizes. For example, if the call is interrupted by a
+      signal handler, it may return a partially filled buffer, or
+      fail with the error <span class="errorname">EINTR</span>. If
+      the pool has not yet been initialized, then the call blocks,
+      unless <code class="constant">GRND_RANDOM</code> is specified
+      in <em class="parameter"><code>flags</code></em>.</p>
+
+      <p>The <em class="parameter"><code>flags</code></em> argument
+      is a bit mask that can contain zero or more of the following
+      values ORed together:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">GRND_RANDOM</code></span></dt>
+
+          <dd>
+            <p>If this bit is set, then random bytes are drawn from
+            the <code class="filename">/dev/random</code> pool
+            instead of the <code class="filename">/dev/urandom</code> pool. The <code class="filename">/dev/random</code> pool is limited based on
+            the entropy that can be obtained from environmental
+            noise. If the number of available bytes in <code class="filename">/dev/random</code> is less than requested in
+            <em class="parameter"><code>buflen</code></em>, the
+            call returns just the available random bytes. If no
+            random bytes are available, the behavior depends on the
+            presence of <code class="constant">GRND_NONBLOCK</code>
+            in the <em class="parameter"><code>flags</code></em>
+            argument.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">GRND_NONBLOCK</code></span></dt>
+
+          <dd>
+            <p>By default, when reading from <code class="filename">/dev/random</code>, <code class="function">getrandom</code>() blocks if no random bytes
+            are available, and when reading from <code class="filename">/dev/urandom</code>, it blocks if the
+            entropy pool has not yet been initialized. If the
+            <code class="constant">GRND_NONBLOCK</code> flag is
+            set, then <code class="function">getrandom</code>()
+            does not block in these cases, but instead immediately
+            returns −1 with <code class="varname">errno</code> set to <span class="errorname">EAGAIN</span>.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="getrandom-2_sect2" name="getrandom-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">getrandom</code>()
+      returns the number of bytes that were copied to the buffer
+      <em class="parameter"><code>buf</code></em>. This may be less
+      than the number of bytes requested via <em class="parameter"><code>buflen</code></em> if <code class="constant">GRND_RANDOM</code> was specified in <em class="parameter"><code>flags</code></em> and insufficient entropy
+      was present in the <code class="filename">/dev/random</code>
+      pool, or if the system call was interrupted by a signal.</p>
+
+      <p>On error, −1 is returned, and <code class="varname">errno</code> is set appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="getrandom-2_sect3" name="getrandom-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>An invalid flag was specified in <em class="parameter"><code>flags</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p>The address referred to by <em class="parameter"><code>buf</code></em> is outside the
+            accessible address space.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EAGAIN</span></span></dt>
+
+          <dd>
+            <p>The requested entropy was not available, and
+            <code class="function">getrandom</code>() would have
+            blocked if the <code class="constant">GRND_NONBLOCK</code> flag was not set.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINTR</span></span></dt>
+
+          <dd>
+            <p>The call was interrupted by a signal handler; see
+            the description of how interrupted <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> calls on
+            "slow" devices are handled with and without the
+            <code class="constant">SA_RESTART</code> flag in the
+            <a class="link" href="../htmlman7/signal.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(7)</span></a> man
+            page.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="getrandom-2_sect4" name="getrandom-2_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p><code class="function">getrandom</code>() was introduced
+      in version 3.17 of the Linux kernel.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="getrandom-2_sect5" name="getrandom-2_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>This system call is Linux-specific.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="getrandom-2_sect6" name="getrandom-2_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <div class="refsect2">
+        <a id="getrandom-2_sect7" name="getrandom-2_sect7" shape="rect"> </a>
+
+        <h3>Maximum number of bytes returned</h3>
+
+        <p>As of Linux 3.19 the following limits apply:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>When reading from <code class="filename">/dev/urandom</code>, a maximum of 33554431
+              bytes is returned by a single call to <code class="function">getrandom</code>() on a system where
+              <span class="type">int</span> has a size of 32
+              bits.</p>
+            </li>
+
+            <li class="listitem">
+              <p>When reading from <code class="filename">/dev/random</code>, a maximum of 512 bytes
+              is returned.</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="getrandom-2_sect8" name="getrandom-2_sect8" shape="rect"> </a>
+
+        <h3>Initialization of the entropy pool</h3>
+
+        <p>The kernel collects bits of entropy from environment.
+        When a sufficient number of random bits has been collected,
+        the <code class="filename">/dev/urandom</code> entropy pool
+        is considered to be initialized. This state is normally
+        reached early in the system bootstrap phase.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="getrandom-2_sect9" name="getrandom-2_sect9" shape="rect"> </a>
+
+        <h3>Interruption by a signal handler</h3>
+
+        <p>When reading from <code class="filename">/dev/urandom</code> (<code class="constant">GRND_RANDOM</code> is not set), <code class="function">getrandom</code>() will block until the entropy
+        pool has been initialized (unless the <code class="constant">GRND_NONBLOCK</code> flag was specified). If a
+        request is made to read a large number (more than 256) of
+        bytes, <code class="function">getrandom</code>() will block
+        until those bytes have been generated and transferred from
+        kernel memory to <em class="parameter"><code>buf</code></em>. When reading from
+        <code class="filename">/dev/random</code> (<code class="constant">GRND_RANDOM</code> is set), <code class="function">getrandom</code>() will block until some random
+        bytes become available (unless the <code class="constant">GRND_NONBLOCK</code> flag was specified).</p>
+
+        <p>The behavior when a call to <code class="function">getrandom</code>() that is blocked while reading
+        from <code class="filename">/dev/urandom</code> is
+        interrupted by a signal handler depends on the
+        initialization state of the entropy buffer and on the
+        request size, <em class="parameter"><code>buflen</code></em>. If the entropy is not
+        yet initialized, then the call will fail with the
+        <span class="errorname">EINTR</span> error. If the entropy
+        pool has been initialized and the request size is large
+        (<em class="parameter"><code>buflen</code></em> &gt; 256),
+        the call either succeeds, returning a partially filled
+        buffer, or fails with the error <em class="replaceable"><code>EINTR.</code></em> If the entropy pool
+        has been initialized and the request size is small
+        (<em class="parameter"><code>buflen</code></em> &lt;= 256),
+        then <code class="function">getrandom</code>() will not
+        fail with <span class="errorname">EINTR</span>. Instead, it
+        will return all of the bytes that have been requested.</p>
+
+        <p>When reading from <code class="filename">/dev/random</code>, blocking requests of any
+        size can be interrupted by a signal (the call fails with
+        the error <span class="errorname">EINTR</span>).</p>
+
+        <p>Calling <code class="function">getrandom</code>() to
+        read <code class="filename">/dev/urandom</code> for small
+        values (&lt;= 256) of <em class="parameter"><code>buflen</code></em> is the preferred mode
+        of usage.</p>
+
+        <p>The special treatment of small values of <em class="parameter"><code>buflen</code></em> was designed for
+        compatibility with OpenBSD's <code class="function">getentropy</code>() system call.</p>
+
+        <p>The user of <code class="function">getrandom</code>()
+        <em class="replaceable"><code>must</code></em> always check
+        the return value, to determine whether either an error
+        occurred or fewer bytes than requested were returned. In
+        the case where <code class="constant">GRND_RANDOM</code> is
+        not specified and <em class="parameter"><code>buflen</code></em> is less than or equal
+        to 256, a return of fewer bytes than requested should never
+        happen, but the careful programmer will check for this
+        anyway!</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="getrandom-2_sect10" name="getrandom-2_sect10" shape="rect"> </a>
+
+        <h3>Choice of random device</h3>
+
+        <p>Unless you are doing long-term key generation (and
+        perhaps not even then), you probably shouldn't be using
+        <em class="replaceable"><code>GRND_RANDOM.</code></em> The
+        cryptographic algorithms used for <code class="filename">/dev/urandom</code> are quite conservative, and
+        so should be sufficient for all purposes. The disadvantage
+        of <code class="constant">GRND_RANDOM</code> is that it can
+        block. Furthermore, dealing with the partially fulfilled
+        <code class="function">getrandom</code>() requests that can
+        occur when using <code class="constant">GRND_RANDOM</code>
+        increases code complexity.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="getrandom-2_sect11" name="getrandom-2_sect11" shape="rect"> </a>
+
+        <h3>Emulating OpenBSD's getentropy()</h3>
+
+        <p>The <code class="function">getentropy</code>() system
+        call in OpenBSD can be emulated using the following
+        function:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+int
+getentropy(void *buf, size_t buflen)
+{
+    int ret;
+
+    if (buflen &gt; 256)
+        goto failure;
+    ret = getrandom(buf, buflen, 0);
+    if (ret &lt; 0)
+        return ret;
+    if (ret == buflen)
+        return 0;
+failure:
+    errno = EIO;
+    return −1;
+}
+</pre>
+            </div>
+          </blockquote>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="getrandom-2_sect12" name="getrandom-2_sect12" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>As of Linux 3.19, the following bug exists:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p>Depending on CPU load, <code class="function">getrandom</code>() does not react to
+            interrupts before reading all bytes requested.</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="getrandom-2_sect13" name="getrandom-2_sect13" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman4/random.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">random</span>(4)</span></a>, <a class="link" href="../htmlman4/random.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">urandom</span>(4)</span></a>, <a class="link" href="../htmlman7/signal.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="getrandom-2_sect14" name="getrandom-2_sect14" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2014, Theodore Ts'o &lt;tytso<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>mit.edu&gt;<br />
+
+                  Copyright (C) 2014,2015 Heinrich Schuchardt &lt;xypron.glpk<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmx.de&gt;<br />
+
+                  Copyright (C) 2015, Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of<br />
+
+                  this manual under the conditions for verbatim copying, provided that<br />
+
+                  the entire resulting derived work is distributed under the terms of<br />
+
+                  a permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume.<br />
+
+                  no responsibility for errors or omissions, or for damages resulting.<br />
+
+                  from the use of the information contained herein.  The author(s) may.<br />
+
+                  not have taken the same level of care in the production of this.<br />
+
+                  manual, which is licensed free of charge, as they might when working.<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

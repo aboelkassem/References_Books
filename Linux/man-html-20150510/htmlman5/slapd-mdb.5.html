@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>slapd-mdb(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="slapd-mdb(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="slapd-mdb.5" name="slapd-mdb.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>slapd−mdb — Memory-Mapped DB backend to
+      slapd</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ETCDIR/slapd.conf
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-mdb-5_sect1" name="slapd-mdb-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <em class="replaceable"><code>mdb</code></em> backend
+      to <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a> uses OpenLDAP's
+      Lightning Memory-Mapped DB (LMDB) library to store data. It
+      relies completely on the underlying operating system for
+      memory management and does no caching of its own. It is the
+      recommended primary database backend.</p>
+
+      <p>The <em class="replaceable"><code>mdb</code></em> backend
+      is similar to the <em class="replaceable"><code>hdb</code></em> backend in that it uses a
+      hierarchical database layout which supports subtree renames.
+      It is both more space-efficient and more execution-efficient
+      than the <em class="replaceable"><code>bdb</code></em>
+      backend, while being overall much simpler to manage.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-mdb-5_sect2" name="slapd-mdb-5_sect2" shape="rect"> </a>
+
+      <h2>CONFIGURATION</h2>
+
+      <p>These <em class="replaceable"><code>slapd.conf</code></em>
+      options apply to the <em class="replaceable"><code>mdb</code></em> backend database. That
+      is, they must follow a "database mdb" line and come before
+      any subsequent "backend" or "database" lines. Other database
+      options are described in the <a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a> manual
+      page.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><em class="replaceable"><code>checkpoint</code></em><span class="emphasis"><em>&lt;kbyte&gt;
+          &lt;min&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specify the frequency for flushing the database disk
+            buffers. This setting is only needed if the <em class="replaceable"><code>dbnosync</code></em> option is
+            used. The checkpoint will occur if either <em class="replaceable"><code>&lt;kbyte&gt;</code></em> data has
+            been written or <em class="replaceable"><code>&lt;min&gt;</code></em> minutes
+            have passed since the last checkpoint. Both arguments
+            default to zero, in which case they are ignored. When
+            the <em class="replaceable"><code>&lt;min&gt;</code></em> argument is
+            non-zero, an internal task will run every <em class="replaceable"><code>&lt;min&gt;</code></em> minutes to
+            perform the checkpoint. Note: currently the <em class="replaceable"><code>&lt;kbyte&gt;</code></em> setting
+            is unimplemented.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>dbnosync</code></em></span></dt>
+
+          <dd>
+            <p>Specify that on-disk database contents should not be
+            immediately synchronized with in memory changes.
+            Enabling this option may improve performance at the
+            expense of data security. In particular, if the
+            operating system crashes before changes are flushed,
+            some number of transactions may be lost. By default, a
+            full data flush/sync is performed when each transaction
+            is committed.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>directory</code></em><em class="replaceable"><code>&lt;directory&gt;</code></em></span></dt>
+
+          <dd>
+            <p>Specify the directory where the LMDB files
+            containing this database and associated indexes live. A
+            separate directory must be specified for each database.
+            The default is <em class="replaceable"><code>LOCALSTATEDIR/openldap−data</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>envflags</em></span> {<em class="replaceable"><code>nosync</code></em>,<em class="replaceable"><code>nometasync</code></em>,<em class="replaceable"><code>writemap</code></em>,<em class="replaceable"><code>mapasync</code></em>,<em class="replaceable"><code>nordahead</code></em>}</span></dt>
+
+          <dd>
+            <p>Specify flags for finer-grained control of the LMDB
+            library's operation.</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><em class="replaceable"><code>nosync</code></em></span></dt>
+
+                    <dd>
+                      <p>This is exactly the same as the <em class="replaceable"><code>dbnosync</code></em>
+                      directive.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><em class="replaceable"><code>nometasync</code></em></span></dt>
+
+                    <dd>
+                      <p>Flush the data on a commit, but skip the
+                      sync of the meta page. This mode is slightly
+                      faster than doing a full sync, but can
+                      potentially lose the last committed
+                      transaction if the operating system crashes.
+                      If both <em class="replaceable"><code>nometasync</code></em>
+                      and <em class="replaceable"><code>nosync</code></em> are
+                      set, the <em class="replaceable"><code>nosync</code></em> flag
+                      takes precedence.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><em class="replaceable"><code>writemap</code></em></span></dt>
+
+                    <dd>
+                      <p>Use a writable memory map instead of just
+                      read-only. This speeds up write operations
+                      but makes the database vulnerable to
+                      corruption in case any bugs in slapd cause
+                      stray writes into the mmap region.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><em class="replaceable"><code>mapasync</code></em></span></dt>
+
+                    <dd>
+                      <p>When using a writable memory map and
+                      performing flushes on each commit, use an
+                      asynchronous flush instead of a synchronous
+                      flush (the default). This option has no
+                      effect if <em class="replaceable"><code>writemap</code></em> has
+                      not been set. It also has no effect if
+                      <em class="replaceable"><code>nosync</code></em> is
+                      set.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><em class="replaceable"><code>nordahead</code></em></span></dt>
+
+                    <dd>
+                      <p>Turn off file readahead. Usually the OS
+                      performs readahead on every read request.
+                      This usually boosts read performance but can
+                      be harmful to random access read performance
+                      if the system's memory is full and the DB is
+                      larger than RAM. This option is not
+                      implemented on Windows.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>index</em></span> {<em class="replaceable"><code>&lt;attrlist&gt;</code></em>|<em class="replaceable"><code>default</code></em>}
+          [<em class="replaceable"><code>pres</code></em>,<em class="replaceable"><code>eq</code></em>,<em class="replaceable"><code>approx</code></em>,<em class="replaceable"><code>sub</code></em>,<em class="replaceable"><code>&lt;special&gt;</code></em>]</span></dt>
+
+          <dd>
+            <p>Specify the indexes to maintain for the given
+            attribute (or list of attributes). Some attributes only
+            support a subset of indexes. If only an <em class="replaceable"><code>&lt;attr&gt;</code></em> is given,
+            the indices specified for <em class="replaceable"><code>default</code></em> are maintained.
+            Note that setting a default does not imply that all
+            attributes will be indexed. Also, for best performance,
+            an <em class="replaceable"><code>eq</code></em> index
+            should always be configured for the <em class="replaceable"><code>objectClass</code></em>
+            attribute.</p>
+
+            <p>A number of special index parameters may be
+            specified. The index type <em class="replaceable"><code>sub</code></em> can be decomposed
+            into <em class="replaceable"><code>subinitial</code></em>, <em class="replaceable"><code>subany</code></em>, and <em class="replaceable"><code>subfinal</code></em> indices. The
+            special type <em class="replaceable"><code>nolang</code></em> may be specified
+            to disallow use of this index by language subtypes. The
+            special type <em class="replaceable"><code>nosubtypes</code></em> may be
+            specified to disallow use of this index by named
+            subtypes. Note: changing <em class="replaceable"><code>index</code></em> settings in
+            <a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a>
+            requires rebuilding indices, see <a class="link" href="../htmlman8/slapindex.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapindex</span>(8)</span></a>;
+            changing <em class="replaceable"><code>index</code></em> settings
+            dynamically by LDAPModifying "cn=config" automatically
+            causes rebuilding of the indices online in a background
+            task.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>maxreaders</code></em><em class="replaceable"><code>&lt;integer&gt;</code></em></span></dt>
+
+          <dd>
+            <p>Specify the maximum number of threads that may have
+            concurrent read access to the database. Tools such as
+            slapcat count as a single thread, in addition to
+            threads in any active slapd processes. The default is
+            126.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>maxsize</code></em><em class="replaceable"><code>&lt;bytes&gt;</code></em></span></dt>
+
+          <dd>
+            <p>Specify the maximum size of the database in bytes. A
+            memory map of this size is allocated at startup time
+            and the database will not be allowed to grow beyond
+            this size. The default is 10485760 bytes. This setting
+            may be changed upward if the configured limit needs to
+            be increased.</p>
+
+            <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+              <table border="0" summary="Note">
+                <tr>
+                  <td rowspan="2" align="center" valign="top" width="25" colspan="1"><img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+                  <th align="left" rowspan="1" colspan="1">Note</th>
+                </tr>
+
+                <tr>
+                  <td align="left" valign="top" rowspan="1" colspan="1">
+                    <p>It is important to set this to as large a
+                    value as possible, (relative to anticipated
+                    growth of the actual data over time) since
+                    growing the size later may not be practical
+                    when the system is under heavy load.</p>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>mode</code></em><em class="replaceable"><code>&lt;integer&gt;</code></em></span></dt>
+
+          <dd>
+            <p>Specify the file protection mode that newly created
+            database files should have. The default is 0600.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>searchstack</code></em><em class="replaceable"><code>&lt;depth&gt;</code></em></span></dt>
+
+          <dd>
+            <p>Specify the depth of the stack used for search
+            filter evaluation. Search filters are evaluated on a
+            stack to accommodate nested AND / OR clauses. An
+            individual stack is assigned to each server thread. The
+            depth of the stack determines how complex a filter can
+            be evaluated without requiring any additional memory
+            allocation. Filters that are nested deeper than the
+            search stack depth will cause a separate stack to be
+            allocated for that particular search operation. These
+            allocations can have a major negative impact on server
+            performance, but specifying too much stack will also
+            consume a great deal of memory. Each search stack uses
+            512K bytes per level. The default stack depth is 16,
+            thus 8MB per thread is used.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-mdb-5_sect3" name="slapd-mdb-5_sect3" shape="rect"> </a>
+
+      <h2>ACCESS CONTROL</h2>
+
+      <p>The <em class="replaceable"><code>mdb</code></em> backend
+      honors access control semantics as indicated in <a class="link" href="../htmlman5/slapd.access.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.access</span>(5)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-mdb-5_sect4" name="slapd-mdb-5_sect4" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">ETCDIR/slapd.conf</span></dt>
+
+          <dd>
+            <p>default <em class="replaceable"><code>slapd</code></em> configuration
+            file</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-mdb-5_sect5" name="slapd-mdb-5_sect5" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a>, <a class="link" href="../htmlman5/slapd-config.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-config</span>(5)</span></a>, <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a>, <a class="link" href="../htmlman8/slapadd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapadd</span>(8)</span></a>, <a class="link" href="../htmlman8/slapcat.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapcat</span>(8)</span></a>, <a class="link" href="../htmlman8/slapindex.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapindex</span>(8)</span></a>, OpenLDAP LMDB
+      documentation.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-mdb-5_sect6" name="slapd-mdb-5_sect6" shape="rect"> </a>
+
+      <h2>ACKNOWLEDGEMENTS</h2>
+
+      <p><span class="emphasis"><em>OpenLDAP Software</em></span>
+      is developed and maintained by The OpenLDAP Project
+      &lt;<a class="literalurl" href="http://www.openldap.org/" target="_top" shape="rect">http://www.openldap.org/</a>&gt;. <span class="emphasis"><em>OpenLDAP Software</em></span> is derived from
+      University of Michigan LDAP 3.3 Release. Written by Howard
+      Chu.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                  See the following documents: <a class="ulink" href="../openldap-COPYRIGHT.html" target="_top" shape="rect">COPYRIGHT</a>, <a class="ulink" href="../openldap-LICENSE.html" target="_top" shape="rect">LICENSE</a><br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

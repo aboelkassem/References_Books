@@ -1,0 +1,2757 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>rpc(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="rpc(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="rpc.3" name="rpc.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>rpc — library routines for remote procedure
+      calls</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="rpc-3_sect1" name="rpc-3_sect1" shape="rect"> </a>
+
+      <h2>SYNOPSIS AND DESCRIPTION</h2>
+
+      <p>These routines allow C programs to make procedure calls on
+      other machines across the network. First, the client calls a
+      procedure to send a data packet to the server. Upon receipt
+      of the packet, the server calls a dispatch routine to perform
+      the requested service, and then sends back a reply. Finally,
+      the procedure call returns to the client.</p>
+
+      <p>To take use of these routines, include the header file
+      <code class="literal">&lt;</code><code class="filename">rpc/rpc.h</code><code class="literal">&gt;</code></p>
+
+      <p>The prototypes below make use of the following types:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+  <span class="emphasis"><em>typedef int </em></span><span class="type">bool_t</span>;
+
+  <code class="function">typedef bool_t</code>(<em class="parameter"><code>*xdrproc_t) (XDR *</code></em>, <em class="parameter"><code>void *</code></em>, <em class="parameter"><code>...</code></em>);
+
+  <code class="function">typedef bool_t</code>(<em class="parameter"><code>*resultproc_t) (caddr_t resp</code></em>, <em class="parameter"><code>struct sockaddr_in *raddr</code></em>);
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>See the header files for the declarations of the
+      <code class="constant">AUTH</code>, <code class="constant">CLIENT</code>, <code class="constant">SVCXPRT</code>, and <code class="constant">XDR</code> types.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">void
+                  <strong>auth_destroy</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">AUTH *<var class="pdparam">auth</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>A macro that destroys the authentication
+              information associated with <em class="parameter"><code>auth</code></em>. Destruction
+              usually involves deallocation of private data
+              structures. The use of <em class="parameter"><code>auth</code></em> is undefined after
+              calling <code class="function">auth_destroy</code>().</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">AUTH
+                  *<strong>authnone_create</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1"><code>void)</code>;</td>
+
+                  <td rowspan="1" colspan="1"> </td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Create and return an RPC authentication handle
+              that passes nonusable authentication information with
+              each remote procedure call. This is the default
+              authentication used by RPC.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">AUTH
+                  *<strong>authunix_create</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">char *<var class="pdparam">host</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">int <var class="pdparam">uid</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">int <var class="pdparam">gid</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">int <var class="pdparam">len</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">int *<var class="pdparam">aup_gids</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Create and return an RPC authentication handle
+              that contains authentication information. The
+              parameter <em class="parameter"><code>host</code></em> is the name of the
+              machine on which the information was created;
+              <em class="parameter"><code>uid</code></em> is the
+              user's user ID; <em class="parameter"><code>gid</code></em> is the user's
+              current group ID; <em class="parameter"><code>len</code></em> and <em class="parameter"><code>aup_gids</code></em> refer to a
+              counted array of groups to which the user belongs. It
+              is easy to impersonate a user.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">AUTH
+                  *<strong>authunix_create_default</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1"><code>void)</code>;</td>
+
+                  <td rowspan="1" colspan="1"> </td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Calls <code class="function">authunix_create</code>() with the
+              appropriate parameters.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">int
+                  <strong>callrpc</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">char *<var class="pdparam">host</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">prognum</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">versnum</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">procnum</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">xdrproc_t <var class="pdparam">inproc</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">char *<var class="pdparam">in</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">xdrproc_t <var class="pdparam">outproc</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">char *<var class="pdparam">out</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Call the remote procedure associated with
+              <em class="parameter"><code>prognum</code></em>,
+              <em class="parameter"><code>versnum</code></em>, and
+              <em class="parameter"><code>procnum</code></em> on
+              the machine, <em class="parameter"><code>host</code></em>. The parameter
+              <em class="parameter"><code>in</code></em> is the
+              address of the procedure's argument(s), and
+              <em class="parameter"><code>out</code></em> is the
+              address of where to place the result(s); <em class="parameter"><code>inproc</code></em> is used to
+              encode the procedure's parameters, and <em class="parameter"><code>outproc</code></em> is used to
+              decode the procedure's results. This routine returns
+              zero if it succeeds, or the value of <span class="emphasis"><em>enum clnt_stat</em></span> cast to an
+              integer if it fails. The routine <code class="function">clnt_perrno</code>() is handy for
+              translating failure statuses into messages.</p>
+
+              <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+                <table border="0" summary="Warning">
+                  <tr>
+                    <td rowspan="2" align="center" valign="top" width="25" colspan="1"><img alt="[Warning]" src="../stylesheet/warning.png" /></td>
+
+                    <th align="left" rowspan="1" colspan="1">Warning</th>
+                  </tr>
+
+                  <tr>
+                    <td align="left" valign="top" rowspan="1" colspan="1">
+                      <p>Calling remote procedures with this
+                      routine uses UDP/IP as a transport; see
+                      <code class="function">clntudp_create</code>() for
+                      restrictions. You do not have control of
+                      timeouts or authentication using this
+                      routine.</p>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">enum clnt_stat
+                  <strong>clnt_broadcast</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">prognum</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">versnum</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">procnum</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">xdrproc_t <var class="pdparam">inproc</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">char *<var class="pdparam">in</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">xdrproc_t <var class="pdparam">outproc</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">char *<var class="pdparam">out</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">resultproc_t <var class="pdparam">eachresult</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Like <code class="function">callrpc</code>(),
+              except the call message is broadcast to all locally
+              connected broadcast nets. Each time it receives a
+              response, this routine calls <code class="function">eachresult</code>(), whose form is:</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">bool_t
+                  <strong>eachresult</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">char *<var class="pdparam">out</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">struct sockaddr_in *<var class="pdparam">addr</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>where <em class="parameter"><code>out</code></em>
+              is the same as <em class="parameter"><code>out</code></em> passed to
+              <code class="function">clnt_broadcast</code>(),
+              except that the remote procedure's output is decoded
+              there; <em class="parameter"><code>addr</code></em>
+              points to the address of the machine that sent the
+              results. If <code class="function">eachresult</code>() returns zero,
+              <code class="function">clnt_broadcast</code>() waits
+              for more replies; otherwise it returns with
+              appropriate status.</p>
+
+              <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+                <table border="0" summary="Warning">
+                  <tr>
+                    <td rowspan="2" align="center" valign="top" width="25" colspan="1"><img alt="[Warning]" src="../stylesheet/warning.png" /></td>
+
+                    <th align="left" rowspan="1" colspan="1">Warning</th>
+                  </tr>
+
+                  <tr>
+                    <td align="left" valign="top" rowspan="1" colspan="1">
+                      <p>Broadcast sockets are limited in size to
+                      the maximum transfer unit of the data link.
+                      For ethernet, this value is 1500 bytes.</p>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">enum clnt_stat
+                  <strong>clnt_call</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">CLIENT *<var class="pdparam">clnt</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">procnum</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">xdrproc_t <var class="pdparam">inproc</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">char *<var class="pdparam">in</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">xdrproc_t <var class="pdparam">outproc</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">char *<var class="pdparam">out</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">struct timeval <var class="pdparam">tout</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>A macro that calls the remote procedure <em class="parameter"><code>procnum</code></em> associated with
+              the client handle, <em class="parameter"><code>clnt</code></em>, which is obtained
+              with an RPC client creation routine such as
+              <code class="function">clnt_create</code>(). The
+              parameter <em class="parameter"><code>in</code></em>
+              is the address of the procedure's argument(s), and
+              <em class="parameter"><code>out</code></em> is the
+              address of where to place the result(s); <em class="parameter"><code>inproc</code></em> is used to
+              encode the procedure's parameters, and <em class="parameter"><code>outproc</code></em> is used to
+              decode the procedure's results; <em class="parameter"><code>tout</code></em> is the time
+              allowed for results to come back.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">void
+                  <strong>clnt_destroy</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">CLIENT *<var class="pdparam">clnt</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>A macro that destroys the client's RPC handle.
+              Destruction usually involves deallocation of private
+              data structures, including <em class="parameter"><code>clnt</code></em> itself. Use of
+              <em class="parameter"><code>clnt</code></em> is
+              undefined after calling <code class="function">clnt_destroy</code>(). If the RPC library
+              opened the associated socket, it will close it also.
+              Otherwise, the socket remains open.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">CLIENT
+                  *<strong>clnt_create</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">char *<var class="pdparam">host</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">prog</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">vers</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">char *<var class="pdparam">proto</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Generic client creation routine. <em class="parameter"><code>host</code></em> identifies the
+              name of the remote host where the server is located.
+              <em class="parameter"><code>proto</code></em>
+              indicates which kind of transport protocol to use.
+              The currently supported values for this field are
+              <span class="quote">“<span class="quote">udp</span>”</span> and <span class="quote">“<span class="quote">tcp</span>”</span>. Default timeouts
+              are set, but can be modified using <code class="function">clnt_control</code>().</p>
+
+              <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+                <table border="0" summary="Warning">
+                  <tr>
+                    <td rowspan="2" align="center" valign="top" width="25" colspan="1"><img alt="[Warning]" src="../stylesheet/warning.png" /></td>
+
+                    <th align="left" rowspan="1" colspan="1">Warning</th>
+                  </tr>
+
+                  <tr>
+                    <td align="left" valign="top" rowspan="1" colspan="1">
+                      <p>Using UDP has its shortcomings. Since
+                      UDP-based RPC messages can hold only up to 8
+                      Kbytes of encoded data, this transport cannot
+                      be used for procedures that take large
+                      arguments or return huge results.</p>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">bool_t
+                  <strong>clnt_control</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">CLIENT *<var class="pdparam">cl</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">int <var class="pdparam">req</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">char *<var class="pdparam">info</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>A macro used to change or retrieve various
+              information about a client object. <em class="parameter"><code>req</code></em> indicates the type
+              of operation, and <em class="parameter"><code>info</code></em> is a pointer to
+              the information. For both UDP and TCP, the supported
+              values of <em class="parameter"><code>req</code></em>
+              and their argument types and what they do are:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="informalexample">
+                    <pre class="programlisting" xml:space="preserve">
+<code class="constant">CLSET_TIMEOUT</code>  <span class="emphasis"><em>struct timeval</em></span> // set total timeout
+<code class="constant">CLGET_TIMEOUT</code>  <span class="emphasis"><em>struct timeval</em></span> // get total timeout
+</pre>
+                  </div>
+                </blockquote>
+              </div>
+
+              <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+                <table border="0" summary="Note">
+                  <tr>
+                    <td rowspan="2" align="center" valign="top" width="25" colspan="1"><img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+                    <th align="left" rowspan="1" colspan="1">Note</th>
+                  </tr>
+
+                  <tr>
+                    <td align="left" valign="top" rowspan="1" colspan="1">
+                      <p>If you set the timeout using <code class="function">clnt_control</code>(), the timeout
+                      parameter passed to <code class="function">clnt_call</code>() will be ignored
+                      in all future calls.</p>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="informalexample">
+                    <pre class="programlisting" xml:space="preserve">
+<code class="constant">CLGET_SERVER_ADDR</code>  <span class="emphasis"><em>struct sockaddr_in </em></span> // get server's address
+</pre>
+                  </div>
+                </blockquote>
+              </div>
+
+              <p>The following operations are valid for UDP
+              only:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="informalexample">
+                    <pre class="programlisting" xml:space="preserve">
+<code class="constant">CLSET_RETRY_TIMEOUT</code>  <span class="emphasis"><em>struct timeval</em></span> // set the retry timeout
+<code class="constant">CLGET_RETRY_TIMEOUT</code>  <span class="emphasis"><em>struct timeval</em></span> // get the retry timeout
+</pre>
+                  </div>
+                </blockquote>
+              </div>
+
+              <p>The retry timeout is the time that "UDP RPC" waits
+              for the server to reply before retransmitting the
+              request.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">bool_t
+                  <strong>clnt_freeres</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">CLIENT * <var class="pdparam">clnt</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">xdrproc_t <var class="pdparam">outproc</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">char *<var class="pdparam">out</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>A macro that frees any data allocated by the
+              RPC/XDR system when it decoded the results of an RPC
+              call. The parameter <em class="parameter"><code>out</code></em> is the address of
+              the results, and <em class="parameter"><code>outproc</code></em> is the XDR
+              routine describing the results. This routine returns
+              one if the results were successfully freed, and zero
+              otherwise.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">void
+                  <strong>clnt_geterr</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">CLIENT *<var class="pdparam">clnt</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">struct rpc_err *<var class="pdparam">errp</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>A macro that copies the error structure out of the
+              client handle to the structure at address <em class="parameter"><code>errp</code></em>.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">void
+                  <strong>clnt_pcreateerror</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">char *<var class="pdparam">s</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Print a message to standard error indicating why a
+              client RPC handle could not be created. The message
+              is prepended with string <em class="parameter"><code>s</code></em> and a colon. Used
+              when a <code class="function">clnt_create</code>(),
+              <code class="function">clntraw_create</code>(),
+              <code class="function">clnttcp_create</code>(), or
+              <code class="function">clntudp_create</code>() call
+              fails.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">void
+                  <strong>clnt_perrno</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">enum clnt_stat <var class="pdparam">stat</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Print a message to standard error corresponding to
+              the condition indicated by <em class="parameter"><code>stat</code></em>. Used after
+              <code class="function">callrpc</code>().</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">void
+                  <strong>clnt_perror</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">CLIENT *<var class="pdparam">clnt</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">char *<var class="pdparam">s</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Print a message to standard error indicating why
+              an RPC call failed; <em class="parameter"><code>clnt</code></em> is the handle used
+              to do the call. The message is prepended with string
+              <em class="parameter"><code>s</code></em> and a
+              colon. Used after <code class="function">clnt_call</code>().</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">char
+                  *<strong>clnt_spcreateerror</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">char *<var class="pdparam">s</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Like <code class="function">clnt_pcreateerror</code>(), except that it
+              returns a string instead of printing to the standard
+              error.</p>
+
+              <p>Bugs: returns pointer to static data that is
+              overwritten on each call.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">char
+                  *<strong>clnt_sperrno</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">enum clnt_stat <var class="pdparam">stat</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Take the same arguments as <code class="function">clnt_perrno</code>(), but instead of
+              sending a message to the standard error indicating
+              why an RPC call failed, return a pointer to a string
+              which contains the message. The string ends with a
+              NEWLINE.</p>
+
+              <p><code class="function">clnt_sperrno</code>() is
+              used instead of <code class="function">clnt_perrno</code>() if the program does
+              not have a standard error (as a program running as a
+              server quite likely does not), or if the programmer
+              does not want the message to be output with <a class="link" href="../htmlman3/printf.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">printf</span>(3)</span></a>, or if a
+              message format different than that supported by
+              <code class="function">clnt_perrno</code>() is to be
+              used. Note: unlike <code class="function">clnt_sperror</code>() and <code class="function">clnt_spcreateerror</code>(), <code class="function">clnt_sperrno</code>() returns pointer to
+              static data, but the result will not get overwritten
+              on each call.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">char
+                  *<strong>clnt_sperror</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">CLIENT *<var class="pdparam">rpch</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">char *<var class="pdparam">s</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Like <code class="function">clnt_perror</code>(),
+              except that (like <code class="function">clnt_sperrno</code>()) it returns a string
+              instead of printing to standard error.</p>
+
+              <p>Bugs: returns pointer to static data that is
+              overwritten on each call.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">CLIENT
+                  *<strong>clntraw_create</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">prognum</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">versnum</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>This routine creates a toy RPC client for the
+              remote program <em class="parameter"><code>prognum</code></em>, version
+              <em class="parameter"><code>versnum</code></em>. The
+              transport used to pass messages to the service is
+              actually a buffer within the process's address space,
+              so the corresponding RPC server should live in the
+              same address space; see <code class="function">svcraw_create</code>(). This allows
+              simulation of RPC and acquisition of RPC overheads,
+              such as round trip times, without any kernel
+              interference. This routine returns NULL if it
+              fails.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">CLIENT
+                  *<strong>clnttcp_create</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">struct sockaddr_in *<var class="pdparam">addr</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">prognum</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">versnum</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">int *<var class="pdparam">sockp</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned int <var class="pdparam">sendsz</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned int <var class="pdparam">recvsz</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>This routine creates an RPC client for the remote
+              program <em class="parameter"><code>prognum</code></em>, version
+              <em class="parameter"><code>versnum</code></em>; the
+              client uses TCP/IP as a transport. The remote program
+              is located at Internet address *<em class="parameter"><code>addr</code></em>. If <em class="replaceable"><code>addr−&gt;sin_port</code></em>
+              is zero, then it is set to the actual port that the
+              remote program is listening on (the remote
+              <code class="systemitem">portmap</code> service is
+              consulted for this information). The parameter
+              <em class="parameter"><code>sockp</code></em> is a
+              socket; if it is <code class="constant">RPC_ANYSOCK</code>, then this routine
+              opens a new one and sets <em class="parameter"><code>sockp</code></em>. Since TCP-based
+              RPC uses buffered I/O, the user may specify the size
+              of the send and receive buffers with the parameters
+              <em class="parameter"><code>sendsz</code></em> and
+              <em class="parameter"><code>recvsz</code></em>;
+              values of zero choose suitable defaults. This routine
+              returns NULL if it fails.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">CLIENT
+                  *<strong>clntudp_create</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">struct sockaddr_in *<var class="pdparam">addr</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">prognum</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">versnum</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">struct timeval <var class="pdparam">wait</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">int *<var class="pdparam">sockp</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>This routine creates an RPC client for the remote
+              program <em class="parameter"><code>prognum</code></em>, version
+              <em class="parameter"><code>versnum</code></em>; the
+              client uses use UDP/IP as a transport. The remote
+              program is located at Internet address <em class="parameter"><code>addr</code></em>. If <em class="replaceable"><code>addr−&gt;sin_port</code></em>
+              is zero, then it is set to actual port that the
+              remote program is listening on (the remote
+              <code class="systemitem">portmap</code> service is
+              consulted for this information). The parameter
+              <em class="parameter"><code>sockp</code></em> is a
+              socket; if it is <code class="constant">RPC_ANYSOCK</code>, then this routine
+              opens a new one and sets <em class="parameter"><code>sockp</code></em>. The UDP
+              transport resends the call message in intervals of
+              <em class="parameter"><code>wait</code></em> time
+              until a response is received or until the call times
+              out. The total time for the call to time out is
+              specified by <code class="function">clnt_call</code>().</p>
+
+              <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+                <table border="0" summary="Warning">
+                  <tr>
+                    <td rowspan="2" align="center" valign="top" width="25" colspan="1"><img alt="[Warning]" src="../stylesheet/warning.png" /></td>
+
+                    <th align="left" rowspan="1" colspan="1">Warning</th>
+                  </tr>
+
+                  <tr>
+                    <td align="left" valign="top" rowspan="1" colspan="1">
+                      <p>Since UDP-based RPC messages can hold only
+                      up to 8 Kbytes of encoded data, this
+                      transport cannot be used for procedures that
+                      take large arguments or return huge
+                      results.</p>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">CLIENT
+                  *<strong>clntudp_bufcreate</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">struct sockaddr_in *<var class="pdparam">addr</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">prognum</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">versnum</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">struct timeval <var class="pdparam">wait</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">int *<var class="pdparam">sockp</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned int <var class="pdparam">sendsize</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned int <var class="pdparam">recosize</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>This routine creates an RPC client for the remote
+              program <em class="parameter"><code>prognum</code></em>, on <em class="parameter"><code>versnum</code></em>; the client
+              uses use UDP/IP as a transport. The remote program is
+              located at Internet address <em class="parameter"><code>addr</code></em>. If <em class="replaceable"><code>addr−&gt;sin_port</code></em>
+              is zero, then it is set to actual port that the
+              remote program is listening on (the remote
+              <code class="systemitem">portmap</code> service is
+              consulted for this information). The parameter
+              <em class="parameter"><code>sockp</code></em> is a
+              socket; if it is <code class="constant">RPC_ANYSOCK</code>, then this routine
+              opens a new one and sets <em class="parameter"><code>sockp</code></em>. The UDP
+              transport resends the call message in intervals of
+              <em class="parameter"><code>wait</code></em> time
+              until a response is received or until the call times
+              out. The total time for the call to time out is
+              specified by <code class="function">clnt_call</code>().</p>
+
+              <p>This allows the user to specify the maximum packet
+              size for sending and receiving UDP-based RPC
+              messages.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">void
+                  <strong>get_myaddress</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">struct sockaddr_in *<var class="pdparam">addr</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Stuff the machine's IP address into *<em class="parameter"><code>addr</code></em>, without
+              consulting the library routines that deal with
+              <code class="filename">/etc/hosts</code>. The port
+              number is always set to <code class="function">htons</code><code class="literal">(</code><em class="parameter"><code>PMAPPORT</code></em><code class="literal">)</code>.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">struct pmaplist
+                  *<strong>pmap_getmaps</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">struct sockaddr_in *<var class="pdparam">addr</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>A user interface to the <code class="systemitem">portmap</code> service, which returns a
+              list of the current RPC program-to-port mappings on
+              the host located at IP address *<em class="parameter"><code>addr</code></em>. This routine can
+              return NULL. The command <span class="emphasis"><em>rpcinfo −p</em></span> uses this
+              routine.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">unsigned short
+                  <strong>pmap_getport</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">struct sockaddr_in *<var class="pdparam">addr</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">prognum</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">versnum</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned int <var class="pdparam">protocol</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>A user interface to the <code class="systemitem">portmap</code> service, which returns
+              the port number on which waits a service that
+              supports program number <em class="parameter"><code>prognum</code></em>, version
+              <em class="parameter"><code>versnum</code></em>, and
+              speaks the transport protocol associated with
+              <em class="parameter"><code>protocol</code></em>. The
+              value of <em class="parameter"><code>protocol</code></em> is most likely
+              <code class="constant">IPPROTO_UDP</code> or
+              <code class="constant">IPPROTO_TCP</code>. A return
+              value of zero means that the mapping does not exist
+              or that the RPC system failed to contact the remote
+              <code class="systemitem">portmap</code> service. In
+              the latter case, the global variable <code class="function">rpc_createerr</code> contains the RPC
+              status.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">enum clnt_stat
+                  <strong>pmap_rmtcall</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">struct sockaddr_in *<var class="pdparam">addr</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">prognum</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">versnum</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">procnum</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">xdrproc_t <var class="pdparam">inproc</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">char *<var class="pdparam">in</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">xdrproc_t <var class="pdparam">outproc</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">char *<var class="pdparam">out</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">struct timeval <var class="pdparam">tout</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long *<var class="pdparam">portp</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>A user interface to the <code class="systemitem">portmap</code> service, which instructs
+              <code class="systemitem">portmap</code> on the host
+              at IP address *<em class="parameter"><code>addr</code></em> to make an RPC
+              call on your behalf to a procedure on that host. The
+              parameter *<em class="parameter"><code>portp</code></em> will be modified
+              to the program's port number if the procedure
+              succeeds. The definitions of other parameters are
+              discussed in <code class="function">callrpc</code>()
+              and <code class="function">clnt_call</code>(). This
+              procedure should be used for a <span class="quote">“<span class="quote">ping</span>”</span> and nothing else.
+              See also <code class="function">clnt_broadcast</code>().</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">bool_t
+                  <strong>pmap_set</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">prognum</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">versnum</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned int <var class="pdparam">protocol</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned short <var class="pdparam">port</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>A user interface to the <code class="systemitem">portmap</code> service, which
+              establishes a mapping between the triple [<em class="parameter"><code>prognum</code></em>,<em class="parameter"><code>versnum</code></em>,<em class="parameter"><code>protocol</code></em>] and
+              <em class="parameter"><code>port</code></em> on the
+              machine's <code class="systemitem">portmap</code>
+              service. The value of <em class="parameter"><code>protocol</code></em> is most likely
+              <code class="constant">IPPROTO_UDP</code> or
+              <code class="constant">IPPROTO_TCP</code>. This
+              routine returns one if it succeeds, zero otherwise.
+              Automatically done by <code class="function">svc_register</code>().</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">bool_t
+                  <strong>pmap_unset</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">prognum</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">versnum</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>A user interface to the <code class="systemitem">portmap</code> service, which destroys
+              all mapping between the triple [<em class="parameter"><code>prognum</code></em>,<em class="parameter"><code>versnum</code></em>,<code class="literal">*</code>] and <code class="systemitem">ports</code> on the machine's
+              <code class="systemitem">portmap</code> service. This
+              routine returns one if it succeeds, zero
+              otherwise.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">int
+                  <strong>registerrpc</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">prognum</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">versnum</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">procnum</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">char *<var class="pdparam">(*procname)</var><code>(</code>char
+                  *<code>)</code>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">xdrproc_t <var class="pdparam">inproc</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">xdrproc_t <var class="pdparam">outproc</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Register procedure <em class="parameter"><code>procname</code></em> with the RPC
+              service package. If a request arrives for program
+              <em class="parameter"><code>prognum</code></em>,
+              version <em class="parameter"><code>versnum</code></em>, and procedure
+              <em class="parameter"><code>procnum</code></em>,
+              <em class="parameter"><code>procname</code></em> is
+              called with a pointer to its parameter(s); <em class="parameter"><code>procname</code></em> should return
+              a pointer to its static result(s); <em class="parameter"><code>inproc</code></em> is used to
+              decode the parameters while <em class="parameter"><code>outproc</code></em> is used to
+              encode the results. This routine returns zero if the
+              registration succeeded, −1 otherwise.</p>
+
+              <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+                <table border="0" summary="Warning">
+                  <tr>
+                    <td rowspan="2" align="center" valign="top" width="25" colspan="1"><img alt="[Warning]" src="../stylesheet/warning.png" /></td>
+
+                    <th align="left" rowspan="1" colspan="1">Warning</th>
+                  </tr>
+
+                  <tr>
+                    <td align="left" valign="top" rowspan="1" colspan="1">
+                      <p>Remote procedures registered in this form
+                      are accessed using the UDP/IP transport; see
+                      <code class="function">svcudp_create</code>()
+                      for restrictions.</p>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </dd>
+
+          <dt><span class="term">struct rpc_createerr
+          rpc_createerr;</span></dt>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>A global variable whose value is set by any RPC
+              client creation routine that does not succeed. Use
+              the routine <code class="function">clnt_pcreateerror</code>() to print the
+              reason why.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">void
+                  <strong>svc_destroy</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">SVCXPRT *<var class="pdparam">xprt</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>A macro that destroys the RPC service transport
+              handle, <em class="parameter"><code>xprt</code></em>.
+              Destruction usually involves deallocation of private
+              data structures, including <em class="parameter"><code>xprt</code></em> itself. Use of
+              <em class="parameter"><code>xprt</code></em> is
+              undefined after calling this routine.</p>
+            </div>
+          </dd>
+
+          <dt><span class="term">fd_set svc_fdset;</span></dt>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>A global variable reflecting the RPC service
+              side's read file descriptor bit mask; it is suitable
+              as a parameter to the <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a> system
+              call. This is of interest only if a service
+              implementor does their own asynchronous event
+              processing, instead of calling <code class="function">svc_run</code>(). This variable is
+              read-only (do not pass its address to <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a>!), yet it
+              may change after calls to <code class="function">svc_getreqset</code>() or any creation
+              routines.</p>
+            </div>
+          </dd>
+
+          <dt><span class="term">int svc_fds;</span></dt>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Similar to <code class="varname">svc_fdset</code>,
+              but limited to 32 descriptors. This interface is
+              obsoleted by <code class="varname">svc_fdset</code>.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">bool_t
+                  <strong>svc_freeargs</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">SVCXPRT *<var class="pdparam">xprt</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">xdrproc_t <var class="pdparam">inproc</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">char *<var class="pdparam">in</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>A macro that frees any data allocated by the
+              RPC/XDR system when it decoded the arguments to a
+              service procedure using <code class="function">svc_getargs</code>(). This routine returns
+              1 if the results were successfully freed, and zero
+              otherwise.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">bool_t
+                  <strong>svc_getargs</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">SVCXPRT *<var class="pdparam">xprt</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">xdrproc_t <var class="pdparam">inproc</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">char *<var class="pdparam">in</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>A macro that decodes the arguments of an RPC
+              request associated with the RPC service transport
+              handle, <em class="parameter"><code>xprt</code></em>.
+              The parameter <em class="parameter"><code>in</code></em> is the address where
+              the arguments will be placed; <em class="parameter"><code>inproc</code></em> is the XDR
+              routine used to decode the arguments. This routine
+              returns one if decoding succeeds, and zero
+              otherwise.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">struct sockaddr_in
+                  *<strong>svc_getcaller</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">SVCXPRT *<var class="pdparam">xprt</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>The approved way of getting the network address of
+              the caller of a procedure associated with the RPC
+              service transport handle, <em class="parameter"><code>xprt</code></em>.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">void
+                  <strong>svc_getreqset</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">fd_set *<var class="pdparam">rdfds</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>This routine is of interest only if a service
+              implementor does not call <code class="function">svc_run</code>(), but instead implements
+              custom asynchronous event processing. It is called
+              when the <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a> system
+              call has determined that an RPC request has arrived
+              on some RPC socket(s); <em class="parameter"><code>rdfds</code></em> is the resultant
+              read file descriptor bit mask. The routine returns
+              when all sockets associated with the value of
+              <em class="parameter"><code>rdfds</code></em> have
+              been serviced.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">void
+                  <strong>svc_getreq</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">int <var class="pdparam">rdfds</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Similar to <code class="function">svc_getreqset</code>(), but limited to 32
+              descriptors. This interface is obsoleted by
+              <code class="function">svc_getreqset</code>().</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">bool_t
+                  <strong>svc_register</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">SVCXPRT *<var class="pdparam">xprt</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">prognum</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">versnum</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">void <var class="pdparam">(*dispatch)</var><code>(</code>svc_req
+                  *, SVCXPRT *<code>)</code>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">protocol</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Associates <em class="parameter"><code>prognum</code></em> and <em class="parameter"><code>versnum</code></em> with the
+              service dispatch procedure, <em class="parameter"><code>dispatch</code></em>. If <em class="parameter"><code>protocol</code></em> is zero, the
+              service is not registered with the <code class="systemitem">portmap</code> service. If <em class="parameter"><code>protocol</code></em> is nonzero,
+              then a mapping of the triple [<em class="parameter"><code>prognum</code></em>,<em class="parameter"><code>versnum</code></em>,<em class="parameter"><code>protocol</code></em>] to <em class="replaceable"><code>xprt−&gt;xp_port</code></em>
+              is established with the local <code class="systemitem">portmap</code> service (generally
+              <em class="parameter"><code>protocol</code></em> is
+              zero, <code class="constant">IPPROTO_UDP</code> or
+              <code class="constant">IPPROTO_TCP</code>). The
+              procedure <em class="parameter"><code>dispatch</code></em> has the
+              following form:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="informalexample">
+                    <pre class="programlisting" xml:space="preserve">
+dispatch(struct svc_req *request, SVCXPRT *xprt);
+</pre>
+                  </div>
+                </blockquote>
+              </div>
+
+              <p>The <code class="function">svc_register</code>()
+              routine returns one if it succeeds, and zero
+              otherwise.</p>
+
+              <div class="informalexample">
+                <pre class="programlisting" xml:space="preserve">
+<span class="emphasis"><em>void svc_run(void);</em></span>
+</pre>
+              </div>
+
+              <p>This routine never returns. It waits for RPC
+              requests to arrive, and calls the appropriate service
+              procedure using <code class="function">svc_getreq</code>() when one arrives. This
+              procedure is usually waiting for a <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a> system
+              call to return.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">bool_t
+                  <strong>svc_sendreply</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">SVCXPRT *<var class="pdparam">xprt</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">xdrproc_t <var class="pdparam">outproc</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">char *<var class="pdparam">out</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Called by an RPC service's dispatch routine to
+              send the results of a remote procedure call. The
+              parameter <em class="parameter"><code>xprt</code></em> is the request's
+              associated transport handle; <em class="parameter"><code>outproc</code></em> is the XDR
+              routine which is used to encode the results; and
+              <em class="parameter"><code>out</code></em> is the
+              address of the results. This routine returns one if
+              it succeeds, zero otherwise.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">void
+                  <strong>svc_unregister</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">prognum</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned long <var class="pdparam">versnum</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Remove all mapping of the double [<em class="parameter"><code>prognum</code></em>,<em class="parameter"><code>versnum</code></em>] to dispatch
+              routines, and of the triple [<em class="parameter"><code>prognum</code></em>,<em class="parameter"><code>versnum</code></em>,<code class="literal">*</code>] to port number.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">void
+                  <strong>svcerr_auth</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">SVCXPRT *<var class="pdparam">xprt</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">enum auth_stat <var class="pdparam">why</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Called by a service dispatch routine that refuses
+              to perform a remote procedure call due to an
+              authentication error.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">void
+                  <strong>svcerr_decode</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">SVCXPRT *<var class="pdparam">xprt</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Called by a service dispatch routine that cannot
+              successfully decode its parameters. See also
+              <code class="function">svc_getargs</code>().</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">void
+                  <strong>svcerr_noproc</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">SVCXPRT *<var class="pdparam">xprt</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Called by a service dispatch routine that does not
+              implement the procedure number that the caller
+              requests.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">void
+                  <strong>svcerr_noprog</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">SVCXPRT *<var class="pdparam">xprt</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Called when the desired program is not registered
+              with the RPC package. Service implementors usually do
+              not need this routine.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">void
+                  <strong>svcerr_progvers</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">SVCXPRT *<var class="pdparam">xprt</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Called when the desired version of a program is
+              not registered with the RPC package. Service
+              implementors usually do not need this routine.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">void
+                  <strong>svcerr_systemerr</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">SVCXPRT *<var class="pdparam">xprt</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Called by a service dispatch routine when it
+              detects a system error not covered by any particular
+              protocol. For example, if a service can no longer
+              allocate storage, it may call this routine.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">void
+                  <strong>svcerr_weakauth</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">SVCXPRT *<var class="pdparam">xprt</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Called by a service dispatch routine that refuses
+              to perform a remote procedure call due to
+              insufficient authentication parameters. The routine
+              calls <code class="function">svcerr_auth</code><code class="literal">(</code><em class="parameter"><code>xprt</code></em><code class="literal">,</code> <em class="parameter"><code>AUTH_TOOWEAK</code></em><code class="literal">)</code>.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">SVCXPRT
+                  *<strong>svcfd_create</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">int <var class="pdparam">fd</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned int <var class="pdparam">sendsize</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned int <var class="pdparam">recvsize</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Create a service on top of any open descriptor.
+              Typically, this descriptor is a connected socket for
+              a stream protocol such as TCP. <em class="parameter"><code>sendsize</code></em> and <em class="parameter"><code>recvsize</code></em> indicate sizes
+              for the send and receive buffers. If they are zero, a
+              reasonable default is chosen.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">SVCXPRT
+                  *<strong>svcraw_create</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1"><code>void)</code>;</td>
+
+                  <td rowspan="1" colspan="1"> </td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>This routine creates a toy RPC service transport,
+              to which it returns a pointer. The transport is
+              really a buffer within the process's address space,
+              so the corresponding RPC client should live in the
+              same address space; see <code class="function">clntraw_create</code>(). This routine
+              allows simulation of RPC and acquisition of RPC
+              overheads (such as round trip times), without any
+              kernel interference. This routine returns NULL if it
+              fails.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">SVCXPRT
+                  *<strong>svctcp_create</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">int <var class="pdparam">sock</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned int <var class="pdparam">send_buf_size</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned int <var class="pdparam">recv_buf_size</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>This routine creates a TCP/IP-based RPC service
+              transport, to which it returns a pointer. The
+              transport is associated with the socket <em class="parameter"><code>sock</code></em>, which may be
+              <code class="constant">RPC_ANYSOCK</code>, in which
+              case a new socket is created. If the socket is not
+              bound to a local TCP port, then this routine binds it
+              to an arbitrary port. Upon completion, <em class="replaceable"><code>xprt−&gt;xp_sock</code></em>
+              is the transport's socket descriptor, and <em class="replaceable"><code>xprt−&gt;xp_port</code></em>
+              is the transport's port number. This routine returns
+              NULL if it fails. Since TCP-based RPC uses buffered
+              I/O, users may specify the size of buffers; values of
+              zero choose suitable defaults.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">SVCXPRT
+                  *<strong>svcudp_bufcreate</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">int <var class="pdparam">sock</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned int <var class="pdparam">sendsize</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">unsigned int <var class="pdparam">recosize</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>This routine creates a UDP/IP-based RPC service
+              transport, to which it returns a pointer. The
+              transport is associated with the socket <em class="parameter"><code>sock</code></em>, which may be
+              <code class="constant">RPC_ANYSOCK</code>, in which
+              case a new socket is created. If the socket is not
+              bound to a local UDP port, then this routine binds it
+              to an arbitrary port. Upon completion, <em class="replaceable"><code>xprt−&gt;xp_sock</code></em>
+              is the transport's socket descriptor, and <em class="replaceable"><code>xprt−&gt;xp_port</code></em>
+              is the transport's port number. This routine returns
+              NULL if it fails.</p>
+
+              <p>This allows the user to specify the maximum packet
+              size for sending and receiving UDP-based RPC
+              messages.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">SVCXPRT
+                  *<strong>svcudp_create</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">int <var class="pdparam">sock</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>This call is equivalent to <em class="replaceable"><code>svcudp_bufcreate(sock,SZ,SZ)</code></em>
+              for some default size <code class="constant">SZ</code>.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">bool_t
+                  <strong>xdr_accepted_reply</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">XDR *<var class="pdparam">xdrs</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">struct accepted_reply *<var class="pdparam">ar</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Used for encoding RPC reply messages. This routine
+              is useful for users who wish to generate RPC-style
+              messages without using the RPC package.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">bool_t
+                  <strong>xdr_authunix_parms</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">XDR *<var class="pdparam">xdrs</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">struct authunix_parms *<var class="pdparam">aupp</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Used for describing UNIX credentials. This routine
+              is useful for users who wish to generate these
+              credentials without using the RPC authentication
+              package.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">void
+                  <strong>xdr_callhdr</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">XDR *<var class="pdparam">xdrs</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">struct rpc_msg *<var class="pdparam">chdr</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Used for describing RPC call header messages. This
+              routine is useful for users who wish to generate
+              RPC-style messages without using the RPC package.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">bool_t
+                  <strong>xdr_callmsg</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">XDR *<var class="pdparam">xdrs</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">struct rpc_msg *<var class="pdparam">cmsg</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Used for describing RPC call messages. This
+              routine is useful for users who wish to generate
+              RPC-style messages without using the RPC package.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">bool_t
+                  <strong>xdr_opaque_auth</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">XDR *<var class="pdparam">xdrs</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">struct opaque_auth *<var class="pdparam">ap</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Used for describing RPC authentication information
+              messages. This routine is useful for users who wish
+              to generate RPC-style messages without using the RPC
+              package.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">bool_t
+                  <strong>xdr_pmap</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">XDR *<var class="pdparam">xdrs</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">struct pmap *<var class="pdparam">regs</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Used for describing parameters to various
+              <code class="systemitem">portmap</code> procedures,
+              externally. This routine is useful for users who wish
+              to generate these parameters without using the
+              <span class="structname">pmap</span> interface.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">bool_t
+                  <strong>xdr_pmaplist</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">XDR *<var class="pdparam">xdrs</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">struct pmaplist **<var class="pdparam">rp</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Used for describing a list of port mappings,
+              externally. This routine is useful for users who wish
+              to generate these parameters without using the
+              <span class="structname">pmap</span> interface.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">bool_t
+                  <strong>xdr_rejected_reply</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">XDR *<var class="pdparam">xdrs</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">struct rejected_reply *<var class="pdparam">rr</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Used for describing RPC reply messages. This
+              routine is useful for users who wish to generate
+              RPC-style messages without using the RPC package.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">bool_t
+                  <strong>xdr_replymsg</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">XDR *<var class="pdparam">xdrs</var>,</td>
+                </tr>
+
+                <tr>
+                  <td rowspan="1" colspan="1"> </td>
+
+                  <td rowspan="1" colspan="1">struct rpc_msg *<var class="pdparam">rmsg</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Used for describing RPC reply messages. This
+              routine is useful for users who wish to generate RPC
+              style messages without using the RPC package.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">void
+                  <strong>xprt_register</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">SVCXPRT *<var class="pdparam">xprt</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>After RPC service transport handles are created,
+              they should register themselves with the RPC service
+              package. This routine modifies the global variable
+              <code class="function">svc_fds</code>. Service
+              implementors usually do not need this routine.</p>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="funcsynopsis">
+              <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+                <tr>
+                  <td rowspan="1" colspan="1"><code class="funcdef">void
+                  <strong>xprt_unregister</strong>(</code></td>
+
+                  <td rowspan="1" colspan="1">SVCXPRT *<var class="pdparam">xprt</var><code>)</code>;</td>
+                </tr>
+              </table>
+
+              <div class="funcprototype-spacer">
+                <span class="term"> </span>
+              </div>
+            </div>
+          </dd>
+
+          <dd>
+            <div class="inlinefuncsynopsisdescr">
+              <p>Before an RPC service transport handle is
+              destroyed, it should unregister itself with the RPC
+              service package. This routine modifies the global
+              variable <code class="function">svc_fds</code>.
+              Service implementors usually do not need this
+              routine.</p>
+            </div>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="rpc-3_sect2" name="rpc-3_sect2" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/xdr.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">xdr</span>(3)</span></a></p>
+
+      <p>The following manuals:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>Remote Procedure Calls: Protocol Specification</p>
+
+          <p>Remote Procedure Call Programming Guide</p>
+
+          <p>rpcgen Programming Guide</p>
+        </blockquote>
+      </div>
+
+      <p><span class="emphasis"><em>RPC: Remote Procedure Call
+      Protocol Specification</em></span>, RFC 1050, Sun
+      Microsystems, Inc., USC-ISI.</p>
+    </div>
+
+    <div class="colophon">
+      <a id="rpc-3_sect3" name="rpc-3_sect3" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    This page was taken from the 4.4BSD-Lite CDROM (BSD license)<br />
+
+                  <br />
+                  %%%LICENSE_START(BSD_ONELINE_CDROM)<br />
+                  This page was taken from the 4.4BSD-Lite CDROM (BSD license)<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  <script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>(#)rpc.3n
+                  2.4 88/08/08 4.0 RPCSRC; from 1.19 88/06/24 SMI<br />
+
+                  <br />
+                  2007-12-30, mtk, Convert function prototypes to modern C syntax<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

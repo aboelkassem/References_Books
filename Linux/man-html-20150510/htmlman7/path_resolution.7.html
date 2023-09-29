@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>path_resolution(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="path_resolution(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="path-resolution.7" name="path-resolution.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>path_resolution — how a pathname is resolved to a
+      file</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="path-resolution-7_sect1" name="path-resolution-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>Some UNIX/Linux system calls have as parameter one or more
+      filenames. A filename (or pathname) is resolved as
+      follows.</p>
+
+      <div class="refsect2">
+        <a id="path-resolution-7_sect2" name="path-resolution-7_sect2" shape="rect"> </a>
+
+        <h3>Step 1: start of the resolution process</h3>
+
+        <p>If the pathname starts with the '/' character, the
+        starting lookup directory is the root directory of the
+        calling process. (A process inherits its root directory
+        from its parent. Usually this will be the root directory of
+        the file hierarchy. A process may get a different root
+        directory by use of the <a class="link" href="../htmlman2/chroot.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chroot</span>(2)</span></a> system call. A
+        process may get an entirely private mount namespace in case
+        it—or one of its ancestors—was started by an
+        invocation of the <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> system call that
+        had the <code class="constant">CLONE_NEWNS</code> flag
+        set.) This handles the '/' part of the pathname.</p>
+
+        <p>If the pathname does not start with the '/' character,
+        the starting lookup directory of the resolution process is
+        the current working directory of the process. (This is also
+        inherited from the parent. It can be changed by use of the
+        <a class="link" href="../htmlman2/chdir.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chdir</span>(2)</span></a> system
+        call.)</p>
+
+        <p>Pathnames starting with a '/' character are called
+        absolute pathnames. Pathnames not starting with a '/' are
+        called relative pathnames.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="path-resolution-7_sect3" name="path-resolution-7_sect3" shape="rect"> </a>
+
+        <h3>Step 2: walk along the path</h3>
+
+        <p>Set the current lookup directory to the starting lookup
+        directory. Now, for each nonfinal component of the
+        pathname, where a component is a substring delimited by '/'
+        characters, this component is looked up in the current
+        lookup directory.</p>
+
+        <p>If the process does not have search permission on the
+        current lookup directory, an <span class="errorname">EACCES</span> error is returned ("Permission
+        denied").</p>
+
+        <p>If the component is not found, an <span class="errorname">ENOENT</span> error is returned ("No such file
+        or directory").</p>
+
+        <p>If the component is found, but is neither a directory
+        nor a symbolic link, an <span class="errorname">ENOTDIR</span> error is returned ("Not a
+        directory").</p>
+
+        <p>If the component is found and is a directory, we set the
+        current lookup directory to that directory, and go to the
+        next component.</p>
+
+        <p>If the component is found and is a symbolic link
+        (symlink), we first resolve this symbolic link (with the
+        current lookup directory as starting lookup directory).
+        Upon error, that error is returned. If the result is not a
+        directory, an <span class="errorname">ENOTDIR</span> error
+        is returned. If the resolution of the symlink is successful
+        and returns a directory, we set the current lookup
+        directory to that directory, and go to the next component.
+        Note that the resolution process here involves recursion.
+        In order to protect the kernel against stack overflow, and
+        also to protect against denial of service, there are limits
+        on the maximum recursion depth, and on the maximum number
+        of symbolic links followed. An <span class="errorname">ELOOP</span> error is returned when the maximum
+        is exceeded ("Too many levels of symbolic links").</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="path-resolution-7_sect4" name="path-resolution-7_sect4" shape="rect"> </a>
+
+        <h3>Step 3: find the final entry</h3>
+
+        <p>The lookup of the final component of the pathname goes
+        just like that of all other components, as described in the
+        previous step, with two differences: (i) the final
+        component need not be a directory (at least as far as the
+        path resolution process is concerned—it may have to
+        be a directory, or a nondirectory, because of the
+        requirements of the specific system call), and (ii) it is
+        not necessarily an error if the component is not
+        found—maybe we are just creating it. The details on
+        the treatment of the final entry are described in the
+        manual pages of the specific system calls.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="path-resolution-7_sect5" name="path-resolution-7_sect5" shape="rect"> </a>
+
+        <h3>. and ..</h3>
+
+        <p>By convention, every directory has the entries "." and
+        "..", which refer to the directory itself and to its parent
+        directory, respectively.</p>
+
+        <p>The path resolution process will assume that these
+        entries have their conventional meanings, regardless of
+        whether they are actually present in the physical
+        filesystem.</p>
+
+        <p>One cannot walk down past the root: "/.." is the same as
+        "/".</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="path-resolution-7_sect6" name="path-resolution-7_sect6" shape="rect"> </a>
+
+        <h3>Mount points</h3>
+
+        <p>After a "mount dev path" command, the pathname "path"
+        refers to the root of the filesystem hierarchy on the
+        device "dev", and no longer to whatever it referred to
+        earlier.</p>
+
+        <p>One can walk out of a mounted filesystem: "path/.."
+        refers to the parent directory of "path", outside of the
+        filesystem hierarchy on "dev".</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="path-resolution-7_sect7" name="path-resolution-7_sect7" shape="rect"> </a>
+
+        <h3>Trailing slashes</h3>
+
+        <p>If a pathname ends in a '/', that forces resolution of
+        the preceding component as in Step 2: it has to exist and
+        resolve to a directory. Otherwise, a trailing '/' is
+        ignored. (Or, equivalently, a pathname with a trailing '/'
+        is equivalent to the pathname obtained by appending '.' to
+        it.)</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="path-resolution-7_sect8" name="path-resolution-7_sect8" shape="rect"> </a>
+
+        <h3>Final symlink</h3>
+
+        <p>If the last component of a pathname is a symbolic link,
+        then it depends on the system call whether the file
+        referred to will be the symbolic link or the result of path
+        resolution on its contents. For example, the system call
+        <a class="link" href="../htmlman2/stat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">lstat</span>(2)</span></a> will operate on
+        the symlink, while <a class="link" href="../htmlman2/stat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">stat</span>(2)</span></a> operates on the
+        file pointed to by the symlink.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="path-resolution-7_sect9" name="path-resolution-7_sect9" shape="rect"> </a>
+
+        <h3>Length limit</h3>
+
+        <p>There is a maximum length for pathnames. If the pathname
+        (or some intermediate pathname obtained while resolving
+        symbolic links) is too long, an <span class="errorname">ENAMETOOLONG</span> error is returned
+        ("Filename too long").</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="path-resolution-7_sect10" name="path-resolution-7_sect10" shape="rect"> </a>
+
+        <h3>Empty pathname</h3>
+
+        <p>In the original UNIX, the empty pathname referred to the
+        current directory. Nowadays POSIX decrees that an empty
+        pathname must not be resolved successfully. Linux returns
+        <span class="errorname">ENOENT</span> in this case.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="path-resolution-7_sect11" name="path-resolution-7_sect11" shape="rect"> </a>
+
+        <h3>Permissions</h3>
+
+        <p>The permission bits of a file consist of three groups of
+        three bits, cf. <a class="link" href="../htmlman1/chmod.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chmod</span>(1)</span></a> and <a class="link" href="../htmlman2/stat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">stat</span>(2)</span></a>. The first group
+        of three is used when the effective user ID of the calling
+        process equals the owner ID of the file. The second group
+        of three is used when the group ID of the file either
+        equals the effective group ID of the calling process, or is
+        one of the supplementary group IDs of the calling process
+        (as set by <a class="link" href="../htmlman2/getgroups.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setgroups</span>(2)</span></a>). When
+        neither holds, the third group is used.</p>
+
+        <p>Of the three bits used, the first bit determines read
+        permission, the second write permission, and the last
+        execute permission in case of ordinary files, or search
+        permission in case of directories.</p>
+
+        <p>Linux uses the fsuid instead of the effective user ID in
+        permission checks. Ordinarily the fsuid will equal the
+        effective user ID, but the fsuid can be changed by the
+        system call <a class="link" href="../htmlman2/setfsuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setfsuid</span>(2)</span></a>.</p>
+
+        <p>(Here "fsuid" stands for something like "filesystem user
+        ID". The concept was required for the implementation of a
+        user space NFS server at a time when processes could send a
+        signal to a process with the same effective user ID. It is
+        obsolete now. Nobody should use <a class="link" href="../htmlman2/setfsuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setfsuid</span>(2)</span></a>.)</p>
+
+        <p>Similarly, Linux uses the fsgid ("filesystem group ID")
+        instead of the effective group ID. See <a class="link" href="../htmlman2/setfsgid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setfsgid</span>(2)</span></a>.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="path-resolution-7_sect12" name="path-resolution-7_sect12" shape="rect"> </a>
+
+        <h3>Bypassing permission checks: superuser and
+        capabilities</h3>
+
+        <p>On a traditional UNIX system, the superuser (<em class="replaceable"><code>root</code></em>, user ID 0) is
+        all-powerful, and bypasses all permissions restrictions
+        when accessing files.</p>
+
+        <p>On Linux, superuser privileges are divided into
+        capabilities (see <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>). Two
+        capabilities are relevant for file permissions checks:
+        <code class="constant">CAP_DAC_OVERRIDE</code> and
+        <code class="constant">CAP_DAC_READ_SEARCH</code>. (A
+        process has these capabilities if its fsuid is 0.)</p>
+
+        <p>The <code class="constant">CAP_DAC_OVERRIDE</code>
+        capability overrides all permission checking, but grants
+        execute permission only when at least one of the file's
+        three execute permission bits is set.</p>
+
+        <p>The <code class="constant">CAP_DAC_READ_SEARCH</code>
+        capability grants read and search permission on
+        directories, and read permission on ordinary files.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="path-resolution-7_sect13" name="path-resolution-7_sect13" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/readlink.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">readlink</span>(2)</span></a>, <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>, <a class="link" href="../htmlman7/credentials.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">credentials</span>(7)</span></a>, <a class="link" href="../htmlman7/symlink.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">symlink</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="path-resolution-7_sect14" name="path-resolution-7_sect14" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2003 Andries Brouwer (aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl)<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>ioperm(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="ioperm(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="ioperm.2" name="ioperm.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>ioperm — set port input/output permissions</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;sys/io.h&gt;
+/* for glibc */
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>ioperm</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">unsigned long <var class="pdparam">from</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">unsigned long <var class="pdparam">num</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">turn_on</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ioperm-2_sect1" name="ioperm-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">ioperm</code>() sets the port
+      access permission bits for the calling thread for <em class="parameter"><code>num</code></em> bits starting from port
+      address <em class="parameter"><code>from</code></em>. If
+      <em class="parameter"><code>turn_on</code></em> is nonzero,
+      then permission for the specified bits is enabled; otherwise
+      it is disabled. If <em class="parameter"><code>turn_on</code></em> is nonzero, the calling
+      thread must be privileged (<code class="constant">CAP_SYS_RAWIO</code>).</p>
+
+      <p>Before Linux 2.6.8, only the first 0x3ff I/O ports could
+      be specified in this manner. For more ports, the <a class="link" href="../htmlman2/iopl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">iopl</span>(2)</span></a> system call had to
+      be used (with a <em class="replaceable"><code>level</code></em> argument of 3). Since
+      Linux 2.6.8, 65,536 I/O ports can be specified.</p>
+
+      <p>Permissions are not inherited by the child created by
+      <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a>; following a
+      <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> the child must turn
+      on those permissions that it needs. Permissions are preserved
+      across <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>; this is useful
+      for giving port access permissions to unprivileged
+      programs.</p>
+
+      <p>This call is mostly for the i386 architecture. On many
+      other architectures it does not exist or will always return
+      an error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ioperm-2_sect2" name="ioperm-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, zero is returned. On error, −1 is
+      returned, and <code class="varname">errno</code> is set
+      appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ioperm-2_sect3" name="ioperm-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>Invalid values for <em class="parameter"><code>from</code></em> or <em class="parameter"><code>num</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EIO</span></span></dt>
+
+          <dd>
+            <p>(on PowerPC) This call is not supported.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>Out of memory.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The calling thread has insufficient privilege.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ioperm-2_sect4" name="ioperm-2_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p><code class="function">ioperm</code>() is Linux-specific
+      and should not be used in programs intended to be
+      portable.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ioperm-2_sect5" name="ioperm-2_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>The <code class="filename">/proc/ioports</code> file shows
+      the I/O ports that are currently allocated on the system.</p>
+
+      <p>Glibc has an <code class="function">ioperm</code>()
+      prototype both in <code class="literal">&lt;</code><code class="filename">sys/io.h</code><code class="literal">&gt;</code>
+      and in <code class="literal">&lt;</code><code class="filename">sys/perm.h</code><code class="literal">&gt;</code>
+      Avoid the latter, it is available on i386 only.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ioperm-2_sect6" name="ioperm-2_sect6" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/iopl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">iopl</span>(2)</span></a>, <a class="link" href="../htmlman2/outb.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">outb</span>(2)</span></a>, <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="ioperm-2_sect7" name="ioperm-2_sect7" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 1993 Michael Haardt<br />
+
+                  (michael<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>moria.de)<br />
+                  Fri Apr  2 11:32:09 MET DST 1993<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_DOC_FULL)<br />
+                  This is free documentation; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License as<br />
+
+                  published by the Free Software Foundation; either version 2 of<br />
+
+                  the License, or (at your option) any later version.<br />
+
+                  <br />
+                  The GNU General Public License's references to "object code"<br />
+
+                  and "executables" are to be interpreted as the output of any<br />
+
+                  document formatting or typesetting system, including<br />
+
+                  intermediate and printed output.<br />
+
+                  <br />
+                  This manual is distributed in the hope that it will be useful,<br />
+
+                  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+
+                  GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Modified Sat Jul 24 15:12:05 1993 by Rik Faith &lt;faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu&gt;<br />
+
+                  Modified Tue Aug  1 16:27    1995 by Jochen Karrer<br />
+
+                                               &lt;cip307<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cip.physik.uni-wuerzburg.de&gt;<br />
+
+                  Modified Tue Oct 22 08:11:14 EDT 1996 by Eric S. Raymond &lt;esr<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>thyrsus.com&gt;<br />
+
+                  Modified Mon Feb 15 17:28:41 CET 1999 by Andries E. Brouwer &lt;aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl&gt;<br />
+
+                  Modified, 27 May 2004, Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                      Added notes on capability requirements<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

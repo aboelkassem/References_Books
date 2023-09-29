@@ -1,0 +1,965 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>mmap(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="mmap(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="mmap.2" name="mmap.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>mmap, munmap — map or unmap files or devices into
+      memory</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;sys/mman.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">void
+            *<strong>mmap</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">void *<var class="pdparam">addr</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">size_t <var class="pdparam">length</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">prot</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">flags</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">fd</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">off_t <var class="pdparam">offset</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>munmap</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">void *<var class="pdparam">addr</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">size_t <var class="pdparam">length</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+See NOTES for information on feature test macro requirements.
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mmap-2_sect1" name="mmap-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">mmap</code>() creates a new mapping
+      in the virtual address space of the calling process. The
+      starting address for the new mapping is specified in
+      <em class="parameter"><code>addr</code></em>. The <em class="parameter"><code>length</code></em> argument specifies the
+      length of the mapping.</p>
+
+      <p>If <em class="parameter"><code>addr</code></em> is NULL,
+      then the kernel chooses the address at which to create the
+      mapping; this is the most portable method of creating a new
+      mapping. If <em class="parameter"><code>addr</code></em> is
+      not NULL, then the kernel takes it as a hint about where to
+      place the mapping; on Linux, the mapping will be created at a
+      nearby page boundary. The address of the new mapping is
+      returned as the result of the call.</p>
+
+      <p>The contents of a file mapping (as opposed to an anonymous
+      mapping; see <code class="constant">MAP_ANONYMOUS</code>
+      below), are initialized using <em class="parameter"><code>length</code></em> bytes starting at offset
+      <em class="parameter"><code>offset</code></em> in the file
+      (or other object) referred to by the file descriptor
+      <em class="parameter"><code>fd</code></em>. <em class="parameter"><code>offset</code></em> must be a multiple of
+      the page size as returned by <em class="replaceable"><code>sysconf(_SC_PAGE_SIZE)</code></em>.</p>
+
+      <p>The <em class="parameter"><code>prot</code></em> argument
+      describes the desired memory protection of the mapping (and
+      must not conflict with the open mode of the file). It is
+      either <code class="constant">PROT_NONE</code> or the bitwise
+      OR of one or more of the following flags:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">PROT_EXEC</code></span></dt>
+
+          <dd>
+            <p>Pages may be executed.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PROT_READ</code></span></dt>
+
+          <dd>
+            <p>Pages may be read.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PROT_WRITE</code></span></dt>
+
+          <dd>
+            <p>Pages may be written.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PROT_NONE</code></span></dt>
+
+          <dd>
+            <p>Pages may not be accessed.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>The <em class="parameter"><code>flags</code></em> argument
+      determines whether updates to the mapping are visible to
+      other processes mapping the same region, and whether updates
+      are carried through to the underlying file. This behavior is
+      determined by including exactly one of the following values
+      in <em class="parameter"><code>flags</code></em>:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">MAP_SHARED</code></span></dt>
+
+          <dd>
+            <p>Share this mapping. Updates to the mapping are
+            visible to other processes that map this file, and are
+            carried through to the underlying file. (To precisely
+            control when updates are carried through to the
+            underlying file requires the use of <a class="link" href="../htmlman2/msync.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">msync</span>(2)</span></a>.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MAP_PRIVATE</code></span></dt>
+
+          <dd>
+            <p>Create a private copy-on-write mapping. Updates to
+            the mapping are not visible to other processes mapping
+            the same file, and are not carried through to the
+            underlying file. It is unspecified whether changes made
+            to the file after the <code class="function">mmap</code>() call are visible in the mapped
+            region.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>Both of these flags are described in POSIX.1-2001.</p>
+
+      <p>In addition, zero or more of the following values can be
+      ORed in <em class="parameter"><code>flags</code></em>:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">MAP_32BIT</code> (since Linux 2.4.20,
+          2.6)</span></dt>
+
+          <dd>
+            <p>Put the mapping into the first 2 Gigabytes of the
+            process address space. This flag is supported only on
+            x86-64, for 64-bit programs. It was added to allow
+            thread stacks to be allocated somewhere in the first
+            2GB of memory, so as to improve context-switch
+            performance on some early 64-bit processors. Modern
+            x86-64 processors no longer have this performance
+            problem, so use of this flag is not required on those
+            systems. The <code class="constant">MAP_32BIT</code>
+            flag is ignored when <code class="constant">MAP_FIXED</code> is set.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MAP_ANON</code></span></dt>
+
+          <dd>
+            <p>Synonym for <code class="constant">MAP_ANONYMOUS</code>. Deprecated.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MAP_ANONYMOUS</code></span></dt>
+
+          <dd>
+            <p>The mapping is not backed by any file; its contents
+            are initialized to zero. The <em class="parameter"><code>fd</code></em> and <em class="parameter"><code>offset</code></em> arguments are
+            ignored; however, some implementations require
+            <em class="parameter"><code>fd</code></em> to be
+            −1 if <code class="constant">MAP_ANONYMOUS</code>
+            (or <code class="constant">MAP_ANON</code>) is
+            specified, and portable applications should ensure
+            this. The use of <code class="constant">MAP_ANONYMOUS</code> in conjunction with
+            <code class="constant">MAP_SHARED</code> is supported
+            on Linux only since kernel 2.4.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MAP_DENYWRITE</code></span></dt>
+
+          <dd>
+            <p>This flag is ignored. (Long ago, it signaled that
+            attempts to write to the underlying file should fail
+            with <code class="constant">ETXTBUSY</code>. But this
+            was a source of denial-of-service attacks.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MAP_EXECUTABLE</code></span></dt>
+
+          <dd>
+            <p>This flag is ignored.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MAP_FILE</code></span></dt>
+
+          <dd>
+            <p>Compatibility flag. Ignored.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MAP_FIXED</code></span></dt>
+
+          <dd>
+            <p>Don't interpret <em class="parameter"><code>addr</code></em> as a hint: place the
+            mapping at exactly that address. <em class="parameter"><code>addr</code></em> must be a multiple
+            of the page size. If the memory region specified by
+            <em class="parameter"><code>addr</code></em> and
+            <em class="replaceable"><code>len</code></em> overlaps
+            pages of any existing mapping(s), then the overlapped
+            part of the existing mapping(s) will be discarded. If
+            the specified address cannot be used, <code class="function">mmap</code>() will fail. Because requiring a
+            fixed address for a mapping is less portable, the use
+            of this option is discouraged.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MAP_GROWSDOWN</code></span></dt>
+
+          <dd>
+            <p>Used for stacks. Indicates to the kernel virtual
+            memory system that the mapping should extend downward
+            in memory.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MAP_HUGETLB</code> (since Linux
+          2.6.32)</span></dt>
+
+          <dd>
+            <p>Allocate the mapping using "huge pages." See the
+            Linux kernel source file <code class="filename">Documentation/vm/hugetlbpage.txt</code> for
+            further information.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MAP_HUGE_2MB</code>, <code class="constant">MAP_HUGE_1GB</code> (since Linux
+          3.8)</span></dt>
+
+          <dd>
+            <p>Used in conjunction with <code class="constant">MAP_HUGETLB</code> to select alternative
+            hugetlb page sizes (respectively, 2 MB and 1 GB) on
+            systems that support multiple hugetlb page sizes.</p>
+
+            <p>More generally, the desired huge page size can be
+            configured by encoding the base-2 logarithm of the
+            desired page size in the six bits at the offset
+            <code class="constant">MAP_HUGE_SHIFT</code>. (A value
+            of zero in this bit field provides the default huge
+            page size; the default huge page size can be discovered
+            vie the <em class="replaceable"><code>Hugepagesize</code></em> field
+            exposed by <code class="filename">/proc/meminfo</code>.) Thus, the above two
+            constants are defined as:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="informalexample">
+                  <pre class="programlisting" xml:space="preserve">
+#define MAP_HUGE_2MB    (21 &lt;&lt; MAP_HUGE_SHIFT)
+#define MAP_HUGE_1GB    (30 &lt;&lt; MAP_HUGE_SHIFT)
+</pre>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>The range of huge page sizes that are supported by
+            the system can be discovered by listing the
+            subdirectories in <code class="filename">/sys/kernel/mm/hugepages</code>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MAP_LOCKED</code> (since Linux
+          2.5.37)</span></dt>
+
+          <dd>
+            <p>Lock the pages of the mapped region into memory in
+            the manner of <a class="link" href="../htmlman2/mlock.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mlock</span>(2)</span></a>. This flag
+            is ignored in older kernels.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MAP_NONBLOCK</code> (since Linux
+          2.5.46)</span></dt>
+
+          <dd>
+            <p>Only meaningful in conjunction with <code class="constant">MAP_POPULATE</code>. Don't perform
+            read-ahead: create page tables entries only for pages
+            that are already present in RAM. Since Linux 2.6.23,
+            this flag causes <code class="constant">MAP_POPULATE</code> to do nothing. One day,
+            the combination of <code class="constant">MAP_POPULATE</code> and <code class="constant">MAP_NONBLOCK</code> may be
+            reimplemented.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MAP_NORESERVE</code></span></dt>
+
+          <dd>
+            <p>Do not reserve swap space for this mapping. When
+            swap space is reserved, one has the guarantee that it
+            is possible to modify the mapping. When swap space is
+            not reserved one might get <code class="constant">SIGSEGV</code> upon a write if no physical
+            memory is available. See also the discussion of the
+            file <code class="filename">/proc/sys/vm/overcommit_memory</code> in
+            <a class="link" href="../htmlman5/proc.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">proc</span>(5)</span></a>. In kernels
+            before 2.6, this flag had effect only for private
+            writable mappings.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MAP_POPULATE</code> (since Linux
+          2.5.46)</span></dt>
+
+          <dd>
+            <p>Populate (prefault) page tables for a mapping. For a
+            file mapping, this causes read-ahead on the file. Later
+            accesses to the mapping will not be blocked by page
+            faults. <code class="constant">MAP_POPULATE</code> is
+            supported for private mappings only since Linux
+            2.6.23.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MAP_STACK</code> (since Linux
+          2.6.27)</span></dt>
+
+          <dd>
+            <p>Allocate the mapping at an address suitable for a
+            process or thread stack. This flag is currently a
+            no-op, but is used in the glibc threading
+            implementation so that if some architectures require
+            special treatment for stack allocations, support can
+            later be transparently implemented for glibc.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MAP_UNINITIALIZED</code> (since Linux
+          2.6.33)</span></dt>
+
+          <dd>
+            <p>Don't clear anonymous pages. This flag is intended
+            to improve performance on embedded devices. This flag
+            is honored only if the kernel was configured with the
+            <code class="constant">CONFIG_MMAP_ALLOW_UNINITIALIZED</code>
+            option. Because of the security implications, that
+            option is normally enabled only on embedded devices
+            (i.e., devices where one has complete control of the
+            contents of user memory).</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>Of the above flags, only <code class="constant">MAP_FIXED</code> is specified in POSIX.1-2001.
+      However, most systems also support <code class="constant">MAP_ANONYMOUS</code> (or its synonym <code class="constant">MAP_ANON</code>).</p>
+
+      <p>Some systems document the additional flags <code class="constant">MAP_AUTOGROW</code>, <code class="constant">MAP_AUTORESRV</code>, <code class="constant">MAP_COPY</code>, and <code class="constant">MAP_LOCAL</code>.</p>
+
+      <p>Memory mapped by <code class="function">mmap</code>() is
+      preserved across <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a>, with the same
+      attributes.</p>
+
+      <p>A file is mapped in multiples of the page size. For a file
+      that is not a multiple of the page size, the remaining memory
+      is zeroed when mapped, and writes to that region are not
+      written out to the file. The effect of changing the size of
+      the underlying file of a mapping on the pages that correspond
+      to added or removed regions of the file is unspecified.</p>
+
+      <div class="refsect2">
+        <a id="mmap-2_sect2" name="mmap-2_sect2" shape="rect"> </a>
+
+        <h3>munmap()</h3>
+
+        <p>The <code class="function">munmap</code>() system call
+        deletes the mappings for the specified address range, and
+        causes further references to addresses within the range to
+        generate invalid memory references. The region is also
+        automatically unmapped when the process is terminated. On
+        the other hand, closing the file descriptor does not unmap
+        the region.</p>
+
+        <p>The address <em class="parameter"><code>addr</code></em>
+        must be a multiple of the page size. All pages containing a
+        part of the indicated range are unmapped, and subsequent
+        references to these pages will generate <code class="constant">SIGSEGV</code>. It is not an error if the
+        indicated range does not contain any mapped pages.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="mmap-2_sect3" name="mmap-2_sect3" shape="rect"> </a>
+
+        <h3>Timestamps changes for file-backed mappings</h3>
+
+        <p>For file-backed mappings, the <em class="replaceable"><code>st_atime</code></em> field for the
+        mapped file may be updated at any time between the
+        <code class="function">mmap</code>() and the corresponding
+        unmapping; the first reference to a mapped page will update
+        the field if it has not been already.</p>
+
+        <p>The <em class="replaceable"><code>st_ctime</code></em>
+        and <em class="replaceable"><code>st_mtime</code></em>
+        field for a file mapped with <code class="constant">PROT_WRITE</code> and <code class="constant">MAP_SHARED</code> will be updated after a write
+        to the mapped region, and before a subsequent <a class="link" href="../htmlman2/msync.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">msync</span>(2)</span></a> with the
+        <code class="constant">MS_SYNC</code> or <code class="constant">MS_ASYNC</code> flag, if one occurs.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mmap-2_sect4" name="mmap-2_sect4" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">mmap</code>() returns a
+      pointer to the mapped area. On error, the value <code class="constant">MAP_FAILED</code> (that is, <span class="emphasis"><em>(void *) −1</em></span>) is returned,
+      and <code class="varname">errno</code> is set to indicate the
+      cause of the error.</p>
+
+      <p>On success, <code class="function">munmap</code>() returns
+      0. On failure, it returns −1, and <code class="varname">errno</code> is set to indicate the cause of the
+      error (probably to <span class="errorname">EINVAL</span>).</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mmap-2_sect5" name="mmap-2_sect5" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EACCES</span></span></dt>
+
+          <dd>
+            <p>A file descriptor refers to a non-regular file. Or a
+            file mapping was requested, but <em class="parameter"><code>fd</code></em> is not open for
+            reading. Or <code class="constant">MAP_SHARED</code>
+            was requested and <code class="constant">PROT_WRITE</code> is set, but <em class="parameter"><code>fd</code></em> is not open in
+            read/write (<code class="constant">O_RDWR</code>) mode.
+            Or <code class="constant">PROT_WRITE</code> is set, but
+            the file is append-only.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EAGAIN</span></span></dt>
+
+          <dd>
+            <p>The file has been locked, or too much memory has
+            been locked (see <a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setrlimit</span>(2)</span></a>).</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EBADF</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>fd</code></em> is not a
+            valid file descriptor (and <code class="constant">MAP_ANONYMOUS</code> was not set).</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>We don't like <em class="parameter"><code>addr</code></em>, <em class="parameter"><code>length</code></em>, or <em class="parameter"><code>offset</code></em> (e.g., they are
+            too large, or not aligned on a page boundary).</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>(since Linux 2.6.12) <em class="parameter"><code>length</code></em> was 0.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>flags</code></em>
+            contained neither <code class="constant">MAP_PRIVATE</code> or <code class="constant">MAP_SHARED</code>, or contained both of
+            these values.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENFILE</span></span></dt>
+
+          <dd>
+            <p>The system limit on the total number of open files
+            has been reached.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENODEV</span></span></dt>
+
+          <dd>
+            <p>The underlying filesystem of the specified file does
+            not support memory mapping.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>No memory is available, or the process's maximum
+            number of mappings would have been exceeded.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The <em class="parameter"><code>prot</code></em>
+            argument asks for <code class="constant">PROT_EXEC</code> but the mapped area belongs
+            to a file on a filesystem that was mounted no-exec.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The operation was prevented by a file seal; see
+            <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ETXTBSY</span></span></dt>
+
+          <dd>
+            <p><code class="constant">MAP_DENYWRITE</code> was set
+            but the object specified by <em class="parameter"><code>fd</code></em> is open for
+            writing.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EOVERFLOW</span></span></dt>
+
+          <dd>
+            <p>On 32-bit architecture together with the large file
+            extension (i.e., using 64-bit <span class="type">off_t</span>): the number of pages used for
+            <em class="parameter"><code>length</code></em> plus
+            number of pages used for <em class="parameter"><code>offset</code></em> would overflow
+            <span class="type">unsigned long</span> (32 bits).</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>Use of a mapped region can result in these signals:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">SIGSEGV</code></span></dt>
+
+          <dd>
+            <p>Attempted write into a region mapped as
+            read-only.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">SIGBUS</code></span></dt>
+
+          <dd>
+            <p>Attempted access to a portion of the buffer that
+            does not correspond to the file (for example, beyond
+            the end of the file, including the case where another
+            process has truncated the file).</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mmap-2_sect6" name="mmap-2_sect6" shape="rect"> </a>
+
+      <h2>ATTRIBUTES</h2>
+
+      <p>For an explanation of the terms used in this section, see
+      <a class="link" href="../htmlman7/attributes.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">attributes</span>(7)</span></a>.</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">Interface</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Attribute</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Value</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><code class="literal">mmap</code>(), <code class="literal">munmap</code>()</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Thread safety</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">MT-Safe</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mmap-2_sect7" name="mmap-2_sect7" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>SVr4, 4.4BSD, POSIX.1-2001.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mmap-2_sect8" name="mmap-2_sect8" shape="rect"> </a>
+
+      <h2>AVAILABILITY</h2>
+
+      <p>On POSIX systems on which <code class="function">mmap</code>(), <a class="link" href="../htmlman2/msync.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">msync</span>(2)</span></a>, and <code class="function">munmap</code>() are available, <code class="constant">_POSIX_MAPPED_FILES</code> is defined in
+      <code class="literal">&lt;</code><code class="filename">unistd.h</code><code class="literal">&gt;</code>
+      to a value greater than 0. (See also <a class="link" href="../htmlman3/sysconf.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sysconf</span>(3)</span></a>.)</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mmap-2_sect9" name="mmap-2_sect9" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>On some hardware architectures (e.g., i386), <code class="constant">PROT_WRITE</code> implies <code class="constant">PROT_READ</code>. It is architecture dependent
+      whether <code class="constant">PROT_READ</code> implies
+      <code class="constant">PROT_EXEC</code> or not. Portable
+      programs should always set <code class="constant">PROT_EXEC</code> if they intend to execute code in
+      the new mapping.</p>
+
+      <p>The portable way to create a mapping is to specify
+      <em class="parameter"><code>addr</code></em> as 0 (NULL), and
+      omit <code class="constant">MAP_FIXED</code> from <em class="parameter"><code>flags</code></em>. In this case, the system
+      chooses the address for the mapping; the address is chosen so
+      as not to conflict with any existing mapping, and will not be
+      0. If the <code class="constant">MAP_FIXED</code> flag is
+      specified, and <em class="parameter"><code>addr</code></em>
+      is 0 (NULL), then the mapped address will be 0 (NULL).</p>
+
+      <p>Certain <em class="parameter"><code>flags</code></em>
+      constants are defined only if either <code class="constant">_BSD_SOURCE</code> or <code class="constant">_SVID_SOURCE</code> is defined. (Requiring
+      <code class="constant">_GNU_SOURCE</code> also suffices, and
+      requiring that macro specifically would have been more
+      logical, since these flags are all Linux-specific.) The
+      relevant flags are: <code class="constant">MAP_32BIT</code>,
+      <code class="constant">MAP_ANONYMOUS</code> (and the synonym
+      <code class="constant">MAP_ANON</code>), <code class="constant">MAP_DENYWRITE</code>, <code class="constant">MAP_EXECUTABLE</code>, <code class="constant">MAP_FILE</code>, <code class="constant">MAP_GROWSDOWN</code>, <code class="constant">MAP_HUGETLB</code>, <code class="constant">MAP_LOCKED</code>, <code class="constant">MAP_NONBLOCK</code>, <code class="constant">MAP_NORESERVE</code>, <code class="constant">MAP_POPULATE</code>, and <code class="constant">MAP_STACK</code>.</p>
+
+      <div class="refsect2">
+        <a id="mmap-2_sect10" name="mmap-2_sect10" shape="rect"> </a>
+
+        <h3>C library/kernel ABI differences</h3>
+
+        <p>This page describes the interface provided by the glibc
+        <code class="function">mmap</code>() wrapper function.
+        Originally, this function invoked a system call of the same
+        name. Since kernel 2.4, that system call has been
+        superseded by <a class="link" href="../htmlman2/mmap2.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap2</span>(2)</span></a>, and nowadays
+        the glibc <code class="function">mmap</code>() wrapper
+        function invokes <a class="link" href="../htmlman2/mmap2.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap2</span>(2)</span></a> with a suitably
+        adjusted value for <em class="parameter"><code>offset</code></em>.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mmap-2_sect11" name="mmap-2_sect11" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>On Linux there are no guarantees like those suggested
+      above under <code class="constant">MAP_NORESERVE</code>. By
+      default, any process can be killed at any moment when the
+      system runs out of memory.</p>
+
+      <p>In kernels before 2.6.7, the <code class="constant">MAP_POPULATE</code> flag has effect only if
+      <em class="parameter"><code>prot</code></em> is specified as
+      <code class="constant">PROT_NONE</code>.</p>
+
+      <p>SUSv3 specifies that <code class="function">mmap</code>()
+      should fail if <em class="parameter"><code>length</code></em>
+      is 0. However, in kernels before 2.6.12, <code class="function">mmap</code>() succeeded in this case: no mapping
+      was created and the call returned <em class="parameter"><code>addr</code></em>. Since kernel 2.6.12,
+      <code class="function">mmap</code>() fails with the error
+      <span class="errorname">EINVAL</span> for this case.</p>
+
+      <p>POSIX specifies that the system shall always zero fill any
+      partial page at the end of the object and that system will
+      never write any modification of the object beyond its end. On
+      Linux, when you write data to such partial page after the end
+      of the object, the data stays in the page cache even after
+      the file is closed and unmapped and even though the data is
+      never written to the file itself, subsequent mappings may see
+      the modified content. In some cases, this could be fixed by
+      calling <a class="link" href="../htmlman2/msync.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">msync</span>(2)</span></a> before the unmap
+      takes place; however, this doesn't work on tmpfs (for
+      example, when using POSIX shared memory interface documented
+      in <a class="link" href="../htmlman7/shm_overview.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">shm_overview</span>(7)</span></a>).</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mmap-2_sect12" name="mmap-2_sect12" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>The following program prints part of the file specified in
+      its first command-line argument to standard output. The range
+      of bytes to be printed is specified via offset and length
+      values in the second and third command-line arguments. The
+      program creates a memory mapping of the required pages of the
+      file and then uses <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a> to output the
+      desired bytes.</p>
+
+      <div class="refsect2">
+        <a id="mmap-2_sect13" name="mmap-2_sect13" shape="rect"> </a>
+
+        <h3>Program source</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+#include &lt;sys/mman.h&gt;
+#include &lt;sys/stat.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+
+#define handle_error(msg) \
+    do { perror(msg); exit(EXIT_FAILURE); } while (0)
+
+int
+main(int argc, char *argv[])
+{
+    char *addr;
+    int fd;
+    struct stat sb;
+    off_t offset, pa_offset;
+    size_t length;
+    ssize_t s;
+
+    if (argc &lt; 3 || argc &gt; 4) {
+        fprintf(stderr, "%s file offset [length]\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    fd = open(argv[1], O_RDONLY);
+    if (fd == −1)
+        handle_error("open");
+
+    if (fstat(fd, &amp;sb) == −1)           /* To obtain file size */
+        handle_error("fstat");
+
+    offset = atoi(argv[2]);
+    pa_offset = offset &amp; ~(sysconf(_SC_PAGE_SIZE) − 1);
+        /* offset for mmap() must be page aligned */
+
+    if (offset &gt;= sb.st_size) {
+        fprintf(stderr, "offset is past end of file\n");
+        exit(EXIT_FAILURE);
+    }
+
+    if (argc == 4) {
+        length = atoi(argv[3]);
+        if (offset + length &gt; sb.st_size)
+            length = sb.st_size − offset;
+                /* Can't display bytes past end of file */
+
+    } else {    /* No length arg ==&gt; display to end of file */
+        length = sb.st_size − offset;
+    }
+
+    addr = mmap(NULL, length + offset − pa_offset, PROT_READ,
+                MAP_PRIVATE, fd, pa_offset);
+    if (addr == MAP_FAILED)
+        handle_error("mmap");
+
+    s = write(STDOUT_FILENO, addr + offset − pa_offset, length);
+    if (s != length) {
+        if (s == −1)
+            handle_error("write");
+
+        fprintf(stderr, "partial write");
+        exit(EXIT_FAILURE);
+    }
+
+    exit(EXIT_SUCCESS);
+}
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mmap-2_sect14" name="mmap-2_sect14" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/getpagesize.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getpagesize</span>(2)</span></a>, <a class="link" href="../htmlman2/memfd_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">memfd_create</span>(2)</span></a>, <a class="link" href="../htmlman2/mincore.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mincore</span>(2)</span></a>, <a class="link" href="../htmlman2/mlock.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mlock</span>(2)</span></a>, <a class="link" href="../htmlman2/mmap2.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap2</span>(2)</span></a>, <a class="link" href="../htmlman2/mprotect.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mprotect</span>(2)</span></a>, <a class="link" href="../htmlman2/mremap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mremap</span>(2)</span></a>, <a class="link" href="../htmlman2/msync.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">msync</span>(2)</span></a>, <a class="link" href="../htmlman2/remap_file_pages.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">remap_file_pages</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setrlimit</span>(2)</span></a>, <a class="link" href="../htmlman2/shmop.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">shmat</span>(2)</span></a>, <a class="link" href="../htmlman3/shm_open.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">shm_open</span>(3)</span></a>, <a class="link" href="../htmlman7/shm_overview.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">shm_overview</span>(7)</span></a></p>
+
+      <p>The descriptions of the following files in <a class="link" href="../htmlman5/proc.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">proc</span>(5)</span></a>: <code class="filename">/proc/[pid]/maps</code>, <code class="filename">/proc/[pid]/map_files</code>, and <code class="filename">/proc/[pid]/smaps</code>.</p>
+
+      <p>B.O. Gallmeister, POSIX.4, O'Reilly, pp. 128-129 and
+      389-391.</p>
+    </div>
+
+    <div class="colophon">
+      <a id="mmap-2_sect15" name="mmap-2_sect15" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 1996 Andries Brouwer &lt;aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl&gt;<br />
+
+                  and Copyright (C) 2006, 2007 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Modified 1997-01-31 by Eric S. Raymond &lt;esr<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>thyrsus.com&gt;<br />
+
+                  Modified 2000-03-25 by Jim Van Zandt &lt;jrv<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>vanzandt.mv.com&gt;<br />
+
+                  Modified 2001-10-04 by John Levon &lt;moz<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>compsoc.man.ac.uk&gt;<br />
+
+                  Modified 2003-02-02 by Andi Kleen &lt;ak<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>muc.de&gt;<br />
+
+                  Modified 2003-05-21 by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  MAP_LOCKED works from 2.5.37<br />
+                  Modified 2004-06-17 by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  Modified 2004-09-11 by aeb<br />
+                  Modified 2004-12-08, from Eric Estievenart &lt;eric.estievenart<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>free.fr&gt;<br />
+
+                  Modified 2004-12-08, mtk, formatting tidy-ups<br />
+
+                  Modified 2006-12-04, mtk, various parts rewritten<br />
+
+                  2007-07-10, mtk, Added an example program.<br />
+
+                  2008-11-18, mtk, document MAP_STACK<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

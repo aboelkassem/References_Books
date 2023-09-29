@@ -1,0 +1,682 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>pcre2syntax(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="pcre2syntax(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="pcre2syntax.3" name="pcre2syntax.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>PCRE2 — Perl-compatible regular expressions (revised
+      API)</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2syntax-3_sect1" name="pcre2syntax-3_sect1" shape="rect"> </a>
+
+      <h2>PCRE2 REGULAR EXPRESSION SYNTAX SUMMARY</h2>
+
+      <p>The full syntax and semantics of the regular expressions
+      that are supported by PCRE2 are described in the <a class="link" href="../htmlman3/pcre2pattern.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2pattern</span>(3)</span></a>
+      documentation. This document contains a quick-reference
+      summary of the syntax.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2syntax-3_sect2" name="pcre2syntax-3_sect2" shape="rect"> </a>
+
+      <h2>QUOTING</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ \x         where x is non-alphanumeric is a literal x
+ \Q...\E    treat enclosed characters as literal
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2syntax-3_sect3" name="pcre2syntax-3_sect3" shape="rect"> </a>
+
+      <h2>CHARACTERS</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ \a         alarm, that is, the BEL character (hex 07)
+ \cx        "control-x", where x is any ASCII character
+ \e         escape (hex 1B)
+ \f         form feed (hex 0C)
+ \n         newline (hex 0A)
+ \r         carriage return (hex 0D)
+ \t         tab (hex 09)
+ \0dd       character with octal code 0dd
+ \ddd       character with octal code ddd, or backreference
+ \o{ddd..}  character with octal code ddd..
+ \xhh       character with hex code hh
+ \x{hhh..}  character with hex code hhh..
+</pre>
+      </div>
+
+      <p>Note that \0dd is always an octal code, and that \8 and \9
+      are the literal characters "8" and "9".</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2syntax-3_sect4" name="pcre2syntax-3_sect4" shape="rect"> </a>
+
+      <h2>CHARACTER TYPES</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ .          any character except newline;
+              in dotall mode, any character whatsoever
+ \C         one data unit, even in UTF mode (best avoided)
+ \d         a decimal digit
+ \D         a character that is not a decimal digit
+ \h         a horizontal white space character
+ \H         a character that is not a horizontal white space character
+ \N         a character that is not a newline
+ \p{<code class="function">xx</code>}     a character with the <code class="function">xx</code> property
+ \P{<code class="function">xx</code>}     a character without the <code class="function">xx</code> property
+ \R         a newline sequence
+ \s         a white space character
+ \S         a character that is not a white space character
+ \v         a vertical white space character
+ \V         a character that is not a vertical white space character
+ \w         a "word" character
+ \W         a "non-word" character
+ \X         a Unicode extended grapheme cluster
+</pre>
+      </div>
+
+      <p>By default, \d, \s, and \w match only ASCII characters,
+      even in UTF-8 mode or in the 16-bit and 32-bit libraries.
+      However, if locale-specific matching is happening, \s and \w
+      may also match characters with code points in the range
+      128-255. If the PCRE2_UCP option is set, the behaviour of
+      these escape sequences is changed to use Unicode properties
+      and they match many more characters.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2syntax-3_sect5" name="pcre2syntax-3_sect5" shape="rect"> </a>
+
+      <h2>GENERAL CATEGORY PROPERTIES FOR \p and \P</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ C          Other
+ Cc         Control
+ Cf         Format
+ Cn         Unassigned
+ Co         Private use
+ Cs         Surrogate
+</pre>
+      </div>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ L          Letter
+ Ll         Lower case letter
+ Lm         Modifier letter
+ Lo         Other letter
+ Lt         Title case letter
+ Lu         Upper case letter
+ L&amp;         Ll, Lu, or Lt
+</pre>
+      </div>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ M          Mark
+ Mc         Spacing mark
+ Me         Enclosing mark
+ Mn         Non-spacing mark
+</pre>
+      </div>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ N          Number
+ Nd         Decimal number
+ Nl         Letter number
+ No         Other number
+</pre>
+      </div>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ P          Punctuation
+ Pc         Connector punctuation
+ Pd         Dash punctuation
+ Pe         Close punctuation
+ Pf         Final punctuation
+ Pi         Initial punctuation
+ Po         Other punctuation
+ Ps         Open punctuation
+</pre>
+      </div>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ S          Symbol
+ Sc         Currency symbol
+ Sk         Modifier symbol
+ Sm         Mathematical symbol
+ So         Other symbol
+</pre>
+      </div>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ Z          Separator
+ Zl         Line separator
+ Zp         Paragraph separator
+ Zs         Space separator
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2syntax-3_sect6" name="pcre2syntax-3_sect6" shape="rect"> </a>
+
+      <h2>PCRE2 SPECIAL CATEGORY PROPERTIES FOR \p and \P</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ Xan        Alphanumeric: union of properties L and N
+ Xps        POSIX space: property Z or tab, NL, VT, FF, CR
+ Xsp        Perl space: property Z or tab, NL, VT, FF, CR
+ Xuc        Univerally-named character: one that can be
+              represented by a Universal Character Name
+ Xwd        Perl word: property Xan or underscore
+</pre>
+      </div>
+
+      <p>Perl and POSIX space are now the same. Perl added VT to
+      its space character set at release 5.18.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2syntax-3_sect7" name="pcre2syntax-3_sect7" shape="rect"> </a>
+
+      <h2>SCRIPT NAMES FOR \p AND \P</h2>
+
+      <p>Arabic, Armenian, Avestan, Balinese, Bamum, Bassa_Vah,
+      Batak, Bengali, Bopomofo, Brahmi, Braille, Buginese, Buhid,
+      Canadian_Aboriginal, Carian, Caucasian_Albanian, Chakma,
+      Cham, Cherokee, Common, Coptic, Cuneiform, Cypriot, Cyrillic,
+      Deseret, Devanagari, Duployan, Egyptian_Hieroglyphs, Elbasan,
+      Ethiopic, Georgian, Glagolitic, Gothic, Grantha, Greek,
+      Gujarati, Gurmukhi, Han, Hangul, Hanunoo, Hebrew, Hiragana,
+      Imperial_Aramaic, Inherited, Inscriptional_Pahlavi,
+      Inscriptional_Parthian, Javanese, Kaithi, Kannada, Katakana,
+      Kayah_Li, Kharoshthi, Khmer, Khojki, Khudawadi, Lao, Latin,
+      Lepcha, Limbu, Linear_A, Linear_B, Lisu, Lycian, Lydian,
+      Mahajani, Malayalam, Mandaic, Manichaean, Meetei_Mayek,
+      Mende_Kikakui, Meroitic_Cursive, Meroitic_Hieroglyphs, Miao,
+      Modi, Mongolian, Mro, Myanmar, Nabataean, New_Tai_Lue, Nko,
+      Ogham, Ol_Chiki, Old_Italic, Old_North_Arabian, Old_Permic,
+      Old_Persian, Old_South_Arabian, Old_Turkic, Oriya, Osmanya,
+      Pahawh_Hmong, Palmyrene, Pau_Cin_Hau, Phags_Pa, Phoenician,
+      Psalter_Pahlavi, Rejang, Runic, Samaritan, Saurashtra,
+      Sharada, Shavian, Siddham, Sinhala, Sora_Sompeng, Sundanese,
+      Syloti_Nagri, Syriac, Tagalog, Tagbanwa, Tai_Le, Tai_Tham,
+      Tai_Viet, Takri, Tamil, Telugu, Thaana, Thai, Tibetan,
+      Tifinagh, Tirhuta, Ugaritic, Vai, Warang_Citi, Yi.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2syntax-3_sect8" name="pcre2syntax-3_sect8" shape="rect"> </a>
+
+      <h2>CHARACTER CLASSES</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ [...]       positive character class
+ [^...]      negative character class
+ [x-y]       range (can be used for hex characters)
+ [[:xxx:]]   positive POSIX named set
+ [[:^xxx:]]  negative POSIX named set
+</pre>
+      </div>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ alnum       alphanumeric
+ alpha       alphabetic
+ ascii       0-127
+ blank       space or tab
+ cntrl       control character
+ digit       decimal digit
+ graph       printing, excluding space
+ lower       lower case letter
+ print       printing, including space
+ punct       printing, excluding alphanumeric
+ space       white space
+ upper       upper case letter
+ word        same as \w
+ xdigit      hexadecimal digit
+</pre>
+      </div>
+
+      <p>In PCRE2, POSIX character set names recognize only ASCII
+      characters by default, but some of them use Unicode
+      properties if PCRE2_UCP is set. You can use \Q...\E inside a
+      character class.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2syntax-3_sect9" name="pcre2syntax-3_sect9" shape="rect"> </a>
+
+      <h2>QUANTIFIERS</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ ?           0 or 1, greedy
+ ?+          0 or 1, possessive
+ ??          0 or 1, lazy
+ *           0 or more, greedy
+ *+          0 or more, possessive
+ *?          0 or more, lazy
+ +           1 or more, greedy
+ ++          1 or more, possessive
+ +?          1 or more, lazy
+ {n}         exactly n
+ {n,m}       at least n, no more than m, greedy
+ {n,m}+      at least n, no more than m, possessive
+ {n,m}?      at least n, no more than m, lazy
+ {n,}        n or more, greedy
+ {n,}+       n or more, possessive
+ {n,}?       n or more, lazy
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2syntax-3_sect10" name="pcre2syntax-3_sect10" shape="rect"> </a>
+
+      <h2>ANCHORS AND SIMPLE ASSERTIONS</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ \b          word boundary
+ \B          not a word boundary
+ ^           start of subject
+              also after internal newline in multiline mode
+ \A          start of subject
+ $           end of subject
+              also before newline at end of subject
+              also before internal newline in multiline mode
+ \Z          end of subject
+              also before newline at end of subject
+ \z          end of subject
+ \G          first matching position in subject
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2syntax-3_sect11" name="pcre2syntax-3_sect11" shape="rect"> </a>
+
+      <h2>MATCH POINT RESET</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+\K          reset start of match
+</pre>
+      </div>
+
+      <p>\K is honoured in positive assertions, but ignored in
+      negative ones.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2syntax-3_sect12" name="pcre2syntax-3_sect12" shape="rect"> </a>
+
+      <h2>ALTERNATION</h2>
+
+      <p>expr|expr|expr...</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2syntax-3_sect13" name="pcre2syntax-3_sect13" shape="rect"> </a>
+
+      <h2>CAPTURING</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ (...)           capturing group
+ (?&lt;name&gt;...)    named capturing group (Perl)
+ (?'name'...)    named capturing group (Perl)
+ (?P&lt;name&gt;...)   named capturing group (Python)
+ (?:...)         non-capturing group
+ (?|...)         non-capturing group; reset group numbers for
+                  capturing groups in each alternative
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2syntax-3_sect14" name="pcre2syntax-3_sect14" shape="rect"> </a>
+
+      <h2>ATOMIC GROUPS</h2>
+
+      <p>(?&gt;...) atomic, non-capturing group</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2syntax-3_sect15" name="pcre2syntax-3_sect15" shape="rect"> </a>
+
+      <h2>COMMENT</h2>
+
+      <p>(?#....) comment (not nestable)</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2syntax-3_sect16" name="pcre2syntax-3_sect16" shape="rect"> </a>
+
+      <h2>OPTION SETTING</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ (?i)            caseless
+ (?J)            allow duplicate names
+ (?m)            multiline
+ (?s)            single line (dotall)
+ (?U)            default ungreedy (lazy)
+ (?x)            extended (ignore white space)
+ (?-...)         unset option(s)
+</pre>
+      </div>
+
+      <p>The following are recognized only at the very start of a
+      pattern or after one of the newline or \R options with
+      similar syntax. More than one of them may appear.</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ (*LIMIT_MATCH=d) set the match limit to d (decimal number)
+ (*LIMIT_RECURSION=d) set the recursion limit to d (decimal number)
+ (*NOTEMPTY)     set PCRE2_NOTEMPTY when matching
+ (*NOTEMPTY_ATSTART) set PCRE2_NOTEMPTY_ATSTART when matching
+ (*NO_AUTO_POSSESS) no auto-possessification (PCRE2_NO_AUTO_POSSESS)
+ (*NO_DOTSTAR_ANCHOR) no .* anchoring (PCRE2_NO_DOTSTAR_ANCHOR)
+ (*NO_START_OPT) no start-match optimization (PCRE2_NO_START_OPTIMIZE)
+ (*UTF)          set appropriate UTF mode for the library in use
+ (*UCP)          set PCRE2_UCP (use Unicode properties for \d etc)
+</pre>
+      </div>
+
+      <p>Note that LIMIT_MATCH and LIMIT_RECURSION can only reduce
+      the value of the limits set by the caller of pcre2_match(),
+      not increase them.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2syntax-3_sect17" name="pcre2syntax-3_sect17" shape="rect"> </a>
+
+      <h2>NEWLINE CONVENTION</h2>
+
+      <p>These are recognized only at the very start of the pattern
+      or after option settings with a similar syntax.</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ (*CR)           carriage return only
+ (*LF)           linefeed only
+ (*CRLF)         carriage return followed by linefeed
+ (*ANYCRLF)      all three of the above
+ (*ANY)          any Unicode newline sequence
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2syntax-3_sect18" name="pcre2syntax-3_sect18" shape="rect"> </a>
+
+      <h2>WHAT \R MATCHES</h2>
+
+      <p>These are recognized only at the very start of the pattern
+      or after option setting with a similar syntax.</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ (*BSR_ANYCRLF)  CR, LF, or CRLF
+ (*BSR_UNICODE)  any Unicode newline sequence
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2syntax-3_sect19" name="pcre2syntax-3_sect19" shape="rect"> </a>
+
+      <h2>LOOKAHEAD AND LOOKBEHIND ASSERTIONS</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ (?=...)         positive look ahead
+ (?!...)         negative look ahead
+ (?&lt;=...)        positive look behind
+ (?&lt;!...)        negative look behind
+</pre>
+      </div>
+
+      <p>Each top-level branch of a look behind must be of a fixed
+      length.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2syntax-3_sect20" name="pcre2syntax-3_sect20" shape="rect"> </a>
+
+      <h2>BACKREFERENCES</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ \n              reference by number (can be ambiguous)
+ \gn             reference by number
+ \g{n}           reference by number
+ \g{-n}          relative reference by number
+ \k&lt;name&gt;        reference by name (Perl)
+ \k'name'        reference by name (Perl)
+ \g{name}        reference by name (Perl)
+ \k{name}        reference by name (.NET)
+ (?P=name)       reference by name (Python)
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2syntax-3_sect21" name="pcre2syntax-3_sect21" shape="rect"> </a>
+
+      <h2>SUBROUTINE REFERENCES (POSSIBLY RECURSIVE)</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ (?R)            recurse whole pattern
+ (?n)            call subpattern by absolute number
+ (?+n)           call subpattern by relative number
+ (?-n)           call subpattern by relative number
+ (?&amp;name)        call subpattern by name (Perl)
+ (?P&gt;name)       call subpattern by name (Python)
+ \g&lt;name&gt;        call subpattern by name (Oniguruma)
+ \g'name'        call subpattern by name (Oniguruma)
+ \g&lt;n&gt;           call subpattern by absolute number (Oniguruma)
+ \g'n'           call subpattern by absolute number (Oniguruma)
+ \g&lt;+n&gt;          call subpattern by relative number (PCRE2 extension)
+ \g'+n'          call subpattern by relative number (PCRE2 extension)
+ \g&lt;-n&gt;          call subpattern by relative number (PCRE2 extension)
+ \g'-n'          call subpattern by relative number (PCRE2 extension)
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2syntax-3_sect22" name="pcre2syntax-3_sect22" shape="rect"> </a>
+
+      <h2>CONDITIONAL PATTERNS</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ (?(condition)yes-pattern)
+ (?(condition)yes-pattern|no-pattern)
+</pre>
+      </div>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ (?(n)               absolute reference condition
+ (?(+n)              relative reference condition
+ (?(-n)              relative reference condition
+ (?(&lt;name&gt;)          named reference condition (Perl)
+ (?('name')          named reference condition (Perl)
+ (?(name)            named reference condition (PCRE2)
+ (?(R)               overall recursion condition
+ (?(Rn)              specific group recursion condition
+ (?(R&amp;name)          specific recursion condition
+ (?(DEFINE)          define subpattern for reference
+ (?(VERSION[&gt;]=n.m)  test PCRE2 version
+ (?(assert)          assertion condition
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2syntax-3_sect23" name="pcre2syntax-3_sect23" shape="rect"> </a>
+
+      <h2>BACKTRACKING CONTROL</h2>
+
+      <p>The following act immediately they are reached:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ (*ACCEPT)       force successful match
+ (*FAIL)         force backtrack; synonym (*F)
+ (*MARK:NAME)    set name to be passed back; synonym (*:NAME)
+</pre>
+      </div>
+
+      <p>The following act only when a subsequent match failure
+      causes a backtrack to reach them. They all force a match
+      failure, but they differ in what happens afterwards. Those
+      that advance the start-of-match point do so only if the
+      pattern is not anchored.</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ (*COMMIT)       overall failure, no advance of starting point
+ (*PRUNE)        advance to next starting character
+ (*PRUNE:NAME)   equivalent to (*MARK:NAME)(*PRUNE)
+ (*SKIP)         advance to current matching position
+ (*SKIP:NAME)    advance to position corresponding to an earlier
+                 (*MARK:NAME); if not found, the (*SKIP) is ignored
+ (*THEN)         local failure, backtrack to next alternation
+ (*THEN:NAME)    equivalent to (*MARK:NAME)(*THEN)
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2syntax-3_sect24" name="pcre2syntax-3_sect24" shape="rect"> </a>
+
+      <h2>CALLOUTS</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ (?C)      callout
+ (?Cn)     callout with data n
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2syntax-3_sect25" name="pcre2syntax-3_sect25" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/pcre2pattern.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2pattern</span>(3)</span></a>, <a class="link" href="../htmlman3/pcre2api.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2api</span>(3)</span></a>, <a class="link" href="../htmlman3/pcre2callout.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2callout</span>(3)</span></a>, <a class="link" href="../htmlman3/pcre2matching.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2matching</span>(3)</span></a>, <a class="link" href="../htmlman3/pcre2.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2</span>(3)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2syntax-3_sect26" name="pcre2syntax-3_sect26" shape="rect"> </a>
+
+      <h2>AUTHOR</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+Philip Hazel
+University Computing Service
+Cambridge, England.
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2syntax-3_sect27" name="pcre2syntax-3_sect27" shape="rect"> </a>
+
+      <h2>REVISION</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+Last updated: 02 January 2015
+Copyright (c) 1997-2015 University of Cambridge.
+</pre>
+      </div>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <thead>
+            <tr>
+              <th style="" rowspan="1" colspan="1">COPYRIGHT</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <p>This manual page is taken from the <a class="ulink" href="http://www.PCRE.org/" target="_top" shape="rect">PCRE library</a>, which is distributed under
+                the BSD license.</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

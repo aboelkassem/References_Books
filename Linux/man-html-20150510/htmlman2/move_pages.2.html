@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>move_pages(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="move_pages(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="move-pages.2" name="move-pages.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>move_pages — move individual pages of a process to
+      another node</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;numaif.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">long
+            <strong>move_pages</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">pid</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">unsigned long <var class="pdparam">count</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">void **<var class="pdparam">pages</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const int *<var class="pdparam">nodes</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int *<var class="pdparam">status</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">flags</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <p>Link with <code class="option">−lnuma</code>.</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="move-pages-2_sect1" name="move-pages-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">move_pages</code>() moves the
+      specified <em class="parameter"><code>pages</code></em> of
+      the process <em class="parameter"><code>pid</code></em> to
+      the memory nodes specified by <em class="parameter"><code>nodes</code></em>. The result of the move
+      is reflected in <em class="parameter"><code>status</code></em>. The <em class="parameter"><code>flags</code></em> indicate constraints on
+      the pages to be moved.</p>
+
+      <p><em class="parameter"><code>pid</code></em> is the ID of
+      the process in which pages are to be moved. To move pages in
+      another process, the caller must be privileged (<code class="constant">CAP_SYS_NICE</code>) or the real or effective user
+      ID of the calling process must match the real or saved-set
+      user ID of the target process. If <em class="parameter"><code>pid</code></em> is 0, then <code class="function">move_pages</code>() moves pages of the calling
+      process.</p>
+
+      <p><em class="parameter"><code>count</code></em> is the
+      number of pages to move. It defines the size of the three
+      arrays <em class="parameter"><code>pages</code></em>,
+      <em class="parameter"><code>nodes</code></em>, and <em class="parameter"><code>status</code></em>.</p>
+
+      <p><em class="parameter"><code>pages</code></em> is an array
+      of pointers to the pages that should be moved. These are
+      pointers that should be aligned to page boundaries. Addresses
+      are specified as seen by the process specified by <em class="parameter"><code>pid</code></em>.</p>
+
+      <p><em class="parameter"><code>nodes</code></em> is an array
+      of integers that specify the desired location for each page.
+      Each element in the array is a node number. <em class="parameter"><code>nodes</code></em> can also be NULL, in
+      which case <code class="function">move_pages</code>() does
+      not move any pages but instead will return the node where
+      each page currently resides, in the <em class="parameter"><code>status</code></em> array. Obtaining the
+      status of each page may be necessary to determine pages that
+      need to be moved.</p>
+
+      <p><em class="parameter"><code>status</code></em> is an array
+      of integers that return the status of each page. The array
+      contains valid values only if <code class="function">move_pages</code>() did not return an error.</p>
+
+      <p><em class="parameter"><code>flags</code></em> specify what
+      types of pages to move. <code class="constant">MPOL_MF_MOVE</code> means that only pages that are
+      in exclusive use by the process are to be moved. <code class="constant">MPOL_MF_MOVE_ALL</code> means that pages shared
+      between multiple processes can also be moved. The process
+      must be privileged (<code class="constant">CAP_SYS_NICE</code>) to use <code class="constant">MPOL_MF_MOVE_ALL</code>.</p>
+
+      <div class="refsect2">
+        <a id="move-pages-2_sect2" name="move-pages-2_sect2" shape="rect"> </a>
+
+        <h3>Page states in the status array</h3>
+
+        <p>The following values can be returned in each element of
+        the <em class="parameter"><code>status</code></em>
+        array.</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term">0..MAX_NUMNODES</span></dt>
+
+            <dd>
+              <p>Identifies the node on which the page resides.</p>
+            </dd>
+
+            <dt><span class="term"><code class="option">−EACCES</code></span></dt>
+
+            <dd>
+              <p>The page is mapped by multiple processes and can
+              be moved only if <code class="constant">MPOL_MF_MOVE_ALL</code> is specified.</p>
+            </dd>
+
+            <dt><span class="term"><code class="option">−EBUSY</code></span></dt>
+
+            <dd>
+              <p>The page is currently busy and cannot be moved.
+              Try again later. This occurs if a page is undergoing
+              I/O or another kernel subsystem is holding a
+              reference to the page.</p>
+            </dd>
+
+            <dt><span class="term"><code class="option">−EFAULT</code></span></dt>
+
+            <dd>
+              <p>This is a zero page or the memory area is not
+              mapped by the process.</p>
+            </dd>
+
+            <dt><span class="term"><code class="option">−EIO</code></span></dt>
+
+            <dd>
+              <p>Unable to write back a page. The page has to be
+              written back in order to move it since the page is
+              dirty and the filesystem does not provide a migration
+              function that would allow the move of dirty
+              pages.</p>
+            </dd>
+
+            <dt><span class="term"><code class="option">−EINVAL</code></span></dt>
+
+            <dd>
+              <p>A dirty page cannot be moved. The filesystem does
+              not provide a migration function and has no ability
+              to write back pages.</p>
+            </dd>
+
+            <dt><span class="term"><code class="option">−ENOENT</code></span></dt>
+
+            <dd>
+              <p>The page is not present.</p>
+            </dd>
+
+            <dt><span class="term"><code class="option">−ENOMEM</code></span></dt>
+
+            <dd>
+              <p>Unable to allocate memory on target node.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="move-pages-2_sect3" name="move-pages-2_sect3" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success <code class="function">move_pages</code>()
+      returns zero. On error, it returns −1, and sets
+      <code class="varname">errno</code> to indicate the error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="move-pages-2_sect4" name="move-pages-2_sect4" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">E2BIG</span></span></dt>
+
+          <dd>
+            <p>Too many pages to move.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EACCES</span></span></dt>
+
+          <dd>
+            <p>One of the target nodes is not allowed by the
+            current cpuset.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p>Parameter array could not be accessed.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>Flags other than <code class="constant">MPOL_MF_MOVE</code> and <code class="constant">MPOL_MF_MOVE_ALL</code> was specified or an
+            attempt was made to migrate pages of a kernel
+            thread.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENODEV</span></span></dt>
+
+          <dd>
+            <p>One of the target nodes is not online.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOENT</span></span></dt>
+
+          <dd>
+            <p>No pages were found that require moving. All pages
+            are either already on the target node, not present, had
+            an invalid address or could not be moved because they
+            were mapped by multiple processes.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The caller specified <code class="constant">MPOL_MF_MOVE_ALL</code> without sufficient
+            privileges (<code class="constant">CAP_SYS_NICE</code>). Or, the caller
+            attempted to move pages of a process belonging to
+            another user but did not have privilege to do so
+            (<code class="constant">CAP_SYS_NICE</code>).</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ESRCH</span></span></dt>
+
+          <dd>
+            <p>Process does not exist.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="move-pages-2_sect5" name="move-pages-2_sect5" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p><code class="function">move_pages</code>() first appeared
+      on Linux in version 2.6.18.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="move-pages-2_sect6" name="move-pages-2_sect6" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>This system call is Linux-specific.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="move-pages-2_sect7" name="move-pages-2_sect7" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>For information on library support, see <a class="link" href="../htmlman7/numa.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">numa</span>(7)</span></a>.</p>
+
+      <p>Use <a class="link" href="../htmlman2/get_mempolicy.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">get_mempolicy</span>(2)</span></a> with the
+      <code class="constant">MPOL_F_MEMS_ALLOWED</code> flag to
+      obtain the set of nodes that are allowed by the current
+      cpuset. Note that this information is subject to change at
+      any time by manual or automatic reconfiguration of the
+      cpuset.</p>
+
+      <p>Use of this function may result in pages whose location
+      (node) violates the memory policy established for the
+      specified addresses (See <a class="link" href="../htmlman2/mbind.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mbind</span>(2)</span></a>) and/or the
+      specified process (See <a class="link" href="../htmlman2/set_mempolicy.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">set_mempolicy</span>(2)</span></a>). That is,
+      memory policy does not constrain the destination nodes used
+      by <code class="function">move_pages</code>().</p>
+
+      <p>The <code class="literal">&lt;</code><code class="filename">numaif.h</code><code class="literal">&gt;</code>
+      header is not included with glibc, but requires installing
+      <em class="replaceable"><code>libnuma-devel</code></em> or a
+      similar package.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="move-pages-2_sect8" name="move-pages-2_sect8" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/get_mempolicy.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">get_mempolicy</span>(2)</span></a>, <a class="link" href="../htmlman2/mbind.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mbind</span>(2)</span></a>, <a class="link" href="../htmlman2/set_mempolicy.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">set_mempolicy</span>(2)</span></a>,
+      <span class="citerefentry"><span class="refentrytitle">numa</span>(3)</span>, <a class="link" href="../htmlman7/numa.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">numa_maps</span>(5)</span></a>, <a class="link" href="../htmlman7/cpuset.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">cpuset</span>(7)</span></a>, <a class="link" href="../htmlman7/numa.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">numa</span>(7)</span></a>, <span class="citerefentry"><span class="refentrytitle">migratepages</span>(8)</span>, <span class="citerefentry"><span class="refentrytitle">numastat</span>(8)</span></p>
+    </div>
+
+    <div class="colophon">
+      <a id="move-pages-2_sect9" name="move-pages-2_sect9" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    This manpage is Copyright (C) 2006 Silicon Graphics, Inc.<br />
+
+                                                Christoph Lameter<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM_TWO_PARA)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  FIXME Should programs normally be using move_pages() directly, or should<br />
+
+                  they rather be using interfaces in the numactl package?<br />
+
+                  (e.g., compare with recommendation in mbind(2)).<br />
+
+                  Does this page need to give advise on this topic?<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

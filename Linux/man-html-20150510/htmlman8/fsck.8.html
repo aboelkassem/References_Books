@@ -1,0 +1,614 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>fsck(8) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="fsck(8) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index8.html" shape="rect">Section 8</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="fsck.8" name="fsck.8" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>fsck — check and repair a Linux filesystem</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">fsck</code> [<code class="option">−lrsAVRTMNP</code>] [ <code class="option">−C</code> [fd] ] [ <code class="option">−t</code> fstype ] [ filesystem... ]
+        [<code class="option">−−</code>]
+        [fs−specific−options]</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fsck-8_sect1" name="fsck-8_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><span class="command"><strong>fsck</strong></span> is used
+      to check and optionally repair one or more Linux filesystems.
+      <span class="command"><strong>filesys</strong></span> can be
+      a device name (e.g. <code class="filename">/dev/hdc1</code>,
+      <code class="filename">/dev/sdb2</code>), a mount point (e.g.
+      <code class="filename">/</code>, <code class="filename">/usr</code>, <code class="filename">/home</code>),
+      or an ext2 label or UUID specifier (e.g.
+      UUID=8868abf6-88c5-4a83-98b8-bfc24057f7bd or LABEL=root).
+      Normally, the <span class="command"><strong>fsck</strong></span> program will try to
+      handle filesystems on different physical disk drives in
+      parallel to reduce the total amount of time needed to check
+      all of them.</p>
+
+      <p>If no filesystems are specified on the command line, and
+      the <code class="option">−A</code> option is not
+      specified, <span class="command"><strong>fsck</strong></span>
+      will default to checking filesystems in <code class="filename">/etc/fstab</code> serially. This is equivalent to
+      the <code class="option">−As</code> options.</p>
+
+      <p>The exit code returned by <span class="command"><strong>fsck</strong></span> is the sum of the
+      following conditions:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="variablelist">
+            <dl class="variablelist">
+              <dt><span class="term"><code class="constant">0</code></span></dt>
+
+              <dd>
+                <p>No errors</p>
+              </dd>
+
+              <dt><span class="term"><code class="constant">1</code></span></dt>
+
+              <dd>
+                <p>Filesystem errors corrected</p>
+              </dd>
+
+              <dt><span class="term"><code class="constant">2</code></span></dt>
+
+              <dd>
+                <p>System should be rebooted</p>
+              </dd>
+
+              <dt><span class="term"><code class="constant">4</code></span></dt>
+
+              <dd>
+                <p>Filesystem errors left uncorrected</p>
+              </dd>
+
+              <dt><span class="term"><code class="constant">8</code></span></dt>
+
+              <dd>
+                <p>Operational error</p>
+              </dd>
+
+              <dt><span class="term"><code class="constant">16</code></span></dt>
+
+              <dd>
+                <p>Usage or syntax error</p>
+              </dd>
+
+              <dt><span class="term"><code class="constant">32</code></span></dt>
+
+              <dd>
+                <p>Checking canceled by user request</p>
+              </dd>
+
+              <dt><span class="term"><code class="constant">128</code></span></dt>
+
+              <dd>
+                <p>Shared-library error</p>
+              </dd>
+            </dl>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>The exit code returned when multiple filesystems are
+      checked is the bit-wise OR of the exit codes for each
+      filesystem that is checked.</p>
+
+      <p>In actuality, <span class="command"><strong>fsck</strong></span> is simply a front-end
+      for the various filesystem checkers (<span class="command"><strong>fsck</strong></span>.<em class="parameter"><code>fstype</code></em>) available under Linux.
+      The filesystem-specific checker is searched for in
+      <code class="filename">/sbin</code> first, then in
+      <code class="filename">/etc/fs</code> and <code class="filename">/etc</code>, and finally in the directories listed
+      in the PATH environment variable. Please see the
+      filesystem-specific checker manual pages for further
+      details.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="fsck-8_sect2" name="fsck-8_sect2" shape="rect"> </a>
+
+      <h2>OPTIONS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="option">−l</code></span></dt>
+
+          <dd>
+            <p>Create an exclusive <a class="link" href="../htmlman2/flock.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">flock</span>(2)</span></a> lock file
+            (/run/fsck/&lt;diskname&gt;.lock) for whole-disk
+            device. This option can be used with one device only
+            (this means that <code class="option">−A</code>
+            and <code class="option">−l</code> are mutually
+            exclusive). This option is recommended when more
+            <a class="link" href="../htmlman8/fsck.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fsck</span>(8)</span></a> instances are
+            executed in the same time. The option is ignored when
+            used for multiple devices or for non-rotating disks.
+            <span class="command"><strong>fsck</strong></span> does
+            not lock underlying devices when executed to check
+            stacked devices (e.g. MD or DM) – this feature is
+            not implemented yet.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−r</code></span></dt>
+
+          <dd>
+            <p>Report certain statistics for each fsck when it
+            completes. These statistics include the exit status,
+            the maximum run set size (in kilobytes), the elapsed
+            all-clock time and the user and system CPU time used by
+            the fsck run. For example:</p>
+
+            <p>/dev/sda1: status 0, rss 92828, real 4.002804, user
+            2.677592, sys 0.86186</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−s</code></span></dt>
+
+          <dd>
+            <p>Serialize <span class="command"><strong>fsck</strong></span> operations. This
+            is a good idea if you are checking multiple filesystems
+            and the checkers are in an interactive mode.</p>
+
+            <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+              <table border="0" summary="Note">
+                <tr>
+                  <td rowspan="2" align="center" valign="top" width="25" colspan="1"><img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+                  <th align="left" rowspan="1" colspan="1">Note</th>
+                </tr>
+
+                <tr>
+                  <td align="left" valign="top" rowspan="1" colspan="1">
+                    <p><span class="citerefentry"><span class="refentrytitle">e2fsck</span>(8)</span> runs in
+                    an interactive mode by default. To make
+                    <span class="citerefentry"><span class="refentrytitle">e2fsck</span>(8)</span> run in
+                    a non-interactive mode, you must either specify
+                    the <code class="option">−p</code> or
+                    <code class="option">−a</code> option, if
+                    you wish for errors to be corrected
+                    automatically, or the <code class="option">−n</code> option if you do
+                    not.</p>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </dd>
+
+          <dt><span class="term"><code class="option">−t
+          fslist</code></span></dt>
+
+          <dd>
+            <p>Specifies the type(s) of filesystem to be checked.
+            When the <code class="option">−A</code> flag is
+            specified, only filesystems that match <span class="command"><strong>fslist</strong></span> are checked.
+            The <span class="command"><strong>fslist</strong></span> parameter is a
+            comma-separated list of filesystems and options
+            specifiers. All of the filesystems in this
+            comma-separated list may be prefixed by a negation
+            operator '<span class="command"><strong>no</strong></span>' or '<code class="literal">!</code>', which requests that only those
+            filesystems not listed in <span class="command"><strong>fslist</strong></span> will be
+            checked. If none of the filesystems in <span class="command"><strong>fslist</strong></span> is prefixed by
+            a negation operator, then only those listed filesystems
+            will be checked.</p>
+
+            <p>Options specifiers may be included in the
+            comma-separated <span class="command"><strong>fslist</strong></span>. They must
+            have the format <em class="replaceable"><code>opts=</code></em> <em class="replaceable"><code>fs-option</code></em>. If an
+            options specifier is present, then only filesystems
+            which contain <em class="replaceable"><code>fs-option</code></em> in their
+            mount options field of <code class="filename">/etc/fstab</code> will be checked. If the
+            options specifier is prefixed by a negation operator,
+            then only those filesystems that do not have <em class="replaceable"><code>fs-option</code></em> in their
+            mount options field of <code class="filename">/etc/fstab</code> will be checked.</p>
+
+            <p>For example, if <em class="replaceable"><code>opts=ro</code></em> appears in
+            <span class="command"><strong>fslist</strong></span>,
+            then only filesystems listed in <code class="filename">/etc/fstab</code> with the <span class="command"><strong>ro</strong></span> option will be
+            checked.</p>
+
+            <p>For compatibility with Mandrake distributions whose
+            boot scripts depend upon an unauthorized UI change to
+            the <span class="command"><strong>fsck</strong></span>
+            program, if a filesystem type of <span class="command"><strong>loop</strong></span> is found in
+            <span class="command"><strong>fslist</strong></span>,
+            it is treated as if <em class="replaceable"><code>opts=loop</code></em> were
+            specified as an argument to the <code class="option">−t</code> option.</p>
+
+            <p>Normally, the filesystem type is deduced by
+            searching for <span class="command"><strong>filesys</strong></span> in the
+            <code class="filename">/etc/fstab</code> file and using
+            the corresponding entry. If the type can not be
+            deduced, and there is only a single filesystem given as
+            an argument to the <code class="option">−t</code>
+            option, <span class="command"><strong>fsck</strong></span> will use the
+            specified filesystem type. If this type is not
+            available, then the default filesystem type (currently
+            ext2) is used.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−A</code></span></dt>
+
+          <dd>
+            <p>Walk through the <code class="filename">/etc/fstab</code> file and try to check all
+            filesystems in one run. This option is typically used
+            from the <code class="filename">/etc/rc</code> system
+            initialization file, instead of multiple commands for
+            checking a single filesystem.</p>
+
+            <p>The root filesystem will be checked first unless the
+            <code class="option">−P</code> option is
+            specified (see below). After that, filesystems will be
+            checked in the order specified by the <span class="command"><strong>fs_passno</strong></span> (the sixth)
+            field in the <code class="filename">/etc/fstab</code>
+            file. Filesystems with a <span class="command"><strong>fs_passno</strong></span> value of 0
+            are skipped and are not checked at all. Filesystems
+            with a <span class="command"><strong>fs_passno</strong></span> value of
+            greater than zero will be checked in order, with
+            filesystems with the lowest <span class="command"><strong>fs_passno</strong></span> number
+            being checked first. If there are multiple filesystems
+            with the same pass number, <span class="command"><strong>fsck</strong></span> will attempt to
+            check them in parallel, although it will avoid running
+            multiple filesystem checks on the same physical
+            disk.</p>
+
+            <p><span class="command"><strong>fsck</strong></span>
+            does not check stacked devices (RAIDs, dm-crypt, ...)
+            in parallel with any other device. See below for
+            FSCK_FORCE_ALL_PARALLEL setting. The /sys filesystem is
+            used to detemine dependencies between devices.</p>
+
+            <p>Hence, a very common configuration in <code class="filename">/etc/fstab</code> files is to set the root
+            filesystem to have a <span class="command"><strong>fs_passno</strong></span> value of 1
+            and to set all other filesystems to have a <span class="command"><strong>fs_passno</strong></span> value of 2.
+            This will allow <span class="command"><strong>fsck</strong></span> to automatically
+            run filesystem checkers in parallel if it is
+            advantageous to do so. System administrators might
+            choose not to use this configuration if they need to
+            avoid multiple filesystem checks running in parallel
+            for some reason – for example, if the machine in
+            question is short on memory so that excessive paging is
+            a concern.</p>
+
+            <p><span class="command"><strong>fsck</strong></span>
+            normally does not check whether the device actually
+            exists before calling a filesystem specific checker.
+            Therefore non-existing devices may cause the system to
+            enter filesystem repair mode during boot if the
+            filesystem specific checker returns a fatal error. The
+            <code class="filename">/etc/fstab</code> mount option
+            <span class="command"><strong>nofail</strong></span>
+            may be used to have <span class="command"><strong>fsck</strong></span> skip
+            non-existing devices. <span class="command"><strong>fsck</strong></span> also skips
+            non-existing devices that have the special filesystem
+            type <span class="command"><strong>auto</strong></span>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−C</code> [ <span class="emphasis"><em>fd</em></span> ]</span></dt>
+
+          <dd>
+            <p>Display completion/progress bars for those
+            filesystem checkers (currently only for ext[234]) which
+            support them. <span class="command"><strong>fsck</strong></span> will manage the
+            filesystem checkers so that only one of them will
+            display a progress bar at a time. GUI front-ends may
+            specify a file descriptor <em class="parameter"><code>fd</code></em>, in which case the
+            progress bar information will be sent to that file
+            descriptor.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−M</code></span></dt>
+
+          <dd>
+            <p>Do not check mounted filesystems and return an exit
+            code of 0 for mounted filesystems.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−N</code></span></dt>
+
+          <dd>
+            <p>Don't execute, just show what would be done.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−P</code></span></dt>
+
+          <dd>
+            <p>When the <code class="option">−A</code> flag
+            is set, check the root filesystem in parallel with the
+            other filesystems. This is not the safest thing in the
+            world to do, since if the root filesystem is in doubt
+            things like the <span class="citerefentry"><span class="refentrytitle">e2fsck</span>(8)</span> executable
+            might be corrupted! This option is mainly provided for
+            those sysadmins who don't want to repartition the root
+            filesystem to be small and compact (which is really the
+            right solution).</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−R</code></span></dt>
+
+          <dd>
+            <p>When checking all filesystems with the <code class="option">−A</code> flag, skip the root
+            filesystem. (This is useful in case the root filesystem
+            has already been mounted read-write.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−T</code></span></dt>
+
+          <dd>
+            <p>Don't show the title on startup.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−V</code></span></dt>
+
+          <dd>
+            <p>Produce verbose output, including all
+            filesystem-specific commands that are executed.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>fs-specific-options</code></em></span></dt>
+
+          <dd>
+            <p>Options which are not understood by <span class="command"><strong>fsck</strong></span> are passed to
+            the filesystem-specific checker. These options
+            <span class="emphasis"><em>must</em></span> not take
+            arguments, as there is no way for <span class="command"><strong>fsck</strong></span> to be able to
+            properly guess which options take arguments and which
+            don't.</p>
+
+            <p>Options and arguments which follow the <code class="option">−−</code> are treated as
+            filesystem-specific options to be passed to the
+            filesystem-specific checker.</p>
+
+            <p>Please note that <span class="command"><strong>fsck</strong></span> is not designed
+            to pass arbitrarily complicated options to
+            filesystem-specific checkers. If you're doing something
+            complicated, please just execute the
+            filesystem-specific checker directly. If you pass
+            <span class="command"><strong>fsck</strong></span> some
+            horribly complicated options and arguments, and it
+            doesn't do what you expect, <span class="emphasis"><em>don't bother reporting it as a
+            bug.</em></span> You're almost certainly doing
+            something that you shouldn't be doing with <span class="command"><strong>fsck</strong></span>.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>Options to different filesystem-specific fsck's are not
+      standardized. If in doubt, please consult the man pages of
+      the filesystem-specific checker. Although not guaranteed, the
+      following options are supported by most filesystem
+      checkers:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="option">−a</code></span></dt>
+
+          <dd>
+            <p>Automatically repair the filesystem without any
+            questions (use this option with caution). Note that
+            <span class="citerefentry"><span class="refentrytitle">e2fsck</span>(8)</span> supports
+            <code class="option">−a</code> for backward
+            compatibility only. This option is mapped to
+            <span class="command"><strong>e2fsck</strong></span>'s
+            <code class="option">−p</code> option which is
+            safe to use, unlike the <code class="option">−a</code> option that some filesystem
+            checkers support.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−n</code></span></dt>
+
+          <dd>
+            <p>For some filesystem-specific checkers, the
+            <code class="option">−n</code> option will cause
+            the fs-specific fsck to avoid attempting to repair any
+            problems, but simply report such problems to stdout.
+            This is however not true for all filesystem-specific
+            checkers. In particular, <span class="citerefentry"><span class="refentrytitle">fsck.reiserfs</span>(8)</span> will not
+            report any corruption if given this option. <a class="link" href="../htmlman8/fsck.minix.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fsck.minix</span>(8)</span></a> does
+            not support the <code class="option">−n</code>
+            option at all.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−r</code></span></dt>
+
+          <dd>
+            <p>Interactively repair the filesystem (ask for
+            confirmations). Note: It is generally a bad idea to use
+            this option if multiple fsck's are being run in
+            parallel. Also note that this is <span class="command"><strong>e2fsck</strong></span>'s default
+            behavior; it supports this option for backward
+            compatibility reasons only.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−y</code></span></dt>
+
+          <dd>
+            <p>For some filesystem-specific checkers, the
+            <code class="option">−y</code> option will cause
+            the fs-specific fsck to always attempt to fix any
+            detected filesystem corruption automatically. Sometimes
+            an expert may be able to do better driving the fsck
+            manually. Note that not all filesystem-specific
+            checkers implement this option. In particular <a class="link" href="../htmlman8/fsck.minix.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fsck.minix</span>(8)</span></a> and
+            <a class="link" href="../htmlman8/fsck.cramfs.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fsck.cramfs</span>(8)</span></a> do not
+            support the <code class="option">−y</code> option
+            as of this writing.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fsck-8_sect3" name="fsck-8_sect3" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <p><code class="filename">/etc/fstab</code>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="fsck-8_sect4" name="fsck-8_sect4" shape="rect"> </a>
+
+      <h2>ENVIRONMENT VARIABLES</h2>
+
+      <p>The <span class="command"><strong>fsck</strong></span>
+      program's behavior is affected by the following environment
+      variables:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">FSCK_FORCE_ALL_PARALLEL</code></span></dt>
+
+          <dd>
+            <p>If this environment variable is set, <span class="command"><strong>fsck</strong></span> will attempt to
+            check all of the specified filesystems in parallel,
+            regardless of whether the filesystems appear to be on
+            the same device. (This is useful for RAID systems or
+            high-end storage systems such as those sold by
+            companies such as IBM or EMC.) Note that the fs_passno
+            value is still used.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FSCK_MAX_INST</code></span></dt>
+
+          <dd>
+            <p>This environment variable will limit the maximum
+            number of filesystem checkers that can be running at
+            one time. This allows configurations which have a large
+            number of disks to avoid <span class="command"><strong>fsck</strong></span> starting too
+            many filesystem checkers at once, which might overload
+            CPU and memory resources available on the system. If
+            this value is zero, then an unlimited number of
+            processes can be spawned. This is currently the
+            default, but future versions of <span class="command"><strong>fsck</strong></span> may attempt to
+            automatically determine how many filesystem checks can
+            be run based on gathering accounting data from the
+            operating system.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PATH</code></span></dt>
+
+          <dd>
+            <p>The <code class="constant">PATH</code> environment
+            variable is used to find filesystem checkers. A set of
+            system directories are searched first: <code class="filename">/sbin</code>, <code class="filename">/sbin/fs.d</code>, <code class="filename">/sbin/fs</code>, <code class="filename">/etc/fs</code>, and <code class="filename">/etc</code>. Then the set of directories
+            found in the <code class="constant">PATH</code>
+            environment are searched.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FSTAB_FILE</code></span></dt>
+
+          <dd>
+            <p>This environment variable allows the system
+            administrator to override the standard location of the
+            <code class="filename">/etc/fstab</code> file. It is
+            also useful for developers who are testing <span class="command"><strong>fsck</strong></span>.</p>
+          </dd>
+
+          <dt><span class="term">LIBBLKID_DEBUG=all</span></dt>
+
+          <dd>
+            <p>enables libblkid debug output.</p>
+          </dd>
+
+          <dt><span class="term">LIBMOUNT_DEBUG=all</span></dt>
+
+          <dd>
+            <p>enables libmount debug output.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fsck-8_sect5" name="fsck-8_sect5" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman5/fstab.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fstab</span>(5)</span></a>, <a class="link" href="../htmlman8/mkfs.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mkfs</span>(8)</span></a>, <span class="citerefentry"><span class="refentrytitle">fsck.ext2</span>(8)</span> or <span class="citerefentry"><span class="refentrytitle">fsck.ext3</span>(8)</span> or <span class="citerefentry"><span class="refentrytitle">e2fsck</span>(8)</span>, <span class="citerefentry"><span class="refentrytitle">cramfsck</span>(8)</span>, <a class="link" href="../htmlman8/fsck.minix.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fsck.minix</span>(8)</span></a>, <span class="citerefentry"><span class="refentrytitle">fsck.msdos</span>(8)</span>, <span class="citerefentry"><span class="refentrytitle">fsck.jfs</span>(8)</span>, <span class="citerefentry"><span class="refentrytitle">fsck.nfs</span>(8)</span>, <span class="citerefentry"><span class="refentrytitle">fsck.vfat</span>(8)</span>, <span class="citerefentry"><span class="refentrytitle">fsck.xfs</span>(8)</span>, <span class="citerefentry"><span class="refentrytitle">reiserfsck</span>(8)</span>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="fsck-8_sect6" name="fsck-8_sect6" shape="rect"> </a>
+
+      <h2>AUTHOR</h2>
+
+      <p><a class="literalurl" href="mailto:tytso%20REMOVE%20@%20THIS%20mit.edu" target="_top" shape="rect">Theodore Ts'o</a></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="fsck-8_sect7" name="fsck-8_sect7" shape="rect"> </a>
+
+      <h2>AVAILABILITY</h2>
+
+      <p>The fsck command is part of the util-linux package and is
+      available from <a class="literalurl" href="ftp://ftp.kernel.org/pub/linux/utils/util-linux/" target="_top" shape="rect">Linux Kernel Archive</a></p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright 1993, 1994, 1995 by Theodore Ts'o.  All Rights Reserved.<br />
+
+                  This file may be copied under the terms of the GNU Public License.<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

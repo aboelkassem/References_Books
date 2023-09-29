@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>slapd-bdb(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="slapd-bdb(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="slapd-bdb.5" name="slapd-bdb.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>slapd−bdb, slapd−hdb — Berkeley DB
+      backends to slapd</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ETCDIR/slapd.conf
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-bdb-5_sect1" name="slapd-bdb-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <em class="replaceable"><code>bdb</code></em> backend
+      to <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a> uses the Oracle
+      Berkeley DB (BDB) package to store data. It makes extensive
+      use of indexing and caching to speed data access.</p>
+
+      <p>Note that BDB is deprecated and support will be dropped in
+      future OpenLDAP releases. Installations should use the
+      <em class="replaceable"><code>mdb</code></em> backend
+      instead.</p>
+
+      <p><em class="replaceable"><code>hdb</code></em> is a variant
+      of the <em class="replaceable"><code>bdb</code></em> backend
+      that uses a hierarchical database layout which supports
+      subtree renames. It is both more space-efficient and more
+      execution-efficient than the <em class="replaceable"><code>bdb</code></em> backend. It is otherwise
+      identical to the <em class="replaceable"><code>bdb</code></em> behavior, and all the
+      same configuration options apply.</p>
+
+      <p>It is noted that these options are intended to complement
+      Berkeley DB configuration options set in the environment's
+      <code class="constant">DB_CONFIG</code> file. See Berkeley DB
+      documentation for details on <code class="constant">DB_CONFIG</code> configuration options. Where
+      there is overlap, settings in <code class="constant">DB_CONFIG</code> take precedence.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-bdb-5_sect2" name="slapd-bdb-5_sect2" shape="rect"> </a>
+
+      <h2>CONFIGURATION</h2>
+
+      <p>These <em class="replaceable"><code>slapd.conf</code></em>
+      options apply to the <em class="replaceable"><code>bdb</code></em> and <em class="replaceable"><code>hdb</code></em> backend database. That
+      is, they must follow a "database bdb" or "database hdb" line
+      and come before any subsequent "backend" or "database" lines.
+      Other database options are described in the <a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a> manual
+      page.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><em class="replaceable"><code>cachesize</code></em><em class="replaceable"><code>&lt;integer&gt;</code></em></span></dt>
+
+          <dd>
+            <p>Specify the size in entries of the in-memory entry
+            cache maintained by the <em class="replaceable"><code>bdb</code></em> or <em class="replaceable"><code>hdb</code></em> backend database
+            instance. The default is 1000 entries.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>cachefree</code></em><em class="replaceable"><code>&lt;integer&gt;</code></em></span></dt>
+
+          <dd>
+            <p>Specify the number of entries to free from the entry
+            cache when the cache reaches the <em class="replaceable"><code>cachesize</code></em> limit. The
+            default is 1 entry.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>checkpoint</code></em><span class="emphasis"><em>&lt;kbyte&gt;
+          &lt;min&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specify the frequency for checkpointing the database
+            transaction log. A checkpoint operation flushes the
+            database buffers to disk and writes a checkpoint record
+            in the log. The checkpoint will occur if either
+            <em class="replaceable"><code>&lt;kbyte&gt;</code></em>
+            data has been written or <em class="replaceable"><code>&lt;min&gt;</code></em> minutes
+            have passed since the last checkpoint. Both arguments
+            default to zero, in which case they are ignored. When
+            the <em class="replaceable"><code>&lt;min&gt;</code></em> argument is
+            non-zero, an internal task will run every <em class="replaceable"><code>&lt;min&gt;</code></em> minutes to
+            perform the checkpoint. See the Berkeley DB reference
+            guide for more details.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>checksum</code></em></span></dt>
+
+          <dd>
+            <p>Enable checksum validation of DB pages whenever they
+            are read from disk. This setting can only be configured
+            before any database files are created.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>cryptfile</code></em><em class="replaceable"><code>&lt;file&gt;</code></em></span></dt>
+
+          <dd>
+            <p>Specify the pathname of a file containing an
+            encryption key to use for encrypting the database.
+            Encryption is performed using Berkeley DB's
+            implementation of AES. Note that encryption can only be
+            configured before any database files are created, and
+            changing the key can only be done after destroying the
+            current database and recreating it. Encryption is not
+            enabled by default, and some distributions of Berkeley
+            DB do not support encryption.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>cryptkey</code></em><em class="replaceable"><code>&lt;key&gt;</code></em></span></dt>
+
+          <dd>
+            <p>Specify an encryption key to use for encrypting the
+            database. This option may be used when a separate
+            <em class="replaceable"><code>cryptfile</code></em> is
+            not desired. Only one of <em class="replaceable"><code>cryptkey</code></em> or <em class="replaceable"><code>cryptfile</code></em> may be
+            configured.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>dbconfig</code></em><em class="replaceable"><code>&lt;Berkeley-DB-setting&gt;</code></em></span></dt>
+
+          <dd>
+            <p>Specify a configuration directive to be placed in
+            the <code class="constant">DB_CONFIG</code> file of the
+            database directory. The <em class="replaceable"><code>dbconfig</code></em> directive is
+            just a convenience to allow all necessary configuration
+            to be set in the <em class="replaceable"><code>slapd.conf</code></em> file. The
+            options set using this directive will only be written
+            to the <code class="constant">DB_CONFIG</code> file if
+            no such file existed at server startup time, otherwise
+            they are completely ignored. This allows one to set
+            initial values without overwriting/destroying a
+            <code class="constant">DB_CONFIG</code> file that was
+            already customized through other means. This directive
+            may be specified multiple times, as needed. For
+            example:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="informalexample">
+                  <pre class="programlisting" xml:space="preserve">
+        dbconfig set_cachesize 0 1048576 0
+        dbconfig set_lg_bsize 2097152
+</pre>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>dbnosync</code></em></span></dt>
+
+          <dd>
+            <p>Specify that on-disk database contents should not be
+            immediately synchronized with in memory changes.
+            Enabling this option may improve performance at the
+            expense of data security. See the Berkeley DB reference
+            guide for more details.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>dbpagesize</em></span> <span class="emphasis"><em>&lt;dbfile&gt;
+          &lt;size&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specify the page size to use for a particular
+            database file, in units of 1024 bytes. The default for
+            the <em class="replaceable"><code>id2entry</code></em>
+            file is 16, the default for all other files depends on
+            the size of the underlying filesystem's block size
+            (typically 4 or 8). The maximum that BerkeleyDB
+            supports is 64. This setting usually should not need to
+            be changed, but if BerkeleyDB's "db_stat −d"
+            shows a large amount of overflow pages in use in a
+            file, setting a larger size may increase performance at
+            the expense of data integrity. This setting only takes
+            effect when a database is being newly created. See the
+            Berkeley DB reference guide for more details.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>directory</code></em><em class="replaceable"><code>&lt;directory&gt;</code></em></span></dt>
+
+          <dd>
+            <p>Specify the directory where the BDB files containing
+            this database and associated indexes live. A separate
+            directory must be specified for each database. The
+            default is <em class="replaceable"><code>LOCALSTATEDIR/openldap−data</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>dirtyread</code></em></span></dt>
+
+          <dd>
+            <p>Allow reads of modified but not yet committed data.
+            Usually transactions are isolated to prevent other
+            operations from accessing uncommitted data. This option
+            may improve performance, but may also return
+            inconsistent results if the data comes from a
+            transaction that is later aborted. In this case, the
+            modified data is discarded and a subsequent search will
+            return a different result.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>dncachesize</code></em><em class="replaceable"><code>&lt;integer&gt;</code></em></span></dt>
+
+          <dd>
+            <p>Specify the maximum number of DNs in the in-memory
+            DN cache. Ideally this cache should be large enough to
+            contain the DNs of every entry in the database. If set
+            to a smaller value than the <em class="replaceable"><code>cachesize</code></em> it will be
+            silently increased to equal the <em class="replaceable"><code>cachesize</code></em>. The default
+            value is 0 which means unlimited, i.e. the DN cache
+            will grow without bound.</p>
+
+            <p>It should be noted that the <span class="emphasis"><em>DN cache</em></span> is allowed to
+            temporarily grow beyond the configured size. It does
+            this if many entries are locked when it tries to do a
+            purge, because that means they're legitimately in use.
+            Also, the <span class="emphasis"><em>DN
+            cache</em></span> never purges entries that have cached
+            children, so depending on the shape of the DIT, it
+            could have lots of cached DNs over the defined
+            limit.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>idlcachesize</code></em><em class="replaceable"><code>&lt;integer&gt;</code></em></span></dt>
+
+          <dd>
+            <p>Specify the size of the in-memory index cache, in
+            index slots. The default is zero. A larger value will
+            speed up frequent searches of indexed entries. An
+            <em class="replaceable"><code>hdb</code></em> database
+            needs a large <em class="replaceable"><code>idlcachesize</code></em> for good
+            search performance, typically three times the
+            <em class="replaceable"><code>cachesize</code></em>
+            (entry cache size) or larger.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>index</em></span> {<em class="replaceable"><code>&lt;attrlist&gt;</code></em>|<em class="replaceable"><code>default</code></em>}
+          [<em class="replaceable"><code>pres</code></em>,<em class="replaceable"><code>eq</code></em>,<em class="replaceable"><code>approx</code></em>,<em class="replaceable"><code>sub</code></em>,<em class="replaceable"><code>&lt;special&gt;</code></em>]</span></dt>
+
+          <dd>
+            <p>Specify the indexes to maintain for the given
+            attribute (or list of attributes). Some attributes only
+            support a subset of indexes. If only an <em class="replaceable"><code>&lt;attr&gt;</code></em> is given,
+            the indices specified for <em class="replaceable"><code>default</code></em> are maintained.
+            Note that setting a default does not imply that all
+            attributes will be indexed. Also, for best performance,
+            an <em class="replaceable"><code>eq</code></em> index
+            should always be configured for the <em class="replaceable"><code>objectClass</code></em>
+            attribute.</p>
+
+            <p>A number of special index parameters may be
+            specified. The index type <em class="replaceable"><code>sub</code></em> can be decomposed
+            into <em class="replaceable"><code>subinitial</code></em>, <em class="replaceable"><code>subany</code></em>, and <em class="replaceable"><code>subfinal</code></em> indices. The
+            special type <em class="replaceable"><code>nolang</code></em> may be specified
+            to disallow use of this index by language subtypes. The
+            special type <em class="replaceable"><code>nosubtypes</code></em> may be
+            specified to disallow use of this index by named
+            subtypes. Note: changing <em class="replaceable"><code>index</code></em> settings in
+            <a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a>
+            requires rebuilding indices, see <a class="link" href="../htmlman8/slapindex.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapindex</span>(8)</span></a>;
+            changing <em class="replaceable"><code>index</code></em> settings
+            dynamically by LDAPModifying "cn=config" automatically
+            causes rebuilding of the indices online in a background
+            task.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>linearindex</code></em></span></dt>
+
+          <dd>
+            <p>Tell <em class="replaceable"><code>slapindex</code></em> to index one
+            attribute at a time. By default, all indexed attributes
+            in an entry are processed at the same time. With this
+            option, each indexed attribute is processed
+            individually, using multiple passes through the entire
+            database. This option improves <em class="replaceable"><code>slapindex</code></em> performance
+            when the database size exceeds the <em class="replaceable"><code>dbcache</code></em> size. When the
+            <em class="replaceable"><code>dbcache</code></em> is
+            large enough, this option is not needed and will
+            decrease performance. Also by default, <em class="replaceable"><code>slapadd</code></em> performs full
+            indexing and so a separate <em class="replaceable"><code>slapindex</code></em> run is not
+            needed. With this option, <em class="replaceable"><code>slapadd</code></em> does no
+            indexing and <em class="replaceable"><code>slapindex</code></em> must be
+            used.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>lockdetect</code></em><code class="literal">{</code>oldest<code class="literal">|</code>youngest<code class="literal">|</code>fewest<code class="literal">|</code>random<code class="literal">|</code>default<code class="literal">}</code></span></dt>
+
+          <dd>
+            <p>Specify which transaction to abort when a deadlock
+            is detected. The default is <em class="replaceable"><code>random</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>mode</code></em><em class="replaceable"><code>&lt;integer&gt;</code></em></span></dt>
+
+          <dd>
+            <p>Specify the file protection mode that newly created
+            database index files should have. The default is
+            0600.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>searchstack</code></em><em class="replaceable"><code>&lt;depth&gt;</code></em></span></dt>
+
+          <dd>
+            <p>Specify the depth of the stack used for search
+            filter evaluation. Search filters are evaluated on a
+            stack to accommodate nested AND / OR clauses. An
+            individual stack is assigned to each server thread. The
+            depth of the stack determines how complex a filter can
+            be evaluated without requiring any additional memory
+            allocation. Filters that are nested deeper than the
+            search stack depth will cause a separate stack to be
+            allocated for that particular search operation. These
+            allocations can have a major negative impact on server
+            performance, but specifying too much stack will also
+            consume a great deal of memory. Each search stack uses
+            512K bytes per level. The default stack depth is 16,
+            thus 8MB per thread is used.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>shm_key</code></em><em class="replaceable"><code>&lt;integer&gt;</code></em></span></dt>
+
+          <dd>
+            <p>Specify a key for a shared memory BDB environment.
+            By default the BDB environment uses memory mapped
+            files. If a non-zero value is specified, it will be
+            used as the key to identify a shared memory region that
+            will house the environment.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-bdb-5_sect3" name="slapd-bdb-5_sect3" shape="rect"> </a>
+
+      <h2>ACCESS CONTROL</h2>
+
+      <p>The <em class="replaceable"><code>bdb</code></em> and
+      <em class="replaceable"><code>hdb</code></em> backends honor
+      access control semantics as indicated in <a class="link" href="../htmlman5/slapd.access.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.access</span>(5)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-bdb-5_sect4" name="slapd-bdb-5_sect4" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">ETCDIR/slapd.conf</span></dt>
+
+          <dd>
+            <p>default <em class="replaceable"><code>slapd</code></em> configuration
+            file</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">DB_CONFIG</code></span></dt>
+
+          <dd>
+            <p>Berkeley DB configuration file</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-bdb-5_sect5" name="slapd-bdb-5_sect5" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a>, <a class="link" href="../htmlman5/slapd-config.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-config</span>(5)</span></a>, <a class="link" href="../htmlman5/slapd-mdb.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-mdb</span>(5)</span></a>, <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a>, <a class="link" href="../htmlman8/slapadd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapadd</span>(8)</span></a>, <a class="link" href="../htmlman8/slapcat.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapcat</span>(8)</span></a>, <a class="link" href="../htmlman8/slapindex.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapindex</span>(8)</span></a>, Berkeley DB
+      documentation.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-bdb-5_sect6" name="slapd-bdb-5_sect6" shape="rect"> </a>
+
+      <h2>ACKNOWLEDGEMENTS</h2>
+
+      <p><span class="emphasis"><em>OpenLDAP Software</em></span>
+      is developed and maintained by The OpenLDAP Project
+      &lt;<a class="literalurl" href="http://www.openldap.org/" target="_top" shape="rect">http://www.openldap.org/</a>&gt;. <span class="emphasis"><em>OpenLDAP Software</em></span> is derived from
+      University of Michigan LDAP 3.3 Release. Originally begun by
+      Kurt Zeilenga. Caching mechanisms originally designed by
+      Jong-Hyuk Choi. Completion and subsequent work, as well as
+      back-hdb, by Howard Chu.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                  See the following documents: <a class="ulink" href="../openldap-COPYRIGHT.html" target="_top" shape="rect">COPYRIGHT</a>, <a class="ulink" href="../openldap-LICENSE.html" target="_top" shape="rect">LICENSE</a><br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

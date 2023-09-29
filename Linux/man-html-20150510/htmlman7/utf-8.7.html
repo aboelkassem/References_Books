@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>utf-8(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="utf-8(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="utf-8.7" name="utf-8.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>UTF-8 — an ASCII compatible multibyte Unicode
+      encoding</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="utf-8-7_sect1" name="utf-8-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The Unicode 3.0 character set occupies a 16-bit code
+      space. The most obvious Unicode encoding (known as UCS-2)
+      consists of a sequence of 16-bit words. Such strings can
+      contain—as part of many 16-bit characters—bytes
+      such as '\0' or '/', which have a special meaning in
+      filenames and other C library function arguments. In
+      addition, the majority of UNIX tools expect ASCII files and
+      can't read 16-bit words as characters without major
+      modifications. For these reasons, UCS-2 is not a suitable
+      external encoding of Unicode in filenames, text files,
+      environment variables, and so on. The ISO 10646 Universal
+      Character Set (UCS), a superset of Unicode, occupies an even
+      larger code space—31 bits—and the obvious UCS-4
+      encoding for it (a sequence of 32-bit words) has the same
+      problems.</p>
+
+      <p>The UTF-8 encoding of Unicode and UCS does not have these
+      problems and is the common way in which Unicode is used on
+      UNIX-style operating systems.</p>
+
+      <div class="refsect2">
+        <a id="utf-8-7_sect2" name="utf-8-7_sect2" shape="rect"> </a>
+
+        <h3>Properties</h3>
+
+        <p>The UTF-8 encoding has the following nice
+        properties:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>UCS characters 0x00000000 to 0x0000007f (the
+              classic US-ASCII characters) are encoded simply as
+              bytes 0x00 to 0x7f (ASCII compatibility). This means
+              that files and strings which contain only 7-bit ASCII
+              characters have the same encoding under both ASCII
+              and UTF-8 .</p>
+            </li>
+
+            <li class="listitem">
+              <p>All UCS characters greater than 0x7f are encoded
+              as a multibyte sequence consisting only of bytes in
+              the range 0x80 to 0xfd, so no ASCII byte can appear
+              as part of another character and there are no
+              problems with, for example, '\0' or '/'.</p>
+            </li>
+
+            <li class="listitem">
+              <p>The lexicographic sorting order of UCS-4 strings
+              is preserved.</p>
+            </li>
+
+            <li class="listitem">
+              <p>All possible 2^31 UCS codes can be encoded using
+              UTF-8.</p>
+            </li>
+
+            <li class="listitem">
+              <p>The bytes 0xc0, 0xc1, 0xfe, and 0xff are never
+              used in the UTF-8 encoding.</p>
+            </li>
+
+            <li class="listitem">
+              <p>The first byte of a multibyte sequence which
+              represents a single non-ASCII UCS character is always
+              in the range 0xc2 to 0xfd and indicates how long this
+              multibyte sequence is. All further bytes in a
+              multibyte sequence are in the range 0x80 to 0xbf.
+              This allows easy resynchronization and makes the
+              encoding stateless and robust against missing
+              bytes.</p>
+            </li>
+
+            <li class="listitem">
+              <p>UTF-8 encoded UCS characters may be up to six
+              bytes long, however the Unicode standard specifies no
+              characters above 0x10ffff, so Unicode characters can
+              be only up to four bytes long in UTF-8.</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="utf-8-7_sect3" name="utf-8-7_sect3" shape="rect"> </a>
+
+        <h3>Encoding</h3>
+
+        <p>The following byte sequences are used to represent a
+        character. The sequence to be used depends on the UCS code
+        number of the character:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term">0x00000000 −
+            0x0000007F:</span></dt>
+
+            <dd>
+              <p>0<em class="replaceable"><code>xxxxxxx</code></em></p>
+            </dd>
+
+            <dt><span class="term">0x00000080 −
+            0x000007FF:</span></dt>
+
+            <dd>
+              <p>110<em class="replaceable"><code>xxxxx</code></em>
+              10<em class="replaceable"><code>xxxxxx</code></em></p>
+            </dd>
+
+            <dt><span class="term">0x00000800 −
+            0x0000FFFF:</span></dt>
+
+            <dd>
+              <p>1110<em class="replaceable"><code>xxxx</code></em>
+              10<em class="replaceable"><code>xxxxxx</code></em>
+              10<em class="replaceable"><code>xxxxxx</code></em></p>
+            </dd>
+
+            <dt><span class="term">0x00010000 −
+            0x001FFFFF:</span></dt>
+
+            <dd>
+              <p>11110<em class="replaceable"><code>xxx</code></em>
+              10<em class="replaceable"><code>xxxxxx</code></em>
+              10<em class="replaceable"><code>xxxxxx</code></em>
+              10<em class="replaceable"><code>xxxxxx</code></em></p>
+            </dd>
+
+            <dt><span class="term">0x00200000 −
+            0x03FFFFFF:</span></dt>
+
+            <dd>
+              <p>111110<em class="replaceable"><code>xx</code></em>
+              10<em class="replaceable"><code>xxxxxx</code></em>
+              10<em class="replaceable"><code>xxxxxx</code></em>
+              10<em class="replaceable"><code>xxxxxx</code></em>
+              10<em class="replaceable"><code>xxxxxx</code></em></p>
+            </dd>
+
+            <dt><span class="term">0x04000000 −
+            0x7FFFFFFF:</span></dt>
+
+            <dd>
+              <p>1111110<em class="replaceable"><code>x</code></em>
+              10<em class="replaceable"><code>xxxxxx</code></em>
+              10<em class="replaceable"><code>xxxxxx</code></em>
+              10<em class="replaceable"><code>xxxxxx</code></em>
+              10<em class="replaceable"><code>xxxxxx</code></em>
+              10<em class="replaceable"><code>xxxxxx</code></em></p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>The <em class="replaceable"><code>xxx</code></em> bit
+        positions are filled with the bits of the character code
+        number in binary representation. Only the shortest possible
+        multibyte sequence which can represent the code number of
+        the character can be used.</p>
+
+        <p>The UCS code values 0xd800–0xdfff (UTF-16
+        surrogates) as well as 0xfffe and 0xffff (UCS
+        noncharacters) should not appear in conforming UTF-8
+        streams.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="utf-8-7_sect4" name="utf-8-7_sect4" shape="rect"> </a>
+
+        <h3>Example</h3>
+
+        <p>The Unicode character 0xa9 = 1010 1001 (the copyright
+        sign) is encoded in UTF-8 as</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <p>11000010 10101001 = 0xc2 0xa9</p>
+          </blockquote>
+        </div>
+
+        <p>and character 0x2260 = 0010 0010 0110 0000 (the "not
+        equal" symbol) is encoded as:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <p>11100010 10001001 10100000 = 0xe2 0x89 0xa0</p>
+          </blockquote>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="utf-8-7_sect5" name="utf-8-7_sect5" shape="rect"> </a>
+
+        <h3>Application notes</h3>
+
+        <p>Users have to select a UTF-8 locale, for example
+        with</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <p>export LANG=en_GB.UTF-8</p>
+          </blockquote>
+        </div>
+
+        <p>in order to activate the UTF-8 support in
+        applications.</p>
+
+        <p>Application software that has to be aware of the used
+        character encoding should always set the locale with for
+        example</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <p>setlocale(LC_CTYPE, "")</p>
+          </blockquote>
+        </div>
+
+        <p>and programmers can then test the expression</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <p>strcmp(nl_langinfo(CODESET), "UTF-8") == 0</p>
+          </blockquote>
+        </div>
+
+        <p>to determine whether a UTF-8 locale has been selected
+        and whether therefore all plaintext standard input and
+        output, terminal communication, plaintext file content,
+        filenames and environment variables are encoded in
+        UTF-8.</p>
+
+        <p>Programmers accustomed to single-byte encodings such as
+        US-ASCII or ISO 8859 have to be aware that two assumptions
+        made so far are no longer valid in UTF-8 locales. Firstly,
+        a single byte does not necessarily correspond any more to a
+        single character. Secondly, since modern terminal emulators
+        in UTF-8 mode also support Chinese, Japanese, and Korean
+        double-width characters as well as nonspacing combining
+        characters, outputting a single character does not
+        necessarily advance the cursor by one position as it did in
+        ASCII. Library functions such as <a class="link" href="../htmlman3/mbsrtowcs.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mbsrtowcs</span>(3)</span></a> and
+        <a class="link" href="../htmlman3/wcswidth.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">wcswidth</span>(3)</span></a> should be
+        used today to count characters and cursor positions.</p>
+
+        <p>The official ESC sequence to switch from an ISO 2022
+        encoding scheme (as used for instance by VT100 terminals)
+        to UTF-8 is ESC % G ("\x1b%G"). The corresponding return
+        sequence from UTF-8 to ISO 2022 is ESC % @ ("\x1b%@").
+        Other ISO 2022 sequences (such as for switching the G0 and
+        G1 sets) are not applicable in UTF-8 mode.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="utf-8-7_sect6" name="utf-8-7_sect6" shape="rect"> </a>
+
+        <h3>Security</h3>
+
+        <p>The Unicode and UCS standards require that producers of
+        UTF-8 shall use the shortest form possible, for example,
+        producing a two-byte sequence with first byte 0xc0 is
+        nonconforming. Unicode 3.1 has added the requirement that
+        conforming programs must not accept non-shortest forms in
+        their input. This is for security reasons: if user input is
+        checked for possible security violations, a program might
+        check only for the ASCII version of "/../" or ";" or NUL
+        and overlook that there are many non-ASCII ways to
+        represent these things in a non-shortest UTF-8
+        encoding.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="utf-8-7_sect7" name="utf-8-7_sect7" shape="rect"> </a>
+
+        <h3>Standards</h3>
+
+        <p>ISO/IEC 10646-1:2000, Unicode 3.1, RFC 3629, Plan 9.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="utf-8-7_sect8" name="utf-8-7_sect8" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><span class="citerefentry"><span class="refentrytitle">locale</span>(1)</span>, <a class="link" href="../htmlman3/nl_langinfo.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">nl_langinfo</span>(3)</span></a>, <a class="link" href="../htmlman3/setlocale.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setlocale</span>(3)</span></a>, <a class="link" href="../htmlman7/charsets.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">charsets</span>(7)</span></a>, <a class="link" href="../htmlman7/unicode.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unicode</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="utf-8-7_sect9" name="utf-8-7_sect9" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) Markus Kuhn, 1996, 2001<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_DOC_FULL)<br />
+                  This is free documentation; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License as<br />
+
+                  published by the Free Software Foundation; either version 2 of<br />
+
+                  the License, or (at your option) any later version.<br />
+
+                  <br />
+                  The GNU General Public License's references to "object code"<br />
+
+                  and "executables" are to be interpreted as the output of any<br />
+
+                  document formatting or typesetting system, including<br />
+
+                  intermediate and printed output.<br />
+
+                  <br />
+                  This manual is distributed in the hope that it will be useful,<br />
+
+                  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+
+                  GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  1995-11-26  Markus Kuhn &lt;mskuhn<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cip.informatik.uni-erlangen.de&gt;<br />
+
+                       First version written<br />
+
+                  2001-05-11  Markus Kuhn &lt;mgk25<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cl.cam.ac.uk&gt;<br />
+
+                       Update<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

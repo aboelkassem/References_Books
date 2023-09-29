@@ -1,0 +1,2125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>console_ioctl(4) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="console_ioctl(4) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index4.html" shape="rect">Section 4</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="console-ioctl.4" name="console-ioctl.4" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>console_ioctl — ioctls for console terminal and
+      virtual consoles</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="console-ioctl-4_sect1" name="console-ioctl-4_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The following Linux-specific <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> requests are
+      supported. Each requires a third argument, assumed here to be
+      <em class="parameter"><code>argp</code></em>.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">KDGETLED</code></span></dt>
+
+          <dd>
+            <p>Get state of LEDs. <em class="parameter"><code>argp</code></em> points to a
+            <code class="function">char</code>. The lower three
+            bits of *<em class="parameter"><code>argp</code></em>
+            are set to the state of the LEDs, as follows:</p>
+          </dd>
+        </dl>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">LED_CAP</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">0x04</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">caps lock led</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">LED_NUM</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">0x02</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">num lock led</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">LED_SCR</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">0x01</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">scroll lock led</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">KDSETLED</code></span></dt>
+
+          <dd>
+            <p>Set the LEDs. The LEDs are set to correspond to the
+            lower three bits of <em class="parameter"><code>argp</code></em>. However, if a
+            higher order bit is set, the LEDs revert to normal:
+            displaying the state of the keyboard functions of caps
+            lock, num lock, and scroll lock.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>Before 1.1.54, the LEDs just reflected the state of the
+      corresponding keyboard flags, and KDGETLED/KDSETLED would
+      also change the keyboard flags. Since 1.1.54 the LEDs can be
+      made to display arbitrary information, but by default they
+      display the keyboard flags. The following two ioctls are used
+      to access the keyboard flags.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">KDGKBLED</code></span></dt>
+
+          <dd>
+            <p>Get keyboard flags CapsLock, NumLock, ScrollLock
+            (not lights). <em class="parameter"><code>argp</code></em> points to a char
+            which is set to the flag state. The low order three
+            bits (mask 0x7) get the current flag state, and the low
+            order bits of the next nibble (mask 0x70) get the
+            default flag state. (Since 1.1.54.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">KDSKBLED</code></span></dt>
+
+          <dd>
+            <p>Set keyboard flags CapsLock, NumLock, ScrollLock
+            (not lights). <em class="parameter"><code>argp</code></em> has the desired flag
+            state. The low order three bits (mask 0x7) have the
+            flag state, and the low order bits of the next nibble
+            (mask 0x70) have the default flag state. (Since
+            1.1.54.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">KDGKBTYPE</code></span></dt>
+
+          <dd>
+            <p>Get keyboard type. This returns the value KB_101,
+            defined as 0x02.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">KDADDIO</code></span></dt>
+
+          <dd>
+            <p>Add I/O port as valid. Equivalent to <em class="replaceable"><code>ioperm(arg,1,1)</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">KDDELIO</code></span></dt>
+
+          <dd>
+            <p>Delete I/O port as valid. Equivalent to <em class="replaceable"><code>ioperm(arg,1,0)</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">KDENABIO</code></span></dt>
+
+          <dd>
+            <p>Enable I/O to video board. Equivalent to
+            <span class="emphasis"><em>ioperm(0x3b4, 0x3df-0x3b4+1,
+            1)</em></span>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">KDDISABIO</code></span></dt>
+
+          <dd>
+            <p>Disable I/O to video board. Equivalent to
+            <span class="emphasis"><em>ioperm(0x3b4, 0x3df-0x3b4+1,
+            0)</em></span>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">KDSETMODE</code></span></dt>
+
+          <dd>
+            <p>Set text/graphics mode. <em class="parameter"><code>argp</code></em> is one of these:</p>
+          </dd>
+        </dl>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">KD_TEXT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">0x00</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">KD_GRAPHICS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">0x01</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">KDGETMODE</code></span></dt>
+
+          <dd>
+            <p>Get text/graphics mode. <em class="parameter"><code>argp</code></em> points to a
+            <code class="function">long</code> which is set to one
+            of the above values.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">KDMKTONE</code></span></dt>
+
+          <dd>
+            <p>Generate tone of specified length. The lower 16 bits
+            of <em class="parameter"><code>argp</code></em> specify
+            the period in clock cycles, and the upper 16 bits give
+            the duration in msec. If the duration is zero, the
+            sound is turned off. Control returns immediately. For
+            example, <em class="parameter"><code>argp</code></em> =
+            (125&lt;&lt;16) + 0x637 would specify the beep normally
+            associated with a ctrl-G. (Thus since 0.99pl1; broken
+            in 2.1.49-50.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">KIOCSOUND</code></span></dt>
+
+          <dd>
+            <p>Start or stop sound generation. The lower 16 bits of
+            <em class="parameter"><code>argp</code></em> specify
+            the period in clock cycles (that is, <em class="parameter"><code>argp</code></em> =
+            1193180/frequency). <em class="parameter"><code>argp</code></em> = 0 turns sound off.
+            In either case, control returns immediately.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">GIO_CMAP</code></span></dt>
+
+          <dd>
+            <p>Get the current default color map from kernel.
+            <em class="parameter"><code>argp</code></em> points to
+            a 48-byte array. (Since 1.3.3.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PIO_CMAP</code></span></dt>
+
+          <dd>
+            <p>Change the default text-mode color map. <em class="parameter"><code>argp</code></em> points to a 48-byte
+            array which contains, in order, the Red, Green, and
+            Blue values for the 16 available screen colors: 0 is
+            off, and 255 is full intensity. The default colors are,
+            in order: black, dark red, dark green, brown, dark
+            blue, dark purple, dark cyan, light grey, dark grey,
+            bright red, bright green, yellow, bright blue, bright
+            purple, bright cyan and white. (Since 1.3.3.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">GIO_FONT</code></span></dt>
+
+          <dd>
+            <p>Gets 256-character screen font in expanded form.
+            <em class="parameter"><code>argp</code></em> points to
+            an 8192 byte array. Fails with error code <span class="errorname">EINVAL</span> if the currently loaded font
+            is a 512-character font, or if the console is not in
+            text mode.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">GIO_FONTX</code></span></dt>
+
+          <dd>
+            <p>Gets screen font and associated information.
+            <em class="parameter"><code>argp</code></em> points to
+            a <span class="emphasis"><em>struct
+            consolefontdesc</em></span> (see <code class="constant">PIO_FONTX</code>). On call, the <code class="function">charcount</code> field should be set to the
+            maximum number of characters that would fit in the
+            buffer pointed to by <code class="function">chardata</code>. On return, the <code class="function">charcount</code> and <code class="function">charheight</code> are filled with the
+            respective data for the currently loaded font, and the
+            <code class="function">chardata</code> array contains
+            the font data if the initial value of <code class="function">charcount</code> indicated enough space was
+            available; otherwise the buffer is untouched and
+            <code class="varname">errno</code> is set to
+            <span class="errorname">ENOMEM</span>. (Since
+            1.3.1.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PIO_FONT</code></span></dt>
+
+          <dd>
+            <p>Sets 256-character screen font. Load font into the
+            EGA/VGA character generator. <em class="parameter"><code>argp</code></em> points to a 8192
+            byte map, with 32 bytes per character. Only the first
+            <code class="constant">N</code> of them are used for an
+            8x<code class="constant">N</code> font (0 &lt;
+            <code class="constant">N</code> &lt;= 32). This call
+            also invalidates the Unicode mapping.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PIO_FONTX</code></span></dt>
+
+          <dd>
+            <p>Sets screen font and associated rendering
+            information. <em class="parameter"><code>argp</code></em> points to a</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="structdef">
+                  <table style="border-collapse: collapse;">
+                    <colgroup span="1">
+                      <col class="c1" span="1" />
+                      <col class="c2" span="1" />
+                      <col class="c3" span="1" />
+                      <col class="c4" span="1" />
+                      <col class="c5" span="1" />
+                    </colgroup>
+
+                    <tbody>
+                      <tr>
+                        <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                        <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">consolefontdesc</span> {</td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>charcount</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* characters in font<br />
+
+                            (256 or 512) */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>charheight</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* scan lines per<br />
+                            character (1-32) */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">char</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1">*</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>chardata</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            /* font data in<br />
+                            expanded form */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>If necessary, the screen will be appropriately
+            resized, and <code class="constant">SIGWINCH</code>
+            sent to the appropriate processes. This call also
+            invalidates the Unicode mapping. (Since 1.3.1.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PIO_FONTRESET</code></span></dt>
+
+          <dd>
+            <p>Resets the screen font, size and Unicode mapping to
+            the bootup defaults. <em class="parameter"><code>argp</code></em> is unused, but
+            should be set to NULL to ensure compatibility with
+            future versions of Linux. (Since 1.3.28.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">GIO_SCRNMAP</code></span></dt>
+
+          <dd>
+            <p>Get screen mapping from kernel. <em class="parameter"><code>argp</code></em> points to an area of
+            size E_TABSZ, which is loaded with the font positions
+            used to display each character. This call is likely to
+            return useless information if the currently loaded font
+            is more than 256 characters.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">GIO_UNISCRNMAP</code></span></dt>
+
+          <dd>
+            <p>Get full Unicode screen mapping from kernel.
+            <em class="parameter"><code>argp</code></em> points to
+            an area of size <span class="emphasis"><em>E_TABSZ*sizeof(unsigned
+            short)</em></span>, which is loaded with the Unicodes
+            each character represent. A special set of Unicodes,
+            starting at U+F000, are used to represent "direct to
+            font" mappings. (Since 1.3.1.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PIO_SCRNMAP</code></span></dt>
+
+          <dd>
+            <p>Loads the "user definable" (fourth) table in the
+            kernel which maps bytes into console screen symbols.
+            <em class="parameter"><code>argp</code></em> points to
+            an area of size E_TABSZ.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PIO_UNISCRNMAP</code></span></dt>
+
+          <dd>
+            <p>Loads the "user definable" (fourth) table in the
+            kernel which maps bytes into Unicodes, which are then
+            translated into screen symbols according to the
+            currently loaded Unicode-to-font map. Special Unicodes
+            starting at U+F000 can be used to map directly to the
+            font symbols. (Since 1.3.1.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">GIO_UNIMAP</code></span></dt>
+
+          <dd>
+            <p>Get Unicode-to-font mapping from kernel. <em class="parameter"><code>argp</code></em> points to a</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="structdef">
+                  <table style="border-collapse: collapse;">
+                    <colgroup span="1">
+                      <col class="c1" span="1" />
+                      <col class="c2" span="1" />
+                      <col class="c3" span="1" />
+                      <col class="c4" span="1" />
+                      <col class="c5" span="1" />
+                    </colgroup>
+
+                    <tbody>
+                      <tr>
+                        <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                        <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">unimapdesc</span> {</td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>entry_ct</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">struct unipair</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1">*</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>entries</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>where <em class="parameter"><code>entries</code></em> points to an
+            array of</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="structdef">
+                  <table style="border-collapse: collapse;">
+                    <colgroup span="1">
+                      <col class="c1" span="1" />
+                      <col class="c2" span="1" />
+                      <col class="c3" span="1" />
+                      <col class="c4" span="1" />
+                      <col class="c5" span="1" />
+                    </colgroup>
+
+                    <tbody>
+                      <tr>
+                        <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                        <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">unipair</span> {</td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>unicode</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>fontpos</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>(Since 1.1.92.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PIO_UNIMAP</code></span></dt>
+
+          <dd>
+            <p>Put unicode-to-font mapping in kernel. <em class="parameter"><code>argp</code></em> points to a
+            <span class="emphasis"><em>struct
+            unimapdesc</em></span>. (Since 1.1.92)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PIO_UNIMAPCLR</code></span></dt>
+
+          <dd>
+            <p>Clear table, possibly advise hash algorithm.
+            <em class="parameter"><code>argp</code></em> points to
+            a</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="structdef">
+                  <table style="border-collapse: collapse;">
+                    <colgroup span="1">
+                      <col class="c1" span="1" />
+                      <col class="c2" span="1" />
+                      <col class="c3" span="1" />
+                      <col class="c4" span="1" />
+                      <col class="c5" span="1" />
+                    </colgroup>
+
+                    <tbody>
+                      <tr>
+                        <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                        <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">unimapinit</span> {</td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>advised_hashsize</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* 0 if no opinion */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>advised_hashstep</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* 0 if no opinion */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>advised_hashlevel</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* 0 if no opinion */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>(Since 1.1.92.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">KDGKBMODE</code></span></dt>
+
+          <dd>
+            <p>Gets current keyboard mode. <em class="parameter"><code>argp</code></em> points to a
+            <code class="function">long</code> which is set to one
+            of these:</p>
+          </dd>
+        </dl>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">K_RAW</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">0x00</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">K_XLATE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">0x01</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">K_MEDIUMRAW</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">0x02</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">K_UNICODE</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">0x03</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">KDSKBMODE</code></span></dt>
+
+          <dd>
+            <p>Sets current keyboard mode. <em class="parameter"><code>argp</code></em> is a <code class="function">long</code> equal to one of the above
+            values.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">KDGKBMETA</code></span></dt>
+
+          <dd>
+            <p>Gets meta key handling mode. <em class="parameter"><code>argp</code></em> points to a
+            <code class="function">long</code> which is set to one
+            of these:</p>
+          </dd>
+        </dl>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">K_METABIT</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">0x03</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">set high order bit</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">K_ESCPREFIX</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">0x04</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">escape prefix</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">KDSKBMETA</code></span></dt>
+
+          <dd>
+            <p>Sets meta key handling mode. <em class="parameter"><code>argp</code></em> is a <code class="function">long</code> equal to one of the above
+            values.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">KDGKBENT</code></span></dt>
+
+          <dd>
+            <p>Gets one entry in key translation table (keycode to
+            action code). <em class="parameter"><code>argp</code></em> points to a</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="structdef">
+                  <table style="border-collapse: collapse;">
+                    <colgroup span="1">
+                      <col class="c1" span="1" />
+                      <col class="c2" span="1" />
+                      <col class="c3" span="1" />
+                      <col class="c4" span="1" />
+                      <col class="c5" span="1" />
+                    </colgroup>
+
+                    <tbody>
+                      <tr>
+                        <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                        <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">kbentry</span> {</td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>kb_table</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>kb_index</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>kb_value</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>with the first two members filled in: <em class="parameter"><code>kb_table</code></em> selects the key
+            table (0 &lt;= <em class="parameter"><code>kb_table</code></em> &lt;
+            MAX_NR_KEYMAPS), and <em class="parameter"><code>kb_index</code></em> is the keycode
+            (0 &lt;= <em class="parameter"><code>kb_index</code></em> &lt; NR_KEYS).
+            <em class="parameter"><code>kb_value</code></em> is set
+            to the corresponding action code, or K_HOLE if there is
+            no such key, or K_NOSUCHMAP if <em class="parameter"><code>kb_table</code></em> is invalid.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">KDSKBENT</code></span></dt>
+
+          <dd>
+            <p>Sets one entry in translation table. <em class="parameter"><code>argp</code></em> points to a
+            <span class="emphasis"><em>struct
+            kbentry</em></span>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">KDGKBSENT</code></span></dt>
+
+          <dd>
+            <p>Gets one function key string. <em class="parameter"><code>argp</code></em> points to a</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="structdef">
+                  <table style="border-collapse: collapse;">
+                    <colgroup span="1">
+                      <col class="c1" span="1" />
+                      <col class="c2" span="1" />
+                      <col class="c3" span="1" />
+                      <col class="c4" span="1" />
+                      <col class="c5" span="1" />
+                    </colgroup>
+
+                    <tbody>
+                      <tr>
+                        <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                        <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">kbsentry</span> {</td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>kb_func</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>kb_string</code></em>[512];</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </blockquote>
+            </div>
+
+            <p><em class="parameter"><code>kb_string</code></em> is
+            set to the (null-terminated) string corresponding to
+            the <em class="parameter"><code>kb_func</code></em>th
+            function key action code.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">KDSKBSENT</code></span></dt>
+
+          <dd>
+            <p>Sets one function key string entry. <em class="parameter"><code>argp</code></em> points to a
+            <span class="emphasis"><em>struct
+            kbsentry</em></span>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">KDGKBDIACR</code></span></dt>
+
+          <dd>
+            <p>Read kernel accent table. <em class="parameter"><code>argp</code></em> points to a</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="structdef">
+                  <table style="border-collapse: collapse;">
+                    <colgroup span="1">
+                      <col class="c1" span="1" />
+                      <col class="c2" span="1" />
+                      <col class="c3" span="1" />
+                      <col class="c4" span="1" />
+                      <col class="c5" span="1" />
+                    </colgroup>
+
+                    <tbody>
+                      <tr>
+                        <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                        <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">kbdiacrs</span> {</td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned int</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>kb_cnt</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">struct kbdiacr</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>kbdiacr</code></em>[256];</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>where <em class="parameter"><code>kb_cnt</code></em>
+            is the number of entries in the array, each of which is
+            a</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="structdef">
+                  <table style="border-collapse: collapse;">
+                    <colgroup span="1">
+                      <col class="c1" span="1" />
+                      <col class="c2" span="1" />
+                      <col class="c3" span="1" />
+                      <col class="c4" span="1" />
+                      <col class="c5" span="1" />
+                    </colgroup>
+
+                    <tbody>
+                      <tr>
+                        <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                        <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">kbdiacr</span> {</td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>diacr</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>base</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>result</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><code class="constant">KDGETKEYCODE</code></span></dt>
+
+          <dd>
+            <p>Read kernel keycode table entry (scan code to
+            keycode). <em class="parameter"><code>argp</code></em>
+            points to a</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="structdef">
+                  <table style="border-collapse: collapse;">
+                    <colgroup span="1">
+                      <col class="c1" span="1" />
+                      <col class="c2" span="1" />
+                      <col class="c3" span="1" />
+                      <col class="c4" span="1" />
+                      <col class="c5" span="1" />
+                    </colgroup>
+
+                    <tbody>
+                      <tr>
+                        <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                        <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">kbkeycode</span> {</td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned int</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>scancode</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned int</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>keycode</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </blockquote>
+            </div>
+
+            <p><em class="parameter"><code>keycode</code></em> is
+            set to correspond to the given <em class="parameter"><code>scancode</code></em>. (89 &lt;=
+            <em class="parameter"><code>scancode</code></em> &lt;=
+            255 only. For 1 &lt;= <em class="parameter"><code>scancode</code></em> &lt;= 88,
+            <em class="parameter"><code>keycode</code></em>==<em class="parameter"><code>scancode</code></em>.) (Since
+            1.1.63.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">KDSETKEYCODE</code></span></dt>
+
+          <dd>
+            <p>Write kernel keycode table entry. <em class="parameter"><code>argp</code></em> points to a
+            <span class="emphasis"><em>struct
+            kbkeycode</em></span>. (Since 1.1.63.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">KDSIGACCEPT</code></span></dt>
+
+          <dd>
+            <p>The calling process indicates its willingness to
+            accept the signal <em class="parameter"><code>argp</code></em> when it is generated
+            by pressing an appropriate key combination. (1 &lt;=
+            <em class="parameter"><code>argp</code></em> &lt;=
+            NSIG). (See <code class="function">spawn_console</code>() in <code class="filename">linux/drivers/char/keyboard.c</code>.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">VT_OPENQRY</code></span></dt>
+
+          <dd>
+            <p>Returns the first available (non-opened) console.
+            <em class="parameter"><code>argp</code></em> points to
+            an <code class="function">int</code> which is set to
+            the number of the vt (1 &lt;= *<em class="parameter"><code>argp</code></em> &lt;=
+            MAX_NR_CONSOLES).</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">VT_GETMODE</code></span></dt>
+
+          <dd>
+            <p>Get mode of active vt. <em class="parameter"><code>argp</code></em> points to a</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="structdef">
+                  <table style="border-collapse: collapse;">
+                    <colgroup span="1">
+                      <col class="c1" span="1" />
+                      <col class="c2" span="1" />
+                      <col class="c3" span="1" />
+                      <col class="c4" span="1" />
+                      <col class="c5" span="1" />
+                    </colgroup>
+
+                    <tbody>
+                      <tr>
+                        <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                        <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">vt_mode</span> {</td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">char</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>mode</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            /* vt mode */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">char</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>waitv</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* if set, hang on writes if not active */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">short</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>relsig</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* signal to raise on release req */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">short</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>acqsig</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* signal to raise on acquisition */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">short</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>frsig</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* unused (set to 0) */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>which is set to the mode of the active vt.
+            <em class="parameter"><code>mode</code></em> is set to
+            one of these values:</p>
+          </dd>
+        </dl>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">VT_AUTO</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">auto vt switching</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">VT_PROCESS</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">process controls
+              switching</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">VT_ACKACQ</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">acknowledge switch</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">VT_SETMODE</code></span></dt>
+
+          <dd>
+            <p>Set mode of active vt. <em class="parameter"><code>argp</code></em> points to a
+            <span class="emphasis"><em>struct
+            vt_mode</em></span>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">VT_GETSTATE</code></span></dt>
+
+          <dd>
+            <p>Get global vt state info. <em class="parameter"><code>argp</code></em> points to a</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="structdef">
+                  <table style="border-collapse: collapse;">
+                    <colgroup span="1">
+                      <col class="c1" span="1" />
+                      <col class="c2" span="1" />
+                      <col class="c3" span="1" />
+                      <col class="c4" span="1" />
+                      <col class="c5" span="1" />
+                    </colgroup>
+
+                    <tbody>
+                      <tr>
+                        <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                        <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">vt_stat</span> {</td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>v_active</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            /* active vt */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>v_signal</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* signal to send */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>v_state</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* vt bit mask */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>For each vt in use, the corresponding bit in the
+            <em class="parameter"><code>v_state</code></em> member
+            is set. (Kernels 1.0 through 1.1.92.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">VT_RELDISP</code></span></dt>
+
+          <dd>
+            <p>Release a display.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">VT_ACTIVATE</code></span></dt>
+
+          <dd>
+            <p>Switch to vt <em class="parameter"><code>argp</code></em> (1 &lt;= <em class="parameter"><code>argp</code></em> &lt;=
+            MAX_NR_CONSOLES).</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">VT_WAITACTIVE</code></span></dt>
+
+          <dd>
+            <p>Wait until vt <em class="parameter"><code>argp</code></em> has been
+            activated.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">VT_DISALLOCATE</code></span></dt>
+
+          <dd>
+            <p>Deallocate the memory associated with vt <em class="parameter"><code>argp</code></em>. (Since 1.1.54.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">VT_RESIZE</code></span></dt>
+
+          <dd>
+            <p>Set the kernel's idea of screensize. <em class="parameter"><code>argp</code></em> points to a</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="structdef">
+                  <table style="border-collapse: collapse;">
+                    <colgroup span="1">
+                      <col class="c1" span="1" />
+                      <col class="c2" span="1" />
+                      <col class="c3" span="1" />
+                      <col class="c4" span="1" />
+                      <col class="c5" span="1" />
+                    </colgroup>
+
+                    <tbody>
+                      <tr>
+                        <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                        <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">vt_sizes</span> {</td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>v_rows</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            /* # rows */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>v_cols</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            /* # columns */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>v_scrollsize</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* no longer used */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>Note that this does not change the videomode. See
+            <span class="citerefentry"><span class="refentrytitle">resizecons</span>(8)</span>. (Since
+            1.1.54.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">VT_RESIZEX</code></span></dt>
+
+          <dd>
+            <p>Set the kernel's idea of various screen parameters.
+            <em class="parameter"><code>argp</code></em> points to
+            a</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="structdef">
+                  <table style="border-collapse: collapse;">
+                    <colgroup span="1">
+                      <col class="c1" span="1" />
+                      <col class="c2" span="1" />
+                      <col class="c3" span="1" />
+                      <col class="c4" span="1" />
+                      <col class="c5" span="1" />
+                    </colgroup>
+
+                    <tbody>
+                      <tr>
+                        <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                        <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">vt_consize</span> {</td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>v_rows</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* number of rows */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>v_cols</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* number of columns */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>v_vlin</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* number of pixel rows<br />
+
+                            on screen */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>v_clin</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* number of pixel rows<br />
+
+                            per character */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>v_vcol</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* number of pixel columns<br />
+
+                            on screen */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>v_ccol</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* number of pixel columns<br />
+
+                            per character */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>Any parameter may be set to zero, indicating "no
+            change", but if multiple parameters are set, they must
+            be self-consistent. Note that this does not change the
+            videomode. See <span class="citerefentry"><span class="refentrytitle">resizecons</span>(8)</span>. (Since
+            1.3.3.)</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>The action of the following ioctls depends on the first
+      byte in the struct pointed to by <em class="parameter"><code>argp</code></em>, referred to here as the
+      <code class="function">subcode</code>. These are legal only
+      for the superuser or the owner of the current terminal.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>TIOCLINUX,
+          subcode=0</em></span></span></dt>
+
+          <dd>
+            <p>Dump the screen. Disappeared in 1.1.92. (With kernel
+            1.1.92 or later, read from <code class="filename">/dev/vcsN</code> or <code class="filename">/dev/vcsaN</code> instead.)</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>TIOCLINUX,
+          subcode=1</em></span></span></dt>
+
+          <dd>
+            <p>Get task information. Disappeared in 1.1.92.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>TIOCLINUX,
+          subcode=2</em></span></span></dt>
+
+          <dd>
+            <p>Set selection. <em class="parameter"><code>argp</code></em> points to a</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="structdef">
+                  <table style="border-collapse: collapse;">
+                    <colgroup span="1">
+                      <col class="c1" span="1" />
+                      <col class="c2" span="1" />
+                      <col class="c3" span="1" />
+                      <col class="c4" span="1" />
+                      <col class="c5" span="1" />
+                    </colgroup>
+
+                    <tbody>
+                      <tr>
+                        <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                        <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1">{</td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">char</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>subcode</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">short</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>xs</code></em>,</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ys</code></em>,</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>xe</code></em>,</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ye</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">short</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sel_mode</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </blockquote>
+            </div>
+
+            <p><em class="parameter"><code>xs</code></em> and
+            <em class="parameter"><code>ys</code></em> are the
+            starting column and row. <em class="parameter"><code>xe</code></em> and <em class="parameter"><code>ye</code></em> are the ending column
+            and row. (Upper left corner is row=column=1.)
+            <em class="parameter"><code>sel_mode</code></em> is 0
+            for character-by-character selection, 1 for
+            word-by-word selection, or 2 for line-by-line
+            selection. The indicated screen characters are
+            highlighted and saved in the static array sel_buffer in
+            <code class="filename">devices/char/console.c</code>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>TIOCLINUX,
+          subcode=3</em></span></span></dt>
+
+          <dd>
+            <p>Paste selection. The characters in the selection
+            buffer are written to <code class="function">fd</code>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>TIOCLINUX,
+          subcode=4</em></span></span></dt>
+
+          <dd>
+            <p>Unblank the screen.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>TIOCLINUX,
+          subcode=5</em></span></span></dt>
+
+          <dd>
+            <p>Sets contents of a 256-bit look up table defining
+            characters in a "word", for word-by-word selection.
+            (Since 1.1.32.)</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>TIOCLINUX,
+          subcode=6</em></span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>argp</code></em> points
+            to a char which is set to the value of the kernel
+            variable <code class="function">shift_state</code>.
+            (Since 1.1.32.)</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>TIOCLINUX,
+          subcode=7</em></span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>argp</code></em> points
+            to a char which is set to the value of the kernel
+            variable <code class="function">report_mouse</code>.
+            (Since 1.1.33.)</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>TIOCLINUX,
+          subcode=8</em></span></span></dt>
+
+          <dd>
+            <p>Dump screen width and height, cursor position, and
+            all the character-attribute pairs. (Kernels 1.1.67
+            through 1.1.91 only. With kernel 1.1.92 or later, read
+            from <code class="filename">/dev/vcsa*</code>
+            instead.)</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>TIOCLINUX,
+          subcode=9</em></span></span></dt>
+
+          <dd>
+            <p>Restore screen width and height, cursor position,
+            and all the character-attribute pairs. (Kernels 1.1.67
+            through 1.1.91 only. With kernel 1.1.92 or later, write
+            to <code class="filename">/dev/vcsa*</code>
+            instead.)</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>TIOCLINUX,
+          subcode=10</em></span></span></dt>
+
+          <dd>
+            <p>Handles the Power Saving feature of the new
+            generation of monitors. VESA screen blanking mode is
+            set to <em class="replaceable"><code>argp[1]</code></em>, which governs
+            what screen blanking does:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><em class="replaceable"><code>0:</code></em></span></dt>
+
+                    <dd>
+                      <p>Screen blanking is disabled.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>1:</code></em></span></dt>
+
+                    <dd>
+                      <p>The current video adapter register
+                      settings are saved, then the controller is
+                      programmed to turn off the vertical
+                      synchronization pulses. This puts the monitor
+                      into "standby" mode. If your monitor has an
+                      Off_Mode timer, then it will eventually power
+                      down by itself.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>2:</code></em></span></dt>
+
+                    <dd>
+                      <p>The current settings are saved, then both
+                      the vertical and horizontal synchronization
+                      pulses are turned off. This puts the monitor
+                      into "off" mode. If your monitor has no
+                      Off_Mode timer, or if you want your monitor
+                      to power down immediately when the
+                      blank_timer times out, then you choose this
+                      option. (<em class="replaceable"><code>Caution:</code></em>
+                      Powering down frequently will damage the
+                      monitor.) (Since 1.1.76.)</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="console-ioctl-4_sect2" name="console-ioctl-4_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, 0 is returned. On error, −1 is returned,
+      and <code class="varname">errno</code> is set.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="console-ioctl-4_sect3" name="console-ioctl-4_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <p><code class="varname">errno</code> may take on these
+      values:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EBADF</span></span></dt>
+
+          <dd>
+            <p>The file descriptor is invalid.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOTTY</span></span></dt>
+
+          <dd>
+            <p>The file descriptor is not associated with a
+            character special device, or the specified request does
+            not apply to it.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>The file descriptor or <em class="parameter"><code>argp</code></em> is invalid.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>Insufficient permission.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="console-ioctl-4_sect4" name="console-ioctl-4_sect4" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Warning">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Warning]" src="../stylesheet/warning.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Warning</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <p>Do not regard this man page as documentation of
+              the Linux console ioctls. This is provided for the
+              curious only, as an alternative to reading the
+              source. Ioctl's are undocumented Linux internals,
+              liable to be changed without warning. (And indeed,
+              this page more or less describes the situation as of
+              kernel version 1.1.94; there are many minor and
+              not-so-minor differences with earlier versions.)</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <p>Very often, ioctls are introduced for communication
+      between the kernel and one particular well-known program
+      (fdisk, hdparm, setserial, tunelp, loadkeys, selection,
+      setfont, etc.), and their behavior will be changed when
+      required by this particular program.</p>
+
+      <p>Programs using these ioctls will not be portable to other
+      versions of UNIX, will not work on older versions of Linux,
+      and will not work on future versions of Linux.</p>
+
+      <p>Use POSIX functions.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="console-ioctl-4_sect5" name="console-ioctl-4_sect5" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><span class="citerefentry"><span class="refentrytitle">dumpkeys</span>(1)</span>, <span class="citerefentry"><span class="refentrytitle">kbd_mode</span>(1)</span>, <span class="citerefentry"><span class="refentrytitle">loadkeys</span>(1)</span>, <a class="link" href="../htmlman1/mknod.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mknod</span>(1)</span></a>, <span class="citerefentry"><span class="refentrytitle">setleds</span>(1)</span>, <span class="citerefentry"><span class="refentrytitle">setmetamode</span>(1)</span>, <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>, <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a>, <a class="link" href="../htmlman2/ioperm.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioperm</span>(2)</span></a>, <a class="link" href="../htmlman3/termios.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">termios</span>(3)</span></a>, <a class="link" href="../htmlman4/console.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">console</span>(4)</span></a>, <a class="link" href="../htmlman4/console_codes.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">console_codes</span>(4)</span></a>,
+      <span class="citerefentry"><span class="refentrytitle">mt</span>(4)</span>, <a class="link" href="../htmlman4/sd.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sd</span>(4)</span></a>, <a class="link" href="../htmlman4/tty.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tty</span>(4)</span></a>, <a class="link" href="../htmlman4/tty_ioctl.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tty_ioctl</span>(4)</span></a>, <a class="link" href="../htmlman4/ttyS.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ttyS</span>(4)</span></a>, <a class="link" href="../htmlman4/vcs.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">vcs</span>(4)</span></a>, <a class="link" href="../htmlman4/vcs.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">vcsa</span>(4)</span></a>, <a class="link" href="../htmlman7/charsets.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">charsets</span>(7)</span></a>, <span class="citerefentry"><span class="refentrytitle">mapscrn</span>(8)</span>, <span class="citerefentry"><span class="refentrytitle">resizecons</span>(8)</span>, <span class="citerefentry"><span class="refentrytitle">setfont</span>(8)</span></p>
+
+      <p><code class="filename">/usr/include/linux/kd.h</code>,
+      <code class="filename">/usr/include/linux/vt.h</code></p>
+    </div>
+
+    <div class="colophon">
+      <a id="console-ioctl-4_sect6" name="console-ioctl-4_sect6" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 1995 Jim Van Zandt &lt;jrv<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>vanzandt.mv.com&gt; and aeb<br />
+
+                  Sun Feb 26 11:46:23 MET 1995<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_DOC_FULL)<br />
+                  This is free documentation; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License as<br />
+
+                  published by the Free Software Foundation; either version 2 of<br />
+
+                  the License, or (at your option) any later version.<br />
+
+                  <br />
+                  The GNU General Public License's references to "object code"<br />
+
+                  and "executables" are to be interpreted as the output of any<br />
+
+                  document formatting or typesetting system, including<br />
+
+                  intermediate and printed output.<br />
+
+                  <br />
+                  This manual is distributed in the hope that it will be useful,<br />
+
+                  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+
+                  GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Modified, Sun Feb 26 15:04:20 1995, faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu<br />
+
+                  Modified, Thu Apr 20 22:08:17 1995, jrv<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>vanzandt.mv.com<br />
+
+                  Modified, Mon Sep 18 22:32:47 1995, hpa<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>storm.net (H. Peter Anvin)<br />
+
+                  FIXME The following are not documented:<br />
+
+                      KDFONTOP (since 2.1.111)<br />
+
+                      KDGKBDIACRUC (since 2.6.24)<br />
+
+                      KDSKBDIACR<br />
+                      KDSKBDIACRUC (since 2.6.24)<br />
+
+                      KDKBDREP (since 2.1.113)<br />
+
+                      KDMAPDISP (not implemented as at 2.6.27)<br />
+
+                      KDUNMAPDISP (not implemented as at 2.6.27)<br />
+
+                      VT_LOCKSWITCH (since 1.3.47, needs CAP_SYS_TTY_CONFIG)<br />
+
+                      VT_UNLOCKSWITCH (since 1.3.47, needs CAP_SYS_TTY_CONFIG)<br />
+
+                      VT_GETHIFONTMASK (since 2.6.18)<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

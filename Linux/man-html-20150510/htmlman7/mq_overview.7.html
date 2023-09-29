@@ -1,0 +1,616 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>mq_overview(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="mq_overview(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="mq-overview.7" name="mq-overview.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>mq_overview — overview of POSIX message queues</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mq-overview-7_sect1" name="mq-overview-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>POSIX message queues allow processes to exchange data in
+      the form of messages. This API is distinct from that provided
+      by System V message queues (<a class="link" href="../htmlman2/msgget.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">msgget</span>(2)</span></a>, <a class="link" href="../htmlman2/msgop.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">msgsnd</span>(2)</span></a>, <a class="link" href="../htmlman2/msgop.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">msgrcv</span>(2)</span></a>, etc.), but
+      provides similar functionality.</p>
+
+      <p>Message queues are created and opened using <a class="link" href="../htmlman3/mq_open.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_open</span>(3)</span></a>; this function
+      returns a <span class="emphasis"><em>message queue
+      descriptor</em></span> (<em class="replaceable"><code>mqd_t</code></em>), which is used to
+      refer to the open message queue in later calls. Each message
+      queue is identified by a name of the form <code class="filename">/somename</code>; that is, a null-terminated
+      string of up to <code class="constant">NAME_MAX</code> (i.e.,
+      255) characters consisting of an initial slash, followed by
+      one or more characters, none of which are slashes. Two
+      processes can operate on the same queue by passing the same
+      name to <a class="link" href="../htmlman3/mq_open.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_open</span>(3)</span></a>.</p>
+
+      <p>Messages are transferred to and from a queue using
+      <a class="link" href="../htmlman3/mq_send.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_send</span>(3)</span></a> and <a class="link" href="../htmlman3/mq_receive.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_receive</span>(3)</span></a>. When a
+      process has finished using the queue, it closes it using
+      <a class="link" href="../htmlman3/mq_close.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_close</span>(3)</span></a>, and when the
+      queue is no longer required, it can be deleted using
+      <a class="link" href="../htmlman3/mq_unlink.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_unlink</span>(3)</span></a>. Queue
+      attributes can be retrieved and (in some cases) modified
+      using <a class="link" href="../htmlman3/mq_getattr.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_getattr</span>(3)</span></a> and <a class="link" href="../htmlman3/mq_getattr.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_setattr</span>(3)</span></a>. A process
+      can request asynchronous notification of the arrival of a
+      message on a previously empty queue using <a class="link" href="../htmlman3/mq_notify.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_notify</span>(3)</span></a>.</p>
+
+      <p>A message queue descriptor is a reference to an
+      <span class="emphasis"><em>open message queue
+      description</em></span> (cf. <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>). After a <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a>, a child inherits
+      copies of its parent's message queue descriptors, and these
+      descriptors refer to the same open message queue descriptions
+      as the corresponding descriptors in the parent. Corresponding
+      descriptors in the two processes share the flags (<em class="replaceable"><code>mq_flags</code></em>) that are associated
+      with the open message queue description.</p>
+
+      <p>Each message has an associated <em class="replaceable"><code>priority</code></em>, and messages are
+      always delivered to the receiving process highest priority
+      first. Message priorities range from 0 (low) to <span class="emphasis"><em>sysconf(_SC_MQ_PRIO_MAX) - 1</em></span>
+      (high). On Linux, <em class="replaceable"><code>sysconf(_SC_MQ_PRIO_MAX)</code></em>
+      returns 32768, but POSIX.1-2001 requires only that an
+      implementation support at least priorities in the range 0 to
+      31; some implementations provide only this range.</p>
+
+      <p>The remainder of this section describes some specific
+      details of the Linux implementation of POSIX message
+      queues.</p>
+
+      <div class="refsect2">
+        <a id="mq-overview-7_sect2" name="mq-overview-7_sect2" shape="rect"> </a>
+
+        <h3>Library interfaces and system calls</h3>
+
+        <p>In most cases the <code class="function">mq_*</code>()
+        library interfaces listed above are implemented on top of
+        underlying system calls of the same name. Deviations from
+        this scheme are indicated in the following table:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informaltable">
+              <table style="border-collapse: collapse;">
+                <colgroup span="1">
+                  <col class="c0" span="1" />
+                  <col class="c1" span="1" />
+                </colgroup>
+
+                <tbody>
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="emphasis"><em>Library
+                    interface</em></span></td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="emphasis"><em>System call</em></span></td>
+                  </tr>
+
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1">mq_close(3)</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">close(2)</td>
+                  </tr>
+
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1">mq_getattr(3)</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">mq_getsetattr(2)</td>
+                  </tr>
+
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1">mq_notify(3)</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">mq_notify(2)</td>
+                  </tr>
+
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1">mq_open(3)</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">mq_open(2)</td>
+                  </tr>
+
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1">mq_receive(3)</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                    mq_timedreceive(2)</td>
+                  </tr>
+
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1">mq_send(3)</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">mq_timedsend(2)</td>
+                  </tr>
+
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1">mq_setattr(3)</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">mq_getsetattr(2)</td>
+                  </tr>
+
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1">
+                    mq_timedreceive(3)</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                    mq_timedreceive(2)</td>
+                  </tr>
+
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1">mq_timedsend(3)</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">mq_timedsend(2)</td>
+                  </tr>
+
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1">mq_unlink(3)</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">mq_unlink(2)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </blockquote>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="mq-overview-7_sect3" name="mq-overview-7_sect3" shape="rect"> </a>
+
+        <h3>Versions</h3>
+
+        <p>POSIX message queues have been supported on Linux since
+        kernel 2.6.6. Glibc support has been provided since version
+        2.3.4.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="mq-overview-7_sect4" name="mq-overview-7_sect4" shape="rect"> </a>
+
+        <h3>Kernel configuration</h3>
+
+        <p>Support for POSIX message queues is configurable via the
+        <code class="constant">CONFIG_POSIX_MQUEUE</code> kernel
+        configuration option. This option is enabled by
+        default.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="mq-overview-7_sect5" name="mq-overview-7_sect5" shape="rect"> </a>
+
+        <h3>Persistence</h3>
+
+        <p>POSIX message queues have kernel persistence: if not
+        removed by <a class="link" href="../htmlman3/mq_unlink.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_unlink</span>(3)</span></a>, a message
+        queue will exist until the system is shut down.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="mq-overview-7_sect6" name="mq-overview-7_sect6" shape="rect"> </a>
+
+        <h3>Linking</h3>
+
+        <p>Programs using the POSIX message queue API must be
+        compiled with <span class="emphasis"><em>cc
+        −lrt</em></span> to link against the real-time
+        library, <em class="replaceable"><code>librt</code></em>.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="mq-overview-7_sect7" name="mq-overview-7_sect7" shape="rect"> </a>
+
+        <h3>/proc interfaces</h3>
+
+        <p>The following interfaces can be used to limit the amount
+        of kernel memory consumed by POSIX message queues and to
+        set the default attributes for new message queues:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="filename">/proc/sys/fs/mqueue/msg_default</code>
+            (since Linux 3.5)</span></dt>
+
+            <dd>
+              <p>This file defines the value used for a new queue's
+              <em class="replaceable"><code>mq_maxmsg</code></em>
+              setting when the queue is created with a call to
+              <a class="link" href="../htmlman3/mq_open.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_open</span>(3)</span></a> where
+              <em class="replaceable"><code>attr</code></em> is
+              specified as NULL. The default value for this file is
+              10. The minimum and maximum are as for <code class="filename">/proc/sys/fs/mqueue/msg_max</code>. A new
+              queue's default <em class="replaceable"><code>mq_maxmsg</code></em> value will
+              be the smaller of <em class="replaceable"><code>msg_default</code></em> and
+              <em class="replaceable"><code>msg_max</code></em>. Up
+              until Linux 2.6.28, the default <em class="replaceable"><code>mq_maxmsg</code></em> was 10;
+              from Linux 2.6.28 to Linux 3.4, the default was the
+              value defined for the <em class="replaceable"><code>msg_max</code></em> limit.</p>
+            </dd>
+
+            <dt><span class="term"><code class="filename">/proc/sys/fs/mqueue/msg_max</code></span></dt>
+
+            <dd>
+              <p>This file can be used to view and change the
+              ceiling value for the maximum number of messages in a
+              queue. This value acts as a ceiling on the <em class="replaceable"><code>attr−&gt;mq_maxmsg</code></em>
+              argument given to <a class="link" href="../htmlman3/mq_open.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_open</span>(3)</span></a>. The
+              default value for <em class="replaceable"><code>msg_max</code></em> is 10. The
+              minimum value is 1 (10 in kernels before 2.6.28). The
+              upper limit is <code class="constant">HARD_MSGMAX</code>. The <em class="replaceable"><code>msg_max</code></em> limit is
+              ignored for privileged processes (<code class="constant">CAP_SYS_RESOURCE</code>), but the
+              <code class="constant">HARD_MSGMAX</code> ceiling is
+              nevertheless imposed.</p>
+
+              <p>The definition of <code class="constant">HARD_MSGMAX</code> has changed across
+              kernel versions:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="itemizedlist">
+                    <ul class="itemizedlist" style="list-style-type: disc;">
+                      <li class="listitem">
+                        <p>Up to Linux 2.6.32: <span class="emphasis"><em>131072 / sizeof(void
+                        *)</em></span></p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>Linux 2.6.33 to 3.4: <span class="emphasis"><em>(32768 * sizeof(void *) /
+                        4)</em></span></p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>Since Linux 3.5: 65,536</p>
+                      </li>
+                    </ul>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="filename">/proc/sys/fs/mqueue/msgsize_default</code>
+            (since Linux 3.5)</span></dt>
+
+            <dd>
+              <p>This file defines the value used for a new queue's
+              <em class="replaceable"><code>mq_msgsize</code></em>
+              setting when the queue is created with a call to
+              <a class="link" href="../htmlman3/mq_open.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_open</span>(3)</span></a> where
+              <em class="replaceable"><code>attr</code></em> is
+              specified as NULL. The default value for this file is
+              8192 (bytes). The minimum and maximum are as for
+              <code class="filename">/proc/sys/fs/mqueue/msgsize_max</code>. If
+              <em class="replaceable"><code>msgsize_default</code></em>
+              exceeds <em class="replaceable"><code>msgsize_max</code></em>, a new
+              queue's default <em class="replaceable"><code>mq_msgsize</code></em> value is
+              capped to the <em class="replaceable"><code>msgsize_max</code></em> limit. Up
+              until Linux 2.6.28, the default <em class="replaceable"><code>mq_msgsize</code></em> was 8192;
+              from Linux 2.6.28 to Linux 3.4, the default was the
+              value defined for the <em class="replaceable"><code>msgsize_max</code></em>
+              limit.</p>
+            </dd>
+
+            <dt><span class="term"><code class="filename">/proc/sys/fs/mqueue/msgsize_max</code></span></dt>
+
+            <dd>
+              <p>This file can be used to view and change the
+              ceiling on the maximum message size. This value acts
+              as a ceiling on the <em class="replaceable"><code>attr−&gt;mq_msgsize</code></em>
+              argument given to <a class="link" href="../htmlman3/mq_open.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_open</span>(3)</span></a>. The
+              default value for <em class="replaceable"><code>msgsize_max</code></em> is 8192
+              bytes. The minimum value is 128 (8192 in kernels
+              before 2.6.28). The upper limit for <em class="replaceable"><code>msgsize_max</code></em> has
+              varied across kernel versions:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="itemizedlist">
+                    <ul class="itemizedlist" style="list-style-type: disc;">
+                      <li class="listitem">
+                        <p>Before Linux 2.6.28, the upper limit is
+                        <code class="constant">INT_MAX</code>.</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>From Linux 2.6.28 to 3.4, the limit is
+                        1,048,576.</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>Since Linux 3.5, the limit is 16,777,216
+                        (<code class="constant">HARD_MSGSIZEMAX</code>).</p>
+                      </li>
+                    </ul>
+                  </div>
+                </blockquote>
+              </div>
+
+              <p>The <em class="replaceable"><code>msgsize_max</code></em> limit is
+              ignored for privileged process (<code class="constant">CAP_SYS_RESOURCE</code>), but, since Linux
+              3.5, the <code class="constant">HARD_MSGSIZEMAX</code> ceiling is enforced
+              for privileged processes.</p>
+            </dd>
+
+            <dt><span class="term"><code class="filename">/proc/sys/fs/mqueue/queues_max</code></span></dt>
+
+            <dd>
+              <p>This file can be used to view and change the
+              system-wide limit on the number of message queues
+              that can be created. The default value for <em class="replaceable"><code>queues_max</code></em> is 256. No
+              ceiling is imposed on the <em class="replaceable"><code>queues_max</code></em> limit;
+              privileged processes (<code class="constant">CAP_SYS_RESOURCE</code>) can exceed the
+              limit (but see BUGS).</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="mq-overview-7_sect8" name="mq-overview-7_sect8" shape="rect"> </a>
+
+        <h3>Resource limit</h3>
+
+        <p>The <code class="constant">RLIMIT_MSGQUEUE</code>
+        resource limit, which places a limit on the amount of space
+        that can be consumed by all of the message queues belonging
+        to a process's real user ID, is described in <a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getrlimit</span>(2)</span></a>.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="mq-overview-7_sect9" name="mq-overview-7_sect9" shape="rect"> </a>
+
+        <h3>Mounting the message queue filesystem</h3>
+
+        <p>On Linux, message queues are created in a virtual
+        filesystem. (Other implementations may also provide such a
+        feature, but the details are likely to differ.) This
+        filesystem can be mounted (by the superuser) using the
+        following commands:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+#<span class="emphasis"><em> mkdir /dev/mqueue</em></span>
+#<span class="emphasis"><em> mount −t mqueue none /dev/mqueue</em></span>
+</pre>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>The sticky bit is automatically enabled on the mount
+        directory.</p>
+
+        <p>After the filesystem has been mounted, the message
+        queues on the system can be viewed and manipulated using
+        the commands usually used for files (e.g., <a class="link" href="../htmlman1/ls.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ls</span>(1)</span></a> and <a class="link" href="../htmlman1/rm.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rm</span>(1)</span></a>).</p>
+
+        <p>The contents of each file in the directory consist of a
+        single line containing information about the queue:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+$<span class="emphasis"><em> cat /dev/mqueue/mymq</em></span>
+QSIZE:129     NOTIFY:2    SIGNO:0    NOTIFY_PID:8260
+</pre>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>These fields are as follows:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">QSIZE</code></span></dt>
+
+            <dd>
+              <p>Number of bytes of data in all messages in the
+              queue.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">NOTIFY_PID</code></span></dt>
+
+            <dd>
+              <p>If this is nonzero, then the process with this PID
+              has used <a class="link" href="../htmlman3/mq_notify.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_notify</span>(3)</span></a> to
+              register for asynchronous message notification, and
+              the remaining fields describe how notification
+              occurs.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">NOTIFY</code></span></dt>
+
+            <dd>
+              <p>Notification method: 0 is <code class="constant">SIGEV_SIGNAL</code>; 1 is <code class="constant">SIGEV_NONE</code>; and 2 is <code class="constant">SIGEV_THREAD</code>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SIGNO</code></span></dt>
+
+            <dd>
+              <p>Signal number to be used for <code class="constant">SIGEV_SIGNAL</code>.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="mq-overview-7_sect10" name="mq-overview-7_sect10" shape="rect"> </a>
+
+        <h3>Polling message queue descriptors</h3>
+
+        <p>On Linux, a message queue descriptor is actually a file
+        descriptor, and can be monitored using <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a>, <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a>, or <a class="link" href="../htmlman7/epoll.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll</span>(7)</span></a>. This is not
+        portable.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="mq-overview-7_sect11" name="mq-overview-7_sect11" shape="rect"> </a>
+
+        <h3>IPC namespaces</h3>
+
+        <p>For a discussion of the interaction of System V IPC
+        objects and IPC namespaces, see <a class="link" href="../htmlman7/namespaces.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">namespaces</span>(7)</span></a>.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mq-overview-7_sect12" name="mq-overview-7_sect12" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>POSIX.1-2001.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mq-overview-7_sect13" name="mq-overview-7_sect13" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>System V message queues (<a class="link" href="../htmlman2/msgget.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">msgget</span>(2)</span></a>, <a class="link" href="../htmlman2/msgop.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">msgsnd</span>(2)</span></a>, <a class="link" href="../htmlman2/msgop.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">msgrcv</span>(2)</span></a>, etc.) are an
+      older API for exchanging messages between processes. POSIX
+      message queues provide a better designed interface than
+      System V message queues; on the other hand POSIX message
+      queues are less widely available (especially on older
+      systems) than System V message queues.</p>
+
+      <p>Linux does not currently (2.6.26) support the use of
+      access control lists (ACLs) for POSIX message queues.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mq-overview-7_sect14" name="mq-overview-7_sect14" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>An example of the use of various message queue functions
+      is shown in <a class="link" href="../htmlman3/mq_notify.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_notify</span>(3)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mq-overview-7_sect15" name="mq-overview-7_sect15" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>In Linux versions 3.5 to 3.14, the kernel imposed a
+      ceiling of 1024 (<code class="constant">HARD_QUEUESMAX</code>) on the value to which the
+      <em class="replaceable"><code>queues_max</code></em> limit
+      could be raised, and the ceiling was enforced even for
+      privileged processes. This ceiling value was removed in Linux
+      3.14, and patches to stable kernels 3.5.x to 3.13.x also
+      removed the ceiling.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mq-overview-7_sect16" name="mq-overview-7_sect16" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getrlimit</span>(2)</span></a>, <a class="link" href="../htmlman2/mq_getsetattr.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_getsetattr</span>(2)</span></a>, <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a>, <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a>, <a class="link" href="../htmlman3/mq_close.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_close</span>(3)</span></a>, <a class="link" href="../htmlman3/mq_getattr.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_getattr</span>(3)</span></a>, <a class="link" href="../htmlman3/mq_notify.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_notify</span>(3)</span></a>, <a class="link" href="../htmlman3/mq_open.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_open</span>(3)</span></a>, <a class="link" href="../htmlman3/mq_receive.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_receive</span>(3)</span></a>, <a class="link" href="../htmlman3/mq_send.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_send</span>(3)</span></a>, <a class="link" href="../htmlman3/mq_unlink.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_unlink</span>(3)</span></a>, <a class="link" href="../htmlman7/epoll.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll</span>(7)</span></a>, <a class="link" href="../htmlman7/namespaces.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">namespaces</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="mq-overview-7_sect17" name="mq-overview-7_sect17" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    t<br />
+                  Copyright (C) 2006 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

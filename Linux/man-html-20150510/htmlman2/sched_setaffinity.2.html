@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>sched_setaffinity(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="sched_setaffinity(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="sched-setaffinity.2" name="sched-setaffinity.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>sched_setaffinity, sched_getaffinity — set and get a
+      thread's CPU affinity mask</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#define _GNU_SOURCE              /* See feature_test_macros(7) */
+#include &lt;sched.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>sched_setaffinity</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">pid_t <var class="pdparam">pid</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">size_t <var class="pdparam">cpusetsize</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const cpu_set_t *<var class="pdparam">mask</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>sched_getaffinity</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">pid_t <var class="pdparam">pid</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">size_t <var class="pdparam">cpusetsize</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">cpu_set_t *<var class="pdparam">mask</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sched-setaffinity-2_sect1" name="sched-setaffinity-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>A thread's CPU affinity mask determines the set of CPUs on
+      which it is eligible to run. On a multiprocessor system,
+      setting the CPU affinity mask can be used to obtain
+      performance benefits. For example, by dedicating one CPU to a
+      particular thread (i.e., setting the affinity mask of that
+      thread to specify a single CPU, and setting the affinity mask
+      of all other threads to exclude that CPU), it is possible to
+      ensure maximum execution speed for that thread. Restricting a
+      thread to run on a single CPU also avoids the performance
+      cost caused by the cache invalidation that occurs when a
+      thread ceases to execute on one CPU and then recommences
+      execution on a different CPU.</p>
+
+      <p>A CPU affinity mask is represented by the <span class="type">cpu_set_t</span> structure, a "CPU set", pointed to by
+      <em class="parameter"><code>mask</code></em>. A set of macros
+      for manipulating CPU sets is described in <a class="link" href="../htmlman3/CPU_SET.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">CPU_SET</span>(3)</span></a>.</p>
+
+      <p><code class="function">sched_setaffinity</code>() sets the
+      CPU affinity mask of the thread whose ID is <em class="parameter"><code>pid</code></em> to the value specified by
+      <em class="parameter"><code>mask</code></em>. If <em class="parameter"><code>pid</code></em> is zero, then the calling
+      thread is used. The argument <em class="parameter"><code>cpusetsize</code></em> is the length (in
+      bytes) of the data pointed to by <em class="parameter"><code>mask</code></em>. Normally this argument
+      would be specified as <em class="replaceable"><code>sizeof(cpu_set_t)</code></em>.</p>
+
+      <p>If the thread specified by <em class="parameter"><code>pid</code></em> is not currently running on
+      one of the CPUs specified in <em class="parameter"><code>mask</code></em>, then that thread is
+      migrated to one of the CPUs specified in <em class="parameter"><code>mask</code></em>.</p>
+
+      <p><code class="function">sched_getaffinity</code>() writes
+      the affinity mask of the thread whose ID is <em class="parameter"><code>pid</code></em> into the <span class="type">cpu_set_t</span> structure pointed to by <em class="parameter"><code>mask</code></em>. The <em class="parameter"><code>cpusetsize</code></em> argument specifies
+      the size (in bytes) of <em class="parameter"><code>mask</code></em>. If <em class="parameter"><code>pid</code></em> is zero, then the mask of
+      the calling thread is returned.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sched-setaffinity-2_sect2" name="sched-setaffinity-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">sched_setaffinity</code>() and <code class="function">sched_getaffinity</code>() return 0. On error,
+      −1 is returned, and <code class="varname">errno</code>
+      is set appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sched-setaffinity-2_sect3" name="sched-setaffinity-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p>A supplied memory address was invalid.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>The affinity bit mask <em class="parameter"><code>mask</code></em> contains no
+            processors that are currently physically on the system
+            and permitted to the thread according to any
+            restrictions that may be imposed by the "cpuset"
+            mechanism described in <a class="link" href="../htmlman7/cpuset.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">cpuset</span>(7)</span></a>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>(<code class="function">sched_getaffinity</code>()
+            and, in kernels before 2.6.9, <code class="function">sched_setaffinity</code>()) <em class="parameter"><code>cpusetsize</code></em> is smaller
+            than the size of the affinity mask used by the
+            kernel.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>(<code class="function">sched_setaffinity</code>())
+            The calling thread does not have appropriate
+            privileges. The caller needs an effective user ID equal
+            to the real user ID or effective user ID of the thread
+            identified by <em class="parameter"><code>pid</code></em>, or it must possess
+            the <code class="constant">CAP_SYS_NICE</code>
+            capability.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ESRCH</span></span></dt>
+
+          <dd>
+            <p>The thread whose ID is <em class="parameter"><code>pid</code></em> could not be
+            found.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sched-setaffinity-2_sect4" name="sched-setaffinity-2_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p>The CPU affinity system calls were introduced in Linux
+      kernel 2.5.8. The system call wrappers were introduced in
+      glibc 2.3. Initially, the glibc interfaces included a
+      <em class="parameter"><code>cpusetsize</code></em> argument,
+      typed as <span class="type">unsigned int</span>. In glibc
+      2.3.3, the <em class="parameter"><code>cpusetsize</code></em>
+      argument was removed, but was then restored in glibc 2.3.4,
+      with type <span class="type">size_t</span>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sched-setaffinity-2_sect5" name="sched-setaffinity-2_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>These system calls are Linux-specific.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sched-setaffinity-2_sect6" name="sched-setaffinity-2_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>After a call to <code class="function">sched_setaffinity</code>(), the set of CPUs on
+      which the thread will actually run is the intersection of the
+      set specified in the <em class="parameter"><code>mask</code></em> argument and the set of
+      CPUs actually present on the system. The system may further
+      restrict the set of CPUs on which the thread runs if the
+      "cpuset" mechanism described in <a class="link" href="../htmlman7/cpuset.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">cpuset</span>(7)</span></a> is being used.
+      These restrictions on the actual set of CPUs on which the
+      thread will run are silently imposed by the kernel.</p>
+
+      <p>There are various ways of determining the number of CPUs
+      available on the system, including: inspecting the contents
+      of <code class="filename">/proc/cpuinfo</code>; using
+      <a class="link" href="../htmlman3/sysconf.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sysconf</span>(3)</span></a> to obtain the
+      values of the <code class="constant">_SC_NPROCESSORS_CONF</code> and <code class="constant">_SC_NPROCESSORS_ONLN</code> parameters; and
+      inspecting the list CPU directories under <code class="filename">/sys/devices/system/cpu/</code>.</p>
+
+      <p><a class="link" href="../htmlman7/sched.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched</span>(7)</span></a> has a description
+      of the Linux scheduling scheme.</p>
+
+      <p>The affinity mask is a per-thread attribute that can be
+      adjusted independently for each of the threads in a thread
+      group. The value returned from a call to <a class="link" href="../htmlman2/gettid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gettid</span>(2)</span></a> can be passed in
+      the argument <em class="parameter"><code>pid</code></em>.
+      Specifying <em class="parameter"><code>pid</code></em> as 0
+      will set the attribute for the calling thread, and passing
+      the value returned from a call to <a class="link" href="../htmlman2/getpid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getpid</span>(2)</span></a> will set the
+      attribute for the main thread of the thread group. (If you
+      are using the POSIX threads API, then use <a class="link" href="../htmlman3/pthread_setaffinity_np.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_setaffinity_np</span>(3)</span></a>
+      instead of <code class="function">sched_setaffinity</code>().)</p>
+
+      <p>A child created via <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> inherits its
+      parent's CPU affinity mask. The affinity mask is preserved
+      across an <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>.</p>
+
+      <div class="refsect2">
+        <a id="sched-setaffinity-2_sect7" name="sched-setaffinity-2_sect7" shape="rect"> </a>
+
+        <h3>C library/kernel ABI differences</h3>
+
+        <p>This manual page describes the glibc interface for the
+        CPU affinity calls. The actual system call interface is
+        slightly different, with the <em class="parameter"><code>mask</code></em> being typed as
+        <span class="type">unsigned long *</span>, reflecting the
+        fact that the underlying implementation of CPU sets is a
+        simple bit mask. On success, the raw <code class="function">sched_getaffinity</code>() system call returns
+        the size (in bytes) of the <span class="type">cpumask_t</span> data type that is used internally
+        by the kernel to represent the CPU set bit mask.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sched-setaffinity-2_sect8" name="sched-setaffinity-2_sect8" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman1/lscpu.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">lscpu</span>(1)</span></a>, <a class="link" href="../htmlman1/nproc.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">nproc</span>(1)</span></a>, <a class="link" href="../htmlman1/taskset.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">taskset</span>(1)</span></a>, <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a>, <a class="link" href="../htmlman2/getcpu.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getcpu</span>(2)</span></a>, <a class="link" href="../htmlman2/getpriority.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getpriority</span>(2)</span></a>, <a class="link" href="../htmlman2/gettid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gettid</span>(2)</span></a>, <a class="link" href="../htmlman2/nice.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">nice</span>(2)</span></a>, <a class="link" href="../htmlman2/sched_get_priority_max.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_get_priority_max</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/sched_get_priority_max.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_get_priority_min</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/sched_setscheduler.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_getscheduler</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/sched_setscheduler.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_setscheduler</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/getpriority.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setpriority</span>(2)</span></a>, <a class="link" href="../htmlman3/CPU_SET.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">CPU_SET</span>(3)</span></a>, <a class="link" href="../htmlman3/pthread_setaffinity_np.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_setaffinity_np</span>(3)</span></a>,
+      <a class="link" href="../htmlman3/sched_getcpu.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_getcpu</span>(3)</span></a>, <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>, <a class="link" href="../htmlman7/cpuset.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">cpuset</span>(7)</span></a>, <a class="link" href="../htmlman7/sched.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="sched-setaffinity-2_sect9" name="sched-setaffinity-2_sect9" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2002 Robert Love<br />
+
+                  and Copyright (C) 2006 Michael Kerrisk<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_DOC_FULL)<br />
+                  This is free documentation; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License as<br />
+
+                  published by the Free Software Foundation; either version 2 of<br />
+
+                  the License, or (at your option) any later version.<br />
+
+                  <br />
+                  The GNU General Public License's references to "object code"<br />
+
+                  and "executables" are to be interpreted as the output of any<br />
+
+                  document formatting or typesetting system, including<br />
+
+                  intermediate and printed output.<br />
+
+                  <br />
+                  This manual is distributed in the hope that it will be useful,<br />
+
+                  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+
+                  GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  2002-11-19 Robert Love &lt;rml<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>tech9.net&gt; - initial version<br />
+
+                  2004-04-20 mtk - fixed description of return value<br />
+
+                  2004-04-22 aeb - added glibc prototype history<br />
+
+                  2005-05-03 mtk - noted that sched_setaffinity may cause thread<br />
+
+                  migration and that CPU affinity is a per-thread attribute.<br />
+
+                  2006-02-03 mtk -- Major rewrite<br />
+
+                  2008-11-12, mtk, removed CPU_*() macro descriptions to a<br />
+
+                  separate CPU_SET(3) page.<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

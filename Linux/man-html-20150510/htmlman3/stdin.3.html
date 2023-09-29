@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>stdin(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="stdin(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="stdin.3" name="stdin.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>stdin, stdout, stderr — standard I/O streams</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;stdio.h&gt;
+
+extern FILE *stdin;
+extern FILE *stdout;
+extern FILE *stderr;
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="stdin-3_sect1" name="stdin-3_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>Under normal circumstances every UNIX program has three
+      streams opened for it when it starts up, one for input, one
+      for output, and one for printing diagnostic or error
+      messages. These are typically attached to the user's terminal
+      (see <a class="link" href="../htmlman4/tty.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tty</span>(4)</span></a> but might instead
+      refer to files or other devices, depending on what the parent
+      process chose to set up. (See also the "Redirection" section
+      of <span class="citerefentry"><span class="refentrytitle">sh</span>(1)</span>.)</p>
+
+      <p>The input stream is referred to as "standard input"; the
+      output stream is referred to as "standard output"; and the
+      error stream is referred to as "standard error". These terms
+      are abbreviated to form the symbols used to refer to these
+      files, namely <code class="varname">stdin</code>,
+      <code class="varname">stdout</code>, and <code class="varname">stderr</code>.</p>
+
+      <p>Each of these symbols is a <a class="link" href="../htmlman3/stdio.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">stdio</span>(3)</span></a> macro of type
+      pointer to <span class="type">FILE</span>, and can be used
+      with functions like <a class="link" href="../htmlman3/printf.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fprintf</span>(3)</span></a> or <a class="link" href="../htmlman3/fread.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fread</span>(3)</span></a>.</p>
+
+      <p>Since <span class="type">FILE</span>s are a buffering
+      wrapper around UNIX file descriptors, the same underlying
+      files may also be accessed using the raw UNIX file interface,
+      that is, the functions like <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> and <a class="link" href="../htmlman2/lseek.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">lseek</span>(2)</span></a>.</p>
+
+      <p>On program startup, the integer file descriptors
+      associated with the streams <code class="varname">stdin</code>, <code class="varname">stdout</code>,
+      and <code class="varname">stderr</code> are 0, 1, and 2,
+      respectively. The preprocessor symbols <code class="constant">STDIN_FILENO</code>, <code class="constant">STDOUT_FILENO</code>, and <code class="constant">STDERR_FILENO</code> are defined with these values
+      in <code class="literal">&lt;</code><code class="filename">unistd.h</code><code class="literal">&gt;</code>
+      (Applying <a class="link" href="../htmlman3/fopen.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">freopen</span>(3)</span></a> to one of these
+      streams can change the file descriptor number associated with
+      the stream.)</p>
+
+      <p>Note that mixing use of <span class="type">FILE</span>s
+      and raw file descriptors can produce unexpected results and
+      should generally be avoided. (For the masochistic among you:
+      POSIX.1, section 8.2.3, describes in detail how this
+      interaction is supposed to work.) A general rule is that file
+      descriptors are handled in the kernel, while stdio is just a
+      library. This means for example, that after an <a class="link" href="../htmlman3/exec.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">exec</span>(3)</span></a>, the child inherits
+      all open file descriptors, but all old streams have become
+      inaccessible.</p>
+
+      <p>Since the symbols <code class="varname">stdin</code>,
+      <code class="varname">stdout</code>, and <code class="varname">stderr</code> are specified to be macros, assigning
+      to them is nonportable. The standard streams can be made to
+      refer to different files with help of the library function
+      <a class="link" href="../htmlman3/fopen.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">freopen</span>(3)</span></a>, specially
+      introduced to make it possible to reassign <code class="varname">stdin</code>, <code class="varname">stdout</code>,
+      and <code class="varname">stderr</code>. The standard streams
+      are closed by a call to <a class="link" href="../htmlman3/exit.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">exit</span>(3)</span></a> and by normal
+      program termination.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="stdin-3_sect2" name="stdin-3_sect2" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>The <code class="varname">stdin</code>, <code class="varname">stdout</code>, and <code class="varname">stderr</code> macros conform to C89 and this
+      standard also stipulates that these three streams shall be
+      open at program startup.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="stdin-3_sect3" name="stdin-3_sect3" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>The stream <code class="varname">stderr</code> is
+      unbuffered. The stream <code class="varname">stdout</code> is
+      line-buffered when it points to a terminal. Partial lines
+      will not appear until <a class="link" href="../htmlman3/fflush.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fflush</span>(3)</span></a> or <a class="link" href="../htmlman3/exit.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">exit</span>(3)</span></a> is called, or a
+      newline is printed. This can produce unexpected results,
+      especially with debugging output. The buffering mode of the
+      standard streams (or any other stream) can be changed using
+      the <a class="link" href="../htmlman3/setbuf.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setbuf</span>(3)</span></a> or <a class="link" href="../htmlman3/setbuf.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setvbuf</span>(3)</span></a> call. Note that
+      in case <code class="varname">stdin</code> is associated with
+      a terminal, there may also be input buffering in the terminal
+      driver, entirely unrelated to stdio buffering. (Indeed,
+      normally terminal input is line buffered in the kernel.) This
+      kernel input handling can be modified using calls like
+      <a class="link" href="../htmlman3/termios.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tcsetattr</span>(3)</span></a>; see also
+      <a class="link" href="../htmlman1/stty.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">stty</span>(1)</span></a>, and <a class="link" href="../htmlman3/termios.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">termios</span>(3)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="stdin-3_sect4" name="stdin-3_sect4" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><span class="citerefentry"><span class="refentrytitle">csh</span>(1)</span>, <span class="citerefentry"><span class="refentrytitle">sh</span>(1)</span>, <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>, <a class="link" href="../htmlman3/fopen.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fopen</span>(3)</span></a>, <a class="link" href="../htmlman3/stdio.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">stdio</span>(3)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="stdin-3_sect5" name="stdin-3_sect5" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    From dholland<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>burgundy.eecs.harvard.edu Tue Mar 24 18:08:15 1998<br />
+
+                  <br />
+                  This man page was written in 1998 by David A. Holland<br />
+
+                  Polished a bit by aeb.<br />
+                  <br />
+                  %%%LICENSE_START(PUBLIC_DOMAIN)<br />
+                  Placed in the Public Domain.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  2005-06-16 mtk, mentioned freopen()<br />
+
+                  2007-12-08, mtk, Converted from mdoc to man macros<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

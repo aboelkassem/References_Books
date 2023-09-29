@@ -1,0 +1,686 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>pcre2partial(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="pcre2partial(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="pcre2partial.3" name="pcre2partial.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>PCRE2 — Perl-compatible regular expressions</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2partial-3_sect1" name="pcre2partial-3_sect1" shape="rect"> </a>
+
+      <h2>PARTIAL MATCHING IN PCRE2</h2>
+
+      <p>In normal use of PCRE2, if the subject string that is
+      passed to a matching function matches as far as it goes, but
+      is too short to match the entire pattern, PCRE2_ERROR_NOMATCH
+      is returned. There are circumstances where it might be
+      helpful to distinguish this case from other cases in which
+      there is no match.</p>
+
+      <p>Consider, for example, an application where a human is
+      required to type in data for a field with specific formatting
+      requirements. An example might be a date in the form
+      <code class="function">ddmmmyy</code>, defined by this
+      pattern:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+^\d?\d(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\d\d$
+</pre>
+      </div>
+
+      <p>If the application sees the user's keystrokes one by one,
+      and can check that what has been typed so far is potentially
+      valid, it is able to raise an error as soon as a mistake is
+      made, by beeping and not reflecting the character that has
+      been typed, for example. This immediate feedback is likely to
+      be a better user interface than a check that is delayed until
+      the entire string has been entered. Partial matching can also
+      be useful when the subject string is very long and is not all
+      available at once.</p>
+
+      <p>PCRE2 supports partial matching by means of the
+      PCRE2_PARTIAL_SOFT and PCRE2_PARTIAL_HARD options, which can
+      be set when calling a matching function. The difference
+      between the two options is whether or not a partial match is
+      preferred to an alternative complete match, though the
+      details differ between the two types of matching function. If
+      both options are set, PCRE2_PARTIAL_HARD takes
+      precedence.</p>
+
+      <p>If you want to use partial matching with just-in-time
+      optimized code, you must call <code class="function">pcre2_jit_compile</code>() with one or both of
+      these options:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ PCRE2_JIT_PARTIAL_SOFT
+ PCRE2_JIT_PARTIAL_HARD
+</pre>
+      </div>
+
+      <p>PCRE2_JIT_COMPLETE should also be set if you are going to
+      run non-partial matches on the same pattern. If the
+      appropriate JIT mode has not been compiled, interpretive
+      matching code is used.</p>
+
+      <p>Setting a partial matching option disables two of PCRE2's
+      standard optimizations. PCRE2 remembers the last literal code
+      unit in a pattern, and abandons matching immediately if it is
+      not present in the subject string. This optimization cannot
+      be used for a subject string that might match only partially.
+      PCRE2 also knows the minimum length of a matching string, and
+      does not bother to run the matching function on shorter
+      strings. This optimization is also disabled for partial
+      matching.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2partial-3_sect2" name="pcre2partial-3_sect2" shape="rect"> </a>
+
+      <h2>PARTIAL MATCHING USING pcre2_match()</h2>
+
+      <p>A partial match occurs during a call to <code class="function">pcre2_match</code>() when the end of the subject
+      string is reached successfully, but matching cannot continue
+      because more characters are needed. However, at least one
+      character in the subject must have been inspected. This
+      character need not form part of the final matched string;
+      lookbehind assertions and the \K escape sequence provide ways
+      of inspecting characters before the start of a matched
+      string. The requirement for inspecting at least one character
+      exists because an empty string can always be matched; without
+      such a restriction there would always be a partial match of
+      an empty string at the end of the subject.</p>
+
+      <p>When a partial match is returned, the first two elements
+      in the ovector point to the portion of the subject that was
+      matched, but the values in the rest of the ovector are
+      undefined. The appearance of \K in the pattern has no effect
+      for a partial match. Consider this pattern:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+/abc\K123/
+</pre>
+      </div>
+
+      <p>If it is matched against "456abc123xyz" the result is a
+      complete match, and the ovector defines the matched string as
+      "123", because \K resets the "start of match" point. However,
+      if a partial match is requested and the subject string is
+      "456abc12", a partial match is found for the string "abc12",
+      because all these characters are needed for a subsequent
+      re-match with additional characters.</p>
+
+      <p>What happens when a partial match is identified depends on
+      which of the two partial matching options are set.</p>
+
+      <div class="refsect2">
+        <a id="pcre2partial-3_sect3" name="pcre2partial-3_sect3" shape="rect"> </a>
+
+        <h3>PCRE2_PARTIAL_SOFT WITH pcre2_match()</h3>
+
+        <p>If PCRE2_PARTIAL_SOFT is set when <code class="function">pcre2_match</code>() identifies a partial match,
+        the partial match is remembered, but matching continues as
+        normal, and other alternatives in the pattern are tried. If
+        no complete match can be found, PCRE2_ERROR_PARTIAL is
+        returned instead of PCRE2_ERROR_NOMATCH.</p>
+
+        <p>This option is "soft" because it prefers a complete
+        match over a partial match. All the various matching items
+        in a pattern behave as if the subject string is potentially
+        complete. For example, \z, \Z, and $ match at the end of
+        the subject, as normal, and for \b and \B the end of the
+        subject is treated as a non-alphanumeric.</p>
+
+        <p>If there is more than one partial match, the first one
+        that was found provides the data that is returned. Consider
+        this pattern:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+/123\w+X|dogY/
+</pre>
+        </div>
+
+        <p>If this is matched against the subject string
+        "abc123dog", both alternatives fail to match, but the end
+        of the subject is reached during matching, so
+        PCRE2_ERROR_PARTIAL is returned. The offsets are set to 3
+        and 9, identifying "123dog" as the first partial match that
+        was found. (In this example, there are two partial matches,
+        because "dog" on its own partially matches the second
+        alternative.)</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2partial-3_sect4" name="pcre2partial-3_sect4" shape="rect"> </a>
+
+        <h3>PCRE2_PARTIAL_HARD WITH pcre2_match()</h3>
+
+        <p>If PCRE2_PARTIAL_HARD is set for <code class="function">pcre2_match</code>(), PCRE2_ERROR_PARTIAL is
+        returned as soon as a partial match is found, without
+        continuing to search for possible complete matches. This
+        option is "hard" because it prefers an earlier partial
+        match over a later complete match. For this reason, the
+        assumption is made that the end of the supplied subject
+        string may not be the true end of the available data, and
+        so, if \z, \Z, \b, \B, or $ are encountered at the end of
+        the subject, the result is PCRE2_ERROR_PARTIAL, provided
+        that at least one character in the subject has been
+        inspected.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2partial-3_sect5" name="pcre2partial-3_sect5" shape="rect"> </a>
+
+        <h3>Comparing hard and soft partial matching</h3>
+
+        <p>The difference between the two partial matching options
+        can be illustrated by a pattern such as:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+/dog(sbody)?/
+</pre>
+        </div>
+
+        <p>This matches either "dog" or "dogsbody", greedily (that
+        is, it prefers the longer string if possible). If it is
+        matched against the string "dog" with PCRE2_PARTIAL_SOFT,
+        it yields a complete match for "dog". However, if
+        PCRE2_PARTIAL_HARD is set, the result is
+        PCRE2_ERROR_PARTIAL. On the other hand, if the pattern is
+        made ungreedy the result is different:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+/dog(sbody)??/
+</pre>
+        </div>
+
+        <p>In this case the result is always a complete match
+        because that is found first, and matching never continues
+        after finding a complete match. It might be easier to
+        follow this explanation by thinking of the two patterns
+        like this:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+ /dog(sbody)?/    is the same as  /dogsbody|dog/
+ /dog(sbody)??/   is the same as  /dog|dogsbody/
+</pre>
+        </div>
+
+        <p>The second pattern will never match "dogsbody", because
+        it will always find the shorter match first.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2partial-3_sect6" name="pcre2partial-3_sect6" shape="rect"> </a>
+
+      <h2>PARTIAL MATCHING USING pcre2_dfa_match()</h2>
+
+      <p>The DFA functions move along the subject string character
+      by character, without backtracking, searching for all
+      possible matches simultaneously. If the end of the subject is
+      reached before the end of the pattern, there is the
+      possibility of a partial match, again provided that at least
+      one character has been inspected.</p>
+
+      <p>When PCRE2_PARTIAL_SOFT is set, PCRE2_ERROR_PARTIAL is
+      returned only if there have been no complete matches.
+      Otherwise, the complete matches are returned. However, if
+      PCRE2_PARTIAL_HARD is set, a partial match takes precedence
+      over any complete matches. The portion of the string that was
+      matched when the longest partial match was found is set as
+      the first matching string.</p>
+
+      <p>Because the DFA functions always search for all possible
+      matches, and there is no difference between greedy and
+      ungreedy repetition, their behaviour is different from the
+      standard functions when PCRE2_PARTIAL_HARD is set. Consider
+      the string "dog" matched against the ungreedy pattern shown
+      above:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+/dog(sbody)??/
+</pre>
+      </div>
+
+      <p>Whereas the standard function stops as soon as it finds
+      the complete match for "dog", the DFA function also finds the
+      partial match for "dogsbody", and so returns that when
+      PCRE2_PARTIAL_HARD is set.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2partial-3_sect7" name="pcre2partial-3_sect7" shape="rect"> </a>
+
+      <h2>PARTIAL MATCHING AND WORD BOUNDARIES</h2>
+
+      <p>If a pattern ends with one of sequences \b or \B, which
+      test for word boundaries, partial matching with
+      PCRE2_PARTIAL_SOFT can give counter-intuitive results.
+      Consider this pattern:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+/\bcat\b/
+</pre>
+      </div>
+
+      <p>This matches "cat", provided there is a word boundary at
+      either end. If the subject string is "the cat", the
+      comparison of the final "t" with a following character cannot
+      take place, so a partial match is found. However, normal
+      matching carries on, and \b matches at the end of the subject
+      when the last character is a letter, so a complete match is
+      found. The result, therefore, is <span class="emphasis"><em>not</em></span> PCRE2_ERROR_PARTIAL. Using
+      PCRE2_PARTIAL_HARD in this case does yield
+      PCRE2_ERROR_PARTIAL, because then the partial match takes
+      precedence.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2partial-3_sect8" name="pcre2partial-3_sect8" shape="rect"> </a>
+
+      <h2>EXAMPLE OF PARTIAL MATCHING USING PCRE2TEST</h2>
+
+      <p>If the <code class="function">partial_soft</code> (or
+      <code class="function">ps</code>) modifier is present on a
+      <code class="function">pcre2test</code> data line, the
+      PCRE2_PARTIAL_SOFT option is used for the match. Here is a
+      run of <code class="function">pcre2test</code> that uses the
+      date example quoted above:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+   re&gt; /^\d?\d(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\d\d$/
+ data&gt; 25jun04\=ps
+  0: 25jun04
+  1: jun
+ data&gt; 25dec3\=ps
+ Partial match: 23dec3
+ data&gt; 3ju\=ps
+ Partial match: 3ju
+ data&gt; 3juj\=ps
+ No match
+ data&gt; j\=ps
+ No match
+</pre>
+      </div>
+
+      <p>The first data string is matched completely, so
+      <code class="function">pcre2test</code> shows the matched
+      substrings. The remaining four strings do not match the
+      complete pattern, but the first two are partial matches.
+      Similar output is obtained if DFA matching is used.</p>
+
+      <p>If the <code class="function">partial_hard</code> (or
+      <code class="function">ph</code>) modifier is present on a
+      <code class="function">pcre2test</code> data line, the
+      PCRE2_PARTIAL_HARD option is set for the match.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2partial-3_sect9" name="pcre2partial-3_sect9" shape="rect"> </a>
+
+      <h2>MULTI-SEGMENT MATCHING WITH pcre2_dfa_match()</h2>
+
+      <p>When a partial match has been found using a DFA matching
+      function, it is possible to continue the match by providing
+      additional subject data and calling the function again with
+      the same compiled regular expression, this time setting the
+      PCRE2_DFA_RESTART option. You must pass the same working
+      space as before, because this is where details of the
+      previous partial match are stored. Here is an example using
+      <code class="function">pcre2test</code>:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+   re&gt; /^\d?\d(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\d\d$/
+ data&gt; 23ja\=dfa,ps
+ Partial match: 23ja
+ data&gt; n05\=dfa,dfa_restart
+  0: n05
+</pre>
+      </div>
+
+      <p>The first call has "23ja" as the subject, and requests
+      partial matching; the second call has "n05" as the subject
+      for the continued (restarted) match. Notice that when the
+      match is complete, only the last part is shown; PCRE2 does
+      not retain the previously partially-matched string. It is up
+      to the calling program to do that if it needs to.</p>
+
+      <p>That means that, for an unanchored pattern, if a continued
+      match fails, it is not possible to try again at a new
+      starting point. All this facility is capable of doing is
+      continuing with the previous match attempt. In the previous
+      example, if the second set of data is "ug23" the result is no
+      match, even though there would be a match for "aug23" if the
+      entire string were given at once. Depending on the
+      application, this may or may not be what you want. The only
+      way to allow for starting again at the next character is to
+      retain the matched part of the subject and try a new complete
+      match.</p>
+
+      <p>You can set the PCRE2_PARTIAL_SOFT or PCRE2_PARTIAL_HARD
+      options with PCRE2_DFA_RESTART to continue partial matching
+      over multiple segments. This facility can be used to pass
+      very long subject strings to the DFA matching functions.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2partial-3_sect10" name="pcre2partial-3_sect10" shape="rect"> </a>
+
+      <h2>MULTI-SEGMENT MATCHING WITH pcre2_match()</h2>
+
+      <p>Unlike the DFA function, it is not possible to restart the
+      previous match with a new segment of data when using
+      <code class="function">pcre2_match</code>(). Instead, new
+      data must be added to the previous subject string, and the
+      entire match re-run, starting from the point where the
+      partial match occurred. Earlier data can be discarded.</p>
+
+      <p>It is best to use PCRE2_PARTIAL_HARD in this situation,
+      because it does not treat the end of a segment as the end of
+      the subject when matching \z, \Z, \b, \B, and $. Consider an
+      unanchored pattern that matches dates:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+   re&gt; /\d?\d(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\d\d/
+ data&gt; The date is 23ja\=ph
+ Partial match: 23ja
+</pre>
+      </div>
+
+      <p>At this stage, an application could discard the text
+      preceding "23ja", add on text from the next segment, and call
+      the matching function again. Unlike the DFA matching
+      function, the entire matching string must always be
+      available, and the complete matching process occurs for each
+      call, so more memory and more processing time is needed.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2partial-3_sect11" name="pcre2partial-3_sect11" shape="rect"> </a>
+
+      <h2>ISSUES WITH MULTI-SEGMENT MATCHING</h2>
+
+      <p>Certain types of pattern may give problems with
+      multi-segment matching, whichever matching function is
+      used.</p>
+
+      <p>1. If the pattern contains a test for the beginning of a
+      line, you need to pass the PCRE2_NOTBOL option when the
+      subject string for any call does start at the beginning of a
+      line. There is also a PCRE2_NOTEOL option, but in practice
+      when doing multi-segment matching you should be using
+      PCRE2_PARTIAL_HARD, which includes the effect of
+      PCRE2_NOTEOL.</p>
+
+      <p>2. If a pattern contains a lookbehind assertion,
+      characters that precede the start of the partial match may
+      have been inspected during the matching process. When using
+      <code class="function">pcre2_match</code>(), sufficient
+      characters must be retained for the next match attempt. You
+      can ensure that enough characters are retained by doing the
+      following:</p>
+
+      <p>Before doing any matching, find the length of the longest
+      lookbehind in the pattern by calling <code class="function">pcre2_pattern_info</code>() with the
+      PCRE2_INFO_MAXLOOKBEHIND option. Note that the resulting
+      count is in characters, not code units. After a partial
+      match, moving back from the ovector[0] offset in the subject
+      by the number of characters given for the maximum lookbehind
+      gets you to the earliest character that must be retained. In
+      a non-UTF or a 32-bit situation, moving back is just a
+      subtraction, but in UTF-8 or UTF-16 you have to count
+      characters while moving back through the code units.</p>
+
+      <p>Characters before the point you have now reached can be
+      discarded, and after the next segment has been added to what
+      is retained, you should run the next match with the
+      <code class="function">startoffset</code> argument set so
+      that the match begins at the same point as before.</p>
+
+      <p>For example, if the pattern "(?&lt;=123)abc" is partially
+      matched against the string "xx123ab", the ovector offsets are
+      5 and 7 ("ab"). The maximum lookbehind count is 3, so all
+      characters before offset 2 can be discarded. The value of
+      <code class="function">startoffset</code> for the next match
+      should be 3. When <code class="function">pcre2test</code>
+      displays a partial match, it indicates the lookbehind
+      characters with '&lt;' characters:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+   re&gt; "(?&lt;=123)abc"
+ data&gt; xx123ab\=ph
+ Partial match: 123ab
+                &lt;&lt;&lt;
+</pre>
+      </div>
+
+      <p>3. Because a partial match must always contain at least
+      one character, what might be considered a partial match of an
+      empty string actually gives a "no match" result. For
+      example:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+   re&gt; /c(?&lt;=abc)x/
+ data&gt; ab\=ps
+ No match
+</pre>
+      </div>
+
+      <p>If the next segment begins "cx", a match should be found,
+      but this will only happen if characters from the previous
+      segment are retained. For this reason, a "no match" result
+      should be interpreted as "partial match of an empty string"
+      when the pattern contains lookbehinds.</p>
+
+      <p>4. Matching a subject string that is split into multiple
+      segments may not always produce exactly the same result as
+      matching over one single long string, especially when
+      PCRE2_PARTIAL_SOFT is used. The section "Partial Matching and
+      Word Boundaries" above describes an issue that arises if the
+      pattern ends with \b or \B. Another kind of difference may
+      occur when there are multiple matching possibilities, because
+      (for PCRE2_PARTIAL_SOFT) a partial match result is given only
+      when there are no completed matches. This means that as soon
+      as the shortest match has been found, continuation to a new
+      subject segment is no longer possible. Consider this
+      <code class="function">pcre2test</code> example:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+   re&gt; /dog(sbody)?/
+ data&gt; dogsb\=ps
+  0: dog
+ data&gt; do\=ps,dfa
+ Partial match: do
+ data&gt; gsb\=ps,dfa,dfa_restart
+  0: g
+ data&gt; dogsbody\=dfa
+  0: dogsbody
+  1: dog
+</pre>
+      </div>
+
+      <p>The first data line passes the string "dogsb" to a
+      standard matching function, setting the PCRE2_PARTIAL_SOFT
+      option. Although the string is a partial match for
+      "dogsbody", the result is not PCRE2_ERROR_PARTIAL, because
+      the shorter string "dog" is a complete match. Similarly, when
+      the subject is presented to a DFA matching function in
+      several parts ("do" and "gsb" being the first two) the match
+      stops when "dog" has been found, and it is not possible to
+      continue. On the other hand, if "dogsbody" is presented as a
+      single string, a DFA matching function finds both
+      matches.</p>
+
+      <p>Because of these problems, it is best to use
+      PCRE2_PARTIAL_HARD when matching multi-segment data. The
+      example above then behaves differently:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+   re&gt; /dog(sbody)?/
+ data&gt; dogsb\=ph
+ Partial match: dogsb
+ data&gt; do\=ps,dfa
+ Partial match: do
+ data&gt; gsb\=ph,dfa,dfa_restart
+ Partial match: gsb
+</pre>
+      </div>
+
+      <p>5. Patterns that contain alternatives at the top level
+      which do not all start with the same pattern item may not
+      work as expected when PCRE2_DFA_RESTART is used. For example,
+      consider this pattern:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+1234|3789
+</pre>
+      </div>
+
+      <p>If the first part of the subject is "ABC123", a partial
+      match of the first alternative is found at offset 3. There is
+      no partial match for the second alternative, because such a
+      match does not start at the same point in the subject string.
+      Attempting to continue with the string "7890" does not yield
+      a match because only those alternatives that match at one
+      point in the subject are remembered. The problem arises
+      because the start of the second alternative matches within
+      the first alternative. There is no problem with anchored
+      patterns or patterns such as:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+1234|ABCD
+</pre>
+      </div>
+
+      <p>where no string can be a partial match for both
+      alternatives. This is not a problem if a standard matching
+      function is used, because the entire match has to be rerun
+      each time:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+   re&gt; /1234|3789/
+ data&gt; ABC123\=ph
+ Partial match: 123
+ data&gt; 1237890
+  0: 3789
+</pre>
+      </div>
+
+      <p>Of course, instead of using PCRE2_DFA_RESTART, the same
+      technique of re-running the entire match can also be used
+      with the DFA matching function. Another possibility is to
+      work with two buffers. If a partial match at offset
+      <code class="literal">n</code> in the first buffer is
+      followed by "no match" when PCRE2_DFA_RESTART is used on the
+      second buffer, you can then try a new match starting at
+      offset <em class="replaceable"><code>n+1</code></em> in the
+      first buffer.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2partial-3_sect12" name="pcre2partial-3_sect12" shape="rect"> </a>
+
+      <h2>AUTHOR</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+Philip Hazel
+University Computing Service
+Cambridge, England.
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2partial-3_sect13" name="pcre2partial-3_sect13" shape="rect"> </a>
+
+      <h2>REVISION</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+Last updated: 22 December 2014
+Copyright (c) 1997-2014 University of Cambridge.
+</pre>
+      </div>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <thead>
+            <tr>
+              <th style="" rowspan="1" colspan="1">COPYRIGHT</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <p>This manual page is taken from the <a class="ulink" href="http://www.PCRE.org/" target="_top" shape="rect">PCRE library</a>, which is distributed under
+                the BSD license.</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

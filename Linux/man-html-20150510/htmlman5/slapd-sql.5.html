@@ -1,0 +1,1015 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>slapd-sql(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="slapd-sql(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry" title="slapd-sql(5) — Linux manual pages">
+    <a id="slapd-sql.5" name="slapd-sql.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>slapd−sql — SQL backend to slapd</p>
+    </div>
+
+    <div class="refsynopsisdiv" title="Synopsis">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ETCDIR/slapd.conf
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1" title="DESCRIPTION">
+      <a id="slapd-sql-5_sect1" name="slapd-sql-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The primary purpose of this <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a> backend is to
+      PRESENT information stored in some RDBMS as an LDAP subtree
+      without any programming (some SQL and maybe stored procedures
+      can't be considered programming, anyway ;).</p>
+
+      <p>That is, for example, when you (some ISP) have account
+      information you use in an RDBMS, and want to use modern
+      solutions that expect such information in LDAP (to
+      authenticate users, make email lookups etc.). Or you want to
+      synchronize or distribute information between different
+      sites/applications that use RDBMSes and/or LDAP. Or whatever
+      else...</p>
+
+      <p>It is NOT designed as a general-purpose backend that uses
+      RDBMS instead of BerkeleyDB (as the standard BDB backend
+      does), though it can be used as such with several
+      limitations. You can take a look at <a class="literalurl" href="http://www.openldap.org/faq/index.cgi?file=378" target="_top" shape="rect">http://www.openldap.org/faq/index.cgi?file=378</a>
+      (OpenLDAP FAQ−O−Matic/General LDAP
+      FAQ/Directories vs. conventional databases) to find out more
+      on this point.</p>
+
+      <p>The idea (detailed below) is to use some meta-information
+      to translate LDAP queries to SQL queries, leaving relational
+      schema untouched, so that old applications can continue using
+      it without any modifications. This allows SQL and LDAP
+      applications to inter-operate without replication, and
+      exchange data as needed.</p>
+
+      <p>The SQL backend is designed to be tunable to virtually any
+      relational schema without having to change source (through
+      that meta-information mentioned). Also, it uses ODBC to
+      connect to RDBMSes, and is highly configurable for SQL
+      dialects RDBMSes may use, so it may be used for integration
+      and distribution of data on different RDBMSes, OSes, hosts
+      etc., in other words, in highly heterogeneous
+      environment.</p>
+
+      <p>This backend is <em class="replaceable"><code>experimental</code></em>.</p>
+    </div>
+
+    <div class="refsect1" title="CONFIGURATION">
+      <a id="slapd-sql-5_sect2" name="slapd-sql-5_sect2" shape="rect"> </a>
+
+      <h2>CONFIGURATION</h2>
+
+      <p>These <em class="replaceable"><code>slapd.conf</code></em>
+      options apply to the SQL backend database, which means that
+      they must follow a "database sql" line and come before any
+      subsequent "backend" or "database" lines. Other database
+      options not specific to this backend are described in the
+      <a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a> manual
+      page.</p>
+    </div>
+
+    <div class="refsect1" title="DATA SOURCE CONFIGURATION">
+      <a id="slapd-sql-5_sect3" name="slapd-sql-5_sect3" shape="rect"> </a>
+
+      <h2>DATA SOURCE CONFIGURATION</h2>
+
+      <div class="variablelist">
+        <dl>
+          <dt><span class="term"><span class="emphasis"><em>dbname
+          &lt;datasource name&gt;</em></span></span></dt>
+
+          <dd>
+            <p>The name of the ODBC datasource to use.</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+<span class="emphasis"><em>dbhost &lt;hostname&gt;</em></span>
+<span class="emphasis"><em>dbpasswd &lt;password&gt;</em></span>
+</pre>
+            </div>
+
+            <p><span class="emphasis"><em>dbuser
+            &lt;username&gt;</em></span></p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <p>The three above options are generally unneeded,
+                because this information is taken from the
+                datasource specified by the <em class="replaceable"><code>dbname</code></em> directive.
+                They allow to override datasource settings. Also,
+                several RDBMS' drivers tend to require explicit
+                passing of user/password, even if those are given
+                in datasource</p>
+
+                <div class="note" title="Note" style="margin-left: 0.5in; margin-right: 0.5in;">
+                  <table border="0" summary="Note">
+                    <tr>
+                      <td rowspan="2" align="center" valign="top" width="25" colspan="1"><img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+                      <th align="left" rowspan="1" colspan="1">Note</th>
+                    </tr>
+
+                    <tr>
+                      <td align="left" valign="top" rowspan="1" colspan="1">
+                        <p><em class="replaceable"><code>dbhost</code></em> is
+                        currently ignored.</p>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1" title="SCOPING CONFIGURATION">
+      <a id="slapd-sql-5_sect4" name="slapd-sql-5_sect4" shape="rect"> </a>
+
+      <h2>SCOPING CONFIGURATION</h2>
+
+      <p>These options specify SQL query templates for scoping
+      searches.</p>
+
+      <div class="variablelist">
+        <dl>
+          <dt><span class="term"><span class="emphasis"><em>subtree_cond &lt;SQL
+          expression&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies a where-clause template used to form a
+            subtree search condition (dn="(.+,)?&lt;dn&gt;$"). It
+            may differ from one SQL dialect to another (see
+            samples). By default, it is constructed based on the
+            knowledge about how to normalize DN values (e.g.
+            <span class="emphasis"><em>"&lt;upper_func&gt;(ldap_entries.dn)
+            LIKE CONCAT('%',?)"</em></span>); see <em class="replaceable"><code>upper_func</code></em>, <em class="replaceable"><code>upper_needs_cast</code></em>,
+            <em class="replaceable"><code>concat_pattern</code></em> and
+            <em class="replaceable"><code>strcast_func</code></em>
+            in "HELPER CONFIGURATION" for details.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>children_cond &lt;SQL
+          expression&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies a where-clause template used to form a
+            children search condition (dn=".+,&lt;dn&gt;$"). It may
+            differ from one SQL dialect to another (see samples).
+            By default, it is constructed based on the knowledge
+            about how to normalize DN values (e.g. <span class="emphasis"><em>"&lt;upper_func&gt;(ldap_entries.dn)
+            LIKE CONCAT('%,',?)"</em></span>); see <em class="replaceable"><code>upper_func</code></em>, <em class="replaceable"><code>upper_needs_cast</code></em>,
+            <em class="replaceable"><code>concat_pattern</code></em> and
+            <em class="replaceable"><code>strcast_func</code></em>
+            in "HELPER CONFIGURATION" for details.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>use_subtree_shortcut { YES | no
+          }</em></span></span></dt>
+
+          <dd>
+            <p>Do not use the subtree condition when the searchBase
+            is the database suffix, and the scope is subtree;
+            rather collect all entries.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1" title="STATEMENT CONFIGURATION">
+      <a id="slapd-sql-5_sect5" name="slapd-sql-5_sect5" shape="rect"> </a>
+
+      <h2>STATEMENT CONFIGURATION</h2>
+
+      <p>These options specify SQL query templates for loading
+      schema mapping meta-information, adding and deleting entries
+      to ldap_entries, etc. All these and subtree_cond should have
+      the given default values. For the current value it is
+      recommended to look at the sources, or in the log output when
+      slapd starts with "−d 5" or greater. Note that the
+      parameter number and order must not be changed.</p>
+
+      <div class="variablelist">
+        <dl>
+          <dt><span class="term">c_query &lt;SQL
+          expression&gt;</span></dt>
+
+          <dd>
+            <p>The query that is used to collect the objectClass
+            mapping data from table <em class="replaceable"><code>ldap_oc_mappings</code></em>; see
+            "METAINFORMATION USED" for details. The default is
+            <span class="emphasis"><em>"SELECT id, name, keytbl,
+            keycol, create_proc, delete_proc, expect_returnFROM
+            ldap_oc_mappings"</em></span>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>at_query &lt;SQL
+          expression&gt;</em></span></span></dt>
+
+          <dd>
+            <p>The query that is used to collect the attributeType
+            mapping data from table <em class="replaceable"><code>ldap_attr_mappings</code></em>; see
+            "METAINFORMATION USED" for details. The default is
+            <span class="emphasis"><em>"SELECT name, sel_expr,
+            from_tbls, join_where, add_proc,
+            delete_proc,param_order, expect_return FROM
+            ldap_attr_mappings WHERE oc_map_id=?"</em></span>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>id_query &lt;SQL
+          expression&gt;</em></span></span></dt>
+
+          <dd>
+            <p>The query that is used to map a DN to an entry in
+            table <em class="replaceable"><code>ldap_entries</code></em>; see
+            "METAINFORMATION USED" for details. The default is
+            <span class="emphasis"><em>"SELECT
+            id,keyval,oc_map_id,dn FROM ldap_entries WHERE &lt;DN
+            match expr&gt;"</em></span>, where <span class="emphasis"><em>&lt;DN match expr&gt;</em></span> is
+            constructed based on the knowledge about how to
+            normalize DN values (e.g. <em class="replaceable"><code>"dn=?"</code></em> if no means to
+            uppercase strings are available; typically, <em class="replaceable"><code>"&lt;upper_func&gt;(dn)=?"</code></em>
+            is used); see <em class="replaceable"><code>upper_func</code></em>, <em class="replaceable"><code>upper_needs_cast</code></em>,
+            <em class="replaceable"><code>concat_pattern</code></em> and
+            <em class="replaceable"><code>strcast_func</code></em>
+            in "HELPER CONFIGURATION" for details.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>insentry_stmt &lt;SQL
+          expression&gt;</em></span></span></dt>
+
+          <dd>
+            <p>The statement that is used to insert a new entry in
+            table <em class="replaceable"><code>ldap_entries</code></em>; see
+            "METAINFORMATION USED" for details. The default is
+            <span class="emphasis"><em>"INSERT INTO ldap_entries
+            (dn, oc_map_id, parent, keyval) VALUES(?, ?, ?,
+            ?)"</em></span>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>delentry_stmt &lt;SQL
+          expression&gt;</em></span></span></dt>
+
+          <dd>
+            <p>The statement that is used to delete an existing
+            entry from table <em class="replaceable"><code>ldap_entries</code></em>; see
+            "METAINFORMATION USED" for details. The default is
+            <span class="emphasis"><em>"DELETE FROM ldap_entries
+            WHERE id=?"</em></span>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>delobjclasses_stmt &lt;SQL
+          expression&gt;</em></span></span></dt>
+
+          <dd>
+            <p>The statement that is used to delete an existing
+            entry's ID from table <em class="replaceable"><code>ldap_objclasses</code></em>; see
+            "METAINFORMATION USED" for details. The default is
+            <span class="emphasis"><em>"DELETE FROM
+            ldap_entry_objclasses WHERE
+            entry_id=?"</em></span>.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1" title="HELPER CONFIGURATION">
+      <a id="slapd-sql-5_sect6" name="slapd-sql-5_sect6" shape="rect"> </a>
+
+      <h2>HELPER CONFIGURATION</h2>
+
+      <p>These statements are used to modify the default behavior
+      of the backend according to issues of the dialect of the
+      RDBMS. The first options essentially refer to string and DN
+      normalization when building filters. LDAP normalization is
+      more than upper- (or lower-)casing everything; however, as a
+      reasonable trade-off, for case-sensitive RDBMSes the backend
+      can be instructed to uppercase strings and DNs by providing
+      the <em class="replaceable"><code>upper_func</code></em>
+      directive. Some RDBMSes, to use functions on arbitrary data
+      types, e.g. string constants, requires a cast, which is
+      triggered by the <em class="replaceable"><code>upper_needs_cast</code></em> directive.
+      If required, a string cast function can be provided as well,
+      by using the <em class="replaceable"><code>strcast_func</code></em> directive.
+      Finally, a custom string concatenation pattern may be
+      required; it is provided by the <em class="replaceable"><code>concat_pattern</code></em> directive.</p>
+
+      <div class="variablelist">
+        <dl>
+          <dt><span class="term"><span class="emphasis"><em>upper_func &lt;SQL function
+          name&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies the name of a function that converts a
+            given value to uppercase. This is used for case
+            insensitive matching when the RDBMS is case sensitive.
+            It may differ from one SQL dialect to another (e.g.
+            <code class="constant">UCASE</code>, <code class="constant">UPPER</code> or whatever; see samples). By
+            default, none is used, i.e. strings are not uppercased,
+            so matches may be case sensitive.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>upper_needs_cast { NO | yes
+          }</em></span></span></dt>
+
+          <dd>
+            <p>Set this directive to <em class="replaceable"><code>yes</code></em> if <em class="replaceable"><code>upper_func</code></em> needs an
+            explicit cast when applied to literal strings. A cast
+            in the form <span class="emphasis"><em>CAST
+            (&lt;arg&gt; AS VARCHAR(&lt;max DN
+            length&gt;))</em></span> is used, where <span class="emphasis"><em>&lt;max DN length&gt;</em></span> is
+            builtin in back-sql; see macro <code class="constant">BACKSQL_MAX_DN_LEN</code> (currently 255;
+            note that slapd's builtin limit, in macro <code class="constant">SLAP_LDAPDN_MAXLEN</code>, is set to 8192).
+            This is <em class="replaceable"><code>experimental</code></em> and may
+            change in future releases.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>strcast_func &lt;SQL function
+          name&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies the name of a function that converts a
+            given value to a string for appropriate ordering. This
+            is used in "SELECT DISTINCT" statements for strongly
+            typed RDBMSes with little implicit casting (like
+            PostgreSQL), when a literal string is specified. This
+            is <em class="replaceable"><code>experimental</code></em> and may
+            change in future releases.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>concat_pattern
+          &lt;pattern&gt;</em></span></span></dt>
+
+          <dd>
+            <p>This statement defines the <em class="replaceable"><code>pattern</code></em> that is used to
+            concatenate strings. The <em class="replaceable"><code>pattern</code></em> MUST contain
+            two question marks, '?', that will be replaced by the
+            two strings that must be concatenated. The default
+            value is <code class="function">CONCAT</code><code class="literal">(</code><em class="parameter"><code>?</code></em><code class="literal">,</code> <em class="parameter"><code>?</code></em><code class="literal">)</code>; a form that is known to be highly
+            portable (IBM db2, PostgreSQL) is <em class="replaceable"><code>?||?</code></em>, but an explicit
+            cast may be required when operating on literal strings:
+            <span class="emphasis"><em>CAST(?||? AS
+            VARCHAR(&lt;length&gt;))</em></span>. On some RDBMSes
+            (IBM db2, MSSQL) the form <em class="replaceable"><code>?+?</code></em> is known to work as
+            well. Carefully check the documentation of your RDBMS
+            or stay with the examples for supported ones. This is
+            <em class="replaceable"><code>experimental</code></em>
+            and may change in future releases.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>aliasing_keyword
+          &lt;string&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Define the aliasing keyword. Some RDBMSes use the
+            word "<code class="constant">AS</code>" (the default),
+            others don't use any.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>aliasing_quote
+          &lt;string&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Define the quoting char of the aliasing keyword.
+            Some RDBMSes don't require any (the default), others
+            may require single or double quotes.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>has_ldapinfo_dn_ru { NO | yes
+          }</em></span></span></dt>
+
+          <dd>
+            <p>Explicitly inform the backend whether the dn_ru
+            column (DN in reverse uppercased form) is present in
+            table <em class="replaceable"><code>ldap_entries</code></em>. Overrides
+            automatic check (this is required, for instance, by
+            PostgreSQL/unixODBC). This is <em class="replaceable"><code>experimental</code></em> and may
+            change in future releases.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>fail_if_no_mapping { NO | yes
+          }</em></span></span></dt>
+
+          <dd>
+            <p>When set to <em class="replaceable"><code>yes</code></em> it forces
+            <em class="replaceable"><code>attribute</code></em>
+            write operations to fail if no appropriate mapping
+            between LDAP attributes and SQL data is available. The
+            default behavior is to ignore those changes that cannot
+            be mapped. It has no impact on objectClass mapping,
+            i.e. if the <em class="replaceable"><code>structuralObjectClass</code></em>
+            of an entry cannot be mapped to SQL by looking up its
+            name in ldap_oc_mappings, an <em class="replaceable"><code>add</code></em> operation will fail
+            regardless of the <em class="replaceable"><code>fail_if_no_mapping</code></em>
+            switch; see section "METAINFORMATION USED" for details.
+            This is <em class="replaceable"><code>experimental</code></em> and may
+            change in future releases.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>allow_orphans { NO | yes
+          }</em></span></span></dt>
+
+          <dd>
+            <p>When set to <em class="replaceable"><code>yes</code></em> orphaned entries
+            (i.e. without the parent entry in the database) can be
+            added. This option should be used with care, possibly
+            in conjunction with some special rule on the RDBMS side
+            that dynamically creates the missing parent.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>baseObject [ &lt;filename&gt;
+          ]</em></span></span></dt>
+
+          <dd>
+            <p>Instructs the database to create and manage an
+            in-memory baseObject entry instead of looking for one
+            in the RDBMS. If the (optional) <em class="replaceable"><code>&lt;filename&gt;</code></em>
+            argument is given, the entry is read from that file in
+            <span class="citerefentry"><span class="refentrytitle">LDIF</span>(5)</span> format;
+            otherwise, an entry with objectClass <em class="replaceable"><code>extensibleObject</code></em> is
+            created based on the contents of the RDN of the
+            <em class="replaceable"><code>baseObject</code></em>.
+            This is particularly useful when <em class="replaceable"><code>ldap_entries</code></em>
+            information is stored in a view rather than in a table,
+            and <em class="replaceable"><code>union</code></em> is
+            not supported for views, so that the view can only
+            specify one rule to compute the entry structure for one
+            objectClass. This topic is discussed further in section
+            "METAINFORMATION USED". This is <em class="replaceable"><code>experimental</code></em> and may
+            change in future releases.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>create_needs_select { NO | yes
+          }</em></span></span></dt>
+
+          <dd>
+            <p>Instructs the database whether or not entry creation
+            in table <em class="replaceable"><code>ldap_entries</code></em> needs a
+            subsequent select to collect the automatically assigned
+            ID, instead of being returned by a stored
+            procedure.</p>
+
+            <p><span class="emphasis"><em>fetch_attrs
+            &lt;attrlist&gt;</em></span></p>
+          </dd>
+        </dl>
+      </div>
+
+      <p><span class="emphasis"><em>fetch_all_attrs { NO | yes
+      }</em></span></p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>The first statement allows to provide a list of
+          attributes that must always be fetched in addition to
+          those requested by any specific operation, because they
+          are required for the proper usage of the backend. For
+          instance, all attributes used in ACLs should be listed
+          here. The second statement is a shortcut to require all
+          attributes to be always loaded. Note that the dynamically
+          generated attributes, e.g. <em class="replaceable"><code>hasSubordinates</code></em>,
+          <em class="replaceable"><code>entryDN</code></em> and
+          other implementation dependent attributes are
+          <code class="constant">NOT</code> generated at this
+          point, for consistency with the rest of slapd. This may
+          change in the future.</p>
+        </blockquote>
+      </div>
+
+      <div class="variablelist">
+        <dl>
+          <dt><span class="term"><span class="emphasis"><em>check_schema { YES | no
+          }</em></span></span></dt>
+
+          <dd>
+            <p>Instructs the database to check schema adherence of
+            entries after modifications, and structural objectClass
+            chain when entries are built. By default it is set to
+            <em class="replaceable"><code>yes</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>sqllayer &lt;name&gt;
+          [...]</em></span></span></dt>
+
+          <dd>
+            <p>Loads the layer <em class="replaceable"><code>&lt;name&gt;</code></em> onto a
+            stack of helpers that are used to map DNs from LDAP to
+            SQL representation and vice-versa. Subsequent args are
+            passed to the layer configuration routine. This is
+            <span class="emphasis"><em>highly
+            experimental</em></span> and should be used with
+            extreme care. The API of the layers is not frozen yet,
+            so it is unpublished.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>autocommit { NO | yes
+          }</em></span></span></dt>
+
+          <dd>
+            <p>Activates autocommit; by default, it is off.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1" title="METAINFORMATION USED">
+      <a id="slapd-sql-5_sect7" name="slapd-sql-5_sect7" shape="rect"> </a>
+
+      <h2>METAINFORMATION USED</h2>
+
+      <p>Almost everything mentioned later is illustrated in
+      examples located in the <em class="replaceable"><code>servers/slapd/back−sql/rdbms_depend/</code></em>
+      directory in the OpenLDAP source tree, and contains scripts
+      for generating sample database for Oracle, MS SQL Server,
+      mySQL and more (including PostgreSQL and IBM db2).</p>
+
+      <p>The first thing that one must arrange is what set of LDAP
+      object classes can present your RDBMS information.</p>
+
+      <p>The easiest way is to create an objectClass for each
+      entity you had in ER-diagram when designing your relational
+      schema. Any relational schema, no matter how normalized it
+      is, was designed after some model of your application's
+      domain (for instance, accounts, services etc. in ISP), and is
+      used in terms of its entities, not just tables of normalized
+      schema. It means that for every attribute of every such
+      instance there is an effective SQL query that loads its
+      values.</p>
+
+      <p>Also you might want your object classes to conform to some
+      of the standard schemas like inetOrgPerson etc.</p>
+
+      <p>Nevertheless, when you think it out, we must define a way
+      to translate LDAP operation requests to (a series of) SQL
+      queries. Let us deal with the SEARCH operation.</p>
+
+      <p>Example: Let's suppose that we store information about
+      persons working in our organization in two tables:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+  PERSONS              PHONES
+  ----------           -------------
+  id integer           id integer
+  first_name varchar   pers_id integer references persons(id)
+  last_name varchar    phone
+  middle_name varchar
+  ...
+</pre>
+      </div>
+
+      <p>(PHONES contains telephone numbers associated with
+      persons). A person can have several numbers, then PHONES
+      contains several records with corresponding pers_id, or no
+      numbers (and no records in PHONES with such pers_id). An LDAP
+      objectclass to present such information could look like
+      this:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+  person
+  -------
+  MUST cn
+  MAY telephoneNumber $ firstName $ lastName
+  ...
+</pre>
+      </div>
+
+      <p>To fetch all values for cn attribute given person ID, we
+      construct the query:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+  SELECT CONCAT(persons.first_name,' ',persons.last_name)
+      AS cn FROM persons WHERE persons.id=?
+</pre>
+      </div>
+
+      <p>for telephoneNumber we can use:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+  SELECT phones.phone AS telephoneNumber FROM persons,phones
+      WHERE persons.id=phones.pers_id AND persons.id=?
+</pre>
+      </div>
+
+      <p>If we wanted to service LDAP requests with filters like
+      (telephoneNumber=123*), we would construct something
+      like:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+  SELECT ... FROM persons,phones
+      WHERE persons.id=phones.pers_id
+          AND persons.id=?
+          AND phones.phone like '%1%2%3%'
+</pre>
+      </div>
+
+      <p>(note how the telephoneNumber match is expanded in
+      multiple wildcards to account for interspersed ininfluential
+      chars like spaces, dashes and so; this occurs by design
+      because telephoneNumber is defined after a specially
+      recognized syntax). So, if we had information about what
+      tables contain values for each attribute, how to join these
+      tables and arrange these values, we could try to
+      automatically generate such statements, and translate search
+      filters to SQL WHERE clauses.</p>
+
+      <p>To store such information, we add three more tables to our
+      schema and fill it with data (see samples):</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+  ldap_oc_mappings (some columns are not listed for clarity)
+  ---------------
+  id=1
+  name="person"
+  keytbl="persons"
+  keycol="id"
+</pre>
+      </div>
+
+      <p>This table defines a mapping between objectclass (its name
+      held in the "name" column), and a table that holds the
+      primary key for corresponding entities. For instance, in our
+      example, the person entity, which we are trying to present as
+      "person" objectclass, resides in two tables (persons and
+      phones), and is identified by the persons.id column (that we
+      will call the primary key for this entity). Keytbl and keycol
+      thus contain "persons" (name of the table), and "id" (name of
+      the column).</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+  ldap_attr_mappings (some columns are not listed for clarity)
+  -----------
+  id=1
+  oc_map_id=1
+  name="cn"
+  sel_expr="CONCAT(persons.first_name,' ',persons.last_name)"
+  from_tbls="persons"
+  join_where=NULL
+  ************
+  id=&lt;n&gt;
+  oc_map_id=1
+  name="telephoneNumber"
+  sel_expr="phones.phone"
+  from_tbls="persons,phones"
+  join_where="phones.pers_id=persons.id"
+</pre>
+      </div>
+
+      <p>This table defines mappings between LDAP attributes and
+      SQL queries that load their values. Note that, unlike LDAP
+      schema, these are not <span class="emphasis"><em>attribute
+      types</em></span> - the attribute "cn" for "person"
+      objectclass can have its values in different tables than "cn"
+      for some other objectclass, so attribute mappings depend on
+      objectclass mappings (unlike attribute types in LDAP schema,
+      which are indifferent to objectclasses). Thus, we have
+      oc_map_id column with link to oc_mappings table.</p>
+
+      <p>Now we cut the SQL query that loads values for a given
+      attribute into 3 parts. First goes into sel_expr column -
+      this is the expression we had between SELECT and FROM
+      keywords, which defines WHAT to load. Next is table list -
+      text between FROM and WHERE keywords. It may contain aliases
+      for convenience (see examples). The last is part of the where
+      clause, which (if it exists at all) expresses the condition
+      for joining the table containing values with the table
+      containing the primary key (foreign key equality and such).
+      If values are in the same table as the primary key, then this
+      column is left NULL (as for cn attribute above).</p>
+
+      <p>Having this information in parts, we are able to not only
+      construct queries that load attribute values by id of entry
+      (for this we could store SQL query as a whole), but to
+      construct queries that load id's of objects that correspond
+      to a given search filter (or at least part of it). See below
+      for examples.</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+  ldap_entries
+  ------------
+  id=1
+  dn=&lt;dn you choose&gt;
+  oc_map_id=...
+  parent=&lt;parent record id&gt;
+  keyval=&lt;value of primary key&gt;
+</pre>
+      </div>
+
+      <p>This table defines mappings between DNs of entries in your
+      LDAP tree, and values of primary keys for corresponding
+      relational data. It has recursive structure (parent column
+      references id column of the same table), which allows you to
+      add any tree structure(s) to your flat relational data.
+      Having id of objectclass mapping, we can determine table and
+      column for primary key, and keyval stores value of it, thus
+      defining the exact tuple corresponding to the LDAP entry with
+      this DN.</p>
+
+      <p>Note that such design (see exact SQL table creation query)
+      implies one important constraint - the key must be an
+      integer. But all that I know about well-designed schemas
+      makes me think that it's not very narrow ;) If anyone needs
+      support for different types for keys - he may want to write a
+      patch, and submit it to OpenLDAP ITS, then I'll include
+      it.</p>
+
+      <p>Also, several users complained that they don't really need
+      very structured trees, and they don't want to update one more
+      table every time they add or delete an instance in the
+      relational schema. Those people can use a view instead of a
+      real table for ldap_entries, something like this (by Robin
+      Elfrink):</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+  CREATE VIEW ldap_entries (id, dn, oc_map_id, parent, keyval)
+      AS
+          SELECT 0, UPPER('o=MyCompany,c=NL'),
+              3, 0, 'baseObject' FROM unixusers WHERE userid='root'
+      UNION
+          SELECT (1000000000+userid),
+              UPPER(CONCAT(CONCAT('cn=',gecos),',o=MyCompany,c=NL')),
+              1, 0, userid FROM unixusers
+      UNION
+          SELECT (2000000000+groupnummer),
+              UPPER(CONCAT(CONCAT('cn=',groupnaam),',o=MyCompany,c=NL')),
+              2, 0, groupnummer FROM groups;
+</pre>
+      </div>
+
+      <p>If your RDBMS does not support <em class="replaceable"><code>unions</code></em> in views, only one
+      objectClass can be mapped in <em class="replaceable"><code>ldap_entries</code></em>, and the
+      baseObject cannot be created; in this case, see the
+      <em class="replaceable"><code>baseObject</code></em>
+      directive for a possible workaround.</p>
+    </div>
+
+    <div class="refsect1" title="TYPICAL SQL BACKEND OPERATION">
+      <a id="slapd-sql-5_sect8" name="slapd-sql-5_sect8" shape="rect"> </a>
+
+      <h2>TYPICAL SQL BACKEND OPERATION</h2>
+
+      <p>Having meta-information loaded, the SQL backend uses these
+      tables to determine a set of primary keys of candidates
+      (depending on search scope and filter). It tries to do it for
+      each objectclass registered in ldap_objclasses.</p>
+
+      <p>Example: for our query with filter (telephoneNumber=123*)
+      we would get the following query generated (which loads
+      candidate IDs)</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+  SELECT ldap_entries.id,persons.id, 'person' AS objectClass,
+         ldap_entries.dn AS dn
+    FROM ldap_entries,persons,phones
+   WHERE persons.id=ldap_entries.keyval
+     AND ldap_entries.objclass=?
+     AND ldap_entries.parent=?
+     AND phones.pers_id=persons.id
+     AND (phones.phone LIKE '%1%2%3%')
+</pre>
+      </div>
+
+      <p>(for ONELEVEL search) or "... AND dn=?" (for BASE search)
+      or "... AND dn LIKE '%?'" (for SUBTREE)</p>
+
+      <p>Then, for each candidate, we load the requested attributes
+      using per-attribute queries like</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+  SELECT phones.phone AS telephoneNumber
+    FROM persons,phones
+   WHERE persons.id=? AND phones.pers_id=persons.id
+</pre>
+      </div>
+
+      <p>Then, we use test_filter() from the frontend API to test
+      the entry for a full LDAP search filter match (since we
+      cannot effectively make sense of SYNTAX of corresponding LDAP
+      schema attribute, we translate the filter into the most
+      relaxed SQL condition to filter candidates), and send it to
+      the user.</p>
+
+      <p>ADD, DELETE, MODIFY and MODRDN operations are also
+      performed on per-attribute meta-information (add_proc etc.).
+      In those fields one can specify an SQL statement or stored
+      procedure call which can add, or delete given values of a
+      given attribute, using the given entry keyval (see examples
+      -- mostly PostgreSQL, ORACLE and MSSQL - since as of this
+      writing there are no stored procs in MySQL).</p>
+
+      <p>We just add more columns to ldap_oc_mappings and
+      ldap_attr_mappings, holding statements to execute (like
+      create_proc, add_proc, del_proc etc.), and flags governing
+      the order of parameters passed to those statements. Please
+      see samples to find out what are the parameters passed, and
+      other information on this matter - they are self-explanatory
+      for those familiar with the concepts expressed above.</p>
+    </div>
+
+    <div class="refsect1" title="COMMON TECHNIQUES">
+      <a id="slapd-sql-5_sect9" name="slapd-sql-5_sect9" shape="rect"> </a>
+
+      <h2>COMMON TECHNIQUES</h2>
+
+      <p>First of all, let's recall that among other major
+      differences to the complete LDAP data model, the above
+      illustrated concept does not directly support such features
+      as multiple objectclasses per entry, and referrals.
+      Fortunately, they are easy to adopt in this scheme. The SQL
+      backend requires that one more table is added to the schema:
+      ldap_entry_objectclasses(entry_id,oc_name).</p>
+
+      <p>That table contains any number of objectclass names that
+      corresponding entries will possess, in addition to that
+      mentioned in mapping. The SQL backend automatically adds
+      attribute mapping for the "objectclass" attribute to each
+      objectclass mapping that loads values from this table. So,
+      you may, for instance, have a mapping for inetOrgPerson, and
+      use it for queries for "person" objectclass...</p>
+
+      <p>Referrals used to be implemented in a loose manner by
+      adding an extra table that allowed any entry to host a "ref"
+      attribute, along with a "referral" extra objectClass in table
+      ldap_entry_objclasses. In the current implementation,
+      referrals are treated like any other user-defined schema,
+      since "referral" is a structural objectclass. The suggested
+      practice is to define a "referral" entry in ldap_oc_mappings,
+      holding a naming attribute, e.g. "ou" or "cn", a "ref"
+      attribute, containing the url; in case multiple referrals per
+      entry are needed, a separate table for urls can be created,
+      where urls are mapped to the respective entries. The use of
+      the naming attribute usually requires to add an
+      "extensibleObject" value to ldap_entry_objclasses.</p>
+    </div>
+
+    <div class="refsect1" title="CAVEATS">
+      <a id="slapd-sql-5_sect10" name="slapd-sql-5_sect10" shape="rect"> </a>
+
+      <h2>CAVEATS</h2>
+
+      <p>As previously stated, this backend should not be
+      considered a replacement of other data storage backends, but
+      rather a gateway to existing RDBMS storages that need to be
+      published in LDAP form.</p>
+
+      <p>The <em class="replaceable"><code>hasSubordintes</code></em> operational
+      attribute is honored by back-sql in search results and in
+      compare operations; it is partially honored also in
+      filtering. Owing to design limitations, a (brain-dead?)
+      filter of the form <em class="replaceable"><code>(!(hasSubordinates=TRUE))</code></em>
+      will give no results instead of returning all the leaf
+      entries, because it actually expands into <span class="emphasis"><em>... AND NOT (1=1)</em></span>. If you need to
+      find all the leaf entries, please use <em class="replaceable"><code>(hasSubordinates=FALSE)</code></em>
+      instead.</p>
+
+      <p>A directoryString value of the form "__First___Last_"
+      (where underscores mean spaces, ASCII 0x20 char) corresponds
+      to its prettified counterpart "First_Last"; this is not
+      currently honored by back-sql if non-prettified data is
+      written via RDBMS; when non-prettified data is written
+      through back-sql, the prettified values are actually used
+      instead.</p>
+    </div>
+
+    <div class="refsect1" title="BUGS">
+      <a id="slapd-sql-5_sect11" name="slapd-sql-5_sect11" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>When the <em class="replaceable"><code>ldap_entry_objclasses</code></em> table
+      is empty, filters on the <em class="replaceable"><code>objectClass</code></em> attribute
+      erroneously result in no candidates. A workaround consists in
+      adding at least one row to that table, no matter if valid or
+      not.</p>
+    </div>
+
+    <div class="refsect1" title="PROXY CACHE OVERLAY">
+      <a id="slapd-sql-5_sect12" name="slapd-sql-5_sect12" shape="rect"> </a>
+
+      <h2>PROXY CACHE OVERLAY</h2>
+
+      <p>The proxy cache overlay allows caching of LDAP search
+      requests (queries) in a local database. See <a class="link" href="../htmlman5/slapo-pcache.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapo-pcache</span>(5)</span></a> for
+      details.</p>
+    </div>
+
+    <div class="refsect1" title="EXAMPLES">
+      <a id="slapd-sql-5_sect13" name="slapd-sql-5_sect13" shape="rect"> </a>
+
+      <h2>EXAMPLES</h2>
+
+      <p>There are example SQL modules in the
+      slapd/back−sql/rdbms_depend/ directory in the OpenLDAP
+      source tree.</p>
+    </div>
+
+    <div class="refsect1" title="ACCESS CONTROL">
+      <a id="slapd-sql-5_sect14" name="slapd-sql-5_sect14" shape="rect"> </a>
+
+      <h2>ACCESS CONTROL</h2>
+
+      <p>The <em class="replaceable"><code>sql</code></em> backend
+      honors access control semantics as indicated in <a class="link" href="../htmlman5/slapd.access.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.access</span>(5)</span></a> (including
+      the <em class="replaceable"><code>disclose</code></em> access
+      privilege when enabled at compile time).</p>
+    </div>
+
+    <div class="refsect1" title="FILES">
+      <a id="slapd-sql-5_sect15" name="slapd-sql-5_sect15" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <div class="variablelist">
+        <dl>
+          <dt><span class="term">ETCDIR/slapd.conf</span></dt>
+
+          <dd>
+            <p>default slapd configuration file</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1" title="SEE ALSO">
+      <a id="slapd-sql-5_sect16" name="slapd-sql-5_sect16" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a>, <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a>.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                  See the following documents: <a class="ulink" href="../openldap-COPYRIGHT.html" target="_top" shape="rect">COPYRIGHT</a>, <a class="ulink" href="../openldap-LICENSE.html" target="_top" shape="rect">LICENSE</a><br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
