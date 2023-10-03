@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>blkdiscard(8) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="blkdiscard(8) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index8.html" shape="rect">Section 8</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="blkdiscard.8" name="blkdiscard.8" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>blkdiscard — discard sectors on a device</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">blkdiscard</code> [ <code class="option">−o</code> offset ] [ <code class="option">−l</code> length ] [<code class="option">−s</code>] [<code class="option">−v</code>] device</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="blkdiscard-8_sect1" name="blkdiscard-8_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><span class="command"><strong>blkdiscard</strong></span>
+      is used to discard device sectors. This is useful for
+      solid-state drivers (SSDs) and thinly-provisioned storage.
+      Unlike <a class="link" href="../htmlman8/fstrim.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fstrim</span>(8)</span></a>, this command is
+      used directly on the block device.</p>
+
+      <p>By default, <span class="command"><strong>blkdiscard</strong></span> will discard all
+      blocks on the device. Options may be used to modify this
+      behavior based on range or size, as explained below.</p>
+
+      <p>The <em class="parameter"><code>device</code></em>
+      argument is the pathname of the block device.</p>
+
+      <p><span class="emphasis"><em>WARNING: All data in the
+      discarded region on the device will be lost!</em></span></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="blkdiscard-8_sect2" name="blkdiscard-8_sect2" shape="rect"> </a>
+
+      <h2>OPTIONS</h2>
+
+      <p>The <em class="parameter"><code>offset</code></em> and
+      <em class="parameter"><code>length</code></em> arguments may
+      be followed by the multiplicative suffixes KiB (=1024), MiB
+      (=1024*1024), and so on for GiB, TiB, PiB, EiB, ZiB and YiB
+      (the "iB" is optional, e.g., "K" has the same meaning as
+      "KiB") or the suffixes KB (=1000), MB (=1000*1000), and so on
+      for GB, TB, PB, EB, ZB and YB.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="option">−o,
+          −−offset <em class="parameter"><code>offset</code></em></code></span></dt>
+
+          <dd>
+            <p>Byte offset into the device from which to start
+            discarding. The provided value will be aligned to the
+            device sector size. The default value is zero.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−l,
+          −−length <em class="parameter"><code>length</code></em></code></span></dt>
+
+          <dd>
+            <p>The number of bytes to discard (counting from the
+            starting point). The provided value will be aligned to
+            the device sector size. If the specified value extends
+            past the end of the device, <span class="command"><strong>blkdiscard</strong></span> will stop
+            at the device size boundary. The default value extends
+            to the end of the device.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−p,
+          −−step <em class="parameter"><code>length</code></em></code></span></dt>
+
+          <dd>
+            <p>The number of bytes to discard within one iteration.
+            The default is to discard all by one ioctl call.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−s,
+          −−secure</code></span></dt>
+
+          <dd>
+            <p>Perform a secure discard. A secure discard is the
+            same as a regular discard except that all copies of the
+            discarded blocks that were possibly created by garbage
+            collection must also be erased. This requires support
+            from the device.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−v,
+          −−verbose</code></span></dt>
+
+          <dd>
+            <p>Display the aligned values of <em class="parameter"><code>offset</code></em> and <em class="parameter"><code>length</code></em>. If the option
+            <code class="option">−−step</code>
+            specified than it prints discard progress every
+            second.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−V,
+          −−version</code></span></dt>
+
+          <dd>
+            <p>Display version information and exit.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−h,
+          −−help</code></span></dt>
+
+          <dd>
+            <p>Display help text and exit.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="blkdiscard-8_sect3" name="blkdiscard-8_sect3" shape="rect"> </a>
+
+      <h2>AUTHOR</h2>
+
+      <p><a class="literalurl" href="mailto:lczerner%20REMOVE%20@%20THIS%20redhat.com" target="_top" shape="rect">Lukas Czerner</a></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="blkdiscard-8_sect4" name="blkdiscard-8_sect4" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman8/fstrim.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fstrim</span>(8)</span></a></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="blkdiscard-8_sect5" name="blkdiscard-8_sect5" shape="rect"> </a>
+
+      <h2>AVAILABILITY</h2>
+
+      <p>The blkdiscard command is part of the util-linux package
+      and is available <a class="literalurl" href="ftp://ftp.kernel.org/pub/linux/utils/util-linux/" target="_top" shape="rect">Linux Kernel Archive</a></p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

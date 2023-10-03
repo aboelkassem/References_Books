@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>delete_module(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="delete_module(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="delete-module.2" name="delete-module.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>delete_module — unload a kernel module</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>delete_module</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">name</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">flags</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">No declaration of this
+            function is provided in glibc headers; see NOTES.</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="delete-module-2_sect1" name="delete-module-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">delete_module</code>() system
+      call attempts to remove the unused loadable module entry
+      identified by <em class="parameter"><code>name</code></em>.
+      If the module has an <em class="replaceable"><code>exit</code></em> function, then that
+      function is executed before unloading the module. The
+      <em class="parameter"><code>flags</code></em> argument is
+      used to modify the behavior of the system call, as described
+      below. This system call requires privilege.</p>
+
+      <p>Module removal is attempted according to the following
+      rules:</p>
+
+      <div class="orderedlist">
+        <ol class="orderedlist" type="1">
+          <li class="listitem">
+            <p>If there are other loaded modules that depend on
+            (i.e., refer to symbols defined in) this module, then
+            the call fails.</p>
+          </li>
+
+          <li class="listitem">
+            <p>Otherwise, if the reference count for the module
+            (i.e., the number of processes currently using the
+            module) is zero, then the module is immediately
+            unloaded.</p>
+          </li>
+
+          <li class="listitem">
+            <p>If a module has a nonzero reference count, then the
+            behavior depends on the bits set in <em class="parameter"><code>flags</code></em>. In normal usage
+            (see NOTES), the <code class="constant">O_NONBLOCK</code> flag is always specified,
+            and the <code class="constant">O_TRUNC</code> flag may
+            additionally be specified.</p>
+
+            <p>The various combinations for <em class="parameter"><code>flags</code></em> have the following
+            effect:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><span class="emphasis"><em>flags ==
+                    O_NONBLOCK</em></span></span></dt>
+
+                    <dd>
+                      <p>The call returns immediately, with an
+                      error.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="function">flags==</code>(<em class="parameter"><code>O_NONBLOCK|O_TRUNC</code></em>)</span></dt>
+
+                    <dd>
+                      <p>The module is unloaded immediately,
+                      regardless of whether it has a nonzero
+                      reference count.</p>
+                    </dd>
+
+                    <dt><span class="term"><span class="emphasis"><em>(flags &amp; O_NONBLOCK) ==
+                    0</em></span></span></dt>
+
+                    <dd>
+                      <p>If <em class="parameter"><code>flags</code></em> does not
+                      specify <code class="constant">O_NONBLOCK</code>, the following
+                      steps occur:</p>
+
+                      <div class="blockquote">
+                        <blockquote class="blockquote">
+                          <div class="itemizedlist">
+                            <ul class="itemizedlist" style="list-style-type: disc;">
+                              <li class="listitem">
+                                <p>The module is marked so that no
+                                new references are permitted.</p>
+                              </li>
+
+                              <li class="listitem">
+                                <p>If the module's reference count
+                                is nonzero, the caller is placed in
+                                an uninterruptible sleep state
+                                (<code class="constant">TASK_UNINTERRUPTIBLE</code>)
+                                until the reference count is zero,
+                                at which point the call
+                                unblocks.</p>
+                              </li>
+
+                              <li class="listitem">
+                                <p>The module is unloaded in the
+                                usual way.</p>
+                              </li>
+                            </ul>
+                          </div>
+                        </blockquote>
+                      </div>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <p>The <code class="constant">O_TRUNC</code> flag has one
+      further effect on the rules described above. By default, if a
+      module has an <em class="replaceable"><code>init</code></em>
+      function but no <em class="replaceable"><code>exit</code></em> function, then an
+      attempt to remove the module will fail. However, if
+      <code class="constant">O_TRUNC</code> was specified, this
+      requirement is bypassed.</p>
+
+      <p>Using the <code class="constant">O_TRUNC</code> flag is
+      dangerous! If the kernel was not built with <code class="constant">CONFIG_MODULE_FORCE_UNLOAD</code>, this flag is
+      silently ignored. (Normally, <code class="constant">CONFIG_MODULE_FORCE_UNLOAD</code> is enabled.)
+      Using this flag taints the kernel (TAINT_FORCED_RMMOD).</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="delete-module-2_sect2" name="delete-module-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, zero is returned. On error, −1 is
+      returned and <code class="varname">errno</code> is set
+      appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="delete-module-2_sect3" name="delete-module-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EBUSY</span></span></dt>
+
+          <dd>
+            <p>The module is not "live" (i.e., it is still being
+            initialized or is already marked for removal); or, the
+            module has an <em class="replaceable"><code>init</code></em> function but has
+            no <em class="replaceable"><code>exit</code></em>
+            function, and <code class="constant">O_TRUNC</code> was
+            not specified in <em class="parameter"><code>flags</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>name</code></em> refers
+            to a location outside the process's accessible address
+            space.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOENT</span></span></dt>
+
+          <dd>
+            <p>No module by that name exists.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The caller was not privileged (did not have the
+            <code class="constant">CAP_SYS_MODULE</code>
+            capability), or module unloading is disabled (see
+            <code class="filename">/proc/sys/kernel/modules_disabled</code> in
+            <a class="link" href="../htmlman5/proc.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">proc</span>(5)</span></a>).</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EWOULDBLOCK</span></span></dt>
+
+          <dd>
+            <p>Other modules depend on this module; or,
+            <code class="constant">O_NONBLOCK</code> was specified
+            in <em class="parameter"><code>flags</code></em>, but
+            the reference count of this module is nonzero and
+            <code class="constant">O_TRUNC</code> was not specified
+            in <em class="parameter"><code>flags</code></em>.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="delete-module-2_sect4" name="delete-module-2_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p><code class="function">delete_module</code>() is
+      Linux-specific.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="delete-module-2_sect5" name="delete-module-2_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>The <code class="function">delete_module</code>() system
+      call is not supported by glibc. No declaration is provided in
+      glibc headers, but, through a quirk of history, glibc does
+      export an ABI for this system call. Therefore, in order to
+      employ this system call, it is sufficient to manually declare
+      the interface in your code; alternatively, you can invoke the
+      system call using <a class="link" href="../htmlman2/syscall.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">syscall</span>(2)</span></a>.</p>
+
+      <p>The uninterruptible sleep that may occur if <code class="constant">O_NONBLOCK</code> is omitted from <em class="parameter"><code>flags</code></em> is considered
+      undesirable, because the sleeping process is left in an
+      unkillable state. As at Linux 3.7, specifying <code class="constant">O_NONBLOCK</code> is optional, but in future
+      kernels it is likely to become mandatory.</p>
+
+      <div class="refsect2">
+        <a id="delete-module-2_sect6" name="delete-module-2_sect6" shape="rect"> </a>
+
+        <h3>Linux 2.4 and earlier</h3>
+
+        <p>In Linux 2.4 and earlier, the system call took only one
+        argument:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+  <code class="function">   int delete_module</code>(<em class="parameter"><code>const char *name</code></em>);
+</pre>
+        </div>
+
+        <p>If <em class="parameter"><code>name</code></em> is NULL,
+        all unused modules marked auto-clean are removed.</p>
+
+        <p>Some further details of differences in the behavior of
+        <code class="function">delete_module</code>() in Linux 2.4
+        and earlier are <em class="replaceable"><code>not</code></em> currently explained in
+        this manual page.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="delete-module-2_sect7" name="delete-module-2_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/create_module.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">create_module</span>(2)</span></a>, <a class="link" href="../htmlman2/init_module.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">init_module</span>(2)</span></a>, <a class="link" href="../htmlman2/query_module.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">query_module</span>(2)</span></a>,
+      <span class="citerefentry"><span class="refentrytitle">lsmod</span>(8)</span>, <span class="citerefentry"><span class="refentrytitle">modprobe</span>(8)</span>, <span class="citerefentry"><span class="refentrytitle">rmmod</span>(8)</span></p>
+    </div>
+
+    <div class="colophon">
+      <a id="delete-module-2_sect8" name="delete-module-2_sect8" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2012 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

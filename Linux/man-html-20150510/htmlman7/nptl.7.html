@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>nptl(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="nptl(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="nptl.7" name="nptl.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>nptl — Native POSIX Threads Library</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="nptl-7_sect1" name="nptl-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>NPTL (Native POSIX Threads Library) is the GNU C library
+      POSIX threads implementation that is used on modern Linux
+      systems.</p>
+
+      <div class="refsect2">
+        <a id="nptl-7_sect2" name="nptl-7_sect2" shape="rect"> </a>
+
+        <h3>NPTL and signals</h3>
+
+        <p>NPTL makes internal use of the first two real-time
+        signals (signal numbers 32 and 33). One of these signals is
+        used to support thread cancellation and POSIX timers (see
+        <a class="link" href="../htmlman2/timer_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">timer_create</span>(2)</span></a>); the
+        other is used as part of a mechanism that ensures all
+        threads in a process always have the same UIDs and GIDs, as
+        required by POSIX. These signals cannot be used in
+        applications.</p>
+
+        <p>To prevent accidental use of these signals in
+        applications, which might interfere with the operation of
+        the NPTL implementation, various glibc library functions
+        and system call wrapper functions attempt to hide these
+        signals from applications, as follows:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p><code class="constant">SIGRTMIN</code> is defined
+              with the value 34 (rather than 32).</p>
+            </li>
+
+            <li class="listitem">
+              <p>The <a class="link" href="../htmlman2/sigwaitinfo.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigwaitinfo</span>(2)</span></a>,
+              <a class="link" href="../htmlman2/sigwaitinfo.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigtimedwait</span>(2)</span></a>,
+              and <a class="link" href="../htmlman3/sigwait.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigwait</span>(3)</span></a>
+              interfaces silently ignore requests to wait for these
+              two signals if they are specified in the signal set
+              argument of these calls.</p>
+            </li>
+
+            <li class="listitem">
+              <p>The <a class="link" href="../htmlman2/sigprocmask.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigprocmask</span>(2)</span></a> and
+              <a class="link" href="../htmlman3/pthread_sigmask.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_sigmask</span>(3)</span></a>
+              interfaces silently ignore attempts to block these
+              two signals.</p>
+            </li>
+
+            <li class="listitem">
+              <p>The <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a>,
+              <a class="link" href="../htmlman3/pthread_kill.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_kill</span>(3)</span></a>,
+              and <a class="link" href="../htmlman3/pthread_sigqueue.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_sigqueue</span>(3)</span></a>
+              interfaces fail with the error <span class="errorname">EINVAL</span> (indicating an invalid
+              signal number) if these signals are specified.</p>
+            </li>
+
+            <li class="listitem">
+              <p><a class="link" href="../htmlman3/sigsetops.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigfillset</span>(3)</span></a> does
+              not include these two signals when it creates a full
+              signal set.</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="nptl-7_sect3" name="nptl-7_sect3" shape="rect"> </a>
+
+        <h3>NPTL and process credential changes</h3>
+
+        <p>At the Linux kernel level, credentials (user and group
+        IDs) are a per-thread attribute. However, POSIX requires
+        that all of the POSIX threads in a process have the same
+        credentials. To accommodate this requirement, the NPTL
+        implementation wraps all of the system calls that change
+        process credentials with functions that, in addition to
+        invoking the underlying system call, arrange for all other
+        threads in the process to also change their
+        credentials.</p>
+
+        <p>The implementation of each of these system calls
+        involves the use of a real-time signal that is sent (using
+        <a class="link" href="../htmlman2/tkill.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tgkill</span>(2)</span></a>) to each of the
+        other threads that must change its credentials. Before
+        sending these signals, the thread that is changing
+        credentials saves the new credential(s) and records the
+        system call being employed in a global buffer. A signal
+        handler in the receiving thread(s) fetches this information
+        and then uses the same system call to change its
+        credentials.</p>
+
+        <p>Wrapper functions employing this technique are provided
+        for <a class="link" href="../htmlman2/setgid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setgid</span>(2)</span></a>, <a class="link" href="../htmlman2/setuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setuid</span>(2)</span></a>, <a class="link" href="../htmlman2/seteuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setegid</span>(2)</span></a>, <a class="link" href="../htmlman2/seteuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">seteuid</span>(2)</span></a>, <a class="link" href="../htmlman2/setreuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setregid</span>(2)</span></a>, <a class="link" href="../htmlman2/setreuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setreuid</span>(2)</span></a>, <a class="link" href="../htmlman2/setresuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setresgid</span>(2)</span></a>, <a class="link" href="../htmlman2/setresuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setresuid</span>(2)</span></a>, and
+        <a class="link" href="../htmlman2/getgroups.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setgroups</span>(2)</span></a>.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="nptl-7_sect4" name="nptl-7_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>For details of the conformance of NPTL to the POSIX
+      standard, see <a class="link" href="../htmlman7/pthreads.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthreads</span>(7)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="nptl-7_sect5" name="nptl-7_sect5" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman7/credentials.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">credentials</span>(7)</span></a>, <a class="link" href="../htmlman7/pthreads.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthreads</span>(7)</span></a>, <a class="link" href="../htmlman7/signal.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(7)</span></a>, <a class="link" href="../htmlman7/standards.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">standards</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="nptl-7_sect6" name="nptl-7_sect6" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 2015 by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

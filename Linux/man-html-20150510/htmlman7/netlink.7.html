@@ -1,0 +1,967 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>netlink(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="netlink(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="netlink.7" name="netlink.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>netlink — communication between kernel and user
+      space (AF_NETLINK)</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;asm/types.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;linux/netlink.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">netlink_socket =
+            <strong>socket</strong>(</code></td>
+
+            <td rowspan="1" colspan="1"><var class="pdparam">AF_NETLINK</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1"><var class="pdparam">socket_type</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1"><var class="pdparam">netlink_family</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="netlink-7_sect1" name="netlink-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>Netlink is used to transfer information between kernel and
+      user-space processes. It consists of a standard sockets-based
+      interface for user space processes and an internal kernel API
+      for kernel modules. The internal kernel interface is not
+      documented in this manual page. There is also an obsolete
+      netlink interface via netlink character devices; this
+      interface is not documented here and is provided only for
+      backward compatibility.</p>
+
+      <p>Netlink is a datagram-oriented service. Both <code class="constant">SOCK_RAW</code> and <code class="constant">SOCK_DGRAM</code> are valid values for <em class="parameter"><code>socket_type</code></em>. However, the
+      netlink protocol does not distinguish between datagram and
+      raw sockets.</p>
+
+      <p><em class="parameter"><code>netlink_family</code></em>
+      selects the kernel module or netlink group to communicate
+      with. The currently assigned netlink families are:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">NETLINK_ROUTE</code></span></dt>
+
+          <dd>
+            <p>Receives routing and link updates and may be used to
+            modify the routing tables (both IPv4 and IPv6), IP
+            addresses, link parameters, neighbor setups, queueing
+            disciplines, traffic classes and packet classifiers
+            (see <a class="link" href="../htmlman7/rtnetlink.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rtnetlink</span>(7)</span></a>).</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">NETLINK_W1</code></span></dt>
+
+          <dd>
+            <p>Messages from 1-wire subsystem.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">NETLINK_USERSOCK</code></span></dt>
+
+          <dd>
+            <p>Reserved for user-mode socket protocols.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">NETLINK_FIREWALL</code></span></dt>
+
+          <dd>
+            <p>Transport IPv4 packets from netfilter to user space.
+            Used by <em class="replaceable"><code>ip_queue</code></em> kernel
+            module.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">NETLINK_INET_DIAG</code></span></dt>
+
+          <dd>
+            <p>INET socket monitoring.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">NETLINK_NFLOG</code></span></dt>
+
+          <dd>
+            <p>Netfilter/iptables ULOG.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">NETLINK_XFRM</code></span></dt>
+
+          <dd>
+            <p>IPsec.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">NETLINK_SELINUX</code></span></dt>
+
+          <dd>
+            <p>SELinux event notifications.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">NETLINK_ISCSI</code></span></dt>
+
+          <dd>
+            <p>Open-iSCSI.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">NETLINK_AUDIT</code></span></dt>
+
+          <dd>
+            <p>Auditing.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">NETLINK_FIB_LOOKUP</code></span></dt>
+
+          <dd>
+            <p>Access to FIB lookup from user space.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">NETLINK_CONNECTOR</code></span></dt>
+
+          <dd>
+            <p>Kernel connector. See <code class="filename">Documentation/connector/*</code> in the
+            Linux kernel source tree for further information.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">NETLINK_NETFILTER</code></span></dt>
+
+          <dd>
+            <p>Netfilter subsystem.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">NETLINK_IP6_FW</code></span></dt>
+
+          <dd>
+            <p>Transport IPv6 packets from netfilter to user space.
+            Used by <em class="replaceable"><code>ip6_queue</code></em> kernel
+            module.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">NETLINK_DNRTMSG</code></span></dt>
+
+          <dd>
+            <p>DECnet routing messages.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">NETLINK_KOBJECT_UEVENT</code></span></dt>
+
+          <dd>
+            <p>Kernel messages to user space.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">NETLINK_GENERIC</code></span></dt>
+
+          <dd>
+            <p>Generic netlink family for simplified netlink
+            usage.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">NETLINK_CRYPTO</code> (since Linux
+          3.2)</span></dt>
+
+          <dd>
+            <p>Netlink interface to request information about
+            ciphers registered with the kernel crypto API as well
+            as allow configuration of the kernel crypto API.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>Netlink messages consist of a byte stream with one or
+      multiple <em class="replaceable"><code>nlmsghdr</code></em>
+      headers and associated payload. The byte stream should be
+      accessed only with the standard <em class="replaceable"><code>NLMSG_*</code></em> macros. See <a class="link" href="../htmlman3/netlink.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">netlink</span>(3)</span></a> for further
+      information.</p>
+
+      <p>In multipart messages (multiple <em class="replaceable"><code>nlmsghdr</code></em> headers with
+      associated payload in one byte stream) the first and all
+      following headers have the <code class="constant">NLM_F_MULTI</code> flag set, except for the last
+      header which has the type <code class="constant">NLMSG_DONE</code>.</p>
+
+      <p>After each <em class="replaceable"><code>nlmsghdr</code></em> the payload
+      follows.</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="structdef">
+            <table style="border-collapse: collapse;">
+              <colgroup span="1">
+                <col class="c1" span="1" />
+                <col class="c2" span="1" />
+                <col class="c3" span="1" />
+                <col class="c4" span="1" />
+                <col class="c5" span="1" />
+              </colgroup>
+
+              <tbody>
+                <tr>
+                  <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                  struct</td>
+
+                  <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">nlmsghdr</span> {</td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u32</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>nlmsg_len</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      
+                      /* Length of message including header. */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u16</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>nlmsg_type</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      
+                      /* Type of message content. */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u16</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>nlmsg_flags</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      /* Additional flags. */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u32</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>nlmsg_seq</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      /* Sequence number. */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u32</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>nlmsg_pid</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      
+                      /* Sender port ID. */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </blockquote>
+      </div>
+
+      <p><em class="parameter"><code>nlmsg_type</code></em> can be
+      one of the standard message types: <code class="constant">NLMSG_NOOP</code> message is to be ignored,
+      <code class="constant">NLMSG_ERROR</code> message signals an
+      error and the payload contains an <em class="replaceable"><code>nlmsgerr</code></em> structure,
+      <code class="constant">NLMSG_DONE</code> message terminates a
+      multipart message.</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="structdef">
+            <table style="border-collapse: collapse;">
+              <colgroup span="1">
+                <col class="c1" span="1" />
+                <col class="c2" span="1" />
+                <col class="c3" span="1" />
+                <col class="c4" span="1" />
+                <col class="c5" span="1" />
+              </colgroup>
+
+              <tbody>
+                <tr>
+                  <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                  struct</td>
+
+                  <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">nlmsgerr</span> {</td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>error</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      
+                      /* Negative errno or 0 for acknowledgements */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">struct nlmsghdr</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>msg</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      
+                      /* Message header that caused the error */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>A netlink family usually specifies more message types, see
+      the appropriate manual pages for that, for example, <a class="link" href="../htmlman7/rtnetlink.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rtnetlink</span>(7)</span></a> for
+      <code class="constant">NETLINK_ROUTE</code>.</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr style="">
+              <td style="" colspan="2" align="left" rowspan="1">Standard flag
+              bits in <em class="parameter"><code>nlmsg_flags</code></em></td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><code class="constant">NLM_F_REQUEST</code></td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Must be set on all request
+              messages.</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><code class="constant">NLM_F_MULTI</code></td>
+
+              <td style="" align="left" rowspan="1" colspan="1">The message is part of a
+              multipart message terminated by <code class="literal">NLMSG_DONE</code>.</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><code class="constant">NLM_F_ACK</code></td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Request for an
+              acknowledgment on success.</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><code class="constant">NLM_F_ECHO</code></td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Echo this request.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr style="">
+              <td style="" colspan="2" align="left" rowspan="1">Additional flag
+              bits for GET requests</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><code class="constant">NLM_F_ROOT</code></td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Return the complete table
+              instead of a single entry.</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><code class="constant">NLM_F_MATCH</code></td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Return all entries matching
+              criteria passed in message content. Not implemented
+              yet.</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><code class="constant">NLM_F_ATOMIC</code></td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Return an atomic snapshot
+              of the table.</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><code class="constant">NLM_F_DUMP</code></td>
+
+              <td style="" align="left" rowspan="1" colspan="1">
+                <p>Convenience macro; equivalent to</p>
+
+                <p>(NLM_F_ROOT|NLM_F_MATCH).</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Note that <code class="constant">NLM_F_ATOMIC</code>
+      requires the <code class="constant">CAP_NET_ADMIN</code>
+      capability or an effective UID of 0.</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr style="">
+              <td style="" colspan="2" align="left" rowspan="1">Additional flag
+              bits for NEW requests</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><code class="constant">NLM_F_REPLACE</code></td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Replace existing matching
+              object.</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><code class="constant">NLM_F_EXCL</code></td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Don't replace if the object
+              already exists.</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><code class="constant">NLM_F_CREATE</code></td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Create object if it doesn't
+              already exist.</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><code class="constant">NLM_F_APPEND</code></td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Add to the end of the
+              object list.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p><em class="parameter"><code>nlmsg_seq</code></em> and
+      <em class="parameter"><code>nlmsg_pid</code></em> are used to
+      track messages. <em class="parameter"><code>nlmsg_pid</code></em> shows the origin of
+      the message. Note that there isn't a 1:1 relationship between
+      <em class="parameter"><code>nlmsg_pid</code></em> and the PID
+      of the process if the message originated from a netlink
+      socket. See the <span class="emphasis"><em>ADDRESS
+      FORMATS</em></span> section for further information.</p>
+
+      <p>Both <em class="parameter"><code>nlmsg_seq</code></em> and
+      <em class="parameter"><code>nlmsg_pid</code></em> are opaque
+      to netlink core.</p>
+
+      <p>Netlink is not a reliable protocol. It tries its best to
+      deliver a message to its destination(s), but may drop
+      messages when an out-of-memory condition or other error
+      occurs. For reliable transfer the sender can request an
+      acknowledgement from the receiver by setting the <code class="constant">NLM_F_ACK</code> flag. An acknowledgment is an
+      <code class="constant">NLMSG_ERROR</code> packet with the
+      error field set to 0. The application must generate
+      acknowledgements for received messages itself. The kernel
+      tries to send an <code class="constant">NLMSG_ERROR</code>
+      message for every failed packet. A user process should follow
+      this convention too.</p>
+
+      <p>However, reliable transmissions from kernel to user are
+      impossible in any case. The kernel can't send a netlink
+      message if the socket buffer is full: the message will be
+      dropped and the kernel and the user-space process will no
+      longer have the same view of kernel state. It is up to the
+      application to detect when this happens (via the <span class="errorname">ENOBUFS</span> error returned by <a class="link" href="../htmlman2/recv.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">recvmsg</span>(2)</span></a>) and
+      resynchronize.</p>
+
+      <div class="refsect2">
+        <a id="netlink-7_sect2" name="netlink-7_sect2" shape="rect"> </a>
+
+        <h3>Address formats</h3>
+
+        <p>The <em class="replaceable"><code>sockaddr_nl</code></em> structure
+        describes a netlink client in user space or in the kernel.
+        A <em class="replaceable"><code>sockaddr_nl</code></em> can
+        be either unicast (only sent to one peer) or sent to
+        netlink multicast groups (<em class="replaceable"><code>nl_groups</code></em> not equal 0).</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="structdef">
+              <table style="border-collapse: collapse;">
+                <colgroup span="1">
+                  <col class="c1" span="1" />
+                  <col class="c2" span="1" />
+                  <col class="c3" span="1" />
+                  <col class="c4" span="1" />
+                  <col class="c5" span="1" />
+                </colgroup>
+
+                <tbody>
+                  <tr>
+                    <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                    struct</td>
+
+                    <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">sockaddr_nl</span> {</td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">sa_family_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>nl_family</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        /* AF_NETLINK */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>nl_pad</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        /* Zero. */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">pid_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>nl_pid</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        /* Port ID. */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u32</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>nl_groups</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Multicast groups mask. */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </blockquote>
+        </div>
+
+        <p><em class="parameter"><code>nl_pid</code></em> is the
+        unicast address of netlink socket. It's always 0 if the
+        destination is in the kernel. For a user-space process,
+        <em class="parameter"><code>nl_pid</code></em> is usually
+        the PID of the process owning the destination socket.
+        However, <em class="parameter"><code>nl_pid</code></em>
+        identifies a netlink socket, not a process. If a process
+        owns several netlink sockets, then <em class="parameter"><code>nl_pid</code></em> can be equal to the
+        process ID only for at most one socket. There are two ways
+        to assign <em class="parameter"><code>nl_pid</code></em> to
+        a netlink socket. If the application sets <em class="parameter"><code>nl_pid</code></em> before calling
+        <a class="link" href="../htmlman2/bind.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">bind</span>(2)</span></a>, then it is up to
+        the application to make sure that <em class="parameter"><code>nl_pid</code></em> is unique. If the
+        application sets it to 0, the kernel takes care of
+        assigning it. The kernel assigns the process ID to the
+        first netlink socket the process opens and assigns a unique
+        <em class="parameter"><code>nl_pid</code></em> to every
+        netlink socket that the process subsequently creates.</p>
+
+        <p><em class="parameter"><code>nl_groups</code></em> is a
+        bit mask with every bit representing a netlink group
+        number. Each netlink family has a set of 32 multicast
+        groups. When <a class="link" href="../htmlman2/bind.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">bind</span>(2)</span></a> is called on the
+        socket, the <em class="parameter"><code>nl_groups</code></em> field in the
+        <em class="replaceable"><code>sockaddr_nl</code></em>
+        should be set to a bit mask of the groups which it wishes
+        to listen to. The default value for this field is zero
+        which means that no multicasts will be received. A socket
+        may multicast messages to any of the multicast groups by
+        setting <em class="parameter"><code>nl_groups</code></em>
+        to a bit mask of the groups it wishes to send to when it
+        calls <a class="link" href="../htmlman2/send.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sendmsg</span>(2)</span></a> or does a
+        <a class="link" href="../htmlman2/connect.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">connect</span>(2)</span></a>. Only
+        processes with an effective UID of 0 or the <code class="constant">CAP_NET_ADMIN</code> capability may send or
+        listen to a netlink multicast group. Since Linux 2.6.13,
+        messages can't be broadcast to multiple groups. Any replies
+        to a message received for a multicast group should be sent
+        back to the sending PID and the multicast group. Some Linux
+        kernel subsystems may additionally allow other users to
+        send and/or receive messages. As at Linux 3.0, the
+        <code class="constant">NETLINK_KOBJECT_UEVENT</code>,
+        <code class="constant">NETLINK_GENERIC</code>, <code class="constant">NETLINK_ROUTE</code>, and <code class="constant">NETLINK_SELINUX</code> groups allow other users
+        to receive messages. No groups allow other users to send
+        messages.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="netlink-7_sect3" name="netlink-7_sect3" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p>The socket interface to netlink is a new feature of Linux
+      2.2.</p>
+
+      <p>Linux 2.0 supported a more primitive device-based netlink
+      interface (which is still available as a compatibility
+      option). This obsolete interface is not described here.</p>
+
+      <p>NETLINK_SELINUX appeared in Linux 2.6.4.</p>
+
+      <p>NETLINK_AUDIT appeared in Linux 2.6.6.</p>
+
+      <p>NETLINK_KOBJECT_UEVENT appeared in Linux 2.6.10.</p>
+
+      <p>NETLINK_W1 and NETLINK_FIB_LOOKUP appeared in Linux
+      2.6.13.</p>
+
+      <p>NETLINK_INET_DIAG, NETLINK_CONNECTOR and NETLINK_NETFILTER
+      appeared in Linux 2.6.14.</p>
+
+      <p>NETLINK_GENERIC and NETLINK_ISCSI appeared in Linux
+      2.6.15.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="netlink-7_sect4" name="netlink-7_sect4" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>It is often better to use netlink via <em class="replaceable"><code>libnetlink</code></em> or <em class="replaceable"><code>libnl</code></em> than via the low-level
+      kernel interface.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="netlink-7_sect5" name="netlink-7_sect5" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>This manual page is not complete.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="netlink-7_sect6" name="netlink-7_sect6" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>The following example creates a <code class="constant">NETLINK_ROUTE</code> netlink socket which will
+      listen to the <code class="constant">RTMGRP_LINK</code>
+      (network interface create/delete/up/down events) and
+      <code class="constant">RTMGRP_IPV4_IFADDR</code></p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="informalexample">
+                  <pre class="programlisting" xml:space="preserve">
+struct sockaddr_nl sa;
+
+memset(&amp;sa, 0, sizeof(sa));
+sa.nl_family = AF_NETLINK;
+sa.nl_groups = RTMGRP_LINK | RTMGRP_IPV4_IFADDR;
+
+fd = socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
+bind(fd, (struct sockaddr *) &amp;sa, sizeof(sa));
+</pre>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>The next example demonstrates how to send a netlink
+            message to the kernel (pid 0). Note that the
+            application must take care of message sequence numbers
+            in order to reliably track acknowledgements.</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="informalexample">
+                  <pre class="programlisting" xml:space="preserve">
+struct nlmsghdr *nh;    /* The nlmsghdr with payload to send. */
+struct sockaddr_nl sa;
+struct iovec iov = { nh, nh−&gt;nlmsg_len };
+struct msghdr msg;
+
+msg = { &amp;sa, sizeof(sa), &amp;iov, 1, NULL, 0, 0 };
+memset(&amp;sa, 0, sizeof(sa));
+sa.nl_family = AF_NETLINK;
+nh−&gt;nlmsg_pid = 0;
+nh−&gt;nlmsg_seq = ++sequence_number;
+/* Request an ack from kernel by setting NLM_F_ACK. */
+nh−&gt;nlmsg_flags |= NLM_F_ACK;
+
+sendmsg(fd, &amp;msg, 0);
+</pre>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>And the last example is about reading netlink
+            message.</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="informalexample">
+                  <pre class="programlisting" xml:space="preserve">
+int len;
+char buf[4096];
+struct iovec iov = { buf, sizeof(buf) };
+struct sockaddr_nl sa;
+struct msghdr msg;
+struct nlmsghdr *nh;
+
+msg = { &amp;sa, sizeof(sa), &amp;iov, 1, NULL, 0, 0 };
+len = recvmsg(fd, &amp;msg, 0);
+
+for (nh = (struct nlmsghdr *) buf; NLMSG_OK (nh, len);
+     nh = NLMSG_NEXT (nh, len)) {
+    /* The end of multipart message. */
+    if (nh−&gt;nlmsg_type == NLMSG_DONE)
+        return;
+
+    if (nh−&gt;nlmsg_type == NLMSG_ERROR)
+        /* Do some error handling. */
+    ...
+
+    /* Continue with parsing payload. */
+    ...
+}
+</pre>
+                </div>
+              </blockquote>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="netlink-7_sect7" name="netlink-7_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/cmsg.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">cmsg</span>(3)</span></a>, <a class="link" href="../htmlman3/netlink.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">netlink</span>(3)</span></a>, <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>, <a class="link" href="../htmlman7/rtnetlink.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rtnetlink</span>(7)</span></a></p>
+
+      <p><a class="literalurl" href="ftp://ftp.inr.ac.ru/ip-routing/iproute2*" target="_top" shape="rect">information about libnetlink</a></p>
+
+      <p><a class="literalurl" href="http://people.suug.ch/~tgr/libnl/" target="_top" shape="rect">information
+      about libnl</a></p>
+
+      <p>RFC 3549 "Linux Netlink as an IP Services Protocol"</p>
+    </div>
+
+    <div class="colophon">
+      <a id="netlink-7_sect8" name="netlink-7_sect8" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    t<br />
+                  This man page is Copyright (c) 1998 by Andi Kleen.<br />
+
+                  <br />
+                  %%%LICENSE_START(GPL_NOVERSION_ONELINE)<br />
+                  Subject to the GPL.<br />
+                  %%%LICENSE_END<br />
+                  <br />
+                  Based on the original comments from Alexey Kuznetsov<br />
+
+                  Modified 2005-12-27 by Hasso Tepper &lt;hasso<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>estpak.ee&gt;<br />
+
+                  $Id: netlink.7,v 1.8 2000/06/22 13:23:00 ak Exp $<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

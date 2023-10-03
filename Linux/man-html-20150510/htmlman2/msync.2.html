@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>msync(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="msync(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="msync.2" name="msync.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>msync — synchronize a file with a memory map</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;sys/mman.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>msync</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">void *<var class="pdparam">addr</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">size_t <var class="pdparam">length</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">flags</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="msync-2_sect1" name="msync-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">msync</code>() flushes changes made
+      to the in-core copy of a file that was mapped into memory
+      using <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a> back to the
+      filesystem. Without use of this call, there is no guarantee
+      that changes are written back before <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">munmap</span>(2)</span></a> is called. To be
+      more precise, the part of the file that corresponds to the
+      memory area starting at <em class="parameter"><code>addr</code></em> and having length
+      <em class="parameter"><code>length</code></em> is
+      updated.</p>
+
+      <p>The <em class="parameter"><code>flags</code></em> argument
+      should specify exactly one of <code class="constant">MS_ASYNC</code> and <code class="constant">MS_SYNC</code>, and may additionally include the
+      <code class="constant">MS_INVALIDATE</code> bit. These bits
+      have the following meanings:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">MS_ASYNC</code></span></dt>
+
+          <dd>
+            <p>Specifies that an update be scheduled, but the call
+            returns immediately.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MS_SYNC</code></span></dt>
+
+          <dd>
+            <p>Requests an update and waits for it to complete.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MS_INVALIDATE</code></span></dt>
+
+          <dd>
+            <p>Asks to invalidate other mappings of the same file
+            (so that they can be updated with the fresh values just
+            written).</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="msync-2_sect2" name="msync-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, zero is returned. On error, −1 is
+      returned, and <code class="varname">errno</code> is set
+      appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="msync-2_sect3" name="msync-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EBUSY</span></span></dt>
+
+          <dd>
+            <p><code class="constant">MS_INVALIDATE</code> was
+            specified in <em class="parameter"><code>flags</code></em>, and a memory lock
+            exists for the specified address range.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>addr</code></em> is not
+            a multiple of PAGESIZE; or any bit other than
+            <code class="constant">MS_ASYNC</code> | <code class="constant">MS_INVALIDATE</code> | <code class="constant">MS_SYNC</code> is set in <em class="parameter"><code>flags</code></em>; or both
+            <code class="constant">MS_SYNC</code> and <code class="constant">MS_ASYNC</code> are set in <em class="parameter"><code>flags</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>The indicated memory (or part of it) was not
+            mapped.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="msync-2_sect4" name="msync-2_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>POSIX.1-2001.</p>
+
+      <p>This call was introduced in Linux 1.3.21, and then used
+      <span class="errorname">EFAULT</span> instead of <span class="errorname">ENOMEM</span>. In Linux 2.4.19, this was changed
+      to the POSIX value <span class="errorname">ENOMEM</span>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="msync-2_sect5" name="msync-2_sect5" shape="rect"> </a>
+
+      <h2>AVAILABILITY</h2>
+
+      <p>On POSIX systems on which <code class="function">msync</code>() is available, both <code class="constant">_POSIX_MAPPED_FILES</code> and <code class="constant">_POSIX_SYNCHRONIZED_IO</code> are defined in
+      <code class="literal">&lt;</code><code class="filename">unistd.h</code><code class="literal">&gt;</code>
+      to a value greater than 0. (See also <a class="link" href="../htmlman3/sysconf.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sysconf</span>(3)</span></a>.)</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="msync-2_sect6" name="msync-2_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>According to POSIX, either <code class="constant">MS_SYNC</code> or <code class="constant">MS_ASYNC</code> must be specified in <em class="parameter"><code>flags</code></em>, and indeed failure to
+      include one of these flags will cause <code class="function">msync</code>() to fail on some systems. However,
+      Linux permits a call to <code class="function">msync</code>()
+      that specifies neither of these flags, with semantics that
+      are (currently) equivalent to specifying <code class="constant">MS_ASYNC</code>. (Since Linux 2.6.19, <code class="constant">MS_ASYNC</code> is in fact a no-op, since the
+      kernel properly tracks dirty pages and flushes them to
+      storage as necessary.) Notwithstanding the Linux behavior,
+      portable, future-proof applications should ensure that they
+      specify either <code class="constant">MS_SYNC</code> or
+      <code class="constant">MS_ASYNC</code> in <em class="parameter"><code>flags</code></em>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="msync-2_sect7" name="msync-2_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a></p>
+
+      <p>B.O. Gallmeister, POSIX.4, O'Reilly, pp. 128-129 and
+      389-391.</p>
+    </div>
+
+    <div class="colophon">
+      <a id="msync-2_sect8" name="msync-2_sect8" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 1996 Andries Brouwer (aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl)<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

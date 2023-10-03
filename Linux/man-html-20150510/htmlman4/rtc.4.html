@@ -1,0 +1,683 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>rtc(4) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="rtc(4) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index4.html" shape="rect">Section 4</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="rtc.4" name="rtc.4" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>rtc — real-time clock</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;linux/rtc.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>ioctl</strong>(</code></td>
+
+            <td rowspan="1" colspan="1"><var class="pdparam">fd</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1"><var class="pdparam">RTC_request</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1"><var class="pdparam">param</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="rtc-4_sect1" name="rtc-4_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>This is the interface to drivers for real-time clocks
+      (RTCs).</p>
+
+      <p>Most computers have one or more hardware clocks which
+      record the current "wall clock" time. These are called "Real
+      Time Clocks" (RTCs). One of these usually has battery backup
+      power so that it tracks the time even while the computer is
+      turned off. RTCs often provide alarms and other
+      interrupts.</p>
+
+      <p>All i386 PCs, and ACPI-based systems, have an RTC that is
+      compatible with the Motorola MC146818 chip on the original
+      PC/AT. Today such an RTC is usually integrated into the
+      mainboard's chipset (south bridge), and uses a replaceable
+      coin-sized backup battery.</p>
+
+      <p>Non-PC systems, such as embedded systems built around
+      system-on-chip processors, use other implementations. They
+      usually won't offer the same functionality as the RTC from a
+      PC/AT.</p>
+
+      <div class="refsect2">
+        <a id="rtc-4_sect2" name="rtc-4_sect2" shape="rect"> </a>
+
+        <h3>RTC vs system clock</h3>
+
+        <p>RTCs should not be confused with the system clock, which
+        is a software clock maintained by the kernel and used to
+        implement <a class="link" href="../htmlman2/gettimeofday.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gettimeofday</span>(2)</span></a> and
+        <a class="link" href="../htmlman2/time.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">time</span>(2)</span></a>, as well as
+        setting timestamps on files, and so on. The system clock
+        reports seconds and microseconds since a start point,
+        defined to be the POSIX Epoch: 1970-01-01 00:00:00 +0000
+        (UTC). (One common implementation counts timer interrupts,
+        once per "jiffy", at a frequency of 100, 250, or 1000 Hz.)
+        That is, it is supposed to report wall clock time, which
+        RTCs also do.</p>
+
+        <p>A key difference between an RTC and the system clock is
+        that RTCs run even when the system is in a low power state
+        (including "off"), and the system clock can't. Until it is
+        initialized, the system clock can only report time since
+        system boot ... not since the POSIX Epoch. So at boot time,
+        and after resuming from a system low power state, the
+        system clock will often be set to the current wall clock
+        time using an RTC. Systems without an RTC need to set the
+        system clock using another clock, maybe across the network
+        or by entering that data manually.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="rtc-4_sect3" name="rtc-4_sect3" shape="rect"> </a>
+
+        <h3>RTC functionality</h3>
+
+        <p>RTCs can be read and written with <a class="link" href="../htmlman8/hwclock.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">hwclock</span>(8)</span></a>, or directly
+        with the ioctl requests listed below.</p>
+
+        <p>Besides tracking the date and time, many RTCs can also
+        generate interrupts</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>on every clock update (i.e., once per second);</p>
+            </li>
+
+            <li class="listitem">
+              <p>at periodic intervals with a frequency that can be
+              set to any power-of-2 multiple in the range 2 Hz to
+              8192 Hz;</p>
+            </li>
+
+            <li class="listitem">
+              <p>on reaching a previously specified alarm time.</p>
+            </li>
+          </ul>
+        </div>
+
+        <p>Each of those interrupt sources can be enabled or
+        disabled separately. On many systems, the alarm interrupt
+        can be configured as a system wakeup event, which can
+        resume the system from a low power state such as
+        Suspend-to-RAM (STR, called S3 in ACPI systems),
+        Hibernation (called S4 in ACPI systems), or even "off"
+        (called S5 in ACPI systems). On some systems, the battery
+        backed RTC can't issue interrupts, but another one can.</p>
+
+        <p>The <code class="filename">/dev/rtc</code> (or
+        <code class="filename">/dev/rtc0</code>, <code class="filename">/dev/rtc1</code>, etc.) device can be opened
+        only once (until it is closed) and it is read-only. On
+        <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> and <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a> the calling
+        process is blocked until the next interrupt from that RTC
+        is received. Following the interrupt, the process can read
+        a long integer, of which the least significant byte
+        contains a bit mask encoding the types of interrupt that
+        occurred, while the remaining 3 bytes contain the number of
+        interrupts since the last <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="rtc-4_sect4" name="rtc-4_sect4" shape="rect"> </a>
+
+        <h3>ioctl(2) interface</h3>
+
+        <p>The following <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> requests are
+        defined on file descriptors connected to RTC devices:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">RTC_RD_TIME</code></span></dt>
+
+            <dd>
+              <p>Returns this RTC's time in the following
+              structure:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="structdef">
+                    <table style="border-collapse: collapse;">
+                      <colgroup span="1">
+                        <col class="c1" span="1" />
+                        <col class="c2" span="1" />
+                        <col class="c3" span="1" />
+                        <col class="c4" span="1" />
+                        <col class="c5" span="1" />
+                      </colgroup>
+
+                      <tbody>
+                        <tr>
+                          <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                          <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">rtc_time</span> {</td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>tm_sec</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>tm_min</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>tm_hour</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>tm_mday</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>tm_mon</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>tm_year</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>tm_wday</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1">
+                            <div class="literallayout">
+                              /* unused */
+                            </div>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>tm_yday</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1">
+                            <div class="literallayout">
+                              /* unused */
+                            </div>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>tm_isdst</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1">
+                            <div class="literallayout">
+                              /* unused */
+                            </div>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </blockquote>
+              </div>
+
+              <p>The fields in this structure have the same meaning
+              and ranges as for the <code class="function">tm</code> structure described in <a class="link" href="../htmlman3/ctime.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gmtime</span>(3)</span></a>. A
+              pointer to this structure should be passed as the
+              third <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a>
+              argument.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">RTC_SET_TIME</code></span></dt>
+
+            <dd>
+              <p>Sets this RTC's time to the time specified by the
+              <code class="function">rtc_time</code> structure
+              pointed to by the third <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> argument.
+              To set the RTC's time the process must be privileged
+              (i.e., have the <code class="constant">CAP_SYS_TIME</code> capability).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">RTC_ALM_READ</code>, <code class="constant">RTC_ALM_SET</code></span></dt>
+
+            <dd>
+              <p>Read and set the alarm time, for RTCs that support
+              alarms. The alarm interrupt must be separately
+              enabled or disabled using the <code class="constant">RTC_AIE_ON</code>, <code class="constant">RTC_AIE_OFF</code> requests. The third
+              <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> argument
+              is a pointer to an <code class="function">rtc_time</code> structure. Only the
+              <em class="parameter"><code>tm_sec</code></em>,
+              <em class="parameter"><code>tm_min</code></em>, and
+              <em class="parameter"><code>tm_hour</code></em>
+              fields of this structure are used.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">RTC_IRQP_READ</code>, <code class="constant">RTC_IRQP_SET</code></span></dt>
+
+            <dd>
+              <p>Read and set the frequency for periodic
+              interrupts, for RTCs that support periodic
+              interrupts. The periodic interrupt must be separately
+              enabled or disabled using the <code class="constant">RTC_PIE_ON</code>, <code class="constant">RTC_PIE_OFF</code> requests. The third
+              <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> argument
+              is an <span class="emphasis"><em>unsigned long
+              *</em></span> or an <span class="emphasis"><em>unsigned long</em></span>,
+              respectively. The value is the frequency in
+              interrupts per second. The set of allowable
+              frequencies is the multiples of two in the range 2 to
+              8192. Only a privileged process (i.e., one having the
+              <code class="constant">CAP_SYS_RESOURCE</code>
+              capability) can set frequencies above the value
+              specified in <code class="filename">/proc/sys/dev/rtc/max-user-freq</code>.
+              (This file contains the value 64 by default.)</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">RTC_AIE_ON</code>, <code class="constant">RTC_AIE_OFF</code></span></dt>
+
+            <dd>
+              <p>Enable or disable the alarm interrupt, for RTCs
+              that support alarms. The third <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> argument
+              is ignored.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">RTC_UIE_ON</code>, <code class="constant">RTC_UIE_OFF</code></span></dt>
+
+            <dd>
+              <p>Enable or disable the interrupt on every clock
+              update, for RTCs that support this once-per-second
+              interrupt. The third <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> argument
+              is ignored.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">RTC_PIE_ON</code>, <code class="constant">RTC_PIE_OFF</code></span></dt>
+
+            <dd>
+              <p>Enable or disable the periodic interrupt, for RTCs
+              that support these periodic interrupts. The third
+              <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> argument
+              is ignored. Only a privileged process (i.e., one
+              having the <code class="constant">CAP_SYS_RESOURCE</code> capability) can
+              enable the periodic interrupt if the frequency is
+              currently set above the value specified in
+              <code class="filename">/proc/sys/dev/rtc/max-user-freq</code>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">RTC_EPOCH_READ</code>, <code class="constant">RTC_EPOCH_SET</code></span></dt>
+
+            <dd>
+              <p>Many RTCs encode the year in an 8-bit register
+              which is either interpreted as an 8-bit binary number
+              or as a BCD number. In both cases, the number is
+              interpreted relative to this RTC's Epoch. The RTC's
+              Epoch is initialized to 1900 on most systems but on
+              Alpha and MIPS it might also be initialized to 1952,
+              1980, or 2000, depending on the value of an RTC
+              register for the year. With some RTCs, these
+              operations can be used to read or to set the RTC's
+              Epoch, respectively. The third <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> argument
+              is a <span class="emphasis"><em>unsigned long
+              *</em></span> or a <span class="emphasis"><em>unsigned long</em></span>,
+              respectively, and the value returned (or assigned) is
+              the Epoch. To set the RTC's Epoch the process must be
+              privileged (i.e., have the <code class="constant">CAP_SYS_TIME</code> capability).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">RTC_WKALM_RD</code>, <code class="constant">RTC_WKALM_SET</code></span></dt>
+
+            <dd>
+              <p>Some RTCs support a more powerful alarm interface,
+              using these ioctls to read or write the RTC's alarm
+              time (respectively) with this structure:</p>
+            </dd>
+          </dl>
+        </div>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="structdef">
+                  <table style="border-collapse: collapse;">
+                    <colgroup span="1">
+                      <col class="c1" span="1" />
+                      <col class="c2" span="1" />
+                      <col class="c3" span="1" />
+                      <col class="c4" span="1" />
+                      <col class="c5" span="1" />
+                    </colgroup>
+
+                    <tbody>
+                      <tr>
+                        <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                        <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">rtc_wkalrm</span> {</td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>enabled</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>pending</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">struct rtc_time</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>time</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </blockquote>
+            </div>
+          </blockquote>
+        </div>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>The <em class="parameter"><code>enabled</code></em> flag is used to
+              enable or disable the alarm interrupt, or to read its
+              current status; when using these calls, <code class="constant">RTC_AIE_ON</code> and <code class="constant">RTC_AIE_OFF</code> are not used. The
+              <em class="parameter"><code>pending</code></em> flag
+              is used by <code class="constant">RTC_WKALM_RD</code>
+              to report a pending interrupt (so it's mostly useless
+              on Linux, except when talking to the RTC managed by
+              EFI firmware). The <em class="parameter"><code>time</code></em> field is as used
+              with <code class="constant">RTC_ALM_READ</code> and
+              <code class="constant">RTC_ALM_SET</code> except that
+              the <em class="parameter"><code>tm_mday</code></em>,
+              <em class="parameter"><code>tm_mon</code></em>, and
+              <em class="parameter"><code>tm_year</code></em>
+              fields are also valid. A pointer to this structure
+              should be passed as the third <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a>
+              argument.</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="rtc-4_sect5" name="rtc-4_sect5" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <p><code class="filename">/dev/rtc</code>, <code class="filename">/dev/rtc0</code>, <code class="filename">/dev/rtc1</code>, etc: RTC special character
+      device files.</p>
+
+      <p><code class="filename">/proc/driver/rtc<code class="literal">:</code></code> status of the (first) RTC.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="rtc-4_sect6" name="rtc-4_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>When the kernel's system time is synchronized with an
+      external reference using <a class="link" href="../htmlman2/adjtimex.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">adjtimex</span>(2)</span></a> it will update
+      a designated RTC periodically every 11 minutes. To do so, the
+      kernel has to briefly turn off periodic interrupts; this
+      might affect programs using that RTC.</p>
+
+      <p>An RTC's Epoch has nothing to do with the POSIX Epoch
+      which is used only for the system clock.</p>
+
+      <p>If the year according to the RTC's Epoch and the year
+      register is less than 1970 it is assumed to be 100 years
+      later, that is, between 2000 and 2069.</p>
+
+      <p>Some RTCs support "wildcard" values in alarm fields, to
+      support scenarios like periodic alarms at fifteen minutes
+      after every hour, or on the first day of each month. Such
+      usage is nonportable; portable user-space code expects only a
+      single alarm interrupt, and will either disable or
+      reinitialize the alarm after receiving it.</p>
+
+      <p>Some RTCs support periodic interrupts with periods that
+      are multiples of a second rather than fractions of a second;
+      multiple alarms; programmable output clock signals;
+      nonvolatile memory; and other hardware capabilities that are
+      not currently exposed by this API.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="rtc-4_sect7" name="rtc-4_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman1/date.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">date</span>(1)</span></a>, <a class="link" href="../htmlman2/adjtimex.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">adjtimex</span>(2)</span></a>, <a class="link" href="../htmlman2/gettimeofday.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gettimeofday</span>(2)</span></a>, <a class="link" href="../htmlman2/gettimeofday.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">settimeofday</span>(2)</span></a>, <a class="link" href="../htmlman2/stime.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">stime</span>(2)</span></a>, <a class="link" href="../htmlman2/time.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">time</span>(2)</span></a>, <a class="link" href="../htmlman3/ctime.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gmtime</span>(3)</span></a>, <a class="link" href="../htmlman7/time.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">time</span>(7)</span></a>, <a class="link" href="../htmlman8/hwclock.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">hwclock</span>(8)</span></a></p>
+
+      <p><code class="filename">Documentation/rtc.txt</code> in the
+      Linux kernel source tree</p>
+    </div>
+
+    <div class="colophon">
+      <a id="rtc-4_sect8" name="rtc-4_sect8" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    rtc.4<br />
+                  Copyright 2002 Urs Thuermann (urs<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>isnogud.escape.de)<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_DOC_FULL)<br />
+                  This is free documentation; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License as<br />
+
+                  published by the Free Software Foundation; either version 2 of<br />
+
+                  the License, or (at your option) any later version.<br />
+
+                  <br />
+                  The GNU General Public License's references to "object code"<br />
+
+                  and "executables" are to be interpreted as the output of any<br />
+
+                  document formatting or typesetting system, including<br />
+
+                  intermediate and printed output.<br />
+
+                  <br />
+                  This manual is distributed in the hope that it will be useful,<br />
+
+                  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+
+                  GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  $Id: rtc.4,v 1.4 2005/12/05 17:19:49 urs Exp $<br />
+
+                  <br />
+                  2006-02-08 Various additions by mtk<br />
+
+                  2006-11-26 cleanup, cover the generic rtc framework; David Brownell<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,940 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>execve(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="execve(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="execve.2" name="execve.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>execve — execute program</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;unistd.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>execve</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">filename</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">char *const <var class="pdparam">argv[]</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">char *const <var class="pdparam">envp[]</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="execve-2_sect1" name="execve-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">execve</code>() executes the
+      program pointed to by <em class="parameter"><code>filename</code></em>. <em class="parameter"><code>filename</code></em> must be either a
+      binary executable, or a script starting with a line of the
+      form:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+<em class="replaceable"><code>#!</code></em> <span class="emphasis"><em>interpreter </em></span>[optional-arg]
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>For details of the latter case, see "Interpreter scripts"
+      below.</p>
+
+      <p><em class="parameter"><code>argv</code></em> is an array
+      of argument strings passed to the new program. By convention,
+      the first of these strings should contain the filename
+      associated with the file being executed. <em class="parameter"><code>envp</code></em> is an array of strings,
+      conventionally of the form <em class="replaceable"><code>key=value</code></em>, which are passed
+      as environment to the new program. Both <em class="parameter"><code>argv</code></em> and <em class="parameter"><code>envp</code></em> must be terminated by a
+      null pointer. The argument vector and environment can be
+      accessed by the called program's main function, when it is
+      defined as:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+int main(int argc, char *argv[], char *envp[])
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p><code class="function">execve</code>() does not return on
+      success, and the text, data, bss, and stack of the calling
+      process are overwritten by that of the program loaded.</p>
+
+      <p>If the current program is being ptraced, a <code class="constant">SIGTRAP</code> is sent to it after a successful
+      <code class="function">execve</code>().</p>
+
+      <p>If the set-user-ID bit is set on the program file pointed
+      to by <em class="parameter"><code>filename</code></em>, and
+      the underlying filesystem is not mounted <em class="replaceable"><code>nosuid</code></em> (the <code class="constant">MS_NOSUID</code> flag for <a class="link" href="../htmlman2/mount.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mount</span>(2)</span></a>), and the calling
+      process is not being ptraced, then the effective user ID of
+      the calling process is changed to that of the owner of the
+      program file. Similarly, when the set-group-ID bit of the
+      program file is set the effective group ID of the calling
+      process is set to the group of the program file.</p>
+
+      <p>The effective user ID of the process is copied to the
+      saved set-user-ID; similarly, the effective group ID is
+      copied to the saved set-group-ID. This copying takes place
+      after any effective ID changes that occur because of the
+      set-user-ID and set-group-ID mode bits.</p>
+
+      <p>If the executable is an a.out dynamically linked binary
+      executable containing shared-library stubs, the Linux dynamic
+      linker <a class="link" href="../htmlman8/ld.so.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ld.so</span>(8)</span></a> is called at the
+      start of execution to bring needed shared libraries into
+      memory and link the executable with them.</p>
+
+      <p>If the executable is a dynamically linked ELF executable,
+      the interpreter named in the PT_INTERP segment is used to
+      load the needed shared libraries. This interpreter is
+      typically <code class="filename">/lib/ld-linux.so.2</code>
+      for binaries linked with glibc.</p>
+
+      <p>All process attributes are preserved during an
+      <code class="function">execve</code>(), except the
+      following:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p>The dispositions of any signals that are being
+            caught are reset to the default (<a class="link" href="../htmlman7/signal.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(7)</span></a>).</p>
+          </li>
+
+          <li class="listitem">
+            <p>Any alternate signal stack is not preserved
+            (<a class="link" href="../htmlman2/sigaltstack.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaltstack</span>(2)</span></a>).</p>
+          </li>
+
+          <li class="listitem">
+            <p>Memory mappings are not preserved (<a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>).</p>
+          </li>
+
+          <li class="listitem">
+            <p>Attached System V shared memory segments are
+            detached (<a class="link" href="../htmlman2/shmop.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">shmat</span>(2)</span></a>).</p>
+          </li>
+
+          <li class="listitem">
+            <p>POSIX shared memory regions are unmapped (<a class="link" href="../htmlman3/shm_open.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">shm_open</span>(3)</span></a>).</p>
+          </li>
+
+          <li class="listitem">
+            <p>Open POSIX message queue descriptors are closed
+            (<a class="link" href="../htmlman7/mq_overview.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_overview</span>(7)</span></a>).</p>
+          </li>
+
+          <li class="listitem">
+            <p>Any open POSIX named semaphores are closed
+            (<a class="link" href="../htmlman7/sem_overview.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_overview</span>(7)</span></a>).</p>
+          </li>
+
+          <li class="listitem">
+            <p>POSIX timers are not preserved (<a class="link" href="../htmlman2/timer_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">timer_create</span>(2)</span></a>).</p>
+          </li>
+
+          <li class="listitem">
+            <p>Any open directory streams are closed (<a class="link" href="../htmlman3/opendir.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">opendir</span>(3)</span></a>).</p>
+          </li>
+
+          <li class="listitem">
+            <p>Memory locks are not preserved (<a class="link" href="../htmlman2/mlock.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mlock</span>(2)</span></a>, <a class="link" href="../htmlman2/mlock.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mlockall</span>(2)</span></a>).</p>
+          </li>
+
+          <li class="listitem">
+            <p>Exit handlers are not preserved (<a class="link" href="../htmlman3/atexit.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">atexit</span>(3)</span></a>, <a class="link" href="../htmlman3/on_exit.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">on_exit</span>(3)</span></a>).</p>
+          </li>
+
+          <li class="listitem">
+            <p>The floating-point environment is reset to the
+            default (see <a class="link" href="../htmlman3/fenv.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fenv</span>(3)</span></a>).</p>
+          </li>
+        </ul>
+      </div>
+
+      <p>The process attributes in the preceding list are all
+      specified in POSIX.1-2001. The following Linux-specific
+      process attributes are also not preserved during an
+      <code class="function">execve</code>():</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p>The <a class="link" href="../htmlman2/prctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">prctl</span>(2)</span></a> <code class="constant">PR_SET_DUMPABLE</code> flag is set, unless a
+            set-user-ID or set-group ID program is being executed,
+            in which case it is cleared.</p>
+          </li>
+
+          <li class="listitem">
+            <p>The <a class="link" href="../htmlman2/prctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">prctl</span>(2)</span></a> <code class="constant">PR_SET_KEEPCAPS</code> flag is cleared.</p>
+          </li>
+
+          <li class="listitem">
+            <p>(Since Linux 2.4.36 / 2.6.23) If a set-user-ID or
+            set-group-ID program is being executed, then the parent
+            death signal set by <a class="link" href="../htmlman2/prctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">prctl</span>(2)</span></a> <code class="constant">PR_SET_PDEATHSIG</code> flag is cleared.</p>
+          </li>
+
+          <li class="listitem">
+            <p>The process name, as set by <a class="link" href="../htmlman2/prctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">prctl</span>(2)</span></a> <code class="constant">PR_SET_NAME</code> (and displayed by
+            <span class="emphasis"><em>ps −o
+            comm</em></span>), is reset to the name of the new
+            executable file.</p>
+          </li>
+
+          <li class="listitem">
+            <p>The <code class="constant">SECBIT_KEEP_CAPS</code>
+            <em class="replaceable"><code>securebits</code></em>
+            flag is cleared. See <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>.</p>
+          </li>
+
+          <li class="listitem">
+            <p>The termination signal is reset to <code class="constant">SIGCHLD</code> (see <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a>).</p>
+          </li>
+
+          <li class="listitem">
+            <p>The file descriptor table is unshared, undoing the
+            effect of the <code class="constant">CLONE_FILES</code>
+            flag of <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a>.</p>
+          </li>
+        </ul>
+      </div>
+
+      <p>Note the following further points:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p>All threads other than the calling thread are
+            destroyed during an <code class="function">execve</code>(). Mutexes, condition
+            variables, and other pthreads objects are not
+            preserved.</p>
+          </li>
+
+          <li class="listitem">
+            <p>The equivalent of <span class="emphasis"><em>setlocale(LC_ALL, "C")</em></span> is
+            executed at program start-up.</p>
+          </li>
+
+          <li class="listitem">
+            <p>POSIX.1-2001 specifies that the dispositions of any
+            signals that are ignored or set to the default are left
+            unchanged. POSIX.1-2001 specifies one exception: if
+            <code class="constant">SIGCHLD</code> is being ignored,
+            then an implementation may leave the disposition
+            unchanged or reset it to the default; Linux does the
+            former.</p>
+          </li>
+
+          <li class="listitem">
+            <p>Any outstanding asynchronous I/O operations are
+            canceled (<a class="link" href="../htmlman3/aio_read.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">aio_read</span>(3)</span></a>,
+            <a class="link" href="../htmlman3/aio_write.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">aio_write</span>(3)</span></a>).</p>
+          </li>
+
+          <li class="listitem">
+            <p>For the handling of capabilities during <code class="function">execve</code>(), see <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>.</p>
+          </li>
+
+          <li class="listitem">
+            <p>By default, file descriptors remain open across an
+            <code class="function">execve</code>(). File
+            descriptors that are marked close-on-exec are closed;
+            see the description of <code class="constant">FD_CLOEXEC</code> in <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a>. (If a file
+            descriptor is closed, this will cause the release of
+            all record locks obtained on the underlying file by
+            this process. See <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a> for
+            details.) POSIX.1-2001 says that if file descriptors 0,
+            1, and 2 would otherwise be closed after a successful
+            <code class="function">execve</code>(), and the process
+            would gain privilege because the set-user_ID or
+            set-group_ID mode bit was set on the executed file,
+            then the system may open an unspecified file for each
+            of these file descriptors. As a general principle, no
+            portable program, whether privileged or not, can assume
+            that these three file descriptors will remain closed
+            across an <code class="function">execve</code>().</p>
+          </li>
+        </ul>
+      </div>
+
+      <div class="refsect2">
+        <a id="execve-2_sect2" name="execve-2_sect2" shape="rect"> </a>
+
+        <h3>Interpreter scripts</h3>
+
+        <p>An interpreter script is a text file that has execute
+        permission enabled and whose first line is of the form:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+<em class="replaceable"><code>#!</code></em> <span class="emphasis"><em>interpreter </em></span>[optional-arg]
+</pre>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>The <em class="replaceable"><code>interpreter</code></em> must be a valid
+        pathname for an executable which is not itself a script. If
+        the <em class="parameter"><code>filename</code></em>
+        argument of <code class="function">execve</code>()
+        specifies an interpreter script, then <em class="replaceable"><code>interpreter</code></em> will be invoked
+        with the following arguments:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+<em class="replaceable"><code>interpreter</code></em> [optional-arg] <em class="parameter"><code>filename</code></em> arg...
+</pre>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>where <em class="replaceable"><code>arg...</code></em>
+        is the series of words pointed to by the <em class="parameter"><code>argv</code></em> argument of <code class="function">execve</code>(), starting at <em class="parameter"><code>argv</code></em>[1].</p>
+
+        <p>For portable use, <em class="replaceable"><code>optional-arg</code></em> should either
+        be absent, or be specified as a single word (i.e., it
+        should not contain white space); see NOTES below.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="execve-2_sect3" name="execve-2_sect3" shape="rect"> </a>
+
+        <h3>Limits on size of arguments and environment</h3>
+
+        <p>Most UNIX implementations impose some limit on the total
+        size of the command-line argument (<em class="parameter"><code>argv</code></em>) and environment
+        (<em class="parameter"><code>envp</code></em>) strings that
+        may be passed to a new program. POSIX.1 allows an
+        implementation to advertise this limit using the
+        <code class="constant">ARG_MAX</code> constant (either
+        defined in <code class="literal">&lt;</code><code class="filename">limits.h</code><code class="literal">&gt;</code>
+        or available at run time using the call <em class="replaceable"><code>sysconf(_SC_ARG_MAX)</code></em>).</p>
+
+        <p>On Linux prior to kernel 2.6.23, the memory used to
+        store the environment and argument strings was limited to
+        32 pages (defined by the kernel constant <code class="constant">MAX_ARG_PAGES</code>). On architectures with a
+        4-kB page size, this yields a maximum size of 128 kB.</p>
+
+        <p>On kernel 2.6.23 and later, most architectures support a
+        size limit derived from the soft <code class="constant">RLIMIT_STACK</code> resource limit (see
+        <a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getrlimit</span>(2)</span></a>) that is in
+        force at the time of the <code class="function">execve</code>() call. (Architectures with no
+        memory management unit are excepted: they maintain the
+        limit that was in effect before kernel 2.6.23.) This change
+        allows programs to have a much larger argument and/or
+        environment list. For these architectures, the total size
+        is limited to 1/4 of the allowed stack size. (Imposing the
+        1/4-limit ensures that the new program always has some
+        stack space.) Since Linux 2.6.25, the kernel places a floor
+        of 32 pages on this size limit, so that, even when
+        <code class="constant">RLIMIT_STACK</code> is set very low,
+        applications are guaranteed to have at least as much
+        argument and environment space as was provided by Linux
+        2.6.23 and earlier. (This guarantee was not provided in
+        Linux 2.6.23 and 2.6.24.) Additionally, the limit per
+        string is 32 pages (the kernel constant <code class="constant">MAX_ARG_STRLEN</code>), and the maximum number
+        of strings is 0x7FFFFFFF.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="execve-2_sect4" name="execve-2_sect4" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">execve</code>() does
+      not return, on error −1 is returned, and <code class="varname">errno</code> is set appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="execve-2_sect5" name="execve-2_sect5" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">E2BIG</span></span></dt>
+
+          <dd>
+            <p>The total number of bytes in the environment
+            (<em class="parameter"><code>envp</code></em>) and
+            argument list (<em class="parameter"><code>argv</code></em>) is too large.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EACCES</span></span></dt>
+
+          <dd>
+            <p>Search permission is denied on a component of the
+            path prefix of <em class="parameter"><code>filename</code></em> or the name of a
+            script interpreter. (See also <a class="link" href="../htmlman7/path_resolution.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">path_resolution</span>(7)</span></a>.)</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EACCES</span></span></dt>
+
+          <dd>
+            <p>The file or a script interpreter is not a regular
+            file.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EACCES</span></span></dt>
+
+          <dd>
+            <p>Execute permission is denied for the file or a
+            script or ELF interpreter.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EACCES</span></span></dt>
+
+          <dd>
+            <p>The filesystem is mounted <em class="replaceable"><code>noexec</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EAGAIN</span> (since Linux 3.1)</span></dt>
+
+          <dd>
+            <p>Having changed its real UID using one of the
+            <code class="function">set*uid</code>() calls, the
+            caller was—and is now still—above its
+            <code class="constant">RLIMIT_NPROC</code> resource
+            limit (see <a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setrlimit</span>(2)</span></a>). For a
+            more detailed explanation of this error, see NOTES.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>filename</code></em> or
+            one of the pointers in the vectors <em class="parameter"><code>argv</code></em> or <em class="parameter"><code>envp</code></em> points outside your
+            accessible address space.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>An ELF executable had more than one PT_INTERP
+            segment (i.e., tried to name more than one
+            interpreter).</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EIO</span></span></dt>
+
+          <dd>
+            <p>An I/O error occurred.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EISDIR</span></span></dt>
+
+          <dd>
+            <p>An ELF interpreter was a directory.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ELIBBAD</span></span></dt>
+
+          <dd>
+            <p>An ELF interpreter was not in a recognized
+            format.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ELOOP</span></span></dt>
+
+          <dd>
+            <p>Too many symbolic links were encountered in
+            resolving <em class="parameter"><code>filename</code></em> or the name of a
+            script or ELF interpreter.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EMFILE</span></span></dt>
+
+          <dd>
+            <p>The process has the maximum number of files
+            open.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENAMETOOLONG</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>filename</code></em> is
+            too long.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENFILE</span></span></dt>
+
+          <dd>
+            <p>The system limit on the total number of open files
+            has been reached.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOENT</span></span></dt>
+
+          <dd>
+            <p>The file <em class="parameter"><code>filename</code></em> or a script or
+            ELF interpreter does not exist, or a shared library
+            needed for file or interpreter cannot be found.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOEXEC</span></span></dt>
+
+          <dd>
+            <p>An executable is not in a recognized format, is for
+            the wrong architecture, or has some other format error
+            that means it cannot be executed.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>Insufficient kernel memory was available.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOTDIR</span></span></dt>
+
+          <dd>
+            <p>A component of the path prefix of <em class="parameter"><code>filename</code></em> or a script or
+            ELF interpreter is not a directory.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The filesystem is mounted <em class="replaceable"><code>nosuid</code></em>, the user is not
+            the superuser, and the file has the set-user-ID or
+            set-group-ID bit set.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The process is being traced, the user is not the
+            superuser and the file has the set-user-ID or
+            set-group-ID bit set.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ETXTBSY</span></span></dt>
+
+          <dd>
+            <p>Executable was open for writing by one or more
+            processes.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="execve-2_sect6" name="execve-2_sect6" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>SVr4, 4.3BSD, POSIX.1-2001. POSIX.1-2001 does not document
+      the #! behavior but is otherwise compatible.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="execve-2_sect7" name="execve-2_sect7" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Set-user-ID and set-group-ID processes can not be
+      <a class="link" href="../htmlman2/ptrace.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ptrace</span>(2)</span></a>d.</p>
+
+      <p>The result of mounting a filesystem <em class="replaceable"><code>nosuid</code></em> varies across Linux
+      kernel versions: some will refuse execution of set-user-ID
+      and set-group-ID executables when this would give the user
+      powers she did not have already (and return <span class="errorname">EPERM</span>), some will just ignore the
+      set-user-ID and set-group-ID bits and <code class="function">exec</code>() successfully. On Linux, <em class="parameter"><code>argv</code></em> and <em class="parameter"><code>envp</code></em> can be specified as NULL.
+      In both cases, this has the same effect as specifying the
+      argument as a pointer to a list containing a single null
+      pointer. <span class="emphasis"><em>Do not take advantage of
+      this misfeature!</em></span> It is nonstandard and
+      nonportable: on most other UNIX systems doing this will
+      result in an error (<span class="errorname">EFAULT</span>).</p>
+
+      <p>POSIX.1-2001 says that values returned by <a class="link" href="../htmlman3/sysconf.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sysconf</span>(3)</span></a> should be
+      invariant over the lifetime of a process. However, since
+      Linux 2.6.23, if the <code class="constant">RLIMIT_STACK</code> resource limit changes, then
+      the value reported by <code class="constant">_SC_ARG_MAX</code> will also change, to reflect
+      the fact that the limit on space for holding command-line
+      arguments and environment variables has changed.</p>
+
+      <p>In most cases where <code class="function">execve</code>()
+      fails, control returns to the original executable image, and
+      the caller of <code class="function">execve</code>() can then
+      handle the error. However, in (rare) cases (typically caused
+      by resource exhaustion), failure may occur past the point of
+      no return: the original executable image has been torn down,
+      but the new image could not be completely built. In such
+      cases, the kernel kills the process with a <code class="constant">SIGKILL</code> signal.</p>
+
+      <div class="refsect2">
+        <a id="execve-2_sect8" name="execve-2_sect8" shape="rect"> </a>
+
+        <h3>Interpreter scripts</h3>
+
+        <p>A maximum line length of 127 characters is allowed for
+        the first line in an interpreter scripts.</p>
+
+        <p>The semantics of the <em class="replaceable"><code>optional-arg</code></em> argument of an
+        interpreter script vary across implementations. On Linux,
+        the entire string following the <em class="replaceable"><code>interpreter</code></em> name is passed
+        as a single argument to the interpreter, and this string
+        can include white space. However, behavior differs on some
+        other systems. Some systems use the first white space to
+        terminate <em class="replaceable"><code>optional-arg</code></em>. On some
+        systems, an interpreter script can have multiple arguments,
+        and white spaces in <em class="replaceable"><code>optional-arg</code></em> are used to
+        delimit the arguments.</p>
+
+        <p>Linux ignores the set-user-ID and set-group-ID bits on
+        scripts.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="execve-2_sect9" name="execve-2_sect9" shape="rect"> </a>
+
+        <h3>execve() and EAGAIN</h3>
+
+        <p>A more detailed explanation of the <span class="errorname">EAGAIN</span> error that can occur (since Linux
+        3.1) when calling <code class="function">execve</code>() is
+        as follows.</p>
+
+        <p>The <span class="errorname">EAGAIN</span> error can
+        occur when a <em class="replaceable"><code>preceding</code></em> call to <a class="link" href="../htmlman2/setuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setuid</span>(2)</span></a>, <a class="link" href="../htmlman2/setreuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setreuid</span>(2)</span></a>, or <a class="link" href="../htmlman2/setresuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setresuid</span>(2)</span></a> caused the
+        real user ID of the process to change, and that change
+        caused the process to exceed its <code class="constant">RLIMIT_NPROC</code> resource limit (i.e., the
+        number of processes belonging to the new real UID exceeds
+        the resource limit). From Linux 2.6.0 to 3.0, this caused
+        the <code class="function">set*uid</code>() call to fail.
+        (Prior to 2.6, the resource limit was not imposed on
+        processes that changed their user IDs.)</p>
+
+        <p>Since Linux 3.1, the scenario just described no longer
+        causes the <code class="function">set*uid</code>() call to
+        fail, because it too often led to security holes where
+        buggy applications didn't check the return status and
+        assumed that—if the caller had root
+        privileges—the call would always succeed. Instead,
+        the <code class="function">set*uid</code>() calls now
+        successfully change the real UID, but the kernel sets an
+        internal flag, named <code class="constant">PF_NPROC_EXCEEDED</code>, to note that the
+        <code class="constant">RLIMIT_NPROC</code> resource limit
+        has been exceeded. If the <code class="constant">PF_NPROC_EXCEEDED</code> flag is set and the
+        resource limit is still exceeded at the time of a
+        subsequent <code class="function">execve</code>() call,
+        that call fails with the error <span class="errorname">EAGAIN</span>. This kernel logic ensures that
+        the <code class="constant">RLIMIT_NPROC</code> resource
+        limit is still enforced for the common privileged daemon
+        workflow—namely, <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> + <code class="function">set*uid</code>() + <code class="function">execve</code>().</p>
+
+        <p>If the resource limit was not still exceeded at the time
+        of the <code class="function">execve</code>() call (because
+        other processes belonging to this real UID terminated
+        between the <code class="function">set*uid</code>() call
+        and the <code class="function">execve</code>() call), then
+        the <code class="function">execve</code>() call succeeds
+        and the kernel clears the <code class="constant">PF_NPROC_EXCEEDED</code> process flag. The flag
+        is also cleared if a subsequent call to <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> by this process
+        succeeds.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="execve-2_sect10" name="execve-2_sect10" shape="rect"> </a>
+
+        <h3>Historical</h3>
+
+        <p>With UNIX V6, the argument list of an <code class="function">exec</code>() call was ended by 0, while the
+        argument list of <em class="replaceable"><code>main</code></em> was ended by −1.
+        Thus, this argument list was not directly usable in a
+        further <code class="function">exec</code>() call. Since
+        UNIX V7, both are NULL.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="execve-2_sect11" name="execve-2_sect11" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>The following program is designed to be execed by the
+      second program below. It just echoes its command-line
+      arguments, one per line.</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+/* myecho.c */
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int
+main(int argc, char *argv[])
+{
+    int j;
+
+    for (j = 0; j &lt; argc; j++)
+        printf("argv[%d]: %s\n", j, argv[j]);
+
+    exit(EXIT_SUCCESS);
+}
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>This program can be used to exec the program named in its
+      command-line argument:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+/* execve.c */
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+
+int
+main(int argc, char *argv[])
+{
+    char *newargv[] = { NULL, "hello", "world", NULL };
+    char *newenviron[] = { NULL };
+
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s &lt;file−to−exec&gt;\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    newargv[0] = argv[1];
+
+    execve(argv[1], newargv, newenviron);
+    perror("execve");   /* execve() returns only on error */
+    exit(EXIT_FAILURE);
+}
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>We can use the second program to exec the first as
+      follows:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$<span class="emphasis"><em> cc myecho.c −o myecho</em></span>
+$<span class="emphasis"><em> cc execve.c −o execve</em></span>
+$<span class="emphasis"><em> ./execve ./myecho</em></span>
+argv[0]: ./myecho
+argv[1]: hello
+argv[2]: world
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>We can also use these programs to demonstrate the use of a
+      script interpreter. To do this we create a script whose
+      "interpreter" is our <em class="replaceable"><code>myecho</code></em> program:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$<span class="emphasis"><em> cat &gt; script</em></span>
+<span class="emphasis"><em>#!./myecho script-arg</em></span>
+<code class="literal">^D</code>
+$<span class="emphasis"><em> chmod +x script</em></span>
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>We can then use our program to exec the script:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$<span class="emphasis"><em> ./execve ./script</em></span>
+argv[0]: ./myecho
+argv[1]: script-arg
+argv[2]: ./script
+argv[3]: hello
+argv[4]: world
+</pre>
+          </div>
+        </blockquote>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="execve-2_sect12" name="execve-2_sect12" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/chmod.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chmod</span>(2)</span></a>, <a class="link" href="../htmlman2/execveat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execveat</span>(2)</span></a>, <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a>, <a class="link" href="../htmlman2/ptrace.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ptrace</span>(2)</span></a>, <a class="link" href="../htmlman3/exec.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execl</span>(3)</span></a>, <a class="link" href="../htmlman3/fexecve.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fexecve</span>(3)</span></a>, <a class="link" href="../htmlman3/getopt.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getopt</span>(3)</span></a>, <a class="link" href="../htmlman7/credentials.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">credentials</span>(7)</span></a>, <a class="link" href="../htmlman7/environ.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">environ</span>(7)</span></a>, <a class="link" href="../htmlman7/path_resolution.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">path_resolution</span>(7)</span></a>,
+      <a class="link" href="../htmlman8/ld.so.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ld.so</span>(8)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="execve-2_sect13" name="execve-2_sect13" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 1992 Drew Eckhardt (drew<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.colorado.edu), March 28, 1992<br />
+
+                  and Copyright (c) 2006 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Modified by Michael Haardt &lt;michael<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>moria.de&gt;<br />
+
+                  Modified 1993-07-21 by Rik Faith &lt;faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu&gt;<br />
+
+                  Modified 1994-08-21 by Michael Chastain &lt;mec<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>shell.portal.com&gt;:<br />
+
+                  Modified 1997-01-31 by Eric S. Raymond &lt;esr<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>thyrsus.com&gt;<br />
+
+                  Modified 1999-11-12 by Urs Thuermann &lt;urs<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>isnogud.escape.de&gt;<br />
+
+                  Modified 2004-06-23 by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  2006-09-04 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                      Added list of process attributes that are not preserved on exec().<br />
+
+                  2007-09-14 Ollie Wild &lt;aaw<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>google.com&gt;, mtk<br />
+
+                      Add text describing limits on command-line arguments + environment<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

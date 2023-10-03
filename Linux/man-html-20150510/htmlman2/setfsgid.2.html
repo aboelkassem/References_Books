@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>setfsgid(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="setfsgid(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="setfsgid.2" name="setfsgid.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>setfsgid — set group identity used for filesystem
+      checks</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;sys/fsuid.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>setfsgid</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">uid_t <var class="pdparam">fsgid</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="setfsgid-2_sect1" name="setfsgid-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The system call <code class="function">setfsgid</code>()
+      changes the value of the caller's filesystem group
+      ID—the group ID that the Linux kernel uses to check for
+      all accesses to the filesystem. Normally, the value of the
+      filesystem group ID will shadow the value of the effective
+      group ID. In fact, whenever the effective group ID is
+      changed, the filesystem group ID will also be changed to the
+      new value of the effective group ID.</p>
+
+      <p>Explicit calls to <a class="link" href="../htmlman2/setfsuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setfsuid</span>(2)</span></a> and
+      <code class="function">setfsgid</code>() are usually used
+      only by programs such as the Linux NFS server that need to
+      change what user and group ID is used for file access without
+      a corresponding change in the real and effective user and
+      group IDs. A change in the normal user IDs for a program such
+      as the NFS server is a security hole that can expose it to
+      unwanted signals. (But see below.)</p>
+
+      <p><code class="function">setfsgid</code>() will succeed only
+      if the caller is the superuser or if <em class="parameter"><code>fsgid</code></em> matches either the
+      caller's real group ID, effective group ID, saved
+      set-group-ID, or current the filesystem user ID.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="setfsgid-2_sect2" name="setfsgid-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On both success and failure, this call returns the
+      previous filesystem group ID of the caller.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="setfsgid-2_sect3" name="setfsgid-2_sect3" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p>This system call is present in Linux since version
+      1.2.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="setfsgid-2_sect4" name="setfsgid-2_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p><code class="function">setfsgid</code>() is Linux-specific
+      and should not be used in programs intended to be
+      portable.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="setfsgid-2_sect5" name="setfsgid-2_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>When glibc determines that the argument is not a valid
+      group ID, it will return −1 and set <code class="varname">errno</code> to <span class="errorname">EINVAL</span> without attempting the system
+      call.</p>
+
+      <p>Note that at the time this system call was introduced, a
+      process could send a signal to a process with the same
+      effective user ID. Today signal permission handling is
+      slightly different. See <a class="link" href="../htmlman2/setfsuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setfsuid</span>(2)</span></a> for a
+      discussion of why the use of both <a class="link" href="../htmlman2/setfsuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setfsuid</span>(2)</span></a> and
+      <code class="function">setfsgid</code>() is nowadays
+      unneeded.</p>
+
+      <p>The original Linux <code class="function">setfsgid</code>() system call supported only
+      16-bit group IDs. Subsequently, Linux 2.4 added <code class="function">setfsgid32</code>() supporting 32-bit IDs. The
+      glibc <code class="function">setfsgid</code>() wrapper
+      function transparently deals with the variation across kernel
+      versions.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="setfsgid-2_sect6" name="setfsgid-2_sect6" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>No error indications of any kind are returned to the
+      caller, and the fact that both successful and unsuccessful
+      calls return the same value makes it impossible to directly
+      determine whether the call succeeded or failed. Instead, the
+      caller must resort to looking at the return value from a
+      further call such as <em class="replaceable"><code>setfsgid(−1)</code></em> (which
+      will always fail), in order to determine if a preceding call
+      to <code class="function">setfsgid</code>() changed the
+      filesystem group ID. At the very least, <span class="errorname">EPERM</span> should be returned when the call
+      fails (because the caller lacks the <code class="constant">CAP_SETGID</code> capability).</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="setfsgid-2_sect7" name="setfsgid-2_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/kill.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">kill</span>(2)</span></a>, <a class="link" href="../htmlman2/setfsuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setfsuid</span>(2)</span></a>, <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>, <a class="link" href="../htmlman7/credentials.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">credentials</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="setfsgid-2_sect8" name="setfsgid-2_sect8" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 1995, Thomas K. Dyas &lt;tdyas<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>eden.rutgers.edu&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Created   1995-08-06 Thomas K. Dyas &lt;tdyas<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>eden.rutgers.edu&gt;<br />
+
+                  Modified  2000-07-01 aeb<br />
+                  Modified  2002-07-23 aeb<br />
+                  Modified, 27 May 2004, Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                      Added notes on capability requirements<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

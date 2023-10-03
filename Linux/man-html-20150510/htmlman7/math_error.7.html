@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>math_error(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="math_error(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="math-error.7" name="math-error.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>math_error — detecting errors from mathematical
+      functions</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;math.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;fenv.h&gt;
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="math-error-7_sect1" name="math-error-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>When an error occurs, most library functions indicate this
+      fact by returning a special value (e.g., −1 or NULL).
+      Because they typically return a floating-point number, the
+      mathematical functions declared in <code class="literal">&lt;</code><code class="filename">math.h</code><code class="literal">&gt;</code>
+      indicate an error using other mechanisms. There are two
+      error-reporting mechanisms: the older one sets <code class="varname">errno</code>; the newer one uses the floating-point
+      exception mechanism (the use of <a class="link" href="../htmlman3/fenv.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">feclearexcept</span>(3)</span></a> and
+      <a class="link" href="../htmlman3/fenv.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fetestexcept</span>(3)</span></a>, as
+      outlined below) described in <a class="link" href="../htmlman3/fenv.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fenv</span>(3)</span></a>.</p>
+
+      <p>A portable program that needs to check for an error from a
+      mathematical function should set <code class="varname">errno</code> to zero, and make the following
+      call</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+feclearexcept(FE_ALL_EXCEPT);
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>before calling a mathematical function.</p>
+
+      <p>Upon return from the mathematical function, if
+      <code class="varname">errno</code> is nonzero, or the
+      following call (see <a class="link" href="../htmlman3/fenv.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fenv</span>(3)</span></a>) returns
+      nonzero</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+fetestexcept(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW |
+             FE_UNDERFLOW);
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>then an error occurred in the mathematical function.</p>
+
+      <p>The error conditions that can occur for mathematical
+      functions are described below.</p>
+
+      <div class="refsect2">
+        <a id="math-error-7_sect2" name="math-error-7_sect2" shape="rect"> </a>
+
+        <h3>Domain error</h3>
+
+        <p>A <span class="emphasis"><em>domain error</em></span>
+        occurs when a mathematical function is supplied with an
+        argument whose value falls outside the domain for which the
+        function is defined (e.g., giving a negative argument to
+        <a class="link" href="../htmlman3/log.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">log</span>(3)</span></a>). When a domain
+        error occurs, math functions commonly return a NaN (though
+        some functions return a different value in this case);
+        <code class="varname">errno</code> is set to <span class="errorname">EDOM</span>, and an "invalid" (<code class="constant">FE_INVALID</code>) floating-point exception is
+        raised.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="math-error-7_sect3" name="math-error-7_sect3" shape="rect"> </a>
+
+        <h3>Pole error</h3>
+
+        <p>A <span class="emphasis"><em>pole error</em></span>
+        occurs when the mathematical result of a function is an
+        exact infinity (e.g., the logarithm of 0 is negative
+        infinity). When a pole error occurs, the function returns
+        the (signed) value <code class="constant">HUGE_VAL</code>,
+        <code class="constant">HUGE_VALF</code>, or <code class="constant">HUGE_VALL</code>, depending on whether the
+        function result type is <em class="replaceable"><code>double</code></em>, <em class="replaceable"><code>float</code></em>, or <span class="emphasis"><em>long double</em></span>. The sign of the
+        result is that which is mathematically correct for the
+        function. <code class="varname">errno</code> is set to
+        <span class="errorname">ERANGE</span>, and a
+        "divide-by-zero" (<code class="constant">FE_DIVBYZERO</code>) floating-point exception is
+        raised.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="math-error-7_sect4" name="math-error-7_sect4" shape="rect"> </a>
+
+        <h3>Range error</h3>
+
+        <p>A <span class="emphasis"><em>range error</em></span>
+        occurs when the magnitude of the function result means that
+        it cannot be represented in the result type of the
+        function. The return value of the function depends on
+        whether the range error was an overflow or an
+        underflow.</p>
+
+        <p>A floating result <em class="replaceable"><code>overflows</code></em> if the result is
+        finite, but is too large to represented in the result type.
+        When an overflow occurs, the function returns the value
+        <code class="constant">HUGE_VAL</code>, <code class="constant">HUGE_VALF</code>, or <code class="constant">HUGE_VALL</code>, depending on whether the
+        function result type is <em class="replaceable"><code>double</code></em>, <em class="replaceable"><code>float</code></em>, or <span class="emphasis"><em>long double</em></span>. <code class="varname">errno</code> is set to <span class="errorname">ERANGE</span>, and an "overflow" (<code class="constant">FE_OVERFLOW</code>) floating-point exception is
+        raised.</p>
+
+        <p>A floating result <em class="replaceable"><code>underflows</code></em> if the result is
+        too small to be represented in the result type. If an
+        underflow occurs, a mathematical function typically returns
+        0.0 (C99 says a function shall return "an
+        implementation-defined value whose magnitude is no greater
+        than the smallest normalized positive number in the
+        specified type"). <code class="varname">errno</code> may be
+        set to <span class="errorname">ERANGE</span>, and an
+        "overflow" (<code class="constant">FE_UNDERFLOW</code>)
+        floating-point exception may be raised.</p>
+
+        <p>Some functions deliver a range error if the supplied
+        argument value, or the correct function result, would be
+        <em class="replaceable"><code>subnormal</code></em>. A
+        subnormal value is one that is nonzero, but with a
+        magnitude that is so small that it can't be presented in
+        normalized form (i.e., with a 1 in the most significant bit
+        of the significand). The representation of a subnormal
+        number will contain one or more leading zeros in the
+        significand.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="math-error-7_sect5" name="math-error-7_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>The <em class="replaceable"><code>math_errhandling</code></em> identifier
+      specified by C99 and POSIX.1-2001 is not supported by glibc.
+      This identifier is supposed to indicate which of the two
+      error-notification mechanisms (<code class="varname">errno</code>, exceptions retrievable via
+      <span class="citerefentry"><span class="refentrytitle">fettestexcept</span>(3)</span>) is in use.
+      The standards require that at least one be in use, but permit
+      both to be available. The current (version 2.8) situation
+      under glibc is messy. Most (but not all) functions raise
+      exceptions on errors. Some also set <code class="varname">errno</code>. A few functions set <code class="varname">errno</code>, but don't raise an exception. A very
+      few functions do neither. See the individual manual pages for
+      details.</p>
+
+      <p>To avoid the complexities of using <code class="varname">errno</code> and <a class="link" href="../htmlman3/fenv.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fetestexcept</span>(3)</span></a> for error
+      checking, it is often advised that one should instead check
+      for bad argument values before each call. For example, the
+      following code ensures that <a class="link" href="../htmlman3/log.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">log</span>(3)</span></a>'s argument is not a
+      NaN and is not zero (a pole error) or less than zero (a
+      domain error):</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+double x, r;
+
+if (isnan(x) || islessequal(x, 0)) {
+    /* Deal with NaN / pole error / domain error */
+}
+
+r = log(x);
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>The discussion on this page does not apply to the complex
+      mathematical functions (i.e., those declared by <code class="literal">&lt;</code><code class="filename">complex.h</code><code class="literal">&gt;</code>
+      which in general are not required to return errors by C99 and
+      POSIX.1-2001.</p>
+
+      <p>The <span class="citerefentry"><span class="refentrytitle">gcc</span>(1)</span> <code class="option">−fno−math−errno</code> option
+      causes the executable to employ implementations of some
+      mathematical functions that are faster than the standard
+      implementations, but do not set <code class="varname">errno</code> on error. (The <span class="citerefentry"><span class="refentrytitle">gcc</span>(1)</span> <code class="option">−ffast−math</code> option also enables
+      <code class="option">−fno−math−errno</code>.) An error
+      can still be tested for using <a class="link" href="../htmlman3/fenv.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fetestexcept</span>(3)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="math-error-7_sect6" name="math-error-7_sect6" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><span class="citerefentry"><span class="refentrytitle">gcc</span>(1)</span>, <a class="link" href="../htmlman3/errno.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">errno</span>(3)</span></a>, <a class="link" href="../htmlman3/fenv.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fenv</span>(3)</span></a>, <a class="link" href="../htmlman3/fpclassify.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fpclassify</span>(3)</span></a>, <a class="link" href="../htmlman3/INFINITY.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">INFINITY</span>(3)</span></a>, <a class="link" href="../htmlman3/isgreater.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">isgreater</span>(3)</span></a>, <a class="link" href="../htmlman3/matherr.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">matherr</span>(3)</span></a>, <a class="link" href="../htmlman3/nan.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">nan</span>(3)</span></a></p>
+
+      <p><span class="emphasis"><em>info libc</em></span></p>
+    </div>
+
+    <div class="colophon">
+      <a id="math-error-7_sect7" name="math-error-7_sect7" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 2008, Linux Foundation, written by Michael Kerrisk<br />
+
+                      &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

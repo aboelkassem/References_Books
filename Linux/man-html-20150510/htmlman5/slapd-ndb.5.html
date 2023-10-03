@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>slapd-ndb(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="slapd-ndb(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="slapd-ndb.5" name="slapd-ndb.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>slapd−ndb — MySQL NDB backend to slapd</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ETCDIR/slapd.conf
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-ndb-5_sect1" name="slapd-ndb-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <em class="replaceable"><code>ndb</code></em> backend
+      to <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a> uses the MySQL
+      Cluster package to store data, through its NDB API. It
+      provides fault tolerance with extreme scalability, along with
+      a degree of SQL compatibility.</p>
+
+      <p>This backend is designed to store LDAP information using
+      tables that are also visible from SQL. It uses a higher level
+      SQL API for creating these tables, while using the low level
+      NDB API for storing and retrieving the data within these
+      tables. The NDB Cluster engine allows data to be partitioned
+      across multiple data nodes, and this backend allows multiple
+      slapd instances to operate against a given database
+      concurrently.</p>
+
+      <p>The general approach is to use distinct tables for each
+      LDAP object class. Entries comprised of multiple object
+      classes will have their data spread across multiple tables.
+      The data tables use a 64 bit entryID as their primary key.
+      The DIT hierarchy is maintained in a separate table, which
+      maps DNs to entryIDs.</p>
+
+      <p>This backend is experimental. While intended to be a
+      general-purpose backend, it is currently missing a number of
+      common LDAP features. See the <code class="constant">TODO</code> file in the source directory for
+      details.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-ndb-5_sect2" name="slapd-ndb-5_sect2" shape="rect"> </a>
+
+      <h2>CONFIGURATION</h2>
+
+      <p>These <em class="replaceable"><code>slapd.conf</code></em>
+      options apply to the <em class="replaceable"><code>ndb</code></em> backend database. That
+      is, they must follow a "database ndb" line and come before
+      any subsequent "backend" or "database" lines. Other database
+      options are described in the <a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a> manual
+      page.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-ndb-5_sect3" name="slapd-ndb-5_sect3" shape="rect"> </a>
+
+      <h2>DATA SOURCE CONFIGURATION</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>dbhost
+          &lt;hostname&gt;</em></span></span></dt>
+
+          <dd>
+            <p>The name or IP address of the host running the MySQL
+            server. The default is "localhost". On Unix systems,
+            the connection to a local server is made using a Unix
+            Domain socket, whose path is specified using the
+            <em class="replaceable"><code>dbsocket</code></em>
+            directive.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>dbuser
+          &lt;username&gt;</em></span></span></dt>
+
+          <dd>
+            <p>The MySQL login ID to use when connecting to the
+            MySQL server. The chosen user must have sufficient
+            privileges to manipulate the SQL tables in the target
+            database.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>dbpasswd
+          &lt;password&gt;</em></span></span></dt>
+
+          <dd>
+            <p>The password for the <em class="replaceable"><code>dbuser</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>dbname
+          &lt;database name&gt;</em></span></span></dt>
+
+          <dd>
+            <p>The name of the MySQL database to use.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>dbport
+          &lt;port&gt;</em></span></span></dt>
+
+          <dd>
+            <p>The port number to use for the TCP connection to the
+            MySQL server.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>dbsocket
+          &lt;path&gt;</em></span></span></dt>
+
+          <dd>
+            <p>The socket to be used for connecting to a local
+            MySQL server.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>dbflag
+          &lt;integer&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Client flags for the MySQL session. See the MySQL
+            documentation for details.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>dbconnect
+          &lt;connectstring&gt;</em></span></span></dt>
+
+          <dd>
+            <p>The name or IP address of the host running the
+            cluster manager. The default is "localhost".</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>dbconnections
+          &lt;integer&gt;</em></span></span></dt>
+
+          <dd>
+            <p>The number of cluster connections to establish.
+            Using up to 4 may improve performance under heavier
+            load. The default is 1.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-ndb-5_sect4" name="slapd-ndb-5_sect4" shape="rect"> </a>
+
+      <h2>SCHEMA CONFIGURATION</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>attrlen
+          &lt;attribute&gt; &lt;length&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specify the column length to use for a particular
+            attribute. LDAP attributes are stored in individual
+            columns of the SQL tables. The maximum column lengths
+            for each column must be specified when creating these
+            tables. If a length constraint was specified in the
+            attribute's LDAP schema definition, that value will be
+            used by default. If the schema didn't specify a
+            constraint, the default is 128 bytes. Currently the
+            maximum is 1024.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>index
+          &lt;attr[,attr...]&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specify a list of attributes for which indexing
+            should be maintained. Currently there is no support for
+            substring indexing; a single index structure provides
+            presence, equality, and inequality indexing for the
+            specified attributes.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>attrset
+          &lt;set&gt; &lt;attrs&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specify a list of attributes to be treated as an
+            attribute set. This directive creates a table named
+            <em class="replaceable"><code>set</code></em> which
+            will contain all of the listed attributes. Ordinarily
+            an attribute resides in a table named by an object
+            class that uses the attribute. However, attributes are
+            only allowed to appear in a single table. For
+            attributes that are derived from an inherited object
+            class definition, the attribute will only be stored in
+            the superior class's table. Attribute sets should be
+            defined for any attributes that are used in multiple
+            unrelated object classes, i.e., classes that are not
+            connected by a simple inheritance chain.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-ndb-5_sect5" name="slapd-ndb-5_sect5" shape="rect"> </a>
+
+      <h2>ACCESS CONTROL</h2>
+
+      <p>The <em class="replaceable"><code>ndb</code></em> backend
+      honors most access control semantics as indicated in
+      <a class="link" href="../htmlman5/slapd.access.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.access</span>(5)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-ndb-5_sect6" name="slapd-ndb-5_sect6" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">ETCDIR/slapd.conf</span></dt>
+
+          <dd>
+            <p>default <em class="replaceable"><code>slapd</code></em> configuration
+            file</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-ndb-5_sect7" name="slapd-ndb-5_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a>, <a class="link" href="../htmlman5/slapd-config.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-config</span>(5)</span></a>, <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a>, <a class="link" href="../htmlman8/slapadd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapadd</span>(8)</span></a>, <a class="link" href="../htmlman8/slapcat.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapcat</span>(8)</span></a>, <a class="link" href="../htmlman8/slapindex.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapindex</span>(8)</span></a>, MySQL Cluster
+      documentation.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-ndb-5_sect8" name="slapd-ndb-5_sect8" shape="rect"> </a>
+
+      <h2>AUTHOR</h2>
+
+      <p>Howard Chu, with assistance from Johan Andersson et al @
+      MySQL.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                  See the following documents: <a class="ulink" href="../openldap-COPYRIGHT.html" target="_top" shape="rect">COPYRIGHT</a>, <a class="ulink" href="../openldap-LICENSE.html" target="_top" shape="rect">LICENSE</a><br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

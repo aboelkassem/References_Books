@@ -1,0 +1,518 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>crypt(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="crypt(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="crypt.3" name="crypt.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>crypt, crypt_r — password and data encryption</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#define _XOPEN_SOURCE        /* See feature_test_macros(7) */
+#include &lt;unistd.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">char
+            *<strong>crypt</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">key</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">salt</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+
+#define _GNU_SOURCE          /* See feature_test_macros(7) */
+#include &lt;crypt.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">char
+            *<strong>crypt_r</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">key</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">salt</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">struct crypt_data *<var class="pdparam">data</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <p>Link with <code class="option">−lcrypt</code>.</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="crypt-3_sect1" name="crypt-3_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">crypt</code>() is the password
+      encryption function. It is based on the Data Encryption
+      Standard algorithm with variations intended (among other
+      things) to discourage use of hardware implementations of a
+      key search.</p>
+
+      <p><em class="parameter"><code>key</code></em> is a user's
+      typed password.</p>
+
+      <p><em class="parameter"><code>salt</code></em> is a
+      two-character string chosen from the set <em class="replaceable"><code>[a−zA−Z0−9./]</code></em>.
+      This string is used to perturb the algorithm in one of 4096
+      different ways.</p>
+
+      <p>By taking the lowest 7 bits of each of the first eight
+      characters of the <em class="parameter"><code>key</code></em>, a 56-bit key is obtained.
+      This 56-bit key is used to encrypt repeatedly a constant
+      string (usually a string consisting of all zeros). The
+      returned value points to the encrypted password, a series of
+      13 printable ASCII characters (the first two characters
+      represent the salt itself). The return value points to static
+      data whose content is overwritten by each call.</p>
+
+      <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Warning">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Warning]" src="../stylesheet/warning.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Warning</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <p>The key space consists of 2**56 equal 7.2e16
+              possible values. Exhaustive searches of this key
+              space are possible using massively parallel
+              computers. Software, such as <span class="citerefentry"><span class="refentrytitle">crack</span>(1)</span>, is available
+              which will search the portion of this key space that
+              is generally used by humans for passwords. Hence,
+              password selection should, at minimum, avoid common
+              words and names. The use of a <span class="citerefentry"><span class="refentrytitle">passwd</span>(1)</span> program that
+              checks for crackable passwords during the selection
+              process is recommended.</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <p>The DES algorithm itself has a few quirks which make the
+      use of the <code class="function">crypt</code>() interface a
+      very poor choice for anything other than password
+      authentication. If you are planning on using the <code class="function">crypt</code>() interface for a cryptography
+      project, don't do it: get a good book on encryption and one
+      of the widely available DES libraries.</p>
+
+      <p><code class="function">crypt_r</code>() is a reentrant
+      version of <code class="function">crypt</code>(). The
+      structure pointed to by <em class="parameter"><code>data</code></em> is used to store result
+      data and bookkeeping information. Other than allocating it,
+      the only thing that the caller should do with this structure
+      is to set <em class="replaceable"><code>data-&gt;initialized</code></em> to zero
+      before the first call to <code class="function">crypt_r</code>().</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="crypt-3_sect2" name="crypt-3_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, a pointer to the encrypted password is
+      returned. On error, NULL is returned.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="crypt-3_sect3" name="crypt-3_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>salt</code></em> has the
+            wrong format.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOSYS</span></span></dt>
+
+          <dd>
+            <p>The <code class="function">crypt</code>() function
+            was not implemented, probably because of U.S.A. export
+            restrictions.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p><code class="filename">/proc/sys/crypto/fips_enabled</code> has a
+            nonzero value, and an attempt was made to use a weak
+            encryption type, such as DES.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="crypt-3_sect4" name="crypt-3_sect4" shape="rect"> </a>
+
+      <h2>ATTRIBUTES</h2>
+
+      <p>For an explanation of the terms used in this section, see
+      <a class="link" href="../htmlman7/attributes.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">attributes</span>(7)</span></a>.</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">Interface</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Attribute</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Value</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><code class="literal">crypt</code>()</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Thread safety</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">MT-Unsafe race:crypt</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><code class="literal">crypt_r</code>()</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Thread safety</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">MT-Safe</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="crypt-3_sect5" name="crypt-3_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p><code class="function">crypt</code>(): SVr4, 4.3BSD,
+      POSIX.1-2001. <code class="function">crypt_r</code>() is a
+      GNU extension.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="crypt-3_sect6" name="crypt-3_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <div class="refsect2">
+        <a id="crypt-3_sect7" name="crypt-3_sect7" shape="rect"> </a>
+
+        <h3>Glibc notes</h3>
+
+        <p>The glibc2 version of this function supports additional
+        encryption algorithms.</p>
+
+        <p>If <em class="parameter"><code>salt</code></em> is a
+        character string starting with the characters
+        "$<code class="function">id</code>$" followed by a string
+        terminated by "$":</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <p>$<code class="function">id</code>$<em class="parameter"><code>salt</code></em>$<code class="function">encrypted</code></p>
+          </blockquote>
+        </div>
+
+        <p>then instead of using the DES machine, <code class="function">id</code> identifies the encryption method used
+        and this then determines how the rest of the password
+        string is interpreted. The following values of <code class="function">id</code> are supported:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informaltable">
+              <table style="border-collapse: collapse;">
+                <colgroup span="1">
+                  <col class="c0" span="1" />
+                  <col class="c1" span="1" />
+                </colgroup>
+
+                <tbody>
+                  <tr style="">
+                    <td style="" align="left" rowspan="1" colspan="1">ID</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">Method</td>
+                  </tr>
+
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1">1</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">MD5</td>
+                  </tr>
+
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1">2a</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">Blowfish (not in
+                    mainline glibc; added in some</td>
+                  </tr>
+
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">Linux
+                    distributions)</td>
+                  </tr>
+
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1">5</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">SHA-256 (since glibc
+                    2.7)</td>
+                  </tr>
+
+                  <tr>
+                    <td style="" align="left" rowspan="1" colspan="1">6</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">SHA-512 (since glibc
+                    2.7)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>So $5$<em class="parameter"><code>salt</code></em>$<code class="function">encrypted</code> is an SHA-256 encoded password
+        and $6$<em class="parameter"><code>salt</code></em>$<code class="function">encrypted</code> is an SHA-512 encoded one.</p>
+
+        <p>"<em class="parameter"><code>salt</code></em>" stands
+        for the up to 16 characters following "$<code class="function">id</code>$" in the salt. The encrypted part of
+        the password string is the actual computed password. The
+        size of this string is fixed:</p>
+
+        <div class="informaltable">
+          <table style="border-collapse: collapse;">
+            <colgroup span="1">
+              <col class="c0" span="1" />
+              <col class="c1" span="1" />
+            </colgroup>
+
+            <tbody>
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">MD5</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">22 characters</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">SHA-256</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">43 characters</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">SHA-512</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">86 characters</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>The characters in "<em class="parameter"><code>salt</code></em>" and "<code class="function">encrypted</code>" are drawn from the set
+        <em class="replaceable"><code>[a−zA−Z0−9./]</code></em>.
+        In the MD5 and SHA implementations the entire <em class="parameter"><code>key</code></em> is significant (instead
+        of only the first 8 bytes in DES).</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="crypt-3_sect8" name="crypt-3_sect8" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman1/login.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">login</span>(1)</span></a>, <span class="citerefentry"><span class="refentrytitle">passwd</span>(1)</span>, <a class="link" href="../htmlman3/encrypt.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">encrypt</span>(3)</span></a>, <a class="link" href="../htmlman3/getpass.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getpass</span>(3)</span></a>, <a class="link" href="../htmlman5/passwd.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">passwd</span>(5)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="crypt-3_sect9" name="crypt-3_sect9" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Michael Haardt (michael<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cantor.informatik.rwth.aachen.de)<br />
+
+                      Sat Sep  3 22:00:30 MET DST 1994<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_DOC_FULL)<br />
+                  This is free documentation; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License as<br />
+
+                  published by the Free Software Foundation; either version 2 of<br />
+
+                  the License, or (at your option) any later version.<br />
+
+                  <br />
+                  The GNU General Public License's references to "object code"<br />
+
+                  and "executables" are to be interpreted as the output of any<br />
+
+                  document formatting or typesetting system, including<br />
+
+                  intermediate and printed output.<br />
+
+                  <br />
+                  This manual is distributed in the hope that it will be useful,<br />
+
+                  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+
+                  GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Sun Feb 19 21:32:25 1995, faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu edited details away<br />
+
+                  <br />
+                  TO DO: This manual page should go more into detail how DES is perturbed,<br />
+
+                  which string will be encrypted, and what determines the repetition factor.<br />
+
+                  Is a simple repetition using ECB used, or something more advanced?  I hope<br />
+
+                  the presented explanations are at least better than nothing, but by no<br />
+
+                  means enough.<br />
+                  <br />
+                  added _XOPEN_SOURCE, aeb, 970705<br />
+
+                  added GNU MD5 stuff, aeb, 011223<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

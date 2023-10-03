@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>gai.conf(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="gai.conf(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="gai.conf.5" name="gai.conf.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>gai.conf — getaddrinfo(3) configuration file</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="gai-conf-5_sect1" name="gai-conf-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>A call to <a class="link" href="../htmlman3/getaddrinfo.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getaddrinfo</span>(3)</span></a> might return
+      multiple answers. According to RFC 3484 these answers must be
+      sorted so that the answer with the highest success rate is
+      first in the list. The RFC provides an algorithm for the
+      sorting. The static rules are not always adequate, though.
+      For this reason, the RFC also requires that system
+      administrators should have the possibility to dynamically
+      change the sorting. For the glibc implementation, this can be
+      achieved with the <code class="filename">/etc/gai.conf</code>
+      file.</p>
+
+      <p>Each line in the configuration file consists of a keyword
+      and its parameters. White spaces in any place are ignored.
+      Lines starting with '#' are comments and are ignored.</p>
+
+      <p>The keywords currently recognized are:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><em class="replaceable"><code>label</code></em> <em class="replaceable"><code>netmask</code></em> <em class="replaceable"><code>precedence</code></em></span></dt>
+
+          <dd>
+            <p>The value is added to the label table used in the
+            RFC 3484 sorting. If any <em class="replaceable"><code>label</code></em> definition is
+            present in the configuration file, the default table is
+            not used. All the label definitions of the default
+            table which are to be maintained have to be duplicated.
+            Following the keyword, the line has to contain a
+            network mask and a precedence value.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>precedence</code></em> <em class="replaceable"><code>netmask</code></em> <em class="replaceable"><code>precedence</code></em></span></dt>
+
+          <dd>
+            <p>This keyword is similar to <em class="replaceable"><code>label</code></em>, but instead the
+            value is added to the precedence table as specified in
+            RFC 3484. Once again, the presence of a single
+            <em class="replaceable"><code>precedence</code></em>
+            line in the configuration file causes the default table
+            to not be used.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>reload</code></em> &lt;<em class="replaceable"><code>yes</code></em>|<em class="replaceable"><code>no</code></em>&gt;</span></dt>
+
+          <dd>
+            <p>This keyword controls whether a process checks
+            whether the configuration file has been changed since
+            the last time it was read. If the value is "<em class="replaceable"><code>yes</code></em>", the file is
+            reread. This might cause problems in multithreaded
+            applications and is generally a bad idea. The default
+            is "<em class="replaceable"><code>no</code></em>".</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>scopev4</code></em> <em class="replaceable"><code>mask</code></em> <em class="replaceable"><code>value</code></em></span></dt>
+
+          <dd>
+            <p>Add another rule to the RFC 3484 scope table for
+            IPv4 address. By default, the scope IDs described in
+            section 3.2 in RFC 3438 are used. Changing these
+            defaults should hardly ever be necessary.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="gai-conf-5_sect2" name="gai-conf-5_sect2" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <p><code class="filename">/etc/gai.conf</code></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="gai-conf-5_sect3" name="gai-conf-5_sect3" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>The default table according to RFC 3484 would be specified
+      with the following configuration file:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+label  ::1/128       0
+label  ::/0          1
+label  2002::/16     2
+label ::/96          3
+label ::ffff:0:0/96  4
+precedence  ::1/128       50
+precedence  ::/0          40
+precedence  2002::/16     30
+precedence ::/96          20
+precedence ::ffff:0:0/96  10
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="gai-conf-5_sect4" name="gai-conf-5_sect4" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/getaddrinfo.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getaddrinfo</span>(3)</span></a>, RFC
+      3484</p>
+    </div>
+
+    <div class="colophon">
+      <a id="gai-conf-5_sect5" name="gai-conf-5_sect5" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2006 Red Hat, Inc. All rights reserved.<br />
+
+                  Author: Ulrich Drepper &lt;drepper<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>redhat.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2_MISC)<br />
+                  This copyrighted material is made available to anyone wishing to use,<br />
+
+                  modify, copy, or redistribute it subject to the terms and conditions of the<br />
+
+                  GNU General Public License v.2.<br />
+
+                  <br />
+                  This program is distributed in the hope that it will be useful, but WITHOUT<br />
+
+                  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or<br />
+
+                  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for<br />
+
+                  more details.<br />
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

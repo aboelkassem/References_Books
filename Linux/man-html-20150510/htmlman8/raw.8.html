@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>raw(8) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="raw(8) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index8.html" shape="rect">Section 8</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="raw.8" name="raw.8" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>raw — bind a Linux raw character device</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">raw</code> /dev/raw/raw&lt;N&gt;
+        &lt;major&gt; &lt;minor&gt;</p>
+      </div>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">raw</code> /dev/raw/raw&lt;N&gt;
+        /dev/&lt;blockdev&gt;</p>
+      </div>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">raw \-q</code>
+        /dev/raw/raw&lt;N&gt;</p>
+      </div>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">raw \-qa</code></p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="raw-8_sect1" name="raw-8_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><span class="command"><strong>raw</strong></span> is used
+      to bind a Linux raw character device to a block device. Any
+      block device may be used: at the time of binding, the device
+      driver does not even have to be accessible (it may be loaded
+      on demand as a kernel module later).</p>
+
+      <p><span class="command"><strong>raw</strong></span> is used
+      in two modes: it either sets raw device bindings, or it
+      queries existing bindings. When setting a raw device,
+      <em class="parameter"><code>/dev/raw/raw&lt;N&gt;</code></em>
+      is the device name of an existing raw device node in the
+      filesystem. The block device to which it is to be bound can
+      be specified either in terms of its <em class="replaceable"><code>major</code></em> and <em class="replaceable"><code>minor</code></em> device numbers, or as a
+      path name <em class="parameter"><code>/dev/&lt;blockdev&gt;</code></em> to an
+      existing block device file.</p>
+
+      <p>The bindings already in existence can be queried with the
+      <code class="option">−q</code> option, which is used
+      either with a raw device filename to query that one device,
+      or with the <code class="option">−a</code> option to
+      query all bound raw devices.</p>
+
+      <p>Unbinding can be done by specifying major and minor 0.</p>
+
+      <p>Once bound to a block device, a raw device can be opened,
+      read and written, just like the block device it is bound to.
+      However, the raw device does not behave exactly like the
+      block device. In particular, access to the raw device
+      bypasses the kernel's block buffer cache entirely: all I/O is
+      done directly to and from the address space of the process
+      performing the I/O. If the underlying block device driver can
+      support DMA, then no data copying at all is required to
+      complete the I/O.</p>
+
+      <p>Because raw I/O involves direct hardware access to a
+      process's memory, a few extra restrictions must be observed.
+      All I/Os must be correctly aligned in memory and on disk:
+      they must start at a sector offset on disk, they must be an
+      exact number of sectors long, and the data buffer in virtual
+      memory must also be aligned to a multiple of the sector size.
+      The sector size is 512 bytes for most devices.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="raw-8_sect2" name="raw-8_sect2" shape="rect"> </a>
+
+      <h2>OPTIONS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="option">−q</code>, <code class="option">−−query</code></span></dt>
+
+          <dd>
+            <p>Set query mode. <span class="command"><strong>raw</strong></span> will query an
+            existing binding instead of setting a new one.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−a</code>, <code class="option">−−all</code></span></dt>
+
+          <dd>
+            <p>With <code class="option">−q</code> , specify
+            that all bound raw devices should be queried.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−h</code>, <code class="option">−−help</code></span></dt>
+
+          <dd>
+            <p>Display help text and exit.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−V</code>, <code class="option">−−version</code></span></dt>
+
+          <dd>
+            <p>Display version information and exit.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="raw-8_sect3" name="raw-8_sect3" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>The Linux <a class="link" href="../htmlman1/dd.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">dd</span>(1)</span></a> command should be
+      used without the <em class="replaceable"><code>bs=</code></em> option, or the blocksize
+      needs to be a multiple of the sector size of the device (512
+      bytes usually), otherwise it will fail with "Invalid
+      Argument" messages (EINVAL).</p>
+
+      <p>Raw I/O devices do not maintain cache coherency with the
+      Linux block device buffer cache. If you use raw I/O to
+      overwrite data already in the buffer cache, the buffer cache
+      will no longer correspond to the contents of the actual
+      storage device underneath. This is deliberate, but is
+      regarded either a bug or a feature depending on who you
+      ask!</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="raw-8_sect4" name="raw-8_sect4" shape="rect"> </a>
+
+      <h2>AUTHOR</h2>
+
+      <p>Stephen Tweedie (sct@redhat.com)</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="raw-8_sect5" name="raw-8_sect5" shape="rect"> </a>
+
+      <h2>AVAILABILITY</h2>
+
+      <p>The raw command is part of the util-linux package and is
+      available from
+      ftp://ftp.kernel.org/pub/linux/utils/util-linux/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,840 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>loop(4) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="loop(4) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index4.html" shape="rect">Section 4</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="loop.4" name="loop.4" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>loop, loop-control — loop devices</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;linux/loop.h&gt;
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="loop-4_sect1" name="loop-4_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The loop device is a block device that maps its data
+      blocks not to a physical device such as a hard disk or
+      optical disk drive, but to the blocks of a regular file in a
+      filesystem or to another block device. This can be useful for
+      example to provide a block device for a filesystem image
+      stored in a file, so that it can be mounted with the
+      <a class="link" href="../htmlman8/mount.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mount</span>(8)</span></a> command. You could
+      do</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+$ <span class="emphasis"><em>dd if=/dev/zero of=file.img bs=1MiB count=10</em></span>
+$ <span class="emphasis"><em>sudo losetup /dev/loop4 file.img </em></span>
+$ <span class="emphasis"><em>sudo mkfs -t ext4 /dev/loop4</em></span>
+$ <span class="emphasis"><em>sudo mkdir /myloopdev</em></span>
+$ <span class="emphasis"><em>sudo mount /dev/loop4 /myloopdev</em></span>
+</pre>
+      </div>
+
+      <p>See <a class="link" href="../htmlman8/losetup.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">losetup</span>(8)</span></a> for another
+      example.</p>
+
+      <p>A transfer function can be specified for each loop device
+      for encryption and decryption purposes.</p>
+
+      <p>The following <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> operations are
+      provided by the loop block device:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">LOOP_SET_FD</code></span></dt>
+
+          <dd>
+            <p>Associate the loop device with the open file whose
+            file descriptor is passed as the (third) <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a>
+            argument.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">LOOP_CLR_FD</code></span></dt>
+
+          <dd>
+            <p>Disassociate the loop device from any file
+            descriptor.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">LOOP_SET_STATUS</code></span></dt>
+
+          <dd>
+            <p>Set the status of the loop device using the (third)
+            <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> argument.
+            This argument is a pointer to <code class="function">loop_info</code> structure, defined in
+            <code class="literal">&lt;</code><code class="filename">linux/loop.h</code><code class="literal">&gt;</code> as:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="structdef">
+                  <table style="border-collapse: collapse;">
+                    <colgroup span="1">
+                      <col class="c1" span="1" />
+                      <col class="c2" span="1" />
+                      <col class="c3" span="1" />
+                      <col class="c4" span="1" />
+                      <col class="c5" span="1" />
+                    </colgroup>
+
+                    <tbody>
+                      <tr>
+                        <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                        <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">loop_info</span> {</td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>lo_number</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            /* ioctl r/o */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">dev_t</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>lo_device</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            /* ioctl r/o */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned long</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>lo_inode</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            /* ioctl r/o */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">dev_t</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>lo_rdevice</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            /* ioctl r/o */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>lo_offset</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>lo_encrypt_type</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>lo_encrypt_key_size</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            /* ioctl w/o */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>lo_flags</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            /* ioctl r/o */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">char</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>lo_name</code></em>[LO_NAME_SIZE];</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>lo_encrypt_key</code></em>[LO_KEY_SIZE];</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            /* ioctl w/o */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned long</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>lo_init</code></em>[2];</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">char</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>reserved</code></em>[4];</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>The encryption type (<em class="parameter"><code>lo_encrypt_type</code></em>) should
+            be one of <code class="constant">LO_CRYPT_NONE</code>,
+            <code class="constant">LO_CRYPT_XOR</code>,
+            <code class="constant">LO_CRYPT_DES</code>,
+            <code class="constant">LO_CRYPT_FISH2</code>,
+            <code class="constant">LO_CRYPT_BLOW</code>,
+            <code class="constant">LO_CRYPT_CAST128</code>,
+            <code class="constant">LO_CRYPT_IDEA</code>,
+            <code class="constant">LO_CRYPT_DUMMY</code>,
+            <code class="constant">LO_CRYPT_SKIPJACK</code>, or
+            (since Linux 2.6.0) <code class="constant">LO_CRYPT_CRYPTOAPI</code>.</p>
+
+            <p>The <em class="parameter"><code>lo_flags</code></em>
+            field is a bit mask that can include zero or more of
+            the following:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><code class="constant">LO_FLAGS_READ_ONLY</code></span></dt>
+
+                    <dd>
+                      <p>The loopback device is read-only.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">LO_FLAGS_AUTOCLEAR</code> (since
+                    Linux 2.6.25)</span></dt>
+
+                    <dd>
+                      <p>The loopback device will autodestruct on
+                      last close.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">LO_FLAGS_PARTSCAN</code> (since
+                    Linux 3.2)</span></dt>
+
+                    <dd>
+                      <p>Allow automatic partition scanning.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><code class="constant">LOOP_GET_STATUS</code></span></dt>
+
+          <dd>
+            <p>Get the status of the loop device. The (third)
+            <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> argument
+            must be a pointer to a <span class="emphasis"><em>struct loop_info</em></span>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">LOOP_CHANGE_FD</code> (since Linux
+          2.6.5)</span></dt>
+
+          <dd>
+            <p>Switch the backing store of the loop device to the
+            new file identified file descriptor specified in the
+            (third) <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> argument,
+            which is an integer. This operation is possible only if
+            the loop device is read-only and the new backing store
+            is the same size and type as the old backing store.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">LOOP_SET_CAPACITY</code> (since Linux
+          2.6.30)</span></dt>
+
+          <dd>
+            <p>Resize a live loop device. One can change the size
+            of the underlying backing store and then use this
+            operation so that the loop driver learns about the new
+            size. This operation takes no argument.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>Since Linux 2.6, there are two new <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> operations:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">LOOP_SET_STATUS64</code>, <code class="constant">LOOP_GET_STATUS64</code></span></dt>
+
+          <dd>
+            <p>These are similar to <code class="constant">LOOP_SET_STATUS</code> and <code class="constant">LOOP_GET_STATUS</code> described above but
+            use the <code class="function">loop_info64</code>
+            structure, which has some additional fields and a
+            larger range for some other fields:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="structdef">
+                  <table style="border-collapse: collapse;">
+                    <colgroup span="1">
+                      <col class="c1" span="1" />
+                      <col class="c2" span="1" />
+                      <col class="c3" span="1" />
+                      <col class="c4" span="1" />
+                      <col class="c5" span="1" />
+                    </colgroup>
+
+                    <tbody>
+                      <tr>
+                        <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                        <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">loop_info64</span> {</td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>lo_device</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            /* ioctl r/o */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>lo_inode</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            /* ioctl r/o */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>lo_rdevice</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            /* ioctl r/o */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>lo_offset</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>lo_sizelimit</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* bytes, 0 == max available */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>lo_number</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            /* ioctl r/o */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>lo_encrypt_type</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>lo_encrypt_key_size</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            /* ioctl w/o */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>lo_flags</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            /* ioctl r/o */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint8_t</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>lo_file_name</code></em>[LO_NAME_SIZE];</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint8_t</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>lo_crypt_name</code></em>[LO_NAME_SIZE];</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint8_t</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>lo_encrypt_key</code></em>[LO_KEY_SIZE];</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            /* ioctl w/o */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>lo_init</code></em>[2];</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"> </td>
+                      </tr>
+
+                      <tr>
+                        <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+        </dl>
+      </div>
+
+      <div class="refsect2">
+        <a id="loop-4_sect2" name="loop-4_sect2" shape="rect"> </a>
+
+        <h3>/dev/loop-control</h3>
+
+        <p>Since Linux 3.1, the kernel provides the <code class="filename">/dev/loop-control</code> device, which permits
+        an application to dynamically find a free device, and to
+        add and remove loop devices from the system. To perform
+        these operations, one first opens <code class="filename">/dev/loop-control</code> and then employs one of
+        the following <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> operations:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">LOOP_CTL_GET_FREE</code></span></dt>
+
+            <dd>
+              <p>Allocate or find a free loop device for use. On
+              success, the device number is returned as the result
+              of the call. This operation takes no argument.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">LOOP_CTL_ADD</code></span></dt>
+
+            <dd>
+              <p>Add the new loop device whose device number is
+              specified as a long integer in the third <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> argument.
+              On success, the device index is returned as the
+              result of the call. If the device is already
+              allocated, the call fails with the error <span class="errorname">EEXIST</span>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">LOOP_CTL_REMOVE</code></span></dt>
+
+            <dd>
+              <p>Remove the loop device whose device number is
+              specified as a long integer in the third <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> argument.
+              On success, the device number is returned as the
+              result of the call. If the device is in use, the call
+              fails with the error <span class="errorname">EBUSY</span>.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="loop-4_sect3" name="loop-4_sect3" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>The program below uses the <code class="filename">/dev/loop-control</code> device to find a free
+      loop device, opens the loop device, opens a file to be used
+      as the underlying storage for the device, and then associates
+      the loop device with the backing store. The following shell
+      session demonstrates the use of the program:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$ <span class="emphasis"><em>dd if=/dev/zero of=file.img bs=1MiB count=10</em></span>
+10+0 records in
+10+0 records out
+10485760 bytes (10 MB) copied, 0.00609385 s, 1.7 GB/s
+$ <span class="emphasis"><em>sudo ./mnt_loop file.img</em></span>
+loopname = /dev/loop5
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="refsect2">
+        <a id="loop-4_sect4" name="loop-4_sect4" shape="rect"> </a>
+
+        <h3>Program source</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+#include &lt;fcntl.h&gt;
+#include &lt;linux/loop.h&gt;
+#include &lt;sys/ioctl.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+
+#define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); \
+                        } while (0)
+
+int
+main(int argc, char *argv[])
+{
+    int loopctlfd, loopfd, backingfile;
+    long devnr;
+    char loopname[4096];
+
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s backing−file\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    loopctlfd = open("/dev/loop−control", O_RDWR);
+    if (loopctlfd == −1)
+        errExit("open: /dev/loop−control");
+
+    devnr = ioctl(loopctlfd, LOOP_CTL_GET_FREE);
+    if (devnr == −1)
+        errExit("ioctl−LOOP_CTL_GET_FREE");
+
+    sprintf(loopname, "/dev/loop%ld", devnr);
+    printf("loopname = %s\n", loopname);
+
+    loopfd = open(loopname, O_RDWR);
+    if (loopfd == −1)
+        errExit("open: loopname");
+
+    backingfile = open(argv[1], O_RDWR);
+    if (backingfile == −1)
+        errExit("open: backing−file");
+
+    if (ioctl(loopfd, LOOP_SET_FD, backingfile) == −1)
+        errExit("ioctl−LOOP_SET_FD");
+
+    exit(EXIT_SUCCESS);
+}
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="loop-4_sect5" name="loop-4_sect5" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <p><code class="filename">/dev/loop*<code class="literal">:</code></code> the loop block special device
+      files</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="loop-4_sect6" name="loop-4_sect6" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman8/losetup.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">losetup</span>(8)</span></a>, <a class="link" href="../htmlman8/mount.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mount</span>(8)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="loop-4_sect7" name="loop-4_sect7" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright 2002 Urs Thuermann (urs<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>isnogud.escape.de)<br />
+
+                  and Copyright 2015 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_DOC_FULL)<br />
+                  This is free documentation; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License as<br />
+
+                  published by the Free Software Foundation; either version 2 of<br />
+
+                  the License, or (at your option) any later version.<br />
+
+                  <br />
+                  The GNU General Public License's references to "object code"<br />
+
+                  and "executables" are to be interpreted as the output of any<br />
+
+                  document formatting or typesetting system, including<br />
+
+                  intermediate and printed output.<br />
+
+                  <br />
+                  This manual is distributed in the hope that it will be useful,<br />
+
+                  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+
+                  GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, write to the Free<br />
+
+                  Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111,<br />
+
+                  USA.<br />
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

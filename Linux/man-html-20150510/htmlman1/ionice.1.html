@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>ionice(1) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="ionice(1) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index1.html" shape="rect">Section 1</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="ionice.1" name="ionice.1" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>ionice — set or get process I/O scheduling class and
+      priority</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">ionice</code> [ <code class="option">−c</code> class ] [ <code class="option">−n</code> level ] [<code class="option">−t</code>] <code class="option">−p</code> PID...</p>
+      </div>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">ionice</code> [ <code class="option">−c</code> class ] [ <code class="option">−n</code> level ] [<code class="option">−t</code>] <code class="option">−P</code> PGID...</p>
+      </div>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">ionice</code> [ <code class="option">−c</code> class ] [ <code class="option">−n</code> level ] [<code class="option">−t</code>] <code class="option">−u</code> UID...</p>
+      </div>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">ionice</code> [ <code class="option">−c</code> class ] [ <code class="option">−n</code> level ] [<code class="option">−t</code>] command [ argument... ]</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ionice-1_sect1" name="ionice-1_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>This program sets or gets the I/O scheduling class and
+      priority for a program. If no arguments or just <code class="option">−p</code> is given, <span class="command"><strong>ionice</strong></span> will query the
+      current I/O scheduling class and priority for that
+      process.</p>
+
+      <p>When <em class="parameter"><code>command</code></em> is
+      given, <span class="command"><strong>ionice</strong></span>
+      will run this command with the given arguments. If no
+      <em class="parameter"><code>class</code></em> is specified,
+      then <em class="parameter"><code>command</code></em> will be
+      executed with the "best-effort" scheduling class. The default
+      priority level is 4.</p>
+
+      <p>As of this writing, a process can be in one of three
+      scheduling classes:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>Idle</em></span></span></dt>
+
+          <dd>
+            <p>A program running with idle I/O priority will only
+            get disk time when no other program has asked for disk
+            I/O for a defined grace period. The impact of an idle
+            I/O process on normal system activity should be zero.
+            This scheduling class does not take a priority
+            argument. Presently, this scheduling class is permitted
+            for an ordinary user (since kernel 2.6.25).</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>Best-effort</code></em></span></dt>
+
+          <dd>
+            <p>This is the effective scheduling class for any
+            process that has not asked for a specific I/O priority.
+            This class takes a priority argument from <em class="replaceable"><code>0-7</code></em>, with a lower
+            number being higher priority. Programs running at the
+            same best-effort priority are served in a round-robin
+            fashion.</p>
+
+            <p>Note that before kernel 2.6.26 a process that has
+            not asked for an I/O priority formally uses
+            "<span class="command"><strong>none</strong></span>" as
+            scheduling class, but the I/O scheduler will treat such
+            processes as if it were in the best-effort class. The
+            priority within the best-effort class will be
+            dynamically derived from the CPU nice level of the
+            process: io_priority = (cpu_nice + 20) / 5.</p>
+
+            <p>For kernels after 2.6.26 with the CFQ I/O scheduler,
+            a process that has not asked for an I/O priority
+            inherits its CPU scheduling class. The I/O priority is
+            derived from the CPU nice level of the process (same as
+            before kernel 2.6.26).</p>
+          </dd>
+
+          <dt><span class="term"><span class="command"><strong>Realtime</strong></span></span></dt>
+
+          <dd>
+            <p>The RT scheduling class is given first access to the
+            disk, regardless of what else is going on in the
+            system. Thus the RT class needs to be used with some
+            care, as it can starve other processes. As with the
+            best-effort class, 8 priority levels are defined
+            denoting how big a time slice a given process will
+            receive on each scheduling window. This scheduling
+            class is not permitted for an ordinary (i.e., non-root)
+            user.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ionice-1_sect2" name="ionice-1_sect2" shape="rect"> </a>
+
+      <h2>OPTIONS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="option">−c,
+          −−class <em class="parameter"><code>class</code></em></code></span></dt>
+
+          <dd>
+            <p>Specify the name or number of the scheduling class
+            to use; <code class="constant">0</code> for none,
+            <code class="constant">1</code> for realtime,
+            <code class="constant">2</code> for best-effort,
+            <code class="constant">3</code> for idle.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−n,
+          −−classdata <em class="parameter"><code>level</code></em></code></span></dt>
+
+          <dd>
+            <p>Specify the scheduling class data. This only has an
+            effect if the class accepts an argument. For realtime
+            and best-effort, <em class="replaceable"><code>0-7</code></em> are valid data
+            (priority levels).</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−p,
+          −−pid <em class="parameter"><code>PID</code></em>...</code></span></dt>
+
+          <dd>
+            <p>Specify the process IDs of running processes for
+            which to get or set the scheduling parameters.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−P,
+          −−pgid <em class="parameter"><code>PGID</code></em>...</code></span></dt>
+
+          <dd>
+            <p>Specify the process group IDs of running processes
+            for which to get or set the scheduling parameters.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−t,
+          −−ignore</code></span></dt>
+
+          <dd>
+            <p>Ignore failure to set the requested priority. If
+            <em class="parameter"><code>command</code></em> was
+            specified, run it even in case it was not possible to
+            set the desired scheduling priority, which can happen
+            due to insufficient privileges or an old kernel
+            version.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−h,
+          −−help</code></span></dt>
+
+          <dd>
+            <p>Display help text and exit.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−u,
+          −−uid <em class="parameter"><code>UID</code></em>...</code></span></dt>
+
+          <dd>
+            <p>Specify the user IDs of running processes for which
+            to get or set the scheduling parameters.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−V,
+          −−version</code></span></dt>
+
+          <dd>
+            <p>Display version information and exit.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ionice-1_sect3" name="ionice-1_sect3" shape="rect"> </a>
+
+      <h2>EXAMPLES</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"># <span class="command"><strong>ionice</strong></span> -c 3 -p
+          89</span></dt>
+
+          <dt><span class="term">Sets process with PID 89 as an
+          idle I/O process.</span></dt>
+
+          <dt><span class="term"># <span class="command"><strong>ionice</strong></span> -c 2 -n 0
+          bash</span></dt>
+
+          <dt><span class="term">Runs 'bash' as a best-effort
+          program with highest priority.</span></dt>
+
+          <dt><span class="term"># <span class="command"><strong>ionice</strong></span> -p 89
+          91</span></dt>
+
+          <dt><span class="term">Prints the class and priority of
+          the processes with PID 89 and 91.</span></dt>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ionice-1_sect4" name="ionice-1_sect4" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Linux supports I/O scheduling priorities and classes since
+      2.6.13 with the CFQ I/O scheduler.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ionice-1_sect5" name="ionice-1_sect5" shape="rect"> </a>
+
+      <h2>AUTHORS</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+Jens Axboe &lt;jens@axboe.dk&gt;
+Karel Zak &lt;kzak@redhat.com&gt;
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ionice-1_sect6" name="ionice-1_sect6" shape="rect"> </a>
+
+      <h2>AVAILABILITY</h2>
+
+      <p>The ionice command is part of the util-linux package and
+      is available from
+      ftp://ftp.kernel.org/pub/linux/utils/util-linux/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

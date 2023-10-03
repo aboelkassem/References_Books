@@ -1,0 +1,1326 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>user_namespaces(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="user_namespaces(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="user-namespaces.7" name="user-namespaces.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>user_namespaces — overview of Linux user
+      namespaces</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="user-namespaces-7_sect1" name="user-namespaces-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>For an overview of namespaces, see <a class="link" href="../htmlman7/namespaces.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">namespaces</span>(7)</span></a>.</p>
+
+      <p>User namespaces isolate security-related identifiers and
+      attributes, in particular, user IDs and group IDs (see
+      <a class="link" href="../htmlman7/credentials.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">credentials</span>(7)</span></a>), the root
+      directory, keys (see <a class="link" href="../htmlman2/keyctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">keyctl</span>(2)</span></a>), and
+      capabilities (see <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>). A
+      process's user and group IDs can be different inside and
+      outside a user namespace. In particular, a process can have a
+      normal unprivileged user ID outside a user namespace while at
+      the same time having a user ID of 0 inside the namespace; in
+      other words, the process has full privileges for operations
+      inside the user namespace, but is unprivileged for operations
+      outside the namespace.</p>
+
+      <div class="refsect2">
+        <a id="user-namespaces-7_sect2" name="user-namespaces-7_sect2" shape="rect"> </a>
+
+        <h3>Nested namespaces, namespace membership</h3>
+
+        <p>User namespaces can be nested; that is, each user
+        namespace—except the initial ("root")
+        namespace—has a parent user namespace, and can have
+        zero or more child user namespaces. The parent user
+        namespace is the user namespace of the process that creates
+        the user namespace via a call to <a class="link" href="../htmlman2/unshare.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unshare</span>(2)</span></a> or <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> with the
+        <code class="constant">CLONE_NEWUSER</code> flag.</p>
+
+        <p>The kernel imposes (since version 3.11) a limit of 32
+        nested levels of user namespaces. Calls to <a class="link" href="../htmlman2/unshare.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unshare</span>(2)</span></a> or <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> that would cause
+        this limit to be exceeded fail with the error <span class="errorname">EUSERS</span>.</p>
+
+        <p>Each process is a member of exactly one user namespace.
+        A process created via <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> or <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> without the
+        <code class="constant">CLONE_NEWUSER</code> flag is a
+        member of the same user namespace as its parent. A
+        single-threaded process can join another user namespace
+        with <a class="link" href="../htmlman2/setns.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setns</span>(2)</span></a> if it has the
+        <code class="constant">CAP_SYS_ADMIN</code> in that
+        namespace; upon doing so, it gains a full set of
+        capabilities in that namespace.</p>
+
+        <p>A call to <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> or <a class="link" href="../htmlman2/unshare.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unshare</span>(2)</span></a> with the
+        <code class="constant">CLONE_NEWUSER</code> flag makes the
+        new child process (for <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a>) or the caller
+        (for <a class="link" href="../htmlman2/unshare.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unshare</span>(2)</span></a>) a member of
+        the new user namespace created by the call.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="user-namespaces-7_sect3" name="user-namespaces-7_sect3" shape="rect"> </a>
+
+        <h3>Capabilities</h3>
+
+        <p>The child process created by <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> with the
+        <code class="constant">CLONE_NEWUSER</code> flag starts out
+        with a complete set of capabilities in the new user
+        namespace. Likewise, a process that creates a new user
+        namespace using <a class="link" href="../htmlman2/unshare.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unshare</span>(2)</span></a> or joins an
+        existing user namespace using <a class="link" href="../htmlman2/setns.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setns</span>(2)</span></a> gains a full set
+        of capabilities in that namespace. On the other hand, that
+        process has no capabilities in the parent (in the case of
+        <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a>) or previous (in
+        the case of <a class="link" href="../htmlman2/unshare.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unshare</span>(2)</span></a> and <a class="link" href="../htmlman2/setns.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setns</span>(2)</span></a>) user namespace,
+        even if the new namespace is created or joined by the root
+        user (i.e., a process with user ID 0 in the root
+        namespace).</p>
+
+        <p>Note that a call to <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a> will cause a
+        process's capabilities to be recalculated in the usual way
+        (see <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>), so that
+        usually, unless it has a user ID of 0 within the namespace
+        or the executable file has a nonempty inheritable
+        capabilities mask, it will lose all capabilities. See the
+        discussion of user and group ID mappings, below.</p>
+
+        <p>A call to <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a>, <a class="link" href="../htmlman2/unshare.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unshare</span>(2)</span></a>, or <a class="link" href="../htmlman2/setns.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setns</span>(2)</span></a> using the
+        <code class="constant">CLONE_NEWUSER</code> flag sets the
+        "securebits" flags (see <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>) to their
+        default values (all flags disabled) in the child (for
+        <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a>) or caller (for
+        <a class="link" href="../htmlman2/unshare.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unshare</span>(2)</span></a>, or <a class="link" href="../htmlman2/setns.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setns</span>(2)</span></a>). Note that
+        because the caller no longer has capabilities in its
+        original user namespace after a call to <a class="link" href="../htmlman2/setns.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setns</span>(2)</span></a>, it is not
+        possible for a process to reset its "securebits" flags
+        while retaining its user namespace membership by using a
+        pair of <a class="link" href="../htmlman2/setns.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setns</span>(2)</span></a> calls to move to
+        another user namespace and then return to its original user
+        namespace.</p>
+
+        <p>Having a capability inside a user namespace permits a
+        process to perform operations (that require privilege) only
+        on resources governed by that namespace. The rules for
+        determining whether or not a process has a capability in a
+        particular user namespace are as follows:</p>
+
+        <div class="orderedlist">
+          <ol class="orderedlist" type="1">
+            <li class="listitem">
+              <p>A process has a capability inside a user namespace
+              if it is a member of that namespace and it has the
+              capability in its effective capability set. A process
+              can gain capabilities in its effective capability set
+              in various ways. For example, it may execute a
+              set-user-ID program or an executable with associated
+              file capabilities. In addition, a process may gain
+              capabilities via the effect of <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a>, <a class="link" href="../htmlman2/unshare.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unshare</span>(2)</span></a>, or
+              <a class="link" href="../htmlman2/setns.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setns</span>(2)</span></a>, as
+              already described.</p>
+            </li>
+
+            <li class="listitem">
+              <p>If a process has a capability in a user namespace,
+              then it has that capability in all child (and further
+              removed descendant) namespaces as well.</p>
+            </li>
+
+            <li class="listitem">
+              <p>When a user namespace is created, the kernel
+              records the effective user ID of the creating process
+              as being the "owner" of the namespace. A process that
+              resides in the parent of the user namespace and whose
+              effective user ID matches the owner of the namespace
+              has all capabilities in the namespace. By virtue of
+              the previous rule, this means that the process has
+              all capabilities in all further removed descendant
+              user namespaces as well.</p>
+            </li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="user-namespaces-7_sect4" name="user-namespaces-7_sect4" shape="rect"> </a>
+
+        <h3>Interaction of user namespaces and other types of
+        namespaces</h3>
+
+        <p>Starting in Linux 3.8, unprivileged processes can create
+        user namespaces, and mount, PID, IPC, network, and UTS
+        namespaces can be created with just the <code class="constant">CAP_SYS_ADMIN</code> capability in the caller's
+        user namespace.</p>
+
+        <p>When a non-user-namespace is created, it is owned by the
+        user namespace in which the creating process was a member
+        at the time of the creation of the namespace. Actions on
+        the non-user-namespace require capabilities in the
+        corresponding user namespace.</p>
+
+        <p>If <code class="constant">CLONE_NEWUSER</code> is
+        specified along with other <em class="replaceable"><code>CLONE_NEW*</code></em> flags in a
+        single <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> or <a class="link" href="../htmlman2/unshare.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unshare</span>(2)</span></a> call, the user
+        namespace is guaranteed to be created first, giving the
+        child (<a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a>) or caller
+        (<a class="link" href="../htmlman2/unshare.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unshare</span>(2)</span></a>) privileges
+        over the remaining namespaces created by the call. Thus, it
+        is possible for an unprivileged caller to specify this
+        combination of flags.</p>
+
+        <p>When a new IPC, mount, network, PID, or UTS namespace is
+        created via <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> or <a class="link" href="../htmlman2/unshare.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unshare</span>(2)</span></a>, the kernel
+        records the user namespace of the creating process against
+        the new namespace. (This association can't be changed.)
+        When a process in the new namespace subsequently performs
+        privileged operations that operate on global resources
+        isolated by the namespace, the permission checks are
+        performed according to the process's capabilities in the
+        user namespace that the kernel associated with the new
+        namespace.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="user-namespaces-7_sect5" name="user-namespaces-7_sect5" shape="rect"> </a>
+
+        <h3>Restrictions on mount namespaces</h3>
+
+        <p>Note the following points with respect to mount
+        namespaces:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>A mount namespace has an owner user namespace. A
+              mount namespace whose owner user namespace is
+              different from the owner user namespace of its parent
+              mount namespace is considered a less privileged mount
+              namespace.</p>
+            </li>
+
+            <li class="listitem">
+              <p>When creating a less privileged mount namespace,
+              shared mounts are reduced to slave mounts. This
+              ensures that mappings performed in less privileged
+              mount namespaces will not propagate to more
+              privileged mount namespaces.</p>
+            </li>
+
+            <li class="listitem">
+              <p>Mounts that come as a single unit from more
+              privileged mount are locked together and may not be
+              separated in a less privileged mount namespace. (The
+              <a class="link" href="../htmlman2/unshare.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unshare</span>(2)</span></a>
+              <code class="constant">CLONE_NEWNS</code> operation
+              brings across all of the mounts from the original
+              mount namespace as a single unit, and recursive
+              mounts that propagate between mount namespaces
+              propagate as a single unit.)</p>
+            </li>
+
+            <li class="listitem">
+              <p>The <a class="link" href="../htmlman2/mount.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mount</span>(2)</span></a> flags
+              <code class="constant">MS_RDONLY</code>, <code class="constant">MS_NOSUID</code>, <code class="constant">MS_NOEXEC</code>, and the "atime" flags
+              (<code class="constant">MS_NOATIME</code>,
+              <code class="constant">MS_NODIRATIME</code>,
+              <code class="constant">MS_RELATIME</code>) settings
+              become locked when propagated from a more privileged
+              to a less privileged mount namespace, and may not be
+              changed in the less privileged mount namespace.</p>
+            </li>
+
+            <li class="listitem">
+              <p>A file or directory that is a mount point in one
+              namespace that is not a mount point in another
+              namespace, may be renamed, unlinked, or removed
+              (<a class="link" href="../htmlman2/rmdir.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rmdir</span>(2)</span></a>) in the
+              mount namespace in which it is not a mount point
+              (subject to the usual permission checks).</p>
+            </li>
+
+            <li class="listitem">
+              <p>Previously, attempting to unlink, rename, or
+              remove a file or directory that was a mount point in
+              another mount namespace would result in the error
+              <span class="errorname">EBUSY</span>. That behavior
+              had technical problems of enforcement (e.g., for NFS)
+              and permitted denial-of-service attacks against more
+              privileged users. (i.e., preventing individual files
+              from being updated by bind mounting on top of
+              them).</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="user-namespaces-7_sect6" name="user-namespaces-7_sect6" shape="rect"> </a>
+
+        <h3>User and group ID mappings: uid_map and gid_map</h3>
+
+        <p>When a user namespace is created, it starts out without
+        a mapping of user IDs (group IDs) to the parent user
+        namespace. The <code class="filename">/proc/[pid]/uid_map</code> and <code class="filename">/proc/[pid]/gid_map</code> files (available
+        since Linux 3.5) expose the mappings for user and group IDs
+        inside the user namespace for the process <em class="replaceable"><code>pid</code></em>. These files can be
+        read to view the mappings in a user namespace and written
+        to (once) to define the mappings.</p>
+
+        <p>The description in the following paragraphs explains the
+        details for <em class="replaceable"><code>uid_map</code></em>; <em class="replaceable"><code>gid_map</code></em> is exactly the
+        same, but each instance of "user ID" is replaced by "group
+        ID".</p>
+
+        <p>The <em class="replaceable"><code>uid_map</code></em>
+        file exposes the mapping of user IDs from the user
+        namespace of the process <em class="replaceable"><code>pid</code></em> to the user namespace
+        of the process that opened <em class="replaceable"><code>uid_map</code></em> (but see a
+        qualification to this point below). In other words,
+        processes that are in different user namespaces will
+        potentially see different values when reading from a
+        particular <em class="replaceable"><code>uid_map</code></em> file, depending on
+        the user ID mappings for the user namespaces of the reading
+        processes.</p>
+
+        <p>Each line in the <em class="replaceable"><code>uid_map</code></em> file specifies a
+        1-to-1 mapping of a range of contiguous user IDs between
+        two user namespaces. (When a user namespace is first
+        created, this file is empty.) The specification in each
+        line takes the form of three numbers delimited by white
+        space. The first two numbers specify the starting user ID
+        in each of the two user namespaces. The third number
+        specifies the length of the mapped range. In detail, the
+        fields are interpreted as follows:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><em class="replaceable"><code>(1)</code></em></span></dt>
+
+            <dd>
+              <p>The start of the range of user IDs in the user
+              namespace of the process <em class="replaceable"><code>pid</code></em>.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>(2)</code></em></span></dt>
+
+            <dd>
+              <p>The start of the range of user IDs to which the
+              user IDs specified by field one map. How field two is
+              interpreted depends on whether the process that
+              opened <em class="replaceable"><code>uid_map</code></em> and the
+              process <em class="replaceable"><code>pid</code></em>
+              are in the same user namespace, as follows:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="orderedlist">
+                    <ol class="orderedlist" type="a">
+                      <li class="listitem">
+                        <p>If the two processes are in different
+                        user namespaces: field two is the start of
+                        a range of user IDs in the user namespace
+                        of the process that opened <em class="replaceable"><code>uid_map</code></em>.</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>If the two processes are in the same
+                        user namespace: field two is the start of
+                        the range of user IDs in the parent user
+                        namespace of the process <em class="replaceable"><code>pid</code></em>. This
+                        case enables the opener of <em class="replaceable"><code>uid_map</code></em>
+                        (the common case here is opening
+                        <code class="filename">/proc/self/uid_map</code>) to
+                        see the mapping of user IDs into the user
+                        namespace of the process that created this
+                        user namespace.</p>
+                      </li>
+                    </ol>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>(3)</code></em></span></dt>
+
+            <dd>
+              <p>The length of the range of user IDs that is mapped
+              between the two user namespaces.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>System calls that return user IDs (group IDs)—for
+        example, <a class="link" href="../htmlman2/getuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getuid</span>(2)</span></a>, <a class="link" href="../htmlman2/getgid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getgid</span>(2)</span></a>, and the
+        credential fields in the structure returned by <a class="link" href="../htmlman2/stat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">stat</span>(2)</span></a>\(emreturn the
+        user ID (group ID) mapped into the caller's user
+        namespace.</p>
+
+        <p>When a process accesses a file, its user and group IDs
+        are mapped into the initial user namespace for the purpose
+        of permission checking and assigning IDs when creating a
+        file. When a process retrieves file user and group IDs via
+        <a class="link" href="../htmlman2/stat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">stat</span>(2)</span></a>, the IDs are
+        mapped in the opposite direction, to produce values
+        relative to the process user and group ID mappings.</p>
+
+        <p>The initial user namespace has no parent namespace, but,
+        for consistency, the kernel provides dummy user and group
+        ID mapping files for this namespace. Looking at the
+        <em class="replaceable"><code>uid_map</code></em> file
+        (<em class="replaceable"><code>gid_map</code></em> is the
+        same) from a shell in the initial namespace shows:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+$ <span class="emphasis"><em>cat /proc/$$/uid_map</em></span>
+         0          0 4294967295
+</pre>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>This mapping tells us that the range starting at user ID
+        0 in this namespace maps to a range starting at 0 in the
+        (nonexistent) parent namespace, and the length of the range
+        is the largest 32-bit unsigned integer. This leaves
+        4294967295 (the 32-bit signed −1 value) unmapped.
+        This is deliberate: <span class="emphasis"><em>(uid_t)
+        −1</em></span> is used in several interfaces (e.g.,
+        <a class="link" href="../htmlman2/setreuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setreuid</span>(2)</span></a>) as a way to
+        specify "no user ID". Leaving <span class="emphasis"><em>(uid_t) −1</em></span> unmapped and
+        unusable guarantees that there will be no confusion when
+        using these interfaces.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="user-namespaces-7_sect7" name="user-namespaces-7_sect7" shape="rect"> </a>
+
+        <h3>Defining user and group ID mappings: writing to uid_map
+        and gid_map</h3>
+
+        <p>After the creation of a new user namespace, the
+        <em class="replaceable"><code>uid_map</code></em> file of
+        <em class="replaceable"><code>one</code></em> of the
+        processes in the namespace may be written to <em class="replaceable"><code>once</code></em> to define the mapping
+        of user IDs in the new user namespace. An attempt to write
+        more than once to a <em class="replaceable"><code>uid_map</code></em> file in a user
+        namespace fails with the error <span class="errorname">EPERM</span>. Similar rules apply for
+        <em class="replaceable"><code>gid_map</code></em>
+        files.</p>
+
+        <p>The lines written to <em class="replaceable"><code>uid_map</code></em> (<em class="replaceable"><code>gid_map</code></em>) must conform to
+        the following rules:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>The three fields must be valid numbers, and the
+              last field must be greater than 0.</p>
+            </li>
+
+            <li class="listitem">
+              <p>Lines are terminated by newline characters.</p>
+            </li>
+
+            <li class="listitem">
+              <p>There is an (arbitrary) limit on the number of
+              lines in the file. As at Linux 3.18, the limit is
+              five lines. In addition, the number of bytes written
+              to the file must be less than the system page size,
+              and the write must be performed at the start of the
+              file (i.e., <a class="link" href="../htmlman2/lseek.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">lseek</span>(2)</span></a> and
+              <a class="link" href="../htmlman2/pread.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pwrite</span>(2)</span></a> can't be
+              used to write to nonzero offsets in the file).</p>
+            </li>
+
+            <li class="listitem">
+              <p>The range of user IDs (group IDs) specified in
+              each line cannot overlap with the ranges in any other
+              lines. In the initial implementation (Linux 3.8),
+              this requirement was satisfied by a simplistic
+              implementation that imposed the further requirement
+              that the values in both field 1 and field 2 of
+              successive lines must be in ascending numerical
+              order, which prevented some otherwise valid maps from
+              being created. Linux 3.9 and later fix this
+              limitation, allowing any valid set of nonoverlapping
+              maps.</p>
+            </li>
+
+            <li class="listitem">
+              <p>At least one line must be written to the file.</p>
+            </li>
+          </ul>
+        </div>
+
+        <p>Writes that violate the above rules fail with the error
+        <span class="errorname">EINVAL</span>.</p>
+
+        <p>In order for a process to write to the <code class="filename">/proc/[pid]/uid_map</code> (<code class="filename">/proc/[pid]/gid_map</code>) file, all of the
+        following requirements must be met:</p>
+
+        <div class="orderedlist">
+          <ol class="orderedlist" type="1">
+            <li class="listitem">
+              <p>The writing process must have the <code class="constant">CAP_SETUID</code> (<code class="constant">CAP_SETGID</code>) capability in the user
+              namespace of the process <em class="replaceable"><code>pid</code></em>.</p>
+            </li>
+
+            <li class="listitem">
+              <p>The writing process must either be in the user
+              namespace of the process <em class="replaceable"><code>pid</code></em> or be in the
+              parent user namespace of the process <em class="replaceable"><code>pid</code></em>.</p>
+            </li>
+
+            <li class="listitem">
+              <p>The mapped user IDs (group IDs) must in turn have
+              a mapping in the parent user namespace.</p>
+            </li>
+
+            <li class="listitem">
+              <p>One of the following two cases applies:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="itemizedlist">
+                    <ul class="itemizedlist" style="list-style-type: disc;">
+                      <li class="listitem">
+                        <p><em class="replaceable"><code>Either</code></em> the
+                        writing process has the <code class="constant">CAP_SETUID</code> (<code class="constant">CAP_SETGID</code>) capability in
+                        the <em class="replaceable"><code>parent</code></em> user
+                        namespace.</p>
+
+                        <div class="blockquote">
+                          <blockquote class="blockquote">
+                            <div class="variablelist">
+                              <dl class="variablelist">
+                                <dt><span class="term"><code class="literal">+</code></span></dt>
+
+                                <dd>
+                                  <p>No further restrictions apply:
+                                  the process can make mappings to
+                                  arbitrary user IDs (group IDs) in
+                                  the parent user namespace.</p>
+                                </dd>
+                              </dl>
+                            </div>
+                          </blockquote>
+                        </div>
+                      </li>
+
+                      <li class="listitem">
+                        <p><em class="replaceable"><code>Or</code></em>
+                        otherwise all of the following restrictions
+                        apply:</p>
+
+                        <div class="blockquote">
+                          <blockquote class="blockquote">
+                            <div class="variablelist">
+                              <dl class="variablelist">
+                                <dt><span class="term"><code class="literal">+</code></span></dt>
+
+                                <dd>
+                                  <p>The data written to <em class="replaceable"><code>uid_map</code></em>
+                                  (<em class="replaceable"><code>gid_map</code></em>)
+                                  must consist of a single line
+                                  that maps the writing process's
+                                  effective user ID (group ID) in
+                                  the parent user namespace to a
+                                  user ID (group ID) in the user
+                                  namespace.</p>
+                                </dd>
+
+                                <dt><span class="term"><code class="literal">+</code></span></dt>
+
+                                <dd>
+                                  <p>The writing process must have
+                                  the same effective user ID as the
+                                  process that created the user
+                                  namespace.</p>
+                                </dd>
+
+                                <dt><span class="term"><code class="literal">+</code></span></dt>
+
+                                <dd>
+                                  <p>In the case of <em class="replaceable"><code>gid_map</code></em>,
+                                  use of the <a class="link" href="../htmlman2/getgroups.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setgroups</span>(2)</span></a>
+                                  system call must first be denied
+                                  by writing "<em class="replaceable"><code>deny</code></em>"
+                                  to the <code class="filename">/proc/[pid]/setgroups</code>
+                                  file (see below) before writing
+                                  to <em class="replaceable"><code>gid_map</code></em>.</p>
+                                </dd>
+                              </dl>
+                            </div>
+                          </blockquote>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </blockquote>
+              </div>
+            </li>
+          </ol>
+        </div>
+
+        <p>Writes that violate the above rules fail with the error
+        <span class="errorname">EPERM</span>.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="user-namespaces-7_sect8" name="user-namespaces-7_sect8" shape="rect"> </a>
+
+        <h3>Interaction with system calls that change process UIDs
+        or GIDs</h3>
+
+        <p>In a user namespace where the <em class="replaceable"><code>uid_map</code></em> file has not been
+        written, the system calls that change user IDs will fail.
+        Similarly, if the <em class="replaceable"><code>gid_map</code></em> file has not been
+        written, the system calls that change group IDs will fail.
+        After the <em class="replaceable"><code>uid_map</code></em>
+        and <em class="replaceable"><code>gid_map</code></em> files
+        have been written, only the mapped values may be used in
+        system calls that change user and group IDs.</p>
+
+        <p>For user IDs, the relevant system calls include
+        <a class="link" href="../htmlman2/setuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setuid</span>(2)</span></a>, <a class="link" href="../htmlman2/setfsuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setfsuid</span>(2)</span></a>, <a class="link" href="../htmlman2/setreuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setreuid</span>(2)</span></a>, and
+        <a class="link" href="../htmlman2/setresuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setresuid</span>(2)</span></a>. For group
+        IDs, the relevant system calls include <a class="link" href="../htmlman2/setgid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setgid</span>(2)</span></a>, <a class="link" href="../htmlman2/setfsgid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setfsgid</span>(2)</span></a>, <a class="link" href="../htmlman2/setreuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setregid</span>(2)</span></a>, <a class="link" href="../htmlman2/setresuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setresgid</span>(2)</span></a>, and
+        <a class="link" href="../htmlman2/getgroups.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setgroups</span>(2)</span></a>.</p>
+
+        <p>Writing "<em class="replaceable"><code>deny</code></em>"
+        to the <code class="filename">/proc/[pid]/setgroups</code>
+        file before writing to <code class="filename">/proc/[pid]/gid_map</code> will permanently
+        disable <a class="link" href="../htmlman2/getgroups.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setgroups</span>(2)</span></a> in a user
+        namespace and allow writing to <code class="filename">/proc/[pid]/gid_map</code> without having the
+        <code class="constant">CAP_SETGID</code> capability in the
+        parent user namespace.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="user-namespaces-7_sect9" name="user-namespaces-7_sect9" shape="rect"> </a>
+
+        <h3>The /proc/[pid]/setgroups file</h3>
+
+        <p>The <code class="filename">/proc/[pid]/setgroups</code>
+        file displays the string "<em class="replaceable"><code>allow</code></em>" if processes in the
+        user namespace that contains the process <em class="replaceable"><code>pid</code></em> are permitted to employ
+        the <a class="link" href="../htmlman2/getgroups.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setgroups</span>(2)</span></a> system call;
+        it displays "<em class="replaceable"><code>deny</code></em>" if <a class="link" href="../htmlman2/getgroups.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setgroups</span>(2)</span></a> is not
+        permitted in that user namespace. Note that regardless of
+        the value in the <code class="filename">/proc/[pid]/setgroups</code> file (and
+        regardless of the process's capabilities), calls to
+        <a class="link" href="../htmlman2/getgroups.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setgroups</span>(2)</span></a> are also not
+        permitted if <code class="filename">/proc/[pid]/gid_map</code> has not yet been
+        set.</p>
+
+        <p>A privileged process (one with the <code class="constant">CAP_SYS_ADMIN</code> capability in the
+        namespace) may write either of the strings "<em class="replaceable"><code>allow</code></em>" or "<em class="replaceable"><code>deny</code></em>" to this file
+        <em class="replaceable"><code>before</code></em> writing a
+        group ID mapping for this user namespace to the file
+        <code class="filename">/proc/[pid]/gid_map</code>. Writing
+        the string "<em class="replaceable"><code>deny</code></em>"
+        prevents any process in the user namespace from employing
+        <a class="link" href="../htmlman2/getgroups.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setgroups</span>(2)</span></a>.</p>
+
+        <p>The essence of the restrictions described in the
+        preceding paragraph is that it is permitted to write to
+        <code class="filename">/proc/[pid]/setgroups</code> only so
+        long as calling <a class="link" href="../htmlman2/getgroups.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setgroups</span>(2)</span></a> is
+        disallowed because <code class="filename">/proc/[pid]gid_map</code> has not been set. This
+        ensures that a process cannot transition from a state where
+        <a class="link" href="../htmlman2/getgroups.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setgroups</span>(2)</span></a> is allowed
+        to a state where <a class="link" href="../htmlman2/getgroups.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setgroups</span>(2)</span></a> is denied; a
+        process can only transition from <a class="link" href="../htmlman2/getgroups.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setgroups</span>(2)</span></a> being
+        disallowed to <a class="link" href="../htmlman2/getgroups.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setgroups</span>(2)</span></a> being
+        allowed.</p>
+
+        <p>The default value of this file in the initial user
+        namespace is "<em class="replaceable"><code>allow</code></em>".</p>
+
+        <p>Once <code class="filename">/proc/[pid]/gid_map</code>
+        has been written to (which has the effect of enabling
+        <a class="link" href="../htmlman2/getgroups.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setgroups</span>(2)</span></a> in the user
+        namespace), it is no longer possible to disallow <a class="link" href="../htmlman2/getgroups.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setgroups</span>(2)</span></a> by writing
+        "<em class="replaceable"><code>deny</code></em>". to
+        <code class="filename">/proc/[pid]/setgroups</code> (the
+        write fails with the error <span class="errorname">EPERM</span>).</p>
+
+        <p>A child user namespace inherits the <code class="filename">/proc/[pid]/setgroups</code> setting from its
+        parent.</p>
+
+        <p>If the <em class="replaceable"><code>setgroups</code></em> file has the
+        value "<em class="replaceable"><code>deny</code></em>",
+        then the <a class="link" href="../htmlman2/getgroups.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setgroups</span>(2)</span></a> system call
+        can't subsequently be reenabled (by writing "<em class="replaceable"><code>allow</code></em>" to the file) in this
+        user namespace. (Attempts to do so will fail with the error
+        <span class="errorname">EPERM</span>.) This restriction
+        also propagates down to all child user namespaces of this
+        user namespace.</p>
+
+        <p>The <code class="filename">/proc/[pid]/setgroups</code>
+        file was added in Linux 3.19, but was backported to many
+        earlier stable kernel series, because it addresses a
+        security issue. The issue concerned files with permissions
+        such as "rwx−−−rwx". Such files give
+        fewer permissions to "group" than they do to "other". This
+        means that dropping groups using <a class="link" href="../htmlman2/getgroups.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setgroups</span>(2)</span></a> might allow
+        a process file access that it did not formerly have. Before
+        the existence of user namespaces this was not a concern,
+        since only a privileged process (one with the <code class="constant">CAP_SETGID</code> capability) could call
+        <a class="link" href="../htmlman2/getgroups.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setgroups</span>(2)</span></a>. However,
+        with the introduction of user namespaces, it became
+        possible for an unprivileged process to create a new
+        namespace in which the user had all privileges. This then
+        allowed formerly unprivileged users to drop groups and thus
+        gain file access that they did not previously have. The
+        <code class="filename">/proc/[pid]/setgroups</code> file
+        was added to address this security issue, by denying any
+        pathway for an unprivileged process to drop groups with
+        <a class="link" href="../htmlman2/getgroups.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setgroups</span>(2)</span></a>.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="user-namespaces-7_sect10" name="user-namespaces-7_sect10" shape="rect"> </a>
+
+        <h3>Unmapped user and group IDs</h3>
+
+        <p>There are various places where an unmapped user ID
+        (group ID) may be exposed to user space. For example, the
+        first process in a new user namespace may call <code class="function">getuid</code>() before a user ID mapping has
+        been defined for the namespace. In most such cases, an
+        unmapped user ID is converted to the overflow user ID
+        (group ID); the default value for the overflow user ID
+        (group ID) is 65534. See the descriptions of <code class="filename">/proc/sys/kernel/overflowuid</code> and
+        <code class="filename">/proc/sys/kernel/overflowgid</code>
+        in <a class="link" href="../htmlman5/proc.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">proc</span>(5)</span></a>.</p>
+
+        <p>The cases where unmapped IDs are mapped in this fashion
+        include system calls that return user IDs (<a class="link" href="../htmlman2/getuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getuid</span>(2)</span></a>, <a class="link" href="../htmlman2/getgid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getgid</span>(2)</span></a>, and similar),
+        credentials passed over a UNIX domain socket, credentials
+        returned by <a class="link" href="../htmlman2/stat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">stat</span>(2)</span></a>, <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitid</span>(2)</span></a>, and the System
+        V IPC "ctl" <code class="constant">IPC_STAT</code>
+        operations, credentials exposed by <code class="filename">/proc/PID/status</code> and the files in
+        <code class="filename">/proc/sysvipc/*</code>, credentials
+        returned via the <em class="replaceable"><code>si_uid</code></em> field in the
+        <em class="replaceable"><code>siginfo_t</code></em>
+        received with a signal (see <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a>),
+        credentials written to the process accounting file (see
+        <a class="link" href="../htmlman5/acct.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">acct</span>(5)</span></a>), and credentials
+        returned with POSIX message queue notifications (see
+        <a class="link" href="../htmlman3/mq_notify.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_notify</span>(3)</span></a>).</p>
+
+        <p>There is one notable case where unmapped user and group
+        IDs are <em class="replaceable"><code>not</code></em>
+        converted to the corresponding overflow ID value. When
+        viewing a <em class="replaceable"><code>uid_map</code></em>
+        or <em class="replaceable"><code>gid_map</code></em> file
+        in which there is no mapping for the second field, that
+        field is displayed as 4294967295 (−1 as an unsigned
+        integer);</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="user-namespaces-7_sect11" name="user-namespaces-7_sect11" shape="rect"> </a>
+
+        <h3>Set-user-ID and set-group-ID programs</h3>
+
+        <p>When a process inside a user namespace executes a
+        set-user-ID (set-group-ID) program, the process's effective
+        user (group) ID inside the namespace is changed to whatever
+        value is mapped for the user (group) ID of the file.
+        However, if either the user <em class="replaceable"><code>or</code></em> the group ID of the file
+        has no mapping inside the namespace, the set-user-ID
+        (set-group-ID) bit is silently ignored: the new program is
+        executed, but the process's effective user (group) ID is
+        left unchanged. (This mirrors the semantics of executing a
+        set-user-ID or set-group-ID program that resides on a
+        filesystem that was mounted with the <code class="constant">MS_NOSUID</code> flag, as described in <a class="link" href="../htmlman2/mount.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mount</span>(2)</span></a>.)</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="user-namespaces-7_sect12" name="user-namespaces-7_sect12" shape="rect"> </a>
+
+        <h3>Miscellaneous</h3>
+
+        <p>When a process's user and group IDs are passed over a
+        UNIX domain socket to a process in a different user
+        namespace (see the description of <code class="constant">SCM_CREDENTIALS</code> in <a class="link" href="../htmlman7/unix.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unix</span>(7)</span></a>), they are
+        translated into the corresponding values as per the
+        receiving process's user and group ID mappings.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="user-namespaces-7_sect13" name="user-namespaces-7_sect13" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>Namespaces are a Linux-specific feature.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="user-namespaces-7_sect14" name="user-namespaces-7_sect14" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Over the years, there have been a lot of features that
+      have been added to the Linux kernel that have been made
+      available only to privileged users because of their potential
+      to confuse set-user-ID-root applications. In general, it
+      becomes safe to allow the root user in a user namespace to
+      use those features because it is impossible, while in a user
+      namespace, to gain more privilege than the root user of a
+      user namespace has.</p>
+
+      <div class="refsect2">
+        <a id="user-namespaces-7_sect15" name="user-namespaces-7_sect15" shape="rect"> </a>
+
+        <h3>Availability</h3>
+
+        <p>Use of user namespaces requires a kernel that is
+        configured with the <code class="constant">CONFIG_USER_NS</code> option. User namespaces
+        require support in a range of subsystems across the kernel.
+        When an unsupported subsystem is configured into the
+        kernel, it is not possible to configure user namespaces
+        support.</p>
+
+        <p>As at Linux 3.8, most relevant subsystems supported user
+        namespaces, but a number of filesystems did not have the
+        infrastructure needed to map user and group IDs between
+        user namespaces. Linux 3.9 added the required
+        infrastructure support for many of the remaining
+        unsupported filesystems (Plan 9 (9P), Andrew File System
+        (AFS), Ceph, CIFS, CODA, NFS, and OCFS2). Linux 3.11 added
+        support the last of the unsupported major filesystems,
+        XFS.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="user-namespaces-7_sect16" name="user-namespaces-7_sect16" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>The program below is designed to allow experimenting with
+      user namespaces, as well as other types of namespaces. It
+      creates namespaces as specified by command-line options and
+      then executes a command inside those namespaces. The comments
+      and <code class="function">usage</code>() function inside the
+      program provide a full explanation of the program. The
+      following shell session demonstrates its use.</p>
+
+      <p>First, we look at the run-time environment:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$ <span class="emphasis"><em>uname -rs</em></span>     # Need Linux 3.8 or later
+Linux 3.8.0
+$ <span class="emphasis"><em>id -u</em></span>         # Running as unprivileged user
+1000
+$ <span class="emphasis"><em>id -g</em></span>
+1000
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>Now start a new shell in new user (<code class="option">−U</code>), mount (<code class="option">−m</code>), and PID (<code class="option">−p</code>) namespaces, with user ID
+      (<code class="option">−M</code>) and group ID
+      (<code class="option">−G</code>) 1000 mapped to 0
+      inside the user namespace:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$ <span class="emphasis"><em>./userns_child_exec -p -m -U -M '0 1000 1' -G '0 1000 1' bash</em></span>
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>The shell has PID 1, because it is the first process in
+      the new PID namespace:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+bash$ <span class="emphasis"><em>echo $$</em></span>
+1
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>Inside the user namespace, the shell has user and group ID
+      0, and a full set of permitted and effective
+      capabilities:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+bash$ <span class="emphasis"><em>cat /proc/$$/status | egrep '^[UG]id'</em></span>
+Uid:    0       0       0       0
+Gid:    0       0       0       0
+bash$ <span class="emphasis"><em>cat /proc/$$/status | egrep '^Cap(Prm|Inh|Eff)'</em></span>
+CapInh: 0000000000000000
+CapPrm: 0000001fffffffff
+CapEff: 0000001fffffffff
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>Mounting a new <code class="filename">/proc</code>
+      filesystem and listing all of the processes visible in the
+      new PID namespace shows that the shell can't see any
+      processes outside the PID namespace:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+bash$ <span class="emphasis"><em>mount -t proc proc /proc</em></span>
+bash$ <span class="emphasis"><em>ps ax</em></span>
+  PID TTY      STAT   TIME COMMAND
+    1 pts/3    S      0:00 bash
+   22 pts/3    R+     0:00 ps ax
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="refsect2">
+        <a id="user-namespaces-7_sect17" name="user-namespaces-7_sect17" shape="rect"> </a>
+
+        <h3>Program source</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+/* userns_child_exec.c
+
+   Licensed under GNU General Public License v2 or later
+
+   Create a child process that executes a shell command in new
+   namespace(s); allow UID and GID mappings to be specified when
+   creating a user namespace.
+*/
+#define _GNU_SOURCE
+#include &lt;sched.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;sys/wait.h&gt;
+#include &lt;signal.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+#include &lt;limits.h&gt;
+#include &lt;errno.h&gt;
+
+/* A simple error−handling function: print an error message based
+   on the value in 'errno' and terminate the calling process */
+
+#define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); \
+                        } while (0)
+
+struct child_args {
+    char **argv;        /* Command to be executed by child, with args */
+    int    pipe_fd[2];  /* Pipe used to synchronize parent and child */
+};
+
+static int verbose;
+
+static void
+usage(char *pname)
+{
+    fprintf(stderr, "Usage: %s [options] cmd [arg...]\n\n", pname);
+    fprintf(stderr, "Create a child process that executes a shell "
+            "command in a new user namespace,\n"
+            "and possibly also other new namespace(s).\n\n");
+    fprintf(stderr, "Options can be:\n\n");
+#define fpe(str) fprintf(stderr, "    %s", str);
+    fpe("−i          New IPC namespace\n");
+    fpe("−m          New mount namespace\n");
+    fpe("−n          New network namespace\n");
+    fpe("−p          New PID namespace\n");
+    fpe("−u          New UTS namespace\n");
+    fpe("−U          New user namespace\n");
+    fpe("−M uid_map  Specify UID map for user namespace\n");
+    fpe("−G gid_map  Specify GID map for user namespace\n");
+    fpe("−z          Map user's UID and GID to 0 in user namespace\n");
+    fpe("            (equivalent to: −M '0 &lt;uid&gt; 1' −G '0 &lt;gid&gt; 1')\n");
+    fpe("−v          Display verbose messages\n");
+    fpe("\n");
+    fpe("If −z, −M, or −G is specified, −U is required.\n");
+    fpe("It is not permitted to specify both −z and either −M or −G.\n");
+    fpe("\n");
+    fpe("Map strings for −M and −G consist of records of the form:\n");
+    fpe("\n");
+    fpe("    ID−inside−ns   ID−outside−ns   len\n");
+    fpe("\n");
+    fpe("A map string can contain multiple records, separated"
+        " by commas;\n");
+    fpe("the commas are replaced by newlines before writing"
+        " to map files.\n");
+
+    exit(EXIT_FAILURE);
+}
+
+/* Update the mapping file 'map_file', with the value provided in
+   'mapping', a string that defines a UID or GID mapping. A UID or
+   GID mapping consists of one or more newline−delimited records
+   of the form:
+
+       ID_inside−ns    ID−outside−ns   length
+
+   Requiring the user to supply a string that contains newlines is
+   of course inconvenient for command−line use. Thus, we permit the
+   use of commas to delimit records in this string, and replace them
+   with newlines before writing the string to the file. */
+
+static void
+update_map(char *mapping, char *map_file)
+{
+    int fd, j;
+    size_t map_len;     /* Length of 'mapping' */
+
+    /* Replace commas in mapping string with newlines */
+
+    map_len = strlen(mapping);
+    for (j = 0; j &lt; map_len; j++)
+        if (mapping[j] == ',')
+            mapping[j] = '\n';
+
+    fd = open(map_file, O_RDWR);
+    if (fd == −1) {
+        fprintf(stderr, "ERROR: open %s: %s\n", map_file,
+                strerror(errno));
+        exit(EXIT_FAILURE);
+    }
+
+    if (write(fd, mapping, map_len) != map_len) {
+        fprintf(stderr, "ERROR: write %s: %s\n", map_file,
+                strerror(errno));
+        exit(EXIT_FAILURE);
+    }
+
+    close(fd);
+}
+
+/* Linux 3.19 made a change in the handling of setgroups(2) and the
+   'gid_map' file to address a security issue. The issue allowed
+   *unprivileged* users to employ user namespaces in order to drop
+   The upshot of the 3.19 changes is that in order to update the
+   'gid_maps' file, use of the setgroups() system call in this
+   user namespace must first be disabled by writing "deny" to one of
+   the /proc/PID/setgroups files for this namespace.  That is the
+   purpose of the following function. */
+
+static void
+proc_setgroups_write(pid_t child_pid, char *str)
+{
+    char setgroups_path[PATH_MAX];
+    int fd;
+
+    snprintf(setgroups_path, PATH_MAX, "/proc/%ld/setgroups",
+            (long) child_pid);
+
+    fd = open(setgroups_path, O_RDWR);
+    if (fd == −1) {
+
+        /* We may be on a system that doesn't support
+           /proc/PID/setgroups. In that case, the file won't exist,
+           and the system won't impose the restrictions that Linux 3.19
+           added. That's fine: we don't need to do anything in order
+           to permit 'gid_map' to be updated.
+
+           However, if the error from open() was something other than
+           the ENOENT error that is expected for that case,  let the
+           user know. */
+
+        if (errno != ENOENT)
+            fprintf(stderr, "ERROR: open %s: %s\n", setgroups_path,
+                strerror(errno));
+        return;
+    }
+
+    if (write(fd, str, strlen(str)) == −1)
+        fprintf(stderr, "ERROR: write %s: %s\n", setgroups_path,
+            strerror(errno));
+
+    close(fd);
+}
+
+static int              /* Start function for cloned child */
+childFunc(void *arg)
+{
+    struct child_args *args = (struct child_args *) arg;
+    char ch;
+
+    /* Wait until the parent has updated the UID and GID mappings.
+       See the comment in main(). We wait for end of file on a
+       pipe that will be closed by the parent process once it has
+       updated the mappings. */
+
+    close(args−&gt;pipe_fd[1]);    /* Close our descriptor for the write
+                                   end of the pipe so that we see EOF
+                                   when parent closes its descriptor */
+    if (read(args−&gt;pipe_fd[0], &amp;ch, 1) != 0) {
+        fprintf(stderr,
+                "Failure in child: read from pipe returned != 0\n");
+        exit(EXIT_FAILURE);
+    }
+
+    /* Execute a shell command */
+
+    printf("About to exec %s\n", args−&gt;argv[0]);
+    execvp(args−&gt;argv[0], args−&gt;argv);
+    errExit("execvp");
+}
+
+#define STACK_SIZE (1024 * 1024)
+
+static char child_stack[STACK_SIZE];    /* Space for child's stack */
+
+int
+main(int argc, char *argv[])
+{
+    int flags, opt, map_zero;
+    pid_t child_pid;
+    struct child_args args;
+    char *uid_map, *gid_map;
+    const int MAP_BUF_SIZE = 100;
+    char map_buf[MAP_BUF_SIZE];
+    char map_path[PATH_MAX];
+
+    /* Parse command−line options. The initial '+' character in
+       the final getopt() argument prevents GNU−style permutation
+       of command−line options. That's useful, since sometimes
+       the 'command' to be executed by this program itself
+       has command−line options. We don't want getopt() to treat
+       those as options to this program. */
+
+    flags = 0;
+    verbose = 0;
+    gid_map = NULL;
+    uid_map = NULL;
+    map_zero = 0;
+    while ((opt = getopt(argc, argv, "+imnpuUM:G:zv")) != −1) {
+        switch (opt) {
+        case 'i': flags |= CLONE_NEWIPC;        break;
+        case 'm': flags |= CLONE_NEWNS;         break;
+        case 'n': flags |= CLONE_NEWNET;        break;
+        case 'p': flags |= CLONE_NEWPID;        break;
+        case 'u': flags |= CLONE_NEWUTS;        break;
+        case 'v': verbose = 1;                  break;
+        case 'z': map_zero = 1;                 break;
+        case 'M': uid_map = optarg;             break;
+        case 'G': gid_map = optarg;             break;
+        case 'U': flags |= CLONE_NEWUSER;       break;
+        default:  usage(argv[0]);
+        }
+    }
+
+    /* −M or −G without −U is nonsensical */
+
+    if (((uid_map != NULL || gid_map != NULL || map_zero) &amp;&amp;
+                !(flags &amp; CLONE_NEWUSER)) ||
+            (map_zero &amp;&amp; (uid_map != NULL || gid_map != NULL)))
+        usage(argv[0]);
+
+    args.argv = &amp;argv[optind];
+
+    /* We use a pipe to synchronize the parent and child, in order to
+       ensure that the parent sets the UID and GID maps before the child
+       calls execve(). This ensures that the child maintains its
+       capabilities during the execve() in the common case where we
+       want to map the child's effective user ID to 0 in the new user
+       namespace. Without this synchronization, the child would lose
+       its capabilities if it performed an execve() with nonzero
+       user IDs (see the capabilities(7) man page for details of the
+       transformation of a process's capabilities during execve()). */
+
+    if (pipe(args.pipe_fd) == −1)
+        errExit("pipe");
+
+    /* Create the child in new namespace(s) */
+
+    child_pid = clone(childFunc, child_stack + STACK_SIZE,
+                      flags | SIGCHLD, &amp;args);
+    if (child_pid == −1)
+        errExit("clone");
+
+    /* Parent falls through to here */
+
+    if (verbose)
+        printf("%s: PID of child created by clone() is %ld\n",
+                argv[0], (long) child_pid);
+
+    /* Update the UID and GID maps in the child */
+
+    if (uid_map != NULL || map_zero) {
+        snprintf(map_path, PATH_MAX, "/proc/%ld/uid_map",
+                (long) child_pid);
+        if (map_zero) {
+            snprintf(map_buf, MAP_BUF_SIZE, "0 %ld 1", (long) getuid());
+            uid_map = map_buf;
+        }
+        update_map(uid_map, map_path);
+    }
+
+    if (gid_map != NULL || map_zero) {
+        proc_setgroups_write(child_pid, "deny");
+
+        snprintf(map_path, PATH_MAX, "/proc/%ld/gid_map",
+                (long) child_pid);
+        if (map_zero) {
+            snprintf(map_buf, MAP_BUF_SIZE, "0 %ld 1", (long) getgid());
+            gid_map = map_buf;
+        }
+        update_map(gid_map, map_path);
+    }
+
+    /* Close the write end of the pipe, to signal to the child that we
+       have updated the UID and GID maps */
+
+    close(args.pipe_fd[1]);
+
+    if (waitpid(child_pid, NULL, 0) == −1)      /* Wait for child */
+        errExit("waitpid");
+
+    if (verbose)
+        printf("%s: terminating\n", argv[0]);
+
+    exit(EXIT_SUCCESS);
+}
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="user-namespaces-7_sect18" name="user-namespaces-7_sect18" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><span class="citerefentry"><span class="refentrytitle">newgidmap</span>(1)</span>, <span class="citerefentry"><span class="refentrytitle">newuidmap</span>(1)</span>, <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a>, <a class="link" href="../htmlman2/setns.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setns</span>(2)</span></a>, <a class="link" href="../htmlman2/unshare.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unshare</span>(2)</span></a>, <a class="link" href="../htmlman5/proc.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">proc</span>(5)</span></a>, <span class="citerefentry"><span class="refentrytitle">subgid</span>(5)</span>, <span class="citerefentry"><span class="refentrytitle">subuid</span>(5)</span>, <a class="link" href="../htmlman7/credentials.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">credentials</span>(7)</span></a>, <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>, <a class="link" href="../htmlman7/namespaces.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">namespaces</span>(7)</span></a>, <a class="link" href="../htmlman7/pid_namespaces.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pid_namespaces</span>(7)</span></a></p>
+
+      <p>The kernel source file <code class="filename">Documentation/namespaces/resource-control.txt</code>.</p>
+    </div>
+
+    <div class="colophon">
+      <a id="user-namespaces-7_sect19" name="user-namespaces-7_sect19" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 2013, 2014 by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  and Copyright (c) 2012, 2014 by Eric W. Biederman &lt;ebiederm<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>xmission.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

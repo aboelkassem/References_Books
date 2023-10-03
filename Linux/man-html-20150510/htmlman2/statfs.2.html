@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>statfs(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="statfs(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="statfs.2" name="statfs.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>statfs, fstatfs — get filesystem statistics</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;sys/vfs.h&gt;     /* or &lt;sys/statfs.h&gt; */
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>statfs</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">path</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">struct statfs *<var class="pdparam">buf</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>fstatfs</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">fd</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">struct statfs *<var class="pdparam">buf</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="statfs-2_sect1" name="statfs-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">statfs</code>() system call
+      returns information about a mounted filesystem. <em class="parameter"><code>path</code></em> is the pathname of any
+      file within the mounted filesystem. <em class="parameter"><code>buf</code></em> is a pointer to a
+      <span class="structname">statfs</span> structure defined
+      approximately as follows:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+struct statfs {
+    __fsword_t f_type;    /* Type of filesystem (see below) */
+    __fsword_t f_bsize;   /* Optimal transfer block size */
+    fsblkcnt_t f_blocks;  /* Total data blocks in filesystem */
+    fsblkcnt_t f_bfree;   /* Free blocks in filesystem */
+    fsblkcnt_t f_bavail;  /* Free blocks available to
+                             unprivileged user */
+    fsfilcnt_t f_files;   /* Total file nodes in filesystem */
+    fsfilcnt_t f_ffree;   /* Free file nodes in filesystem */
+    fsid_t     f_fsid;    /* Filesystem ID */
+    __fsword_t f_namelen; /* Maximum length of filenames */
+    __fsword_t f_frsize;  /* Fragment size (since Linux 2.6) */
+    __fsword_t f_flags;   /* Mount flags of filesystem
+                             (since Linux 2.6.36) */
+    __fsword_t f_spare[xxx];
+                    /* Padding bytes reserved for future use */
+};
+
+Filesystem types:
+
+   ADFS_SUPER_MAGIC      0xadf5
+   AFFS_SUPER_MAGIC      0xADFF
+   BDEVFS_MAGIC          0x62646576
+   BEFS_SUPER_MAGIC      0x42465331
+   BFS_MAGIC             0x1BADFACE
+   BINFMTFS_MAGIC        0x42494e4d
+   BTRFS_SUPER_MAGIC     0x9123683E
+   CGROUP_SUPER_MAGIC    0x27e0eb
+   CIFS_MAGIC_NUMBER     0xFF534D42
+   CODA_SUPER_MAGIC      0x73757245
+   COH_SUPER_MAGIC       0x012FF7B7
+   CRAMFS_MAGIC          0x28cd3d45
+   DEBUGFS_MAGIC         0x64626720
+   DEVFS_SUPER_MAGIC     0x1373
+   DEVPTS_SUPER_MAGIC    0x1cd1
+   EFIVARFS_MAGIC        0xde5e81e4
+   EFS_SUPER_MAGIC       0x00414A53
+   EXT_SUPER_MAGIC       0x137D
+   EXT2_OLD_SUPER_MAGIC  0xEF51
+   EXT2_SUPER_MAGIC      0xEF53
+   EXT3_SUPER_MAGIC      0xEF53
+   EXT4_SUPER_MAGIC      0xEF53
+   FUSE_SUPER_MAGIC      0x65735546
+   FUTEXFS_SUPER_MAGIC   0xBAD1DEA
+   HFS_SUPER_MAGIC       0x4244
+   HOSTFS_SUPER_MAGIC    0x00c0ffee
+   HPFS_SUPER_MAGIC      0xF995E849
+   HUGETLBFS_MAGIC       0x958458f6
+   ISOFS_SUPER_MAGIC     0x9660
+   JFFS2_SUPER_MAGIC     0x72b6
+   JFS_SUPER_MAGIC       0x3153464a
+   MINIX_SUPER_MAGIC     0x137F /* orig. minix */
+   MINIX_SUPER_MAGIC2    0x138F /* 30 char minix */
+   MINIX2_SUPER_MAGIC    0x2468 /* minix V2 */
+   MINIX2_SUPER_MAGIC2   0x2478 /* minix V2, 30 char names */
+   MINIX3_SUPER_MAGIC    0x4d5a /* minix V3 fs, 60 char names */
+   MQUEUE_MAGIC          0x19800202
+   MSDOS_SUPER_MAGIC     0x4d44
+   NCP_SUPER_MAGIC       0x564c
+   NFS_SUPER_MAGIC       0x6969
+   NILFS_SUPER_MAGIC     0x3434
+   NTFS_SB_MAGIC         0x5346544e
+   OCFS2_SUPER_MAGIC     0x7461636f
+   OPENPROM_SUPER_MAGIC  0x9fa1
+   PIPEFS_MAGIC          0x50495045
+   PROC_SUPER_MAGIC      0x9fa0
+   PSTOREFS_MAGIC        0x6165676C
+   QNX4_SUPER_MAGIC      0x002f
+   QNX6_SUPER_MAGIC      0x68191122
+   RAMFS_MAGIC           0x858458f6
+   REISERFS_SUPER_MAGIC  0x52654973
+   ROMFS_MAGIC           0x7275
+   SELINUX_MAGIC         0xf97cff8c
+   SMACK_MAGIC           0x43415d53
+   SMB_SUPER_MAGIC       0x517B
+   SOCKFS_MAGIC          0x534F434B
+   SQUASHFS_MAGIC        0x73717368
+   SYSFS_MAGIC           0x62656572
+   SYSV2_SUPER_MAGIC     0x012FF7B6
+   SYSV4_SUPER_MAGIC     0x012FF7B5
+   TMPFS_MAGIC           0x01021994
+   UDF_SUPER_MAGIC       0x15013346
+   UFS_MAGIC             0x00011954
+   USBDEVICE_SUPER_MAGIC 0x9fa2
+   V9FS_MAGIC            0x01021997
+   VXFS_SUPER_MAGIC      0xa501FCF5
+   XENFS_SUPER_MAGIC     0xabba1974
+   XENIX_SUPER_MAGIC     0x012FF7B4
+   XFS_SUPER_MAGIC       0x58465342
+   _XIAFS_SUPER_MAGIC    0x012FD16D
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>Most of these MAGIC constants are defined in <code class="filename">/usr/include/linux/magic.h</code>, and some are
+      hardcoded in kernel sources.</p>
+
+      <p>The <em class="replaceable"><code>f_flags</code></em> is a
+      bit mask indicating mount options for the file system. It
+      contains zero or more of the following bits:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">ST_MANDLOCK</code></span></dt>
+
+          <dd>
+            <p>Mandatory locking is permitted on the filesystem
+            (see <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a>).</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">ST_NOATIME</code></span></dt>
+
+          <dd>
+            <p>Do not update access times; see <a class="link" href="../htmlman2/mount.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mount</span>(2)</span></a>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">ST_NODEV</code></span></dt>
+
+          <dd>
+            <p>Disallow access to device special files on this
+            filesystem.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">ST_NODIRATIME</code></span></dt>
+
+          <dd>
+            <p>Do not update directory access times; see <a class="link" href="../htmlman2/mount.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mount</span>(2)</span></a>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">ST_NOEXEC</code></span></dt>
+
+          <dd>
+            <p>Execution of programs is disallowed on this
+            filesystem.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">ST_NOSUID</code></span></dt>
+
+          <dd>
+            <p>The set-user-ID and set-group-ID bits are ignored by
+            <a class="link" href="../htmlman3/exec.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">exec</span>(3)</span></a> for
+            executable files on this filesystem</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">ST_RDONLY</code></span></dt>
+
+          <dd>
+            <p>This filesystem is mounted read-only.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">ST_RELATIME</code></span></dt>
+
+          <dd>
+            <p>Update atime relative to mtime/ctime; see <a class="link" href="../htmlman2/mount.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mount</span>(2)</span></a>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">ST_SYNCHRONOUS</code></span></dt>
+
+          <dd>
+            <p>Writes are synched to the filesystem immediately
+            (see the description of <code class="constant">O_SYNC</code> in <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>).</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>Nobody knows what <em class="replaceable"><code>f_fsid</code></em> is supposed to contain
+      (but see below).</p>
+
+      <p>Fields that are undefined for a particular filesystem are
+      set to 0.</p>
+
+      <p><code class="function">fstatfs</code>() returns the same
+      information about an open file referenced by descriptor
+      <em class="parameter"><code>fd</code></em>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="statfs-2_sect2" name="statfs-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, zero is returned. On error, −1 is
+      returned, and <code class="varname">errno</code> is set
+      appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="statfs-2_sect3" name="statfs-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EACCES</span></span></dt>
+
+          <dd>
+            <p>(<code class="function">statfs</code>()) Search
+            permission is denied for a component of the path prefix
+            of <em class="parameter"><code>path</code></em>. (See
+            also <a class="link" href="../htmlman7/path_resolution.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">path_resolution</span>(7)</span></a>.)</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EBADF</span></span></dt>
+
+          <dd>
+            <p>(<code class="function">fstatfs</code>()) <em class="parameter"><code>fd</code></em> is not a valid open
+            file descriptor.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>buf</code></em> or
+            <em class="parameter"><code>path</code></em> points to
+            an invalid address.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINTR</span></span></dt>
+
+          <dd>
+            <p>This call was interrupted by a signal.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EIO</span></span></dt>
+
+          <dd>
+            <p>An I/O error occurred while reading from the
+            filesystem.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ELOOP</span></span></dt>
+
+          <dd>
+            <p>(<code class="function">statfs</code>()) Too many
+            symbolic links were encountered in translating
+            <em class="parameter"><code>path</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENAMETOOLONG</span></span></dt>
+
+          <dd>
+            <p>(<code class="function">statfs</code>()) <em class="parameter"><code>path</code></em> is too long.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOENT</span></span></dt>
+
+          <dd>
+            <p>(<code class="function">statfs</code>()) The file
+            referred to by <em class="parameter"><code>path</code></em> does not exist.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>Insufficient kernel memory was available.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOSYS</span></span></dt>
+
+          <dd>
+            <p>The filesystem does not support this call.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOTDIR</span></span></dt>
+
+          <dd>
+            <p>(<code class="function">statfs</code>()) A component
+            of the path prefix of <em class="parameter"><code>path</code></em> is not a
+            directory.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EOVERFLOW</span></span></dt>
+
+          <dd>
+            <p>Some values were too large to be represented in the
+            returned struct.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="statfs-2_sect4" name="statfs-2_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>Linux-specific. The Linux <code class="function">statfs</code>() was inspired by the 4.4BSD one
+      (but they do not use the same structure).</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="statfs-2_sect5" name="statfs-2_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>The <span class="type">__fsword_t</span> type used for
+      various fields in the <span class="structname">statfs</span>
+      structure definition is a glibc internal type, not intended
+      for public use. This leaves the programmer in a bit of a
+      conundrum when trying to copy or compare these fields to
+      local variables in a program. Using <span class="type">unsigned int</span> for such variables suffices on
+      most systems.</p>
+
+      <p>The original Linux <code class="function">statfs</code>()
+      and <code class="function">fstatfs</code>() system calls were
+      not designed with extremely large file sizes in mind.
+      Subsequently, Linux 2.6 added new <code class="function">statfs64</code>() and <code class="function">fstatfs64</code>() system calls that employ a new
+      structure, <em class="replaceable"><code>statfs64</code></em>. The new structure
+      contains the same fields as the original <span class="structname">statfs</span> structure, but the sizes of
+      various fields are increased, to accommodate large file
+      sizes. The glibc <code class="function">statfs</code>() and
+      <code class="function">fstatfs</code>() wrapper functions
+      transparently deal with the kernel differences.</p>
+
+      <p>Some systems have only <code class="literal">&lt;</code><code class="filename">sys/vfs.h</code><code class="literal">&gt;</code>
+      other systems also have <code class="literal">&lt;</code><code class="filename">sys/statfs.h</code><code class="literal">&gt;</code> where the former includes the latter.
+      So it seems including the former is the best choice.</p>
+
+      <p>LSB has deprecated the library calls <code class="function">statfs</code>() and <code class="function">fstatfs</code>() and tells us to use <a class="link" href="../htmlman3/statvfs.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">statvfs</span>(2)</span></a> and <a class="link" href="../htmlman3/statvfs.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fstatvfs</span>(2)</span></a> instead.</p>
+
+      <div class="refsect2">
+        <a id="statfs-2_sect6" name="statfs-2_sect6" shape="rect"> </a>
+
+        <h3>The f_fsid field</h3>
+
+        <p>Solaris, Irix and POSIX have a system call <a class="link" href="../htmlman3/statvfs.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">statvfs</span>(2)</span></a> that returns a
+        <span class="emphasis"><em>struct statvfs</em></span>
+        (defined in <code class="literal">&lt;</code><code class="filename">sys/statvfs.h</code><code class="literal">&gt;</code> containing an <span class="type">unsigned long</span> <em class="replaceable"><code>f_fsid</code></em>. Linux, SunOS,
+        HP-UX, 4.4BSD have a system call <code class="function">statfs</code>() that returns a <span class="emphasis"><em>struct statfs</em></span> (defined in
+        <code class="literal">&lt;</code><code class="filename">sys/vfs.h</code><code class="literal">&gt;</code> containing a <span class="type">fsid_t</span> <em class="replaceable"><code>f_fsid</code></em>, where <span class="type">fsid_t</span> is defined as <span class="emphasis"><em>struct { int val[2]; }</em></span>. The same
+        holds for FreeBSD, except that it uses the include file
+        <code class="literal">&lt;</code><code class="filename">sys/mount.h</code><code class="literal">&gt;</code></p>
+
+        <p>The general idea is that <em class="replaceable"><code>f_fsid</code></em> contains some random
+        stuff such that the pair (<em class="replaceable"><code>f_fsid</code></em>,<em class="replaceable"><code>ino</code></em>) uniquely determines a
+        file. Some operating systems use (a variation on) the
+        device number, or the device number combined with the
+        filesystem type. Several operating systems restrict giving
+        out the <em class="replaceable"><code>f_fsid</code></em>
+        field to the superuser only (and zero it for unprivileged
+        users), because this field is used in the filehandle of the
+        filesystem when NFS-exported, and giving it out is a
+        security concern.</p>
+
+        <p>Under some operating systems, the <em class="replaceable"><code>fsid</code></em> can be used as the
+        second argument to the <a class="link" href="../htmlman2/sysfs.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sysfs</span>(2)</span></a> system call.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="statfs-2_sect7" name="statfs-2_sect7" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>From Linux 2.6.38 up to and including Linux 3.1,
+      <code class="function">fstatfs</code>() failed with the error
+      <span class="errorname">ENOSYS</span> for file descriptors
+      created by <a class="link" href="../htmlman2/pipe.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pipe</span>(2)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="statfs-2_sect8" name="statfs-2_sect8" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/stat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">stat</span>(2)</span></a>, <a class="link" href="../htmlman3/statvfs.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">statvfs</span>(2)</span></a>, <a class="link" href="../htmlman7/path_resolution.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">path_resolution</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="statfs-2_sect9" name="statfs-2_sect9" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2003 Andries Brouwer (aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl)<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Modified 2003-08-17 by Walter Harms<br />
+
+                  Modified 2004-06-23 by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

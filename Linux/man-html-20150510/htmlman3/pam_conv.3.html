@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>pam_conv(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="pam_conv(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry" title="pam_conv(3) — Linux manual pages">
+    <a id="pam-conv.3" name="pam-conv.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <a id="pam_conv-name" name="pam_conv-name" shape="rect"> </a>
+
+      <h2>Name</h2>
+
+      <p>pam_conv — PAM conversation function</p>
+    </div>
+
+    <div class="refsynopsisdiv" title="Synopsis">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <a id="pam_conv-synopsis" name="pam_conv-synopsis" shape="rect"> </a>
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;security/pam_appl.h&gt;
+</pre>
+      </div>
+      <pre class="programlisting" xml:space="preserve">
+struct pam_message {
+    int msg_style;
+    const char *msg;
+};
+
+struct pam_response {
+    char *resp;
+    int resp_retcode;
+};
+
+struct pam_conv {
+    int (*conv)(int num_msg, const struct pam_message **msg,
+                struct pam_response **resp, void *appdata_ptr);
+    void *appdata_ptr;
+};
+    
+</pre>
+    </div>
+
+    <div class="refsect1" title="DESCRIPTION">
+      <a id="pam_conv-description" name="pam_conv-description" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The PAM library uses an application-defined callback to
+      allow a direct communication between a loaded module and the
+      application. This callback is specified by the <span class="emphasis"><em>struct pam_conv</em></span> passed to
+      <a class="link" href="../htmlman3/pam_start.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_start</span>(3)</span></a> at the start
+      of the transaction.</p>
+
+      <p>When a module calls the referenced conv() function, the
+      argument <span class="emphasis"><em>appdata_ptr</em></span>
+      is set to the second element of this structure.</p>
+
+      <p>The other arguments of a call to conv() concern the
+      information exchanged by module and application. That is to
+      say, <span class="emphasis"><em>num_msg</em></span> holds the
+      length of the array of pointers, <span class="emphasis"><em>msg</em></span>. After a successful return,
+      the pointer <span class="emphasis"><em>resp</em></span>
+      points to an array of pam_response structures, holding the
+      application supplied text. The <span class="emphasis"><em>resp_retcode</em></span> member of this struct
+      is unused and should be set to zero. It is the caller's
+      responsibility to release both, this array and the responses
+      themselves, using <a class="link" href="../htmlman3/malloc.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">free</span>(3)</span></a>. Note, <span class="emphasis"><em>*resp</em></span> is a <span class="emphasis"><em>struct pam_response</em></span> array and not
+      an array of pointers.</p>
+
+      <p>The number of responses is always equal to the
+      <span class="emphasis"><em>num_msg</em></span> conversation
+      function argument. This does require that the response array
+      is <a class="link" href="../htmlman3/malloc.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">free</span>(3)</span></a>'d after every call
+      to the conversation function. The index of the responses
+      corresponds directly to the prompt index in the pam_message
+      array.</p>
+
+      <p>On failure, the conversation function should release any
+      resources it has allocated, and return one of the predefined
+      PAM error codes.</p>
+
+      <p>Each message can have one of four types, specified by the
+      <span class="emphasis"><em>msg_style</em></span> member of
+      <span class="emphasis"><em>struct
+      pam_message</em></span>:</p>
+
+      <div class="variablelist">
+        <dl>
+          <dt><span class="term">PAM_PROMPT_ECHO_OFF</span></dt>
+
+          <dd>
+            <p>Obtain a string without echoing any text.</p>
+          </dd>
+
+          <dt><span class="term">PAM_PROMPT_ECHO_ON</span></dt>
+
+          <dd>
+            <p>Obtain a string whilst echoing text.</p>
+          </dd>
+
+          <dt><span class="term">PAM_ERROR_MSG</span></dt>
+
+          <dd>
+            <p>Display an error message.</p>
+          </dd>
+
+          <dt><span class="term">PAM_TEXT_INFO</span></dt>
+
+          <dd>
+            <p>Display some text.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>The point of having an array of messages is that it
+      becomes possible to pass a number of things to the
+      application in a single call from the module. It can also be
+      convenient for the application that related things come at
+      once: a windows based application can then present a single
+      form with many messages/prompts on at once.</p>
+
+      <p>In passing, it is worth noting that there is a descrepency
+      between the way Linux-PAM handles the const struct
+      pam_message **msg conversation function argument from the way
+      that Solaris' PAM (and derivitives, known to include HP/UX,
+      are there others?) does. Linux-PAM interprets the msg
+      argument as entirely equivalent to the following prototype
+      const struct pam_message *msg[] (which, in spirit, is
+      consistent with the commonly used prototypes for argv
+      argument to the familiar main() function: char **argv; and
+      char *argv[]). Said another way Linux-PAM interprets the msg
+      argument as a pointer to an array of num_msg read only
+      'struct pam_message' pointers. Solaris' PAM implementation
+      interprets this argument as a pointer to a pointer to an
+      array of num_msg pam_message structures. Fortunately,
+      perhaps, for most module/application developers when num_msg
+      has a value of one these two definitions are entirely
+      equivalent. Unfortunately, casually raising this number to
+      two has led to unanticipated compatibility problems.</p>
+
+      <p>For what its worth the two known module writer
+      work-arounds for trying to maintain source level
+      compatibility with both PAM implementations are:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" type="disc">
+          <li class="listitem">
+            <p>never call the conversation function with num_msg
+            greater than one.</p>
+          </li>
+
+          <li class="listitem">
+            <p>set up msg as doubly referenced so both types of
+            conversation function can find the messages. That is,
+            make</p>
+            <pre class="programlisting" xml:space="preserve">
+       msg[n] = &amp; (( *msg )[n])
+       
+</pre>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="refsect1" title="RETURN VALUES">
+      <a id="pam_conv-return_values" name="pam_conv-return_values" shape="rect"> </a>
+
+      <h2>RETURN VALUES</h2>
+
+      <div class="variablelist">
+        <dl>
+          <dt><span class="term">PAM_BUF_ERR</span></dt>
+
+          <dd>
+            <p>Memory buffer error.</p>
+          </dd>
+
+          <dt><span class="term">PAM_CONV_ERR</span></dt>
+
+          <dd>
+            <p>Conversation failure. The application should not set
+            <span class="emphasis"><em>*resp</em></span>.</p>
+          </dd>
+
+          <dt><span class="term">PAM_SUCCESS</span></dt>
+
+          <dd>
+            <p>Success.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1" title="SEE ALSO">
+      <a id="pam_conv-see_also" name="pam_conv-see_also" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/pam_start.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_start</span>(3)</span></a>, <a class="link" href="../htmlman3/pam_set_item.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_set_item</span>(3)</span></a>, <a class="link" href="../htmlman3/pam_get_item.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_get_item</span>(3)</span></a>, <a class="link" href="../htmlman3/pam_strerror.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_strerror</span>(3)</span></a>, <a class="link" href="../htmlman8/pam.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam</span>(8)</span></a></p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  See <a class="ulink" href="../linuxpam-copyright.html" target="_top" shape="rect">Linux-PAM copyright notice</a> for more information.
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

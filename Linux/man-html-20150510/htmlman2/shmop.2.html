@@ -1,0 +1,498 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>shmop(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="shmop(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="shmop.2" name="shmop.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>shmat, shmdt — System V shared memory operations</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;sys/types.h&gt;
+#include &lt;sys/shm.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">void
+            *<strong>shmat</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">shmid</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const void *<var class="pdparam">shmaddr</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">shmflg</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>shmdt</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">const void *<var class="pdparam">shmaddr</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="shmop-2_sect1" name="shmop-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <div class="refsect2">
+        <a id="shmop-2_sect2" name="shmop-2_sect2" shape="rect"> </a>
+
+        <h3>shmat()</h3>
+
+        <p><code class="function">shmat</code>() attaches the
+        System V shared memory segment identified by <em class="parameter"><code>shmid</code></em> to the address space of
+        the calling process. The attaching address is specified by
+        <em class="parameter"><code>shmaddr</code></em> with one of
+        the following criteria:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>If <em class="parameter"><code>shmaddr</code></em>
+              is NULL, the system chooses a suitable (unused)
+              address at which to attach the segment.</p>
+            </li>
+
+            <li class="listitem">
+              <p>If <em class="parameter"><code>shmaddr</code></em>
+              isn't NULL and <code class="constant">SHM_RND</code>
+              is specified in <em class="parameter"><code>shmflg</code></em>, the attach
+              occurs at the address equal to <em class="parameter"><code>shmaddr</code></em> rounded down to
+              the nearest multiple of <code class="constant">SHMLBA</code>.</p>
+            </li>
+
+            <li class="listitem">
+              <p>Otherwise, <em class="parameter"><code>shmaddr</code></em> must be a
+              page-aligned address at which the attach occurs.</p>
+            </li>
+          </ul>
+        </div>
+
+        <p>In addition to <code class="constant">SHM_RND</code>,
+        the following flags may be specified in the <em class="parameter"><code>shmflg</code></em> bit-mask argument:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">SHM_EXEC</code> (Linux-specific; since Linux
+            2.6.9)</span></dt>
+
+            <dd>
+              <p>Allow the contents of the segment to be executed.
+              The caller must have execute permission on the
+              segment.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SHM_RDONLY</code></span></dt>
+
+            <dd>
+              <p>Attach the segment for read-only access. The
+              process must have read permission for the segment. If
+              this flag is not specified, the segment is attached
+              for read and write access, and the process must have
+              read and write permission for the segment. There is
+              no notion of a write-only shared memory segment.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SHM_REMAP</code>
+            (Linux-specific)</span></dt>
+
+            <dd>
+              <p>This flag specifies that the mapping of the
+              segment should replace any existing mapping in the
+              range starting at <em class="parameter"><code>shmaddr</code></em> and continuing
+              for the size of the segment. (Normally, an
+              <span class="errorname">EINVAL</span> error would
+              result if a mapping already exists in this address
+              range.) In this case, <em class="parameter"><code>shmaddr</code></em> must not be
+              NULL.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>The <a class="link" href="../htmlman2/brk.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">brk</span>(2)</span></a> value of the
+        calling process is not altered by the attach. The segment
+        will automatically be detached at process exit. The same
+        segment may be attached as a read and as a read-write one,
+        and more than once, in the process's address space.</p>
+
+        <p>A successful <code class="function">shmat</code>() call
+        updates the members of the <em class="replaceable"><code>shmid_ds</code></em> structure (see
+        <a class="link" href="../htmlman2/shmctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">shmctl</span>(2)</span></a>) associated
+        with the shared memory segment as follows:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p><em class="replaceable"><code>shm_atime</code></em> is set to
+              the current time.</p>
+            </li>
+
+            <li class="listitem">
+              <p><em class="replaceable"><code>shm_lpid</code></em>
+              is set to the process-ID of the calling process.</p>
+            </li>
+
+            <li class="listitem">
+              <p><em class="replaceable"><code>shm_nattch</code></em> is
+              incremented by one.</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="shmop-2_sect3" name="shmop-2_sect3" shape="rect"> </a>
+
+        <h3>shmdt()</h3>
+
+        <p><code class="function">shmdt</code>() detaches the
+        shared memory segment located at the address specified by
+        <em class="parameter"><code>shmaddr</code></em> from the
+        address space of the calling process. The to-be-detached
+        segment must be currently attached with <em class="parameter"><code>shmaddr</code></em> equal to the value
+        returned by the attaching <code class="function">shmat</code>() call.</p>
+
+        <p>On a successful <code class="function">shmdt</code>()
+        call, the system updates the members of the <em class="replaceable"><code>shmid_ds</code></em> structure
+        associated with the shared memory segment as follows:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p><em class="replaceable"><code>shm_dtime</code></em> is set to
+              the current time.</p>
+            </li>
+
+            <li class="listitem">
+              <p><em class="replaceable"><code>shm_lpid</code></em>
+              is set to the process-ID of the calling process.</p>
+            </li>
+
+            <li class="listitem">
+              <p><em class="replaceable"><code>shm_nattch</code></em> is
+              decremented by one. If it becomes 0 and the segment
+              is marked for deletion, the segment is deleted.</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="shmop-2_sect4" name="shmop-2_sect4" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">shmat</code>() returns
+      the address of the attached shared memory segment; on error,
+      <span class="emphasis"><em>(void *) −1</em></span> is
+      returned, and <code class="varname">errno</code> is set to
+      indicate the cause of the error.</p>
+
+      <p>On success, <code class="function">shmdt</code>() returns
+      0; on error −1 is returned, and <code class="varname">errno</code> is set to indicate the cause of the
+      error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="shmop-2_sect5" name="shmop-2_sect5" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <p>When <code class="function">shmat</code>() fails,
+      <code class="varname">errno</code> is set to one of the
+      following:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EACCES</span></span></dt>
+
+          <dd>
+            <p>The calling process does not have the required
+            permissions for the requested attach type, and does not
+            have the <code class="constant">CAP_IPC_OWNER</code>
+            capability.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EIDRM</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>shmid</code></em> points
+            to a removed identifier.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>Invalid <em class="parameter"><code>shmid</code></em> value, unaligned
+            (i.e., not page-aligned and <code class="constant">SHM_RND</code> was not specified) or invalid
+            <em class="parameter"><code>shmaddr</code></em> value,
+            or can't attach segment at <em class="parameter"><code>shmaddr</code></em>, or <code class="constant">SHM_REMAP</code> was specified and
+            <em class="parameter"><code>shmaddr</code></em> was
+            NULL.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>Could not allocate memory for the descriptor or for
+            the page tables.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>When <code class="function">shmdt</code>() fails,
+      <code class="varname">errno</code> is set as follows:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>There is no shared memory segment attached at
+            <em class="parameter"><code>shmaddr</code></em>; or,
+            <em class="parameter"><code>shmaddr</code></em> is not
+            aligned on a page boundary.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="shmop-2_sect6" name="shmop-2_sect6" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>SVr4, POSIX.1-2001.</p>
+
+      <p>In SVID 3 (or perhaps earlier), the type of the <em class="parameter"><code>shmaddr</code></em> argument was changed
+      from <span class="emphasis"><em>char *</em></span> into
+      <span class="type">const void *</span>, and the returned type
+      of <code class="function">shmat</code>() from <span class="emphasis"><em>char *</em></span> into <span class="emphasis"><em>void *</em></span>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="shmop-2_sect7" name="shmop-2_sect7" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>After a <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a>, the child inherits
+      the attached shared memory segments.</p>
+
+      <p>After an <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>, all attached
+      shared memory segments are detached from the process.</p>
+
+      <p>Upon <a class="link" href="../htmlman2/_exit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">_exit</span>(2)</span></a>, all attached
+      shared memory segments are detached from the process.</p>
+
+      <p>Using <code class="function">shmat</code>() with
+      <em class="parameter"><code>shmaddr</code></em> equal to NULL
+      is the preferred, portable way of attaching a shared memory
+      segment. Be aware that the shared memory segment attached in
+      this way may be attached at different addresses in different
+      processes. Therefore, any pointers maintained within the
+      shared memory must be made relative (typically to the
+      starting address of the segment), rather than absolute.</p>
+
+      <p>On Linux, it is possible to attach a shared memory segment
+      even if it is already marked to be deleted. However,
+      POSIX.1-2001 does not specify this behavior and many other
+      implementations do not support it.</p>
+
+      <p>The following system parameter affects <code class="function">shmat</code>():</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">SHMLBA</code></span></dt>
+
+          <dd>
+            <p>Segment low boundary address multiple. When
+            explicitly specifying an attach address in a call to
+            <code class="function">shmat</code>(), the caller
+            should ensure that the address is a multiple of this
+            value. This is necessary on some architectures, in
+            order either to ensure good CPU cache performance or to
+            ensure that different attaches of the same segment have
+            consistent views within the CPU cache. <code class="constant">SHMLBA</code> is normally some multiple of
+            the system page size (on many Linux architectures, it
+            is the same as the system page size).</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>The implementation places no intrinsic per-process limit
+      on the number of shared memory segments (<code class="constant">SHMSEG</code>).</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="shmop-2_sect8" name="shmop-2_sect8" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/brk.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">brk</span>(2)</span></a>, <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>, <a class="link" href="../htmlman2/shmctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">shmctl</span>(2)</span></a>, <a class="link" href="../htmlman2/shmget.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">shmget</span>(2)</span></a>, <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>, <a class="link" href="../htmlman7/shm_overview.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">shm_overview</span>(7)</span></a>, <a class="link" href="../htmlman7/svipc.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">svipc</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="shmop-2_sect9" name="shmop-2_sect9" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright 1993 Giorgio Ciucci (giorgio<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>crcc.it)<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Modified Sun Nov 28 17:06:19 1993, Rik Faith (faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu)<br />
+
+                           with material from Luigi P. Bai (lpb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>softint.com)<br />
+
+                  Portions Copyright 1993 Luigi P. Bai<br />
+
+                  Modified Tue Oct 22 22:04:23 1996 by Eric S. Raymond &lt;esr<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>thyrsus.com&gt;<br />
+
+                  Modified, 5 Jan 2002, Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  Modified, 19 Sep 2002, Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  Added SHM_REMAP flag description<br />
+
+                  Modified, 27 May 2004, Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                      Added notes on capability requirements<br />
+
+                  Modified, 11 Nov 2004, Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  Language and formatting clean-ups<br />
+
+                  Changed wording and placement of sentence regarding attachment<br />
+
+                  of segments marked for destruction<br />
+
+                  <br />
+                  FIXME . Add an example program to this page.<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,1650 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>capabilities(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="capabilities(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="capabilities.7" name="capabilities.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>capabilities — overview of Linux capabilities</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="capabilities-7_sect1" name="capabilities-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>For the purpose of performing permission checks,
+      traditional UNIX implementations distinguish two categories
+      of processes: <em class="replaceable"><code>privileged</code></em> processes (whose
+      effective user ID is 0, referred to as superuser or root),
+      and <em class="replaceable"><code>unprivileged</code></em>
+      processes (whose effective UID is nonzero). Privileged
+      processes bypass all kernel permission checks, while
+      unprivileged processes are subject to full permission
+      checking based on the process's credentials (usually:
+      effective UID, effective GID, and supplementary group
+      list).</p>
+
+      <p>Starting with kernel 2.2, Linux divides the privileges
+      traditionally associated with superuser into distinct units,
+      known as <em class="replaceable"><code>capabilities</code></em>, which can be
+      independently enabled and disabled. Capabilities are a
+      per-thread attribute.</p>
+
+      <div class="refsect2">
+        <a id="capabilities-7_sect2" name="capabilities-7_sect2" shape="rect"> </a>
+
+        <h3>Capabilities list</h3>
+
+        <p>The following list shows the capabilities implemented on
+        Linux, and the operations or behaviors that each capability
+        permits:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">CAP_AUDIT_CONTROL</code> (since Linux
+            2.6.11)</span></dt>
+
+            <dd>
+              <p>Enable and disable kernel auditing; change
+              auditing filter rules; retrieve auditing status and
+              filtering rules.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_AUDIT_READ</code> (since Linux
+            3.16)</span></dt>
+
+            <dd>
+              <p>Allow reading the audit log via a multicast
+              netlink socket.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_AUDIT_WRITE</code> (since Linux
+            2.6.11)</span></dt>
+
+            <dd>
+              <p>Write records to kernel auditing log.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_BLOCK_SUSPEND</code> (since Linux
+            3.5)</span></dt>
+
+            <dd>
+              <p>Employ features that can block system suspend
+              (<a class="link" href="../htmlman7/epoll.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll</span>(7)</span></a>
+              <code class="constant">EPOLLWAKEUP</code>,
+              <code class="filename">/proc/sys/wake_lock</code>).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_CHOWN</code></span></dt>
+
+            <dd>
+              <p>Make arbitrary changes to file UIDs and GIDs (see
+              <a class="link" href="../htmlman2/chown.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chown</span>(2)</span></a>).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_DAC_OVERRIDE</code></span></dt>
+
+            <dd>
+              <p>Bypass file read, write, and execute permission
+              checks. (DAC is an abbreviation of "discretionary
+              access control".)</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_DAC_READ_SEARCH</code></span></dt>
+
+            <dd>
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="itemizedlist">
+                    <ul class="itemizedlist" style="list-style-type: disc;">
+                      <li class="listitem">
+                        <p>Bypass file read permission checks and
+                        directory read and execute permission
+                        checks;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>Invoke <a class="link" href="../htmlman2/open_by_handle_at.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open_by_handle_at</span>(2)</span></a>.</p>
+                      </li>
+                    </ul>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_FOWNER</code></span></dt>
+
+            <dd>
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="itemizedlist">
+                    <ul class="itemizedlist" style="list-style-type: disc;">
+                      <li class="listitem">
+                        <p>Bypass permission checks on operations
+                        that normally require the filesystem UID of
+                        the process to match the UID of the file
+                        (e.g., <a class="link" href="../htmlman2/chmod.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chmod</span>(2)</span></a>,
+                        <a class="link" href="../htmlman2/utime.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">utime</span>(2)</span></a>),
+                        excluding those operations covered by
+                        <code class="constant">CAP_DAC_OVERRIDE</code> and
+                        <code class="constant">CAP_DAC_READ_SEARCH</code>;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>set extended file attributes (see
+                        <span class="citerefentry"><span class="refentrytitle">chattr</span>(1)</span>) on
+                        arbitrary files;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>set Access Control Lists (ACLs) on
+                        arbitrary files;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>ignore directory sticky bit on file
+                        deletion;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>specify <code class="constant">O_NOATIME</code> for arbitrary
+                        files in <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>
+                        and <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a>.</p>
+                      </li>
+                    </ul>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_FSETID</code></span></dt>
+
+            <dd>
+              <p>Don't clear set-user-ID and set-group-ID mode bits
+              when a file is modified; set the set-group-ID bit for
+              a file whose GID does not match the filesystem or any
+              of the supplementary GIDs of the calling process.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_IPC_LOCK</code></span></dt>
+
+            <dd>
+              <p>Lock memory (<a class="link" href="../htmlman2/mlock.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mlock</span>(2)</span></a>, <a class="link" href="../htmlman2/mlock.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mlockall</span>(2)</span></a>,
+              <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>, <a class="link" href="../htmlman2/shmctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">shmctl</span>(2)</span></a>).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_IPC_OWNER</code></span></dt>
+
+            <dd>
+              <p>Bypass permission checks for operations on System
+              V IPC objects.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_KILL</code></span></dt>
+
+            <dd>
+              <p>Bypass permission checks for sending signals (see
+              <a class="link" href="../htmlman2/kill.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">kill</span>(2)</span></a>). This
+              includes use of the <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a>
+              <code class="constant">KDSIGACCEPT</code>
+              operation.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_LEASE</code> (since Linux
+            2.4)</span></dt>
+
+            <dd>
+              <p>Establish leases on arbitrary files (see <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a>).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_LINUX_IMMUTABLE</code></span></dt>
+
+            <dd>
+              <p>Set the <code class="constant">FS_APPEND_FL</code>
+              and <code class="constant">FS_IMMUTABLE_FL</code>
+              inode flags (see <span class="citerefentry"><span class="refentrytitle">chattr</span>(1)</span>).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_MAC_ADMIN</code> (since Linux
+            2.6.25)</span></dt>
+
+            <dd>
+              <p>Override Mandatory Access Control (MAC).
+              Implemented for the Smack Linux Security Module
+              (LSM).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_MAC_OVERRIDE</code> (since Linux
+            2.6.25)</span></dt>
+
+            <dd>
+              <p>Allow MAC configuration or state changes.
+              Implemented for the Smack LSM.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_MKNOD</code> (since Linux
+            2.4)</span></dt>
+
+            <dd>
+              <p>Create special files using <a class="link" href="../htmlman2/mknod.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mknod</span>(2)</span></a>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_NET_ADMIN</code></span></dt>
+
+            <dd>
+              <p>Perform various network-related operations:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="itemizedlist">
+                    <ul class="itemizedlist" style="list-style-type: disc;">
+                      <li class="listitem">
+                        <p>interface configuration;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>administration of IP firewall,
+                        masquerading, and accounting;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>modify routing tables;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>bind to any address for transparent
+                        proxying;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>set type-of-service (TOS)</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>clear driver statistics;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>set promiscuous mode;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>enabling multicasting;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>use <a class="link" href="../htmlman2/getsockopt.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setsockopt</span>(2)</span></a>
+                        to set the following socket options:
+                        <code class="constant">SO_DEBUG</code>,
+                        <code class="constant">SO_MARK</code>,
+                        <code class="constant">SO_PRIORITY</code>
+                        (for a priority outside the range 0 to 6),
+                        <code class="constant">SO_RCVBUFFORCE</code>, and
+                        <code class="constant">SO_SNDBUFFORCE</code>.</p>
+                      </li>
+                    </ul>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_NET_BIND_SERVICE</code></span></dt>
+
+            <dd>
+              <p>Bind a socket to Internet domain privileged ports
+              (port numbers less than 1024).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_NET_BROADCAST</code></span></dt>
+
+            <dd>
+              <p>(Unused) Make socket broadcasts, and listen to
+              multicasts.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_NET_RAW</code></span></dt>
+
+            <dd>
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="itemizedlist">
+                    <ul class="itemizedlist" style="list-style-type: disc;">
+                      <li class="listitem">
+                        <p>use RAW and PACKET sockets;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>bind to any address for transparent
+                        proxying.</p>
+                      </li>
+                    </ul>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_SETGID</code></span></dt>
+
+            <dd>
+              <p>Make arbitrary manipulations of process GIDs and
+              supplementary GID list; forge GID when passing socket
+              credentials via UNIX domain sockets; write a group ID
+              mapping in a user namespace (see <a class="link" href="../htmlman7/user_namespaces.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">user_namespaces</span>(7)</span></a>).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_SETFCAP</code> (since Linux
+            2.6.24)</span></dt>
+
+            <dd>
+              <p>Set file capabilities.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_SETPCAP</code></span></dt>
+
+            <dd>
+              <p>If file capabilities are not supported: grant or
+              remove any capability in the caller's permitted
+              capability set to or from any other process. (This
+              property of <code class="constant">CAP_SETPCAP</code>
+              is not available when the kernel is configured to
+              support file capabilities, since <code class="constant">CAP_SETPCAP</code> has entirely different
+              semantics for such kernels.)</p>
+
+              <p>If file capabilities are supported: add any
+              capability from the calling thread's bounding set to
+              its inheritable set; drop capabilities from the
+              bounding set (via <a class="link" href="../htmlman2/prctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">prctl</span>(2)</span></a>
+              <code class="constant">PR_CAPBSET_DROP</code>); make
+              changes to the <em class="replaceable"><code>securebits</code></em> flags.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_SETUID</code></span></dt>
+
+            <dd>
+              <p>Make arbitrary manipulations of process UIDs
+              (<a class="link" href="../htmlman2/setuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setuid</span>(2)</span></a>,
+              <a class="link" href="../htmlman2/setreuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setreuid</span>(2)</span></a>,
+              <a class="link" href="../htmlman2/setresuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setresuid</span>(2)</span></a>,
+              <a class="link" href="../htmlman2/setfsuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setfsuid</span>(2)</span></a>); forge
+              UID when passing socket credentials via UNIX domain
+              sockets; write a user ID mapping in a user namespace
+              (see <a class="link" href="../htmlman7/user_namespaces.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">user_namespaces</span>(7)</span></a>).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_SYS_ADMIN</code></span></dt>
+
+            <dd>
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="itemizedlist">
+                    <ul class="itemizedlist" style="list-style-type: disc;">
+                      <li class="listitem">
+                        <p>Perform a range of system administration
+                        operations including: <a class="link" href="../htmlman2/quotactl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">quotactl</span>(2)</span></a>,
+                        <a class="link" href="../htmlman2/mount.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mount</span>(2)</span></a>,
+                        <a class="link" href="../htmlman2/umount.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">umount</span>(2)</span></a>,
+                        <a class="link" href="../htmlman2/swapon.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">swapon</span>(2)</span></a>,
+                        <a class="link" href="../htmlman2/swapon.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">swapoff</span>(2)</span></a>,
+                        <a class="link" href="../htmlman2/gethostname.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sethostname</span>(2)</span></a>,
+                        and <a class="link" href="../htmlman2/getdomainname.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setdomainname</span>(2)</span></a>;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>perform privileged <a class="link" href="../htmlman2/syslog.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">syslog</span>(2)</span></a>
+                        operations (since Linux 2.6.37,
+                        <code class="constant">CAP_SYSLOG</code>
+                        should be used to permit such
+                        operations);</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>perform <code class="constant">VM86_REQUEST_IRQ</code>
+                        <a class="link" href="../htmlman2/vm86.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">vm86</span>(2)</span></a>
+                        command;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>perform <code class="constant">IPC_SET</code> and <code class="constant">IPC_RMID</code> operations on
+                        arbitrary System V IPC objects;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>override <code class="constant">RLIMIT_NPROC</code> resource
+                        limit;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>perform operations on <em class="replaceable"><code>trusted</code></em> and
+                        <em class="replaceable"><code>security</code></em>
+                        Extended Attributes (see <a class="link" href="../htmlman7/xattr.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">xattr</span>(7)</span></a>);</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>use <a class="link" href="../htmlman2/lookup_dcookie.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">lookup_dcookie</span>(2)</span></a>;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>use <a class="link" href="../htmlman2/ioprio_set.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioprio_set</span>(2)</span></a>
+                        to assign <code class="constant">IOPRIO_CLASS_RT</code> and
+                        (before Linux 2.6.25) <code class="constant">IOPRIO_CLASS_IDLE</code> I/O
+                        scheduling classes;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>forge PID when passing socket
+                        credentials via UNIX domain sockets;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>exceed <code class="filename">/proc/sys/fs/file-max</code>,
+                        the system-wide limit on the number of open
+                        files, in system calls that open files
+                        (e.g., <a class="link" href="../htmlman2/accept.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">accept</span>(2)</span></a>,
+                        <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>,
+                        <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>,
+                        <a class="link" href="../htmlman2/pipe.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pipe</span>(2)</span></a>);</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>employ <em class="replaceable"><code>CLONE_*</code></em>
+                        flags that create new namespaces with
+                        <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a>
+                        and <a class="link" href="../htmlman2/unshare.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unshare</span>(2)</span></a>
+                        (but, since Linux 3.8, creating user
+                        namespaces does not require any
+                        capability);</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>call <a class="link" href="../htmlman2/perf_event_open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">perf_event_open</span>(2)</span></a>;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>access privileged <em class="replaceable"><code>perf</code></em> event
+                        information;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>call <a class="link" href="../htmlman2/setns.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setns</span>(2)</span></a>
+                        (requires <code class="constant">CAP_SYS_ADMIN</code> in the
+                        <em class="replaceable"><code>target</code></em>
+                        namespace);</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>call <a class="link" href="../htmlman2/fanotify_init.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fanotify_init</span>(2)</span></a>;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>perform <code class="constant">KEYCTL_CHOWN</code> and
+                        <code class="constant">KEYCTL_SETPERM</code> <a class="link" href="../htmlman2/keyctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">keyctl</span>(2)</span></a>
+                        operations;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>perform <a class="link" href="../htmlman2/madvise.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">madvise</span>(2)</span></a>
+                        <code class="constant">MADV_HWPOISON</code>
+                        operation;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>employ the <code class="constant">TIOCSTI</code> <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a>
+                        to insert characters into the input queue
+                        of a terminal other than the caller's
+                        controlling terminal;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>employ the obsolete <a class="link" href="../htmlman2/nfsservctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">nfsservctl</span>(2)</span></a>
+                        system call;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>employ the obsolete <a class="link" href="../htmlman2/bdflush.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">bdflush</span>(2)</span></a>
+                        system call;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>perform various privileged block-device
+                        <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a>
+                        operations;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>perform various privileged filesystem
+                        <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a>
+                        operations;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>perform administrative operations on
+                        many device drivers.</p>
+                      </li>
+                    </ul>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_SYS_BOOT</code></span></dt>
+
+            <dd>
+              <p>Use <a class="link" href="../htmlman2/reboot.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">reboot</span>(2)</span></a> and
+              <a class="link" href="../htmlman2/kexec_load.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">kexec_load</span>(2)</span></a>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_SYS_CHROOT</code></span></dt>
+
+            <dd>
+              <p>Use <a class="link" href="../htmlman2/chroot.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chroot</span>(2)</span></a>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_SYS_MODULE</code></span></dt>
+
+            <dd>
+              <p>Load and unload kernel modules (see <a class="link" href="../htmlman2/init_module.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">init_module</span>(2)</span></a> and
+              <a class="link" href="../htmlman2/delete_module.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">delete_module</span>(2)</span></a>);
+              in kernels before 2.6.25: drop capabilities from the
+              system-wide capability bounding set.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_SYS_NICE</code></span></dt>
+
+            <dd>
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="itemizedlist">
+                    <ul class="itemizedlist" style="list-style-type: disc;">
+                      <li class="listitem">
+                        <p>Raise process nice value (<a class="link" href="../htmlman2/nice.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">nice</span>(2)</span></a>,
+                        <a class="link" href="../htmlman2/getpriority.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setpriority</span>(2)</span></a>)
+                        and change the nice value for arbitrary
+                        processes;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>set real-time scheduling policies for
+                        calling process, and set scheduling
+                        policies and priorities for arbitrary
+                        processes (<a class="link" href="../htmlman2/sched_setscheduler.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_setscheduler</span>(2)</span></a>,
+                        <a class="link" href="../htmlman2/sched_setparam.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_setparam</span>(2)</span></a>,
+                        <span class="citerefentry"><span class="refentrytitle">shed_setattr</span>(2)</span>);</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>set CPU affinity for arbitrary processes
+                        (<a class="link" href="../htmlman2/sched_setaffinity.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_setaffinity</span>(2)</span></a>);</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>set I/O scheduling class and priority
+                        for arbitrary processes (<a class="link" href="../htmlman2/ioprio_set.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioprio_set</span>(2)</span></a>);</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>apply <a class="link" href="../htmlman2/migrate_pages.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">migrate_pages</span>(2)</span></a>
+                        to arbitrary processes and allow processes
+                        to be migrated to arbitrary nodes;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>apply <a class="link" href="../htmlman2/move_pages.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">move_pages</span>(2)</span></a>
+                        to arbitrary processes;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>use the <code class="constant">MPOL_MF_MOVE_ALL</code> flag
+                        with <a class="link" href="../htmlman2/mbind.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mbind</span>(2)</span></a>
+                        and <a class="link" href="../htmlman2/move_pages.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">move_pages</span>(2)</span></a>.</p>
+                      </li>
+                    </ul>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_SYS_PACCT</code></span></dt>
+
+            <dd>
+              <p>Use <a class="link" href="../htmlman2/acct.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">acct</span>(2)</span></a>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_SYS_PTRACE</code></span></dt>
+
+            <dd>
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="itemizedlist">
+                    <ul class="itemizedlist" style="list-style-type: disc;">
+                      <li class="listitem">
+                        <p>Trace arbitrary processes using
+                        <a class="link" href="../htmlman2/ptrace.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ptrace</span>(2)</span></a>;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>apply <a class="link" href="../htmlman2/get_robust_list.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">get_robust_list</span>(2)</span></a>
+                        to arbitrary processes;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>transfer data to or from the memory of
+                        arbitrary processes using <a class="link" href="../htmlman2/process_vm_readv.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">process_vm_readv</span>(2)</span></a>
+                        and <a class="link" href="../htmlman2/process_vm_readv.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">process_vm_writev</span>(2)</span></a>.</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>inspect processes using <a class="link" href="../htmlman2/kcmp.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">kcmp</span>(2)</span></a>.</p>
+                      </li>
+                    </ul>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_SYS_RAWIO</code></span></dt>
+
+            <dd>
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="itemizedlist">
+                    <ul class="itemizedlist" style="list-style-type: disc;">
+                      <li class="listitem">
+                        <p>Perform I/O port operations (<a class="link" href="../htmlman2/iopl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">iopl</span>(2)</span></a>
+                        and <a class="link" href="../htmlman2/ioperm.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioperm</span>(2)</span></a>);</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>access <code class="filename">/proc/kcore</code>;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>employ the <code class="constant">FIBMAP</code> <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a>
+                        operation;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>open devices for accessing x86
+                        model-specific registers (MSRs, see
+                        <a class="link" href="../htmlman4/msr.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">msr</span>(4)</span></a>)</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>update <code class="filename">/proc/sys/vm/mmap_min_addr</code>;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>create memory mappings at addresses
+                        below the value specified by <code class="filename">/proc/sys/vm/mmap_min_addr</code>;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>map files in <code class="filename">/proc/bus/pci</code>;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>open <code class="filename">/dev/mem</code> and <code class="filename">/dev/kmem</code>;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>perform various SCSI device
+                        commands;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>perform certain operations on <a class="link" href="../htmlman4/hpsa.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">hpsa</span>(4)</span></a>
+                        and <a class="link" href="../htmlman4/cciss.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">cciss</span>(4)</span></a>
+                        devices;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>perform a range of device-specific
+                        operations on other devices.</p>
+                      </li>
+                    </ul>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_SYS_RESOURCE</code></span></dt>
+
+            <dd>
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="itemizedlist">
+                    <ul class="itemizedlist" style="list-style-type: disc;">
+                      <li class="listitem">
+                        <p>Use reserved space on ext2
+                        filesystems;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>make <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a>
+                        calls controlling ext3 journaling;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>override disk quota limits;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>increase resource limits (see <a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setrlimit</span>(2)</span></a>);</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>override <code class="constant">RLIMIT_NPROC</code> resource
+                        limit;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>override maximum number of consoles on
+                        console allocation;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>override maximum number of keymaps;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>allow more than 64hz interrupts from the
+                        real-time clock;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>raise <em class="replaceable"><code>msg_qbytes</code></em>
+                        limit for a System V message queue above
+                        the limit in <code class="filename">/proc/sys/kernel/msgmnb</code>
+                        (see <a class="link" href="../htmlman2/msgop.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">msgop</span>(2)</span></a>
+                        and <a class="link" href="../htmlman2/msgctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">msgctl</span>(2)</span></a>);</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>override the <code class="filename">/proc/sys/fs/pipe-size-max</code>
+                        limit when setting the capacity of a pipe
+                        using the <code class="constant">F_SETPIPE_SZ</code> <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a>
+                        command.</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>use <code class="constant">F_SETPIPE_SZ</code> to increase
+                        the capacity of a pipe above the limit
+                        specified by <code class="filename">/proc/sys/fs/pipe-max-size</code>;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>override <code class="filename">/proc/sys/fs/mqueue/queues_max</code>
+                        limit when creating POSIX message queues
+                        (see <a class="link" href="../htmlman7/mq_overview.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_overview</span>(7)</span></a>);</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>employ <a class="link" href="../htmlman2/prctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">prctl</span>(2)</span></a>
+                        <code class="constant">PR_SET_MM</code>
+                        operation;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>set <code class="filename">/proc/PID/oom_score_adj</code>
+                        to a value lower than the value last set by
+                        a process with <code class="constant">CAP_SYS_RESOURCE</code>.</p>
+                      </li>
+                    </ul>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_SYS_TIME</code></span></dt>
+
+            <dd>
+              <p>Set system clock (<a class="link" href="../htmlman2/gettimeofday.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">settimeofday</span>(2)</span></a>,
+              <a class="link" href="../htmlman2/stime.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">stime</span>(2)</span></a>, <a class="link" href="../htmlman2/adjtimex.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">adjtimex</span>(2)</span></a>); set
+              real-time (hardware) clock.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_SYS_TTY_CONFIG</code></span></dt>
+
+            <dd>
+              <p>Use <a class="link" href="../htmlman2/vhangup.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">vhangup</span>(2)</span></a>; employ
+              various privileged <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> operations
+              on virtual terminals.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_SYSLOG</code> (since Linux
+            2.6.37)</span></dt>
+
+            <dd>
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="itemizedlist">
+                    <ul class="itemizedlist" style="list-style-type: disc;">
+                      <li class="listitem">
+                        <p>Perform privileged <a class="link" href="../htmlman2/syslog.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">syslog</span>(2)</span></a>
+                        operations. See <a class="link" href="../htmlman2/syslog.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">syslog</span>(2)</span></a>
+                        for information on which operations require
+                        privilege.</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>View kernel addresses exposed via
+                        <code class="filename">/proc</code> and
+                        other interfaces when <code class="filename">/proc/sys/kernel/kptr_restrict</code>
+                        has the value 1. (See the discussion of the
+                        <em class="replaceable"><code>kptr_restrict</code></em>
+                        in <a class="link" href="../htmlman5/proc.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">proc</span>(5)</span></a>.)</p>
+                      </li>
+                    </ul>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="constant">CAP_WAKE_ALARM</code> (since Linux
+            3.0)</span></dt>
+
+            <dd>
+              <p>Trigger something that will wake up the system
+              (set <code class="constant">CLOCK_REALTIME_ALARM</code> and
+              <code class="constant">CLOCK_BOOTTIME_ALARM</code>
+              timers).</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="capabilities-7_sect3" name="capabilities-7_sect3" shape="rect"> </a>
+
+        <h3>Past and current implementation</h3>
+
+        <p>A full implementation of capabilities requires that:</p>
+
+        <div class="orderedlist">
+          <ol class="orderedlist" type="1">
+            <li class="listitem">
+              <p>For all privileged operations, the kernel must
+              check whether the thread has the required capability
+              in its effective set.</p>
+            </li>
+
+            <li class="listitem">
+              <p>The kernel must provide system calls allowing a
+              thread's capability sets to be changed and
+              retrieved.</p>
+            </li>
+
+            <li class="listitem">
+              <p>The filesystem must support attaching capabilities
+              to an executable file, so that a process gains those
+              capabilities when the file is executed.</p>
+            </li>
+          </ol>
+        </div>
+
+        <p>Before kernel 2.6.24, only the first two of these
+        requirements are met; since kernel 2.6.24, all three
+        requirements are met.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="capabilities-7_sect4" name="capabilities-7_sect4" shape="rect"> </a>
+
+        <h3>Thread capability sets</h3>
+
+        <p>Each thread has three capability sets containing zero or
+        more of the above capabilities:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><em class="replaceable"><code>Permitted</code></em>:</span></dt>
+
+            <dd>
+              <p>This is a limiting superset for the effective
+              capabilities that the thread may assume. It is also a
+              limiting superset for the capabilities that may be
+              added to the inheritable set by a thread that does
+              not have the <code class="constant">CAP_SETPCAP</code> capability in its
+              effective set.</p>
+
+              <p>If a thread drops a capability from its permitted
+              set, it can never reacquire that capability (unless
+              it <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>s either a
+              set-user-ID-root program, or a program whose
+              associated file capabilities grant that
+              capability).</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>Inheritable</code></em>:</span></dt>
+
+            <dd>
+              <p>This is a set of capabilities preserved across an
+              <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>. It
+              provides a mechanism for a process to assign
+              capabilities to the permitted set of the new program
+              during an <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>Effective</code></em>:</span></dt>
+
+            <dd>
+              <p>This is the set of capabilities used by the kernel
+              to perform permission checks for the thread.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>A child created via <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> inherits copies
+        of its parent's capability sets. See below for a discussion
+        of the treatment of capabilities during <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>.</p>
+
+        <p>Using <a class="link" href="../htmlman2/capget.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capset</span>(2)</span></a>, a thread may
+        manipulate its own capability sets (see below).</p>
+
+        <p>Since Linux 3.2, the file <code class="filename">/proc/sys/kernel/cap_last_cap</code> exposes the
+        numerical value of the highest capability supported by the
+        running kernel; this can be used to determine the highest
+        bit that may be set in a capability set.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="capabilities-7_sect5" name="capabilities-7_sect5" shape="rect"> </a>
+
+        <h3>File capabilities</h3>
+
+        <p>Since kernel 2.6.24, the kernel supports associating
+        capability sets with an executable file using <span class="citerefentry"><span class="refentrytitle">setcap</span>(8)</span>. The file
+        capability sets are stored in an extended attribute (see
+        <a class="link" href="../htmlman2/setxattr.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setxattr</span>(2)</span></a>) named
+        <em class="replaceable"><code>security.capability</code></em>.
+        Writing to this extended attribute requires the
+        <code class="constant">CAP_SETFCAP</code> capability. The
+        file capability sets, in conjunction with the capability
+        sets of the thread, determine the capabilities of a thread
+        after an <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>.</p>
+
+        <p>The three file capability sets are:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><em class="replaceable"><code>Permitted</code></em> (formerly
+            known as <em class="replaceable"><code>forced</code></em>):</span></dt>
+
+            <dd>
+              <p>These capabilities are automatically permitted to
+              the thread, regardless of the thread's inheritable
+              capabilities.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>Inheritable</code></em> (formerly
+            known as <em class="replaceable"><code>allowed</code></em>):</span></dt>
+
+            <dd>
+              <p>This set is ANDed with the thread's inheritable
+              set to determine which inheritable capabilities are
+              enabled in the permitted set of the thread after the
+              <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>Effective</code></em>:</span></dt>
+
+            <dd>
+              <p>This is not a set, but rather just a single bit.
+              If this bit is set, then during an <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a> all of
+              the new permitted capabilities for the thread are
+              also raised in the effective set. If this bit is not
+              set, then after an <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>, none of
+              the new permitted capabilities is in the new
+              effective set.</p>
+
+              <p>Enabling the file effective capability bit implies
+              that any file permitted or inheritable capability
+              that causes a thread to acquire the corresponding
+              permitted capability during an <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a> (see the
+              transformation rules described below) will also
+              acquire that capability in its effective set.
+              Therefore, when assigning capabilities to a file
+              (<span class="citerefentry"><span class="refentrytitle">setcap</span>(8)</span>, <span class="citerefentry"><span class="refentrytitle">cap_set_file</span>(3)</span>,
+              <span class="citerefentry"><span class="refentrytitle">cap_set_fd</span>(3)</span>), if we
+              specify the effective flag as being enabled for any
+              capability, then the effective flag must also be
+              specified as enabled for all other capabilities for
+              which the corresponding permitted or inheritable
+              flags is enabled.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="capabilities-7_sect6" name="capabilities-7_sect6" shape="rect"> </a>
+
+        <h3>Transformation of capabilities during execve()</h3>
+
+        <p>During an <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>, the kernel
+        calculates the new capabilities of the process using the
+        following algorithm:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+P'(permitted) = (P(inheritable) &amp; F(inheritable)) |
+                (F(permitted) &amp; cap_bset)
+
+P'(effective) = F(effective) ? P'(permitted) : 0
+
+P'(inheritable) = P(inheritable)    [i.e., unchanged]
+</pre>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>where:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="variablelist">
+              <dl class="variablelist">
+                <dt><span class="term"><code class="constant">P</code></span></dt>
+
+                <dd>
+                  <p>denotes the value of a thread capability set
+                  before the <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a></p>
+                </dd>
+
+                <dt><span class="term"><em class="replaceable"><code>P'</code></em></span></dt>
+
+                <dd>
+                  <p>denotes the value of a capability set after
+                  the <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a></p>
+                </dd>
+
+                <dt><span class="term"><code class="constant">F</code></span></dt>
+
+                <dd>
+                  <p>denotes a file capability set</p>
+                </dd>
+
+                <dt><span class="term"><em class="replaceable"><code>cap_bset</code></em></span></dt>
+
+                <dd>
+                  <p>is the value of the capability bounding set
+                  (described below).</p>
+                </dd>
+              </dl>
+            </div>
+          </blockquote>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="capabilities-7_sect7" name="capabilities-7_sect7" shape="rect"> </a>
+
+        <h3>Capabilities and execution of programs by root</h3>
+
+        <p>In order to provide an all-powerful <em class="replaceable"><code>root</code></em> using capability sets,
+        during an <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>:</p>
+
+        <div class="orderedlist">
+          <ol class="orderedlist" type="1">
+            <li class="listitem">
+              <p>If a set-user-ID-root program is being executed,
+              or the real user ID of the process is 0 (root) then
+              the file inheritable and permitted sets are defined
+              to be all ones (i.e., all capabilities enabled).</p>
+            </li>
+
+            <li class="listitem">
+              <p>If a set-user-ID-root program is being executed,
+              then the file effective bit is defined to be one
+              (enabled).</p>
+            </li>
+          </ol>
+        </div>
+
+        <p>The upshot of the above rules, combined with the
+        capabilities transformations described above, is that when
+        a process <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>s a
+        set-user-ID-root program, or when a process with an
+        effective UID of 0 <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>s a program, it
+        gains all capabilities in its permitted and effective
+        capability sets, except those masked out by the capability
+        bounding set. This provides semantics that are the same as
+        those provided by traditional UNIX systems.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="capabilities-7_sect8" name="capabilities-7_sect8" shape="rect"> </a>
+
+        <h3>Capability bounding set</h3>
+
+        <p>The capability bounding set is a security mechanism that
+        can be used to limit the capabilities that can be gained
+        during an <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>. The bounding
+        set is used in the following ways:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>During an <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>, the
+              capability bounding set is ANDed with the file
+              permitted capability set, and the result of this
+              operation is assigned to the thread's permitted
+              capability set. The capability bounding set thus
+              places a limit on the permitted capabilities that may
+              be granted by an executable file.</p>
+            </li>
+
+            <li class="listitem">
+              <p>(Since Linux 2.6.25) The capability bounding set
+              acts as a limiting superset for the capabilities that
+              a thread can add to its inheritable set using
+              <a class="link" href="../htmlman2/capget.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capset</span>(2)</span></a>. This
+              means that if a capability is not in the bounding
+              set, then a thread can't add this capability to its
+              inheritable set, even if it was in its permitted
+              capabilities, and thereby cannot have this capability
+              preserved in its permitted set when it <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>s a file
+              that has the capability in its inheritable set.</p>
+            </li>
+          </ul>
+        </div>
+
+        <p>Note that the bounding set masks the file permitted
+        capabilities, but not the inherited capabilities. If a
+        thread maintains a capability in its inherited set that is
+        not in its bounding set, then it can still gain that
+        capability in its permitted set by executing a file that
+        has the capability in its inherited set.</p>
+
+        <p>Depending on the kernel version, the capability bounding
+        set is either a system-wide attribute, or a per-process
+        attribute.</p>
+
+        <p><span class="emphasis"><em>Capability bounding set prior
+        to Linux 2.6.25</em></span></p>
+
+        <p>In kernels before 2.6.25, the capability bounding set is
+        a system-wide attribute that affects all threads on the
+        system. The bounding set is accessible via the file
+        <code class="filename">/proc/sys/kernel/cap-bound</code>.
+        (Confusingly, this bit mask parameter is expressed as a
+        signed decimal number in <code class="filename">/proc/sys/kernel/cap-bound</code>.)</p>
+
+        <p>Only the <em class="replaceable"><code>init</code></em>
+        process may set capabilities in the capability bounding
+        set; other than that, the superuser (more precisely:
+        programs with the <code class="constant">CAP_SYS_MODULE</code> capability) may only clear
+        capabilities from this set.</p>
+
+        <p>On a standard system the capability bounding set always
+        masks out the <code class="constant">CAP_SETPCAP</code>
+        capability. To remove this restriction (dangerous!), modify
+        the definition of <code class="constant">CAP_INIT_EFF_SET</code> in <code class="filename">include/linux/capability.h</code> and rebuild
+        the kernel.</p>
+
+        <p>The system-wide capability bounding set feature was
+        added to Linux starting with kernel version 2.2.11.</p>
+
+        <p><span class="emphasis"><em>Capability bounding set from
+        Linux 2.6.25 onward</em></span></p>
+
+        <p>From Linux 2.6.25, the <span class="emphasis"><em>capability bounding set</em></span> is a
+        per-thread attribute. (There is no longer a system-wide
+        capability bounding set.)</p>
+
+        <p>The bounding set is inherited at <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> from the thread's
+        parent, and is preserved across an <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>.</p>
+
+        <p>A thread may remove capabilities from its capability
+        bounding set using the <a class="link" href="../htmlman2/prctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">prctl</span>(2)</span></a> <code class="constant">PR_CAPBSET_DROP</code> operation, provided it
+        has the <code class="constant">CAP_SETPCAP</code>
+        capability. Once a capability has been dropped from the
+        bounding set, it cannot be restored to that set. A thread
+        can determine if a capability is in its bounding set using
+        the <a class="link" href="../htmlman2/prctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">prctl</span>(2)</span></a> <code class="constant">PR_CAPBSET_READ</code> operation.</p>
+
+        <p>Removing capabilities from the bounding set is supported
+        only if file capabilities are compiled into the kernel. In
+        kernels before Linux 2.6.33, file capabilities were an
+        optional feature configurable via the <code class="constant">CONFIG_SECURITY_FILE_CAPABILITIES</code> option.
+        Since Linux 2.6.33, the configuration option has been
+        removed and file capabilities are always part of the
+        kernel. When file capabilities are compiled into the
+        kernel, the <em class="replaceable"><code>init</code></em>
+        process (the ancestor of all processes) begins with a full
+        bounding set. If file capabilities are not compiled into
+        the kernel, then <em class="replaceable"><code>init</code></em> begins with a full
+        bounding set minus <code class="constant">CAP_SETPCAP</code>, because this capability has
+        a different meaning when there are no file
+        capabilities.</p>
+
+        <p>Removing a capability from the bounding set does not
+        remove it from the thread's inherited set. However it does
+        prevent the capability from being added back into the
+        thread's inherited set in the future.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="capabilities-7_sect9" name="capabilities-7_sect9" shape="rect"> </a>
+
+        <h3>Effect of user ID changes on capabilities</h3>
+
+        <p>To preserve the traditional semantics for transitions
+        between 0 and nonzero user IDs, the kernel makes the
+        following changes to a thread's capability sets on changes
+        to the thread's real, effective, saved set, and filesystem
+        user IDs (using <a class="link" href="../htmlman2/setuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setuid</span>(2)</span></a>, <a class="link" href="../htmlman2/setresuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setresuid</span>(2)</span></a>, or
+        similar):</p>
+
+        <div class="orderedlist">
+          <ol class="orderedlist" type="1">
+            <li class="listitem">
+              <p>If one or more of the real, effective or saved set
+              user IDs was previously 0, and as a result of the UID
+              changes all of these IDs have a nonzero value, then
+              all capabilities are cleared from the permitted and
+              effective capability sets.</p>
+            </li>
+
+            <li class="listitem">
+              <p>If the effective user ID is changed from 0 to
+              nonzero, then all capabilities are cleared from the
+              effective set.</p>
+            </li>
+
+            <li class="listitem">
+              <p>If the effective user ID is changed from nonzero
+              to 0, then the permitted set is copied to the
+              effective set.</p>
+            </li>
+
+            <li class="listitem">
+              <p>If the filesystem user ID is changed from 0 to
+              nonzero (see <a class="link" href="../htmlman2/setfsuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setfsuid</span>(2)</span></a>), then
+              the following capabilities are cleared from the
+              effective set: <code class="constant">CAP_CHOWN</code>, <code class="constant">CAP_DAC_OVERRIDE</code>, <code class="constant">CAP_DAC_READ_SEARCH</code>, <code class="constant">CAP_FOWNER</code>, <code class="constant">CAP_FSETID</code>, <code class="constant">CAP_LINUX_IMMUTABLE</code> (since Linux
+              2.6.30), <code class="constant">CAP_MAC_OVERRIDE</code>, and <code class="constant">CAP_MKNOD</code> (since Linux 2.6.30). If
+              the filesystem UID is changed from nonzero to 0, then
+              any of these capabilities that are enabled in the
+              permitted set are enabled in the effective set.</p>
+            </li>
+          </ol>
+        </div>
+
+        <p>If a thread that has a 0 value for one or more of its
+        user IDs wants to prevent its permitted capability set
+        being cleared when it resets all of its user IDs to nonzero
+        values, it can do so using the <a class="link" href="../htmlman2/prctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">prctl</span>(2)</span></a> <code class="constant">PR_SET_KEEPCAPS</code> operation or the
+        <code class="constant">SECBIT_KEEP_CAPS</code> securebits
+        flag described below.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="capabilities-7_sect10" name="capabilities-7_sect10" shape="rect"> </a>
+
+        <h3>Programmatically adjusting capability sets</h3>
+
+        <p>A thread can retrieve and change its capability sets
+        using the <a class="link" href="../htmlman2/capget.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capget</span>(2)</span></a> and <a class="link" href="../htmlman2/capget.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capset</span>(2)</span></a> system calls.
+        However, the use of <span class="citerefentry"><span class="refentrytitle">cap_get_proc</span>(3)</span> and
+        <span class="citerefentry"><span class="refentrytitle">cap_set_proc</span>(3)</span>, both
+        provided in the <em class="replaceable"><code>libcap</code></em> package, is
+        preferred for this purpose. The following rules govern
+        changes to the thread capability sets:</p>
+
+        <div class="orderedlist">
+          <ol class="orderedlist" type="1">
+            <li class="listitem">
+              <p>If the caller does not have the <code class="constant">CAP_SETPCAP</code> capability, the new
+              inheritable set must be a subset of the combination
+              of the existing inheritable and permitted sets.</p>
+            </li>
+
+            <li class="listitem">
+              <p>(Since Linux 2.6.25) The new inheritable set must
+              be a subset of the combination of the existing
+              inheritable set and the capability bounding set.</p>
+            </li>
+
+            <li class="listitem">
+              <p>The new permitted set must be a subset of the
+              existing permitted set (i.e., it is not possible to
+              acquire permitted capabilities that the thread does
+              not currently have).</p>
+            </li>
+
+            <li class="listitem">
+              <p>The new effective set must be a subset of the new
+              permitted set.</p>
+            </li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="capabilities-7_sect11" name="capabilities-7_sect11" shape="rect"> </a>
+
+        <h3>The securebits flags: establishing a capabilities-only
+        environment</h3>
+
+        <p>Starting with kernel 2.6.26, and with a kernel in which
+        file capabilities are enabled, Linux implements a set of
+        per-thread <em class="replaceable"><code>securebits</code></em> flags that can
+        be used to disable special handling of capabilities for UID
+        0 (<em class="replaceable"><code>root</code></em>). These
+        flags are as follows:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">SECBIT_KEEP_CAPS</code></span></dt>
+
+            <dd>
+              <p>Setting this flag allows a thread that has one or
+              more 0 UIDs to retain its capabilities when it
+              switches all of its UIDs to a nonzero value. If this
+              flag is not set, then such a UID switch causes the
+              thread to lose all capabilities. This flag is always
+              cleared on an <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>. (This
+              flag provides the same functionality as the older
+              <a class="link" href="../htmlman2/prctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">prctl</span>(2)</span></a>
+              <code class="constant">PR_SET_KEEPCAPS</code>
+              operation.)</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SECBIT_NO_SETUID_FIXUP</code></span></dt>
+
+            <dd>
+              <p>Setting this flag stops the kernel from adjusting
+              capability sets when the threads's effective and
+              filesystem UIDs are switched between zero and nonzero
+              values. (See the subsection <span class="emphasis"><em>Effect of User ID Changes on
+              Capabilities</em></span>.)</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SECBIT_NOROOT</code></span></dt>
+
+            <dd>
+              <p>If this bit is set, then the kernel does not grant
+              capabilities when a set-user-ID-root program is
+              executed, or when a process with an effective or real
+              UID of 0 calls <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>. (See the
+              subsection <span class="emphasis"><em>Capabilities
+              and execution of programs by root</em></span>.)</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>Each of the above "base" flags has a companion "locked"
+        flag. Setting any of the "locked" flags is irreversible,
+        and has the effect of preventing further changes to the
+        corresponding "base" flag. The locked flags are:
+        <code class="constant">SECBIT_KEEP_CAPS_LOCKED</code>,
+        <code class="constant">SECBIT_NO_SETUID_FIXUP_LOCKED</code>, and
+        <code class="constant">SECBIT_NOROOT_LOCKED</code>.</p>
+
+        <p>The <em class="replaceable"><code>securebits</code></em>
+        flags can be modified and retrieved using the <a class="link" href="../htmlman2/prctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">prctl</span>(2)</span></a> <code class="constant">PR_SET_SECUREBITS</code> and <code class="constant">PR_GET_SECUREBITS</code> operations. The
+        <code class="constant">CAP_SETPCAP</code> capability is
+        required to modify the flags.</p>
+
+        <p>The <em class="replaceable"><code>securebits</code></em>
+        flags are inherited by child processes. During an <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>, all of the
+        flags are preserved, except <code class="constant">SECBIT_KEEP_CAPS</code> which is always
+        cleared.</p>
+
+        <p>An application can use the following call to lock
+        itself, and all of its descendants, into an environment
+        where the only way of gaining capabilities is by executing
+        a program with associated file capabilities:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+prctl(PR_SET_SECUREBITS,
+        SECBIT_KEEP_CAPS_LOCKED |
+        SECBIT_NO_SETUID_FIXUP |
+        SECBIT_NO_SETUID_FIXUP_LOCKED |
+        SECBIT_NOROOT |
+        SECBIT_NOROOT_LOCKED);
+</pre>
+            </div>
+          </blockquote>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="capabilities-7_sect12" name="capabilities-7_sect12" shape="rect"> </a>
+
+        <h3>Interaction with user namespaces</h3>
+
+        <p>For a discussion of the interaction of capabilities and
+        user namespaces, see <a class="link" href="../htmlman7/user_namespaces.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">user_namespaces</span>(7)</span></a>.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="capabilities-7_sect13" name="capabilities-7_sect13" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>No standards govern capabilities, but the Linux capability
+      implementation is based on the withdrawn POSIX.1e draft
+      standard; see <a class="literalurl" href="http://wt.tuxomania.net/publications/posix.1e/" target="_top" shape="rect">http://wt.tuxomania.net/publications/posix.1e/</a></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="capabilities-7_sect14" name="capabilities-7_sect14" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>From kernel 2.5.27 to kernel 2.6.26, capabilities were an
+      optional kernel component, and can be enabled/disabled via
+      the <code class="constant">CONFIG_SECURITY_CAPABILITIES</code> kernel
+      configuration option.</p>
+
+      <p>The <code class="filename">/proc/PID/task/TID/status</code> file can be used
+      to view the capability sets of a thread. The <code class="filename">/proc/PID/status</code> file shows the capability
+      sets of a process's main thread. Before Linux 3.8,
+      nonexistent capabilities were shown as being enabled (1) in
+      these sets. Since Linux 3.8, all nonexistent capabilities
+      (above <code class="constant">CAP_LAST_CAP</code>) are shown
+      as disabled (0).</p>
+
+      <p>The <em class="replaceable"><code>libcap</code></em>
+      package provides a suite of routines for setting and getting
+      capabilities that is more comfortable and less likely to
+      change than the interface provided by <a class="link" href="../htmlman2/capget.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capset</span>(2)</span></a> and <a class="link" href="../htmlman2/capget.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capget</span>(2)</span></a>. This package
+      also provides the <span class="citerefentry"><span class="refentrytitle">setcap</span>(8)</span> and <span class="citerefentry"><span class="refentrytitle">getcap</span>(8)</span> programs. It can be
+      found at</p>
+
+      <p><a class="literalurl" href="http://www.kernel.org/pub/linux/libs/security/linux-privs" target="_top" shape="rect">http://www.kernel.org/pub/linux/libs/security/linux-privs</a></p>
+
+      <p>Before kernel 2.6.24, and from kernel 2.6.24 to kernel
+      2.6.32 if file capabilities are not enabled, a thread with
+      the <code class="constant">CAP_SETPCAP</code> capability can
+      manipulate the capabilities of threads other than itself.
+      However, this is only theoretically possible, since no thread
+      ever has <code class="constant">CAP_SETPCAP</code> in either
+      of these cases:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p>In the pre-2.6.25 implementation the system-wide
+            capability bounding set, <code class="filename">/proc/sys/kernel/cap-bound</code>, always
+            masks out this capability, and this can not be changed
+            without modifying the kernel source and rebuilding.</p>
+          </li>
+
+          <li class="listitem">
+            <p>If file capabilities are disabled in the current
+            implementation, then <em class="replaceable"><code>init</code></em> starts out with
+            this capability removed from its per-process bounding
+            set, and that bounding set is inherited by all other
+            processes created on the system.</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="capabilities-7_sect15" name="capabilities-7_sect15" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><span class="citerefentry"><span class="refentrytitle">capsh</span>(1)</span>, <a class="link" href="../htmlman1/setpriv.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setpriv</span>(1)</span></a>, <a class="link" href="../htmlman2/prctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">prctl</span>(2)</span></a>, <a class="link" href="../htmlman2/setfsuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setfsuid</span>(2)</span></a>, <span class="citerefentry"><span class="refentrytitle">cap_clear</span>(3)</span>, <span class="citerefentry"><span class="refentrytitle">cap_copy_ext</span>(3)</span>, <span class="citerefentry"><span class="refentrytitle">cap_from_text</span>(3)</span>, <span class="citerefentry"><span class="refentrytitle">cap_get_file</span>(3)</span>, <span class="citerefentry"><span class="refentrytitle">cap_get_proc</span>(3)</span>, <span class="citerefentry"><span class="refentrytitle">cap_init</span>(3)</span>, <span class="citerefentry"><span class="refentrytitle">capgetp</span>(3)</span>, <span class="citerefentry"><span class="refentrytitle">capsetp</span>(3)</span>, <span class="citerefentry"><span class="refentrytitle">libcap</span>(3)</span>, <a class="link" href="../htmlman7/credentials.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">credentials</span>(7)</span></a>, <a class="link" href="../htmlman7/user_namespaces.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">user_namespaces</span>(7)</span></a>,
+      <a class="link" href="../htmlman7/pthreads.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthreads</span>(7)</span></a>, <span class="citerefentry"><span class="refentrytitle">getcap</span>(8)</span>, <span class="citerefentry"><span class="refentrytitle">setcap</span>(8)</span></p>
+
+      <p><code class="filename">include/linux/capability.h</code>
+      in the Linux kernel source tree</p>
+    </div>
+
+    <div class="colophon">
+      <a id="capabilities-7_sect16" name="capabilities-7_sect16" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 2002 by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  6 Aug 2002 - Initial Creation<br />
+
+                  Modified 2003-05-23, Michael Kerrisk, &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  Modified 2004-05-27, Michael Kerrisk, &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  2004-12-08, mtk Added O_NOATIME for CAP_FOWNER<br />
+
+                  2005-08-16, mtk, Added CAP_AUDIT_CONTROL and CAP_AUDIT_WRITE<br />
+
+                  2008-07-15, Serge Hallyn &lt;serue<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>us.bbm.com&gt;<br />
+
+                      Document file capabilities, per-process capability<br />
+
+                      bounding set, changed semantics for CAP_SETPCAP,<br />
+
+                      and other changes in 2.6.2[45].<br />
+
+                      Add CAP_MAC_ADMIN, CAP_MAC_OVERRIDE, CAP_SETFCAP.<br />
+
+                  2008-07-15, mtk<br />
+                      Add text describing circumstances in which CAP_SETPCAP<br />
+
+                      (theoretically) permits a thread to change the<br />
+
+                      capability sets of another thread.<br />
+
+                      Add section describing rules for programmatically<br />
+
+                      adjusting thread capability sets.<br />
+
+                      Describe rationale for capability bounding set.<br />
+
+                      Document "securebits" flags.<br />
+
+                      Add text noting that if we set the effective flag for one file<br />
+
+                      capability, then we must also set the effective flag for all<br />
+
+                      other capabilities where the permitted or inheritable bit is set.<br />
+
+                  2011-09-07, mtk/Serge hallyn: Add CAP_SYSLOG<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

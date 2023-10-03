@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>remap_file_pages(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="remap_file_pages(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="remap-file-pages.2" name="remap-file-pages.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>remap_file_pages — create a nonlinear file
+      mapping</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#define _GNU_SOURCE          /* See feature_test_macros(7) */
+#include &lt;sys/mman.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>remap_file_pages</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">void *<var class="pdparam">addr</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">size_t <var class="pdparam">size</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">prot</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">size_t <var class="pdparam">pgoff</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">flags</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="remap-file-pages-2_sect1" name="remap-file-pages-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <p>this system call is (since Linux 3.16) deprecated
+              and will eventually be replaced by a slower in-kernel
+              emulation. Those few applications that use this
+              system call should consider migrating to
+              alternatives.</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <p>The <code class="function">remap_file_pages</code>()
+      system call is used to create a nonlinear mapping, that is, a
+      mapping in which the pages of the file are mapped into a
+      nonsequential order in memory. The advantage of using
+      <code class="function">remap_file_pages</code>() over using
+      repeated calls to <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a> is that the former
+      approach does not require the kernel to create additional VMA
+      (Virtual Memory Area) data structures.</p>
+
+      <p>To create a nonlinear mapping we perform the following
+      steps:</p>
+
+      <div class="orderedlist">
+        <ol class="orderedlist" type="1">
+          <li class="listitem">
+            <p>Use <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a> to create a
+            mapping (which is initially linear). This mapping must
+            be created with the <code class="constant">MAP_SHARED</code> flag.</p>
+          </li>
+
+          <li class="listitem">
+            <p>Use one or more calls to <code class="function">remap_file_pages</code>() to rearrange the
+            correspondence between the pages of the mapping and the
+            pages of the file. It is possible to map the same page
+            of a file into multiple locations within the mapped
+            region.</p>
+          </li>
+        </ol>
+      </div>
+
+      <p>The <em class="parameter"><code>pgoff</code></em> and
+      <em class="parameter"><code>size</code></em> arguments
+      specify the region of the file that is to be relocated within
+      the mapping: <em class="parameter"><code>pgoff</code></em> is
+      a file offset in units of the system page size; <em class="parameter"><code>size</code></em> is the length of the
+      region in bytes.</p>
+
+      <p>The <em class="parameter"><code>addr</code></em> argument
+      serves two purposes. First, it identifies the mapping whose
+      pages we want to rearrange. Thus, <em class="parameter"><code>addr</code></em> must be an address that
+      falls within a region previously mapped by a call to
+      <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>. Second, <em class="parameter"><code>addr</code></em> specifies the address at
+      which the file pages identified by <em class="parameter"><code>pgoff</code></em> and <em class="parameter"><code>size</code></em> will be placed.</p>
+
+      <p>The values specified in <em class="parameter"><code>addr</code></em> and <em class="parameter"><code>size</code></em> should be multiples of the
+      system page size. If they are not, then the kernel rounds
+      <em class="replaceable"><code>both</code></em> values
+      <em class="replaceable"><code>down</code></em> to the nearest
+      multiple of the page size.</p>
+
+      <p>The <em class="parameter"><code>prot</code></em> argument
+      must be specified as 0.</p>
+
+      <p>The <em class="parameter"><code>flags</code></em> argument
+      has the same meaning as for <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>, but all flags
+      other than <code class="constant">MAP_NONBLOCK</code> are
+      ignored.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="remap-file-pages-2_sect2" name="remap-file-pages-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">remap_file_pages</code>() returns 0. On error,
+      −1 is returned, and <code class="varname">errno</code>
+      is set appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="remap-file-pages-2_sect3" name="remap-file-pages-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>addr</code></em> does
+            not refer to a valid mapping created with the
+            <code class="constant">MAP_SHARED</code> flag.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>addr</code></em>,
+            <em class="parameter"><code>size</code></em>,
+            <em class="parameter"><code>prot</code></em>, or
+            <em class="parameter"><code>pgoff</code></em> is
+            invalid.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="remap-file-pages-2_sect4" name="remap-file-pages-2_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p>The <code class="function">remap_file_pages</code>()
+      system call appeared in Linux 2.5.46; glibc support was added
+      in version 2.3.3.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="remap-file-pages-2_sect5" name="remap-file-pages-2_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>The <code class="function">remap_file_pages</code>()
+      system call is Linux-specific.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="remap-file-pages-2_sect6" name="remap-file-pages-2_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Since Linux 2.6.23, <code class="function">remap_file_pages</code>() creates non-linear
+      mappings only on in-memory file systems such as tmpfs,
+      hugetlbfs or ramfs. On filesystems with a backing store,
+      <code class="function">remap_file_pages</code>() is not much
+      more efficient than using <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a> to adjust which
+      parts of the file are mapped to which addresses.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="remap-file-pages-2_sect7" name="remap-file-pages-2_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/getpagesize.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getpagesize</span>(2)</span></a>, <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>, <a class="link" href="../htmlman2/mmap2.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap2</span>(2)</span></a>, <a class="link" href="../htmlman2/mprotect.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mprotect</span>(2)</span></a>, <a class="link" href="../htmlman2/mremap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mremap</span>(2)</span></a>, <a class="link" href="../htmlman2/msync.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">msync</span>(2)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="remap-file-pages-2_sect8" name="remap-file-pages-2_sect8" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2003, Michael Kerrisk (mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com)<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  2003-12-10 Initial creation, Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  2004-10-28 aeb, corrected prototype, prot must be 0<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

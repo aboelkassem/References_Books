@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>mprotect(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="mprotect(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="mprotect.2" name="mprotect.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>mprotect — set protection on a region of memory</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;sys/mman.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>mprotect</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">void *<var class="pdparam">addr</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">size_t <var class="pdparam">len</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">prot</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mprotect-2_sect1" name="mprotect-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">mprotect</code>() changes
+      protection for the calling process's memory page(s)
+      containing any part of the address range in the interval
+      [<em class="parameter"><code>addr</code></em>, <em class="parameter"><code>addr</code></em>+<em class="parameter"><code>len</code></em>−1]. <em class="parameter"><code>addr</code></em> must be aligned to a page
+      boundary.</p>
+
+      <p>If the calling process tries to access memory in a manner
+      that violates the protection, then the kernel generates a
+      <code class="constant">SIGSEGV</code> signal for the
+      process.</p>
+
+      <p><em class="parameter"><code>prot</code></em> is either
+      <code class="constant">PROT_NONE</code> or a bitwise-or of
+      the other values in the following list:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">PROT_NONE</code></span></dt>
+
+          <dd>
+            <p>The memory cannot be accessed at all.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PROT_READ</code></span></dt>
+
+          <dd>
+            <p>The memory can be read.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PROT_WRITE</code></span></dt>
+
+          <dd>
+            <p>The memory can be modified.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PROT_EXEC</code></span></dt>
+
+          <dd>
+            <p>The memory can be executed.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mprotect-2_sect2" name="mprotect-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">mprotect</code>()
+      returns zero. On error, −1 is returned, and
+      <code class="varname">errno</code> is set appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mprotect-2_sect3" name="mprotect-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EACCES</span></span></dt>
+
+          <dd>
+            <p>The memory cannot be given the specified access.
+            This can happen, for example, if you <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a> a file to
+            which you have read-only access, then ask <code class="function">mprotect</code>() to mark it <code class="constant">PROT_WRITE</code>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>addr</code></em> is not
+            a valid pointer, or not a multiple of the system page
+            size.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>Internal kernel structures could not be
+            allocated.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>Addresses in the range [<em class="parameter"><code>addr</code></em>, <em class="parameter"><code>addr</code></em>+<em class="parameter"><code>len</code></em>−1] are invalid
+            for the address space of the process, or specify one or
+            more pages that are not mapped. (Before kernel 2.4.19,
+            the error <span class="errorname">EFAULT</span> was
+            incorrectly produced for these cases.)</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mprotect-2_sect4" name="mprotect-2_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>SVr4, POSIX.1-2001. POSIX says that the behavior of
+      <code class="function">mprotect</code>() is unspecified if it
+      is applied to a region of memory that was not obtained via
+      <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mprotect-2_sect5" name="mprotect-2_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>On Linux it is always permissible to call <code class="function">mprotect</code>() on any address in a process's
+      address space (except for the kernel vsyscall area). In
+      particular it can be used to change existing code mappings to
+      be writable.</p>
+
+      <p>Whether <code class="constant">PROT_EXEC</code> has any
+      effect different from <code class="constant">PROT_READ</code>
+      depends on processor architecture, kernel version, and
+      process state. If <code class="constant">READ_IMPLIES_EXEC</code> is set in the process's
+      personality flags (see <a class="link" href="../htmlman2/personality.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">personality</span>(2)</span></a>), specifying
+      <code class="constant">PROT_READ</code> will implicitly add
+      <em class="replaceable"><code>PROT_EXEC.</code></em></p>
+
+      <p>On some hardware architectures (e.g., i386), <code class="constant">PROT_WRITE</code> implies <code class="constant">PROT_READ</code>.</p>
+
+      <p>POSIX.1-2001 says that an implementation may permit access
+      other than that specified in <em class="parameter"><code>prot</code></em>, but at a minimum can
+      allow write access only if <code class="constant">PROT_WRITE</code> has been set, and must not allow
+      any access if <code class="constant">PROT_NONE</code> has
+      been set.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mprotect-2_sect6" name="mprotect-2_sect6" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>The program below allocates four pages of memory, makes
+      the third of these pages read-only, and then executes a loop
+      that walks upward through the allocated region modifying
+      bytes.</p>
+
+      <p>An example of what we might see when running the program
+      is the following:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$<span class="emphasis"><em> ./a.out</em></span>
+Start of region:        0x804c000
+Got SIGSEGV at address: 0x804e000
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="refsect2">
+        <a id="mprotect-2_sect7" name="mprotect-2_sect7" shape="rect"> </a>
+
+        <h3>Program source</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+#include &lt;unistd.h&gt;
+#include &lt;signal.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;malloc.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;sys/mman.h&gt;
+
+#define handle_error(msg) \
+    do { perror(msg); exit(EXIT_FAILURE); } while (0)
+
+static char *buffer;
+
+static void
+handler(int sig, siginfo_t *si, void *unused)
+{
+    printf("Got SIGSEGV at address: 0x%lx\n",
+            (long) si−&gt;si_addr);
+    exit(EXIT_FAILURE);
+}
+
+int
+main(int argc, char *argv[])
+{
+    char *p;
+    int pagesize;
+    struct sigaction sa;
+
+    sa.sa_flags = SA_SIGINFO;
+    sigemptyset(&amp;sa.sa_mask);
+    sa.sa_sigaction = handler;
+    if (sigaction(SIGSEGV, &amp;sa, NULL) == −1)
+        handle_error("sigaction");
+
+    pagesize = sysconf(_SC_PAGE_SIZE);
+    if (pagesize == −1)
+        handle_error("sysconf");
+
+    /* Allocate a buffer aligned on a page boundary;
+       initial protection is PROT_READ | PROT_WRITE */
+
+    buffer = memalign(pagesize, 4 * pagesize);
+    if (buffer == NULL)
+        handle_error("memalign");
+
+    printf("Start of region:        0x%lx\n", (long) buffer);
+
+    if (mprotect(buffer + pagesize * 2, pagesize,
+                PROT_READ) == −1)
+        handle_error("mprotect");
+
+    for (p = buffer ; ; )
+        *(p++) = 'a';
+
+    printf("Loop completed\n");     /* Should never happen */
+    exit(EXIT_SUCCESS);
+}
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mprotect-2_sect8" name="mprotect-2_sect8" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>, <a class="link" href="../htmlman3/sysconf.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sysconf</span>(3)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="mprotect-2_sect9" name="mprotect-2_sect9" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2007 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  and Copyright (C) 1995 Michael Shields &lt;shields<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>tembel.org&gt;.<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and author of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Modified 1996-10-22 by Eric S. Raymond &lt;esr<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>thyrsus.com&gt;<br />
+
+                  Modified 1997-05-31 by Andries Brouwer &lt;aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl&gt;<br />
+
+                  Modified 2003-08-24 by Andries Brouwer &lt;aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl&gt;<br />
+
+                  Modified 2004-08-16 by Andi Kleen &lt;ak<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>muc.de&gt;<br />
+
+                  2007-06-02, mtk: Fairly substantial rewrites and additions, and<br />
+
+                  a much improved example program.<br />
+
+                  <br />
+                  FIXME The following protection flags need documenting:<br />
+
+                          PROT_SEM<br />
+
+                          PROT_GROWSDOWN<br />
+
+                          PROT_GROWSUP<br />
+
+                          PROT_SAO (PowerPC)<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

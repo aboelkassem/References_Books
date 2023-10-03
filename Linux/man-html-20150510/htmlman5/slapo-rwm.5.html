@@ -1,0 +1,943 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>slapo-rwm(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="slapo-rwm(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="slapo-rwm.5" name="slapo-rwm.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>slapo−rwm — rewrite/remap overlay to slapd</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ETCDIR/slapd.conf
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-rwm-5_sect1" name="slapo-rwm-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <em class="replaceable"><code>rwm</code></em> overlay
+      to <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a> performs basic
+      DN/data rewrite and objectClass/attributeType mapping. Its
+      usage is mostly intended to provide virtual views of existing
+      data either remotely, in conjunction with the proxy backend
+      described in <a class="link" href="../htmlman5/slapd-ldap.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-ldap</span>(5)</span></a>, or locally,
+      in conjunction with the relay backend described in <a class="link" href="../htmlman5/slapd-relay.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-relay</span>(5)</span></a>.</p>
+
+      <p>This overlay is experimental.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-rwm-5_sect2" name="slapo-rwm-5_sect2" shape="rect"> </a>
+
+      <h2>MAPPING</h2>
+
+      <p>An important feature of the <em class="replaceable"><code>rwm</code></em> overlay is the capability
+      to map objectClasses and attributeTypes from the local set
+      (or a subset of it) to a foreign set, and vice versa. This is
+      accomplished by means of the <em class="replaceable"><code>rwm−map</code></em> directive.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>rwm−map {attribute | objectclass}
+          [&lt;local name&gt; | *] {&lt;foreign name&gt; |
+          *}</em></span></span></dt>
+
+          <dd>
+            <p>Map attributeTypes and objectClasses from the
+            foreign server to different values on the local slapd.
+            The reason is that some attributes might not be part of
+            the local slapd's schema, some attribute names might be
+            different but serve the same purpose, etc. If local or
+            foreign name is `*', the name is preserved. If local
+            name is omitted, the foreign name is removed. Unmapped
+            names are preserved if both local and foreign name are
+            `*', and removed if local name is omitted and foreign
+            name is `*'.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>The local <em class="replaceable"><code>objectClasses</code></em> and <em class="replaceable"><code>attributeTypes</code></em> must be
+      defined in the local schema; the foreign ones do not have to,
+      but users are encouraged to explicitly define the remote
+      attributeTypes and the objectClasses they intend to map. All
+      in all, when remapping a remote server via back-ldap (
+      <a class="link" href="../htmlman5/slapd-ldap.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-ldap</span>(5)</span></a>) or back-meta
+      ( <a class="link" href="../htmlman5/slapd-meta.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-meta</span>(5)</span></a>) their
+      definition can be easily obtained by querying the <em class="replaceable"><code>subschemaSubentry</code></em> of the
+      remote server; the problem should not exist when remapping a
+      local database. Note, however, that the decision whether to
+      rewrite or not attributeTypes with <span class="emphasis"><em>distinguishedName syntax</em></span>, requires
+      the knowledge of the attributeType syntax. See the REWRITING
+      section for details.</p>
+
+      <p>Note that when mapping DN-valued attributes from local to
+      remote, first the DN is rewritten, and then the attributeType
+      is mapped; while mapping from remote to local, first the
+      attributeType is mapped, and then the DN is rewritten. As
+      such, it is important that the local attributeType is
+      appropriately defined as using the distinguishedName syntax.
+      Also, note that there are DN-related syntaxes (i.e. compound
+      types with a portion that is DN-valued), like
+      nameAndOptionalUID, whose values are currently not
+      rewritten.</p>
+
+      <p>If the foreign type of an attribute mapping is not defined
+      on the local server, it might be desirable to have the
+      attribute values normalized after the mapping process. Not
+      normalizing the values can lead to wrong results, when the
+      <em class="replaceable"><code>rwm</code></em> overlay is used
+      together with e.g. the <em class="replaceable"><code>pcache</code></em> overlay. This
+      normalization can be enabled by means of the <em class="replaceable"><code>rwm−normalize−mapped−attrs</code></em>
+      directive.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>rwm−normalize−mapped−attrs
+          {yes|no}</em></span></span></dt>
+
+          <dd>
+            <p>Set this to "yes", if the <em class="replaceable"><code>rwm</code></em> overlay should try
+            to normalize the values of attributes that are mapped
+            from an attribute type that is unknown to the local
+            server. The default value of this setting is "no".</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>rwm-drop-unrequested-attrs
+          {yes|no}</em></span></span></dt>
+
+          <dd>
+            <p>Set this to "yes", if the <em class="replaceable"><code>rwm</code></em> overlay should drop
+            attributes that are not explicitly requested by a
+            search operation. When this is set to "no", the
+            <em class="replaceable"><code>rwm</code></em> overlay
+            will leave all attributes in place, so that subsequent
+            modules can further manipulate them. In any case,
+            unrequested attributes will be omitted from search
+            results by the frontend, when the search entry response
+            package is encoded. The default value of this setting
+            is "yes".</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-rwm-5_sect3" name="slapo-rwm-5_sect3" shape="rect"> </a>
+
+      <h2>SUFFIX MASSAGING</h2>
+
+      <p>A basic feature of the <em class="replaceable"><code>rwm</code></em> overlay is the capability
+      to perform suffix massaging between a virtual and a real
+      naming context by means of the <em class="replaceable"><code>rwm−suffixmassage</code></em>
+      directive. This, in conjunction with proxy backends,
+      <a class="link" href="../htmlman5/slapd-ldap.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-ldap</span>(5)</span></a> and <a class="link" href="../htmlman5/slapd-meta.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-meta</span>(5)</span></a>, or with the
+      relay backend, <a class="link" href="../htmlman5/slapd-relay.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-relay</span>(5)</span></a>, allows to
+      create virtual views of databases. A distinguishing feature
+      of this overlay is that, when instantiated before any
+      database, it can modify the DN of requests <em class="replaceable"><code>before</code></em> database selection.
+      For this reason, rules that rewrite the empty DN ("") or the
+      subschemaSubentry DN (usually "cn=subschema"), would prevent
+      clients from reading the root DSE or the DSA's schema.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>rwm−suffixmassage [&lt;virtual
+          naming context&gt;] &lt;real naming
+          context&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Shortcut to implement naming context rewriting; the
+            trailing part of the DN is rewritten from the virtual
+            to the real naming context in the bindDN, searchDN,
+            searchFilterAttrDN, compareDN, compareAttrDN, addDN,
+            addAttrDN, modifyDN, modifyAttrDN, modrDN,
+            newSuperiorDN, deleteDN, exopPasswdDN, and from the
+            real to the virtual naming context in the
+            searchEntryDN, searchAttrDN and matchedDN rewrite
+            contexts. By default no rewriting occurs for the
+            searchFilter and for the referralAttrDN and referralDN
+            rewrite contexts. If no <span class="emphasis"><em>&lt;virtual naming
+            context&gt;</em></span> is given, the first suffix of
+            the database is used; this requires the <em class="replaceable"><code>rwm−suffixmassage</code></em>
+            directive be defined <em class="replaceable"><code>after</code></em> the database
+            <em class="replaceable"><code>suffix</code></em>
+            directive. The <em class="replaceable"><code>rwm−suffixmassage</code></em>
+            directive automatically sets the <em class="replaceable"><code>rwm−rewriteEngine</code></em>
+            to <code class="constant">ON</code>.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>See the REWRITING section for details.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-rwm-5_sect4" name="slapo-rwm-5_sect4" shape="rect"> </a>
+
+      <h2>REWRITING</h2>
+
+      <p>A string is rewritten according to a set of rules, called
+      a `rewrite context'. The rules are based on POSIX
+      (''extended'') regular expressions with substring matching;
+      basic variable substitution and map resolution of substrings
+      is allowed by specific mechanisms detailed in the following.
+      The behavior of pattern matching/substitution can be altered
+      by a set of flags.</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+&lt;rewrite context&gt; ::= &lt;rewrite rule&gt; [...]
+&lt;rewrite rule&gt; ::= &lt;pattern&gt; &lt;action&gt; [&lt;flags&gt;]
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>The underlying concept is to build a lightweight rewrite
+      module for the slapd server (initially dedicated to the LDAP
+      backend):</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-rwm-5_sect5" name="slapo-rwm-5_sect5" shape="rect"> </a>
+
+      <h2>Passes</h2>
+
+      <p>An incoming string is matched against a set of <em class="replaceable"><code>rewriteRules</code></em>. Rules are made
+      of a <span class="emphasis"><em>regex match
+      pattern</em></span>, a <span class="emphasis"><em>substitution pattern</em></span> and a set of
+      actions, described by a set of <span class="emphasis"><em>optional flags</em></span>. In case of match,
+      string rewriting is performed according to the substitution
+      pattern that allows to refer to substrings matched in the
+      incoming string. The actions, if any, are finally performed.
+      Each rule is executed recursively, unless altered by specific
+      action flags; see "Action Flags" for details. A default limit
+      on the recursion level is set, and can be altered by the
+      <em class="replaceable"><code>rwm−rewriteMaxPasses</code></em>
+      directive, as detailed in the "Additional Configuration
+      Syntax" section. The substitution pattern allows map
+      resolution of substrings. A map is a generic object that maps
+      a substitution pattern to a value. The flags are divided in
+      "Pattern Matching Flags" and "Action Flags"; the former alter
+      the regex match pattern behavior, while the latter alter the
+      actions that are taken after substitution.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-rwm-5_sect6" name="slapo-rwm-5_sect6" shape="rect"> </a>
+
+      <h2>Pattern Matching Flags</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><em class="replaceable"><code>`C'</code></em></span></dt>
+
+          <dd>
+            <p>honors case in matching (default is case
+            insensitive)</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>`R'</code></em></span></dt>
+
+          <dd>
+            <p>use POSIX ''basic'' regular expressions (default is
+            ''extended'')</p>
+          </dd>
+
+          <dt><span class="term">`M{n}'</span></dt>
+
+          <dd>
+            <p>allow no more than <code class="literal">n</code>
+            recursive passes for a specific rule; does not alter
+            the max total count of passes, so it can only enforce a
+            stricter limit for a specific rule.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-rwm-5_sect7" name="slapo-rwm-5_sect7" shape="rect"> </a>
+
+      <h2>Action Flags</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">`:'</span></dt>
+
+          <dd>
+            <p>apply the rule once only (default is recursive)</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>`@'</code></em></span></dt>
+
+          <dd>
+            <p>stop applying rules in case of match; the current
+            rule is still applied recursively; combine with `:' to
+            apply the current rule only once and then stop.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>`#'</code></em></span></dt>
+
+          <dd>
+            <p>stop current operation if the rule matches, and
+            issue an `unwilling to perform' error.</p>
+          </dd>
+
+          <dt><span class="term">`G{n}'</span></dt>
+
+          <dd>
+            <p>jump <code class="literal">n</code> rules back and
+            forth (watch for loops!). Note that `G{1}' is implicit
+            in every rule.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>`I'</code></em></span></dt>
+
+          <dd>
+            <p>ignores errors in rule; this means, in case of
+            error, e.g. issued by a map, the error is treated as a
+            missed match. The `unwilling to perform' is not
+            overridden.</p>
+          </dd>
+
+          <dt><span class="term">`U{n}'</span></dt>
+
+          <dd>
+            <p>uses <code class="literal">n</code> as return code
+            if the rule matches; the flag does not alter the
+            recursive behavior of the rule, so, to have it
+            performed only once, it must be used in combination
+            with `:', e.g. <em class="replaceable"><code>`:U{32}'</code></em> returns the
+            value `32' (indicating noSuchObject) after exactly one
+            execution of the rule, if the pattern matches. As a
+            consequence, its behavior is equivalent to `@', with
+            the return code set to <code class="literal">n</code>;
+            or, in other words, `@' is equivalent to `U{0}'.
+            Positive errors are allowed, indicating the related
+            LDAP error codes as specified in <em class="replaceable"><code>draft-ietf-ldapbis-protocol</code></em>.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>The ordering of the flags can be significant. For
+      instance: `IG{2}' means ignore errors and jump two lines
+      ahead both in case of match and in case of error, while
+      `G{2}I' means ignore errors, but jump two lines ahead only in
+      case of match.</p>
+
+      <p>More flags (mainly Action Flags) will be added as
+      needed.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-rwm-5_sect8" name="slapo-rwm-5_sect8" shape="rect"> </a>
+
+      <h2>Pattern Matching</h2>
+
+      <p>See <a class="link" href="../htmlman7/regex.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">regex</span>(7)</span></a> and/or
+      <span class="citerefentry"><span class="refentrytitle">re_format</span>(7)</span>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-rwm-5_sect9" name="slapo-rwm-5_sect9" shape="rect"> </a>
+
+      <h2>Substitution Pattern Syntax</h2>
+
+      <p>Everything starting with `$' requires substitution;</p>
+
+      <p>the only obvious exception is `$$', which is turned into a
+      single `$';</p>
+
+      <p>the basic substitution is `$&lt;d&gt;', where `&lt;d&gt;'
+      is a digit; 0 means the whole string, while 1-9 is a
+      submatch, as discussed in <a class="link" href="../htmlman7/regex.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">regex</span>(7)</span></a> and/or
+      <span class="citerefentry"><span class="refentrytitle">re_format</span>(7)</span>.</p>
+
+      <p>a `$' followed by a `{' invokes an advanced substitution.
+      The pattern is:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>`$' `{' [ &lt;operator&gt; ] &lt;name&gt; `('
+          &lt;substitution&gt; `)' `}'</p>
+        </blockquote>
+      </div>
+
+      <p>where &lt;name&gt; must be a legal name for the map,
+      i.e.</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+&lt;name&gt; ::= [a-z][a-z0-9]* (case insensitive)
+&lt;operator&gt; ::= `&gt;' `|' `&amp;' `&amp;&amp;' `*' `**' `$'
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>and &lt;substitution&gt; must be a legal substitution
+      pattern, with no limits on the nesting level.</p>
+
+      <p>The operators are:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">&gt;</span></dt>
+
+          <dd>
+            <p>sub-context invocation; &lt;name&gt; must be a
+            legal, already defined rewrite context name</p>
+          </dd>
+
+          <dt><span class="term"><code class="literal">|</code></span></dt>
+
+          <dd>
+            <p>external command invocation; &lt;name&gt; must refer
+            to a legal, already defined command name (NOT
+            IMPLEMENTED YET)</p>
+          </dd>
+
+          <dt><span class="term">&amp;</span></dt>
+
+          <dd>
+            <p>variable assignment; &lt;name&gt; defines a variable
+            in the running operation structure which can be
+            dereferenced later; operator <em class="replaceable"><code>&amp;</code></em> assigns a
+            variable in the rewrite context scope; operator
+            <em class="replaceable"><code>&amp;&amp;</code></em>
+            assigns a variable that scopes the entire session, e.g.
+            its value can be dereferenced later by other rewrite
+            contexts</p>
+
+            <p>variable dereferencing; &lt;name&gt; must refer to a
+            variable that is defined and assigned for the running
+            operation; operator <code class="literal">*</code>
+            dereferences a variable scoping the rewrite context;
+            operator <em class="replaceable"><code>**</code></em>
+            dereferences a variable scoping the whole session, e.g.
+            the value is passed across rewrite contexts</p>
+          </dd>
+
+          <dt><span class="term"><code class="literal">$</code></span></dt>
+
+          <dd>
+            <p>parameter dereferencing; &lt;name&gt; must refer to
+            an existing parameter; the idea is to make some
+            run-time parameters set by the system available to the
+            rewrite engine, as the client host name, the bind DN if
+            any, constant parameters initialized at config time,
+            and so on; no parameter is currently set by either
+            <em class="replaceable"><code>back−ldap</code></em> or
+            <em class="replaceable"><code>back−meta</code></em>, but
+            constant parameters can be defined in the configuration
+            file by using the <em class="replaceable"><code>rewriteParam</code></em>
+            directive.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>Substitution escaping has been delegated to the `$'
+      symbol, which is used instead of `\' in string substitution
+      patterns because `\' is already escaped by slapd's low level
+      parsing routines; as a consequence, regex escaping requires
+      two `\' symbols, e.g. `<em class="replaceable"><code>.*\.foo\.bar</code></em>' must be written
+      as `<em class="replaceable"><code>.*\\.foo\\.bar</code></em>'.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-rwm-5_sect10" name="slapo-rwm-5_sect10" shape="rect"> </a>
+
+      <h2>Rewrite Context</h2>
+
+      <p>A rewrite context is a set of rules which are applied in
+      sequence. The basic idea is to have an application initialize
+      a rewrite engine (think of Apache's mod_rewrite ...) with a
+      set of rewrite contexts; when string rewriting is required,
+      one invokes the appropriate rewrite context with the input
+      string and obtains the newly rewritten one if no errors
+      occur.</p>
+
+      <p>Each basic server operation is associated to a rewrite
+      context; they are divided in two main groups: client
+      −&gt; server and server −&gt; client
+      rewriting.</p>
+
+      <p>client −&gt; server:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+(default)            if defined and no specific context 
+                     is available
+bindDN               bind
+searchDN             search
+searchFilter         search
+searchFilterAttrDN   search
+compareDN            compare
+compareAttrDN        compare AVA
+addDN                add
+addAttrDN            add AVA (DN portion of "ref" excluded)
+modifyDN             modify
+modifyAttrDN         modify AVA (DN portion of "ref" excluded)
+referralAttrDN       add/modify DN portion of referrals
+                     (default to none)
+renameDN             modrdn (the old DN)
+newSuperiorDN        modrdn (the new parent DN, if any)
+newRDN               modrdn (the new relative DN)
+deleteDN             delete
+exopPasswdDN         password modify extended operation DN
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>server −&gt; client:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+searchEntryDN        search (only if defined; no default;
+                     acts on DN of search entries)
+searchAttrDN         search AVA (only if defined; defaults
+                     to searchEntryDN; acts on DN-syntax
+                     attributes of search results)
+matchedDN            all ops (only if applicable; defaults
+                     to searchEntryDN)
+referralDN           all ops (only if applicable; defaults
+                     to none)
+</pre>
+          </div>
+        </blockquote>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-rwm-5_sect11" name="slapo-rwm-5_sect11" shape="rect"> </a>
+
+      <h2>Basic Configuration Syntax</h2>
+
+      <p>All rewrite/remap directives start with the prefix
+      <em class="replaceable"><code>rwm−</code></em>; for
+      backwards compatibility with the historical <a class="link" href="../htmlman5/slapd-ldap.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-ldap</span>(5)</span></a> and <a class="link" href="../htmlman5/slapd-meta.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-meta</span>(5)</span></a> builtin
+      rewrite/remap capabilities, the prefix may be omitted, but
+      this practice is strongly discouraged.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>rwm−rewriteEngine { on | off
+          }</em></span></span></dt>
+
+          <dd>
+            <p>If `on', the requested rewriting is performed; if
+            `off', no rewriting takes place (an easy way to stop
+            rewriting without altering too much the configuration
+            file).</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>rwm−rewriteContext &lt;context
+          name&gt; [ alias &lt;aliased context name&gt;
+          ]</em></span></span></dt>
+
+          <dd>
+            <p>&lt;Context name&gt; is the name that identifies the
+            context, i.e. the name used by the application to refer
+            to the set of rules it contains. It is used also to
+            reference sub contexts in string rewriting. A context
+            may alias another one. In this case the alias context
+            contains no rule, and any reference to it will result
+            in accessing the aliased one.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>rwm−rewriteRule &lt;regex match
+          pattern&gt; &lt;substitution pattern&gt; [ &lt;flags&gt;
+          ]</em></span></span></dt>
+
+          <dd>
+            <p>Determines how a string can be rewritten if a
+            pattern is matched. Examples are reported below.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-rwm-5_sect12" name="slapo-rwm-5_sect12" shape="rect"> </a>
+
+      <h2>Additional Configuration Syntax</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>rwm−rewriteMap &lt;map type&gt;
+          &lt;map name&gt; [ &lt;map attrs&gt;
+          ]</em></span></span></dt>
+
+          <dd>
+            <p>Allows to define a map that transforms substring
+            rewriting into something else. The map is referenced
+            inside the substitution pattern of a rule.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>rwm−rewriteParam &lt;param name&gt;
+          &lt;param value&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Sets a value with global scope, that can be
+            dereferenced by the command `${$paramName}'.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>rwm−rewriteMaxPasses &lt;number of
+          passes&gt; [&lt;number of passes per
+          rule&gt;]</em></span></span></dt>
+
+          <dd>
+            <p>Sets the maximum number of total rewriting passes
+            that can be performed in a single rewrite operation (to
+            avoid loops). A safe default is set to 100; note that
+            reaching this limit is still treated as a success;
+            recursive invocation of rules is simply interrupted.
+            The count applies to the rewriting operation as a
+            whole, not to any single rule; an optional per-rule
+            limit can be set. This limit is overridden by setting
+            specific per-rule limits with the `M{n}' flag.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-rwm-5_sect13" name="slapo-rwm-5_sect13" shape="rect"> </a>
+
+      <h2>MAPS</h2>
+
+      <p>Currently, few maps are builtin but additional map types
+      may be registered at runtime.</p>
+
+      <p>Supported maps are:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>LDAP
+          &lt;URI&gt; [bindwhen=&lt;when&gt;]
+          [version=&lt;version&gt;] [binddn=&lt;DN&gt;]
+          [credentials=&lt;cred&gt;]</em></span></span></dt>
+
+          <dd>
+            <p>The <code class="constant">LDAP</code> map expands a
+            value by performing a simple LDAP search. Its
+            configuration is based on a mandatory URI, whose
+            <em class="replaceable"><code>attrs</code></em> portion
+            must contain exactly one attribute (use <em class="replaceable"><code>entryDN</code></em> to fetch the DN
+            of an entry). If a multi-valued attribute is used, only
+            the first value is considered.</p>
+
+            <p>The parameter <em class="replaceable"><code>bindwhen</code></em> determines
+            when the connection is established. It can take the
+            values <em class="replaceable"><code>now</code></em>,
+            <em class="replaceable"><code>later</code></em>, and
+            <em class="replaceable"><code>everytime</code></em>,
+            respectively indicating that the connection should be
+            created at startup, when required, or any time it is
+            used. In the former two cases, the connection is
+            cached, while in the latter a fresh new one is used all
+            times. This is the default.</p>
+
+            <p>The parameters <em class="replaceable"><code>binddn</code></em> and <em class="replaceable"><code>credentials</code></em> represent
+            the DN and the password that is used to perform an
+            authenticated simple bind before performing the search
+            operation; if not given, an anonymous connection is
+            used.</p>
+
+            <p>The parameter <em class="replaceable"><code>version</code></em> can be 2 or 3
+            to indicate the protocol version that must be used. The
+            default is 3.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>slapd
+          &lt;URI&gt;</em></span></span></dt>
+
+          <dd>
+            <p>The <em class="replaceable"><code>slapd</code></em>
+            map expands a value by performing an internal LDAP
+            search. Its configuration is based on a mandatory URI,
+            which must begin with <em class="replaceable"><code>ldap:///</code></em> (i.e., it must
+            be an LDAP URI and it must not specify a host). As with
+            the LDAP map, the <em class="replaceable"><code>attrs</code></em> portion must
+            contain exactly one attribute, and if a multi-valued
+            attribute is used, only the first value is
+            considered.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-rwm-5_sect14" name="slapo-rwm-5_sect14" shape="rect"> </a>
+
+      <h2>REWRITE CONFIGURATION EXAMPLES</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+# set to `off' to disable rewriting
+rwm−rewriteEngine on
+
+# the rules the "suffixmassage" directive implies
+rwm−rewriteEngine on
+# all dataflow from client to server referring to DNs
+rwm−rewriteContext default
+rwm−rewriteRule "(.+,)?&lt;virtualnamingcontext&gt;$" "$1&lt;realnamingcontext&gt;" ":"
+# empty filter rule
+rwm−rewriteContext searchFilter
+# all dataflow from server to client
+rwm−rewriteContext searchEntryDN
+rwm−rewriteRule "(.+,)?&lt;realnamingcontext&gt;$" "$1&lt;virtualnamingcontext&gt;" ":"
+rwm−rewriteContext searchAttrDN alias searchEntryDN
+rwm−rewriteContext matchedDN alias searchEntryDN
+# misc empty rules
+rwm−rewriteContext referralAttrDN
+rwm−rewriteContext referralDN
+
+# Everything defined here goes into the `default' context.
+# This rule changes the naming context of anything sent
+# to `dc=home,dc=net' to `dc=OpenLDAP, dc=org'
+
+rwm−rewriteRule "(.+,)?dc=home,[ ]?dc=net$"
+            "$1dc=OpenLDAP, dc=org"  ":"
+
+# since a pretty/normalized DN does not include spaces
+# after rdn separators, e.g. `,', this rule suffices:
+
+rwm−rewriteRule "(.+,)?dc=home,dc=net$"
+            "$1dc=OpenLDAP,dc=org"  ":"
+
+# Start a new context (ends input of the previous one).
+# This rule adds blanks between DN parts if not present.
+rwm−rewriteContext  addBlanks
+rwm−rewriteRule     "(.*),([^ ].*)" "$1, $2"
+
+# This one eats blanks
+rwm−rewriteContext  eatBlanks
+rwm−rewriteRule     "(.*), (.*)" "$1,$2"
+
+# Here control goes back to the default rewrite
+# context; rules are appended to the existing ones.
+# anything that gets here is piped into rule `addBlanks'
+rwm−rewriteContext  default
+rwm−rewriteRule     ".*" "${&gt;addBlanks($0)}" ":"
+
+# Rewrite the search base according to `default' rules.
+rwm−rewriteContext  searchDN alias default
+
+# Search results with OpenLDAP DN are rewritten back with
+# `dc=home,dc=net' naming context, with spaces eaten.
+rwm−rewriteContext  searchEntryDN
+rwm−rewriteRule     "(.*[^ ],)?[ ]?dc=OpenLDAP,[ ]?dc=org$"
+                "${&gt;eatBlanks($1)}dc=home,dc=net"    ":"
+
+# Bind with email instead of full DN: we first need
+# an ldap map that turns attributes into a DN (the
+# argument used when invoking the map is appended to 
+# the URI and acts as the filter portion)
+rwm−rewriteMap ldap attr2dn "ldap://host/dc=my,dc=org?dn?sub"
+
+# Then we need to detect DN made up of a single email,
+# e.g. `mail=someone@example.com'; note that the rule
+# in case of match stops rewriting; in case of error,
+# it is ignored.  In case we are mapping virtual
+# to real naming contexts, we also need to rewrite
+# regular DNs, because the definition of a bindDN
+# rewrite context overrides the default definition.
+rwm−rewriteContext bindDN
+rwm−rewriteRule "^mail=[^,]+@[^,]+$" "${attr2dn($0)}" ":@I"
+
+# This is a rather sophisticated example. It massages a
+# search filter in case who performs the search has
+# administrative privileges.  First we need to keep
+# track of the bind DN of the incoming request, which is
+# stored in a variable called `binddn' with session scope,
+# and left in place to allow regular binding:
+rwm−rewriteContext  bindDN
+rwm−rewriteRule     ".+" "${&amp;&amp;binddn($0)}$0" ":"
+
+# A search filter containing `uid=' is rewritten only
+# if an appropriate DN is bound.
+# To do this, in the first rule the bound DN is
+# dereferenced, while the filter is decomposed in a
+# prefix, in the value of the `uid=&lt;arg&gt;' AVA, and 
+# in a suffix. A tag `&lt;&gt;' is appended to the DN. 
+# If the DN refers to an entry in the `ou=admin' subtree, 
+# the filter is rewritten OR-ing the `uid=&lt;arg&gt;' with
+# `cn=&lt;arg&gt;'; otherwise it is left as is. This could be
+# useful, for instance, to allow apache's auth_ldap-1.4
+# module to authenticate users with both `uid' and
+# `cn', but only if the request comes from a possible
+# `cn=Web auth,ou=admin,dc=home,dc=net' user.
+rwm−rewriteContext searchFilter
+rwm−rewriteRule "(.*\\()uid=([a−z0−9_]+)(\\).*)"
+  "${**binddn}&lt;&gt;${&amp;prefix($1)}${&amp;arg($2)}${&amp;suffix($3)}"
+  ":I"
+rwm−rewriteRule "^[^,]+,ou=admin,dc=home,dc=net$"
+  "${*prefix}|(uid=${*arg})(cn=${*arg})${*suffix}" ":@I"
+rwm−rewriteRule ".*&lt;&gt;$" "${*prefix}uid=${*arg}${*suffix}" ":"
+
+# This example shows how to strip unwanted DN-valued
+# attribute values from a search result; the first rule
+# matches DN values below "ou=People,dc=example,dc=com";
+# in case of match the rewriting exits successfully.
+# The second rule matches everything else and causes
+# the value to be rejected.
+rwm−rewriteContext searchEntryDN
+rwm−rewriteRule ".+,ou=People,dc=example,dc=com$" "$0" ":@"
+rwm−rewriteRule ".*" "" "#"
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-rwm-5_sect15" name="slapo-rwm-5_sect15" shape="rect"> </a>
+
+      <h2>MAPPING EXAMPLES</h2>
+
+      <p>The following directives map the object class
+      `groupOfNames' to the object class `groupOfUniqueNames' and
+      the attribute type `member' to the attribute type
+      `uniqueMember':</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+map objectclass groupOfNames groupOfUniqueNames
+map attribute uniqueMember member
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>This presents a limited attribute set from the foreign
+      server:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+map attribute cn *
+map attribute sn *
+map attribute manager *
+map attribute description *
+map attribute *
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>These lines map cn, sn, manager, and description to
+      themselves, and any other attribute gets "removed" from the
+      object before it is sent to the client (or sent up to the
+      LDAP server). This is obviously a simplistic example, but you
+      get the point.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-rwm-5_sect16" name="slapo-rwm-5_sect16" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">ETCDIR/slapd.conf</span></dt>
+
+          <dd>
+            <p>default slapd configuration file</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-rwm-5_sect17" name="slapo-rwm-5_sect17" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a>, <a class="link" href="../htmlman5/slapd-config.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-config</span>(5)</span></a>, <a class="link" href="../htmlman5/slapd-ldap.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-ldap</span>(5)</span></a>, <a class="link" href="../htmlman5/slapd-meta.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-meta</span>(5)</span></a>, <a class="link" href="../htmlman5/slapd-relay.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-relay</span>(5)</span></a>, <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a>, <a class="link" href="../htmlman7/regex.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">regex</span>(7)</span></a>, <span class="citerefentry"><span class="refentrytitle">re_format</span>(7)</span>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-rwm-5_sect18" name="slapo-rwm-5_sect18" shape="rect"> </a>
+
+      <h2>AUTHOR</h2>
+
+      <p>Pierangelo Masarati; based on back-ldap rewrite/remap
+      features by Howard Chu, Pierangelo Masarati.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                  See the following documents: <a class="ulink" href="../openldap-COPYRIGHT.html" target="_top" shape="rect">COPYRIGHT</a>, <a class="ulink" href="../openldap-LICENSE.html" target="_top" shape="rect">LICENSE</a><br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

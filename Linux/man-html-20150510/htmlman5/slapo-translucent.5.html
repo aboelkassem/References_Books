@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>slapo-translucent(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="slapo-translucent(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="slapo-translucent.5" name="slapo-translucent.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>slapo−translucent — Translucent Proxy overlay
+      to slapd</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ETCDIR/slapd.conf
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-translucent-5_sect1" name="slapo-translucent-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The Translucent Proxy overlay can be used with a backend
+      database such as <a class="link" href="../htmlman5/slapd-bdb.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-bdb</span>(5)</span></a> to create a
+      "translucent proxy". Entries retrieved from a remote LDAP
+      server may have some or all attributes overridden, or new
+      attributes added, by entries in the local database before
+      being presented to the client.</p>
+
+      <p>A <em class="replaceable"><code>search</code></em>
+      operation is first populated with entries from the remote
+      LDAP server, the attributes of which are then overridden with
+      any attributes defined in the local database. Local overrides
+      may be populated with the <em class="replaceable"><code>add</code></em>, <span class="emphasis"><em>modify ,</em></span> and <em class="replaceable"><code>modrdn</code></em> operations, the use of
+      which is restricted to the root user.</p>
+
+      <p>A <em class="replaceable"><code>compare</code></em>
+      operation will perform a comparison with attributes defined
+      in the local database record (if any) before any comparison
+      is made with data in the remote database.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-translucent-5_sect2" name="slapo-translucent-5_sect2" shape="rect"> </a>
+
+      <h2>CONFIGURATION</h2>
+
+      <p>The Translucent Proxy overlay uses a proxied database,
+      typically a (set of) remote LDAP server(s), which is
+      configured with the options shown in <a class="link" href="../htmlman5/slapd-ldap.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-ldap</span>(5)</span></a>, <a class="link" href="../htmlman5/slapd-meta.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-meta</span>(5)</span></a> or similar.
+      These <em class="replaceable"><code>slapd.conf</code></em>
+      options are specific to the Translucent Proxy overlay; they
+      must appear after the <em class="replaceable"><code>overlay</code></em> directive that
+      instantiates the <em class="replaceable"><code>translucent</code></em> overlay.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><em class="replaceable"><code>translucent_strict</code></em></span></dt>
+
+          <dd>
+            <p>By default, attempts to delete attributes in either
+            the local or remote databases will be silently ignored.
+            The <em class="replaceable"><code>translucent_strict</code></em>
+            directive causes these modifications to fail with a
+            Constraint Violation.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>translucent_no_glue</code></em></span></dt>
+
+          <dd>
+            <p>This configuration option disables the automatic
+            creation of "glue" records for an <em class="replaceable"><code>add</code></em> or <em class="replaceable"><code>modrdn</code></em> operation, such
+            that all parents of an entry added to the local
+            database must be created by hand. Glue records are
+            always created for a <em class="replaceable"><code>modify</code></em> operation.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>translucent_local
+          &lt;attr[,attr...]&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specify a list of attributes that should be searched
+            for in the local database when used in a search filter.
+            By default, search filters are only handled by the
+            remote database. With this directive, search filters
+            will be split into a local and remote portion, and
+            local attributes will be searched locally.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>translucent_remote
+          &lt;attr[,attr...]&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specify a list of attributes that should be searched
+            for in the remote database when used in a search
+            filter. This directive complements the <em class="replaceable"><code>translucent_local</code></em>
+            directive. Attributes may be specified as both local
+            and remote if desired.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>If neither <em class="replaceable"><code>translucent_local</code></em> nor
+      <em class="replaceable"><code>translucent_remote</code></em>
+      are specified, the default behavior is to search the remote
+      database with the complete search filter. If only <em class="replaceable"><code>translucent_local</code></em> is
+      specified, searches will only be run on the local database.
+      Likewise, if only <em class="replaceable"><code>translucent_remote</code></em> is
+      specified, searches will only be run on the remote database.
+      In any case, both the local and remote entries corresponding
+      to a search result will be merged before being returned to
+      the client.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><em class="replaceable"><code>translucent_bind_local</code></em></span></dt>
+
+          <dd>
+            <p>Enable looking for locally stored credentials for
+            simple bind when binding to the remote database fails.
+            Disabled by default.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>translucent_pwmod_local</code></em></span></dt>
+
+          <dd>
+            <p>Enable RFC 3062 Password Modification extended
+            operation on locally stored credentials. The operation
+            only applies to entries that exist in the remote
+            database. Disabled by default.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-translucent-5_sect3" name="slapo-translucent-5_sect3" shape="rect"> </a>
+
+      <h2>ACCESS CONTROL</h2>
+
+      <p>Access control is delegated to either the remote DSA(s) or
+      to the local database backend for <em class="replaceable"><code>auth</code></em> and <em class="replaceable"><code>write</code></em> operations. It is
+      delegated to the remote DSA(s) and to the frontend for
+      <em class="replaceable"><code>read</code></em> operations.
+      Local access rules involving data returned by the remote
+      DSA(s) should be designed with care. In fact, entries are
+      returned by the remote DSA(s) only based on the remote
+      fraction of the data, based on the identity the operation is
+      performed as. As a consequence, local rules might only be
+      allowed to see a portion of the remote data.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-translucent-5_sect4" name="slapo-translucent-5_sect4" shape="rect"> </a>
+
+      <h2>CAVEATS</h2>
+
+      <p>The Translucent Proxy overlay will disable schema checking
+      in the local database, so that an entry consisting of overlay
+      attributes need not adhere to the complete schema.</p>
+
+      <p>Because the translucent overlay does not perform any DN
+      rewrites, the local and remote database instances must have
+      the same suffix. Other configurations will probably fail with
+      No Such Object and other errors.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-translucent-5_sect5" name="slapo-translucent-5_sect5" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">ETCDIR/slapd.conf</span></dt>
+
+          <dd>
+            <p>default slapd configuration file</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-translucent-5_sect6" name="slapo-translucent-5_sect6" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a>, <a class="link" href="../htmlman5/slapd-config.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-config</span>(5)</span></a>, <a class="link" href="../htmlman5/slapd-ldap.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-ldap</span>(5)</span></a>.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                  See the following documents: <a class="ulink" href="../openldap-COPYRIGHT.html" target="_top" shape="rect">COPYRIGHT</a>, <a class="ulink" href="../openldap-LICENSE.html" target="_top" shape="rect">LICENSE</a><br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

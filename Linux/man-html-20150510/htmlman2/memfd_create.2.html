@@ -1,0 +1,647 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>memfd_create(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="memfd_create(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="memfd-create.2" name="memfd-create.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>memfd_create — create an anonymous file</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;sys/memfd.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>memfd_create</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">name</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">unsigned int <var class="pdparam">flags</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="memfd-create-2_sect1" name="memfd-create-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">memfd_create</code>() creates an
+      anonymous file and returns a file descriptor that refers to
+      it. The file behaves like a regular file, and so can be
+      modified, truncated, memory-mapped, and so on. However,
+      unlike a regular file, it lives in RAM and has a volatile
+      backing storage. Once all references to the file are dropped,
+      it is automatically released. Anonymous memory is used for
+      all backing pages of the file. Therefore, files created by
+      <code class="function">memfd_create</code>() have the same
+      semantics as other anonymous memory allocations such as those
+      allocated using <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a> with the
+      <code class="constant">MAP_ANONYMOUS</code> flag.</p>
+
+      <p>The initial size of the file is set to 0. Following the
+      call, the file size should be set using <a class="link" href="../htmlman2/truncate.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ftruncate</span>(2)</span></a>.
+      (Alternatively, the file may be populated by calls to
+      <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a> or similar.)</p>
+
+      <p>The name supplied in <em class="parameter"><code>name</code></em> is used as a filename and
+      will be displayed as the target of the corresponding symbolic
+      link in the directory <code class="filename">/proc/self/fd/</code>. The displayed name is
+      always prefixed with <em class="replaceable"><code>memfd:</code></em> and serves only for
+      debugging purposes. Names do not affect the behavior of the
+      file descriptor, and as such multiple files can have the same
+      name without any side effects.</p>
+
+      <p>The following values may be bitwise ORed in <em class="parameter"><code>flags</code></em> to change the behavior of
+      <code class="function">memfd_create</code>():</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">MFD_CLOEXEC</code></span></dt>
+
+          <dd>
+            <p>Set the close-on-exec (<code class="constant">FD_CLOEXEC</code>) flag on the new file
+            descriptor. See the description of the <code class="constant">O_CLOEXEC</code> flag in <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a> for reasons
+            why this may be useful.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MFD_ALLOW_SEALING</code></span></dt>
+
+          <dd>
+            <p>Allow sealing operations on this file. See the
+            discussion of the <code class="constant">F_ADD_SEALS</code> and <code class="constant">F_GET_SEALS</code> operations in <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a>, and also
+            NOTES, below. The initial set of seals is empty. If
+            this flag is not set, the initial set of seals will be
+            <code class="constant">F_SEAL_SEAL</code>, meaning that
+            no other seals can be set on the file.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>Unused bits in <em class="parameter"><code>flags</code></em> must be 0.</p>
+
+      <p>As its return value, <code class="function">memfd_create</code>() returns a new file
+      descriptor that can be used to refer to the file. This file
+      descriptor is opened for both reading and writing
+      (<code class="constant">O_RDWR</code>) and <code class="constant">O_LARGEFILE</code> is set for the descriptor.</p>
+
+      <p>With respect to <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> and <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>, the usual
+      semantics apply for the file descriptor created by
+      <code class="function">memfd_create</code>(). A copy of the
+      file descriptor is inherited by the child produced by
+      <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> and refers to the
+      same file. The file descriptor is preserved across <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>, unless the
+      close-on-exec flag has been set.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="memfd-create-2_sect2" name="memfd-create-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">memfd_create</code>()
+      returns a new file descriptor. On error, −1 is returned
+      and <code class="varname">errno</code> is set to indicate the
+      error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="memfd-create-2_sect3" name="memfd-create-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p>The address in <em class="parameter"><code>name</code></em> points to invalid
+            memory.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>An unsupported value was specified in one of the
+            arguments: <em class="parameter"><code>flags</code></em> included unknown
+            bits, or <em class="parameter"><code>name</code></em>
+            was too long.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EMFILE</span></span></dt>
+
+          <dd>
+            <p>The per-process limit on open file descriptors has
+            been reached.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENFILE</span></span></dt>
+
+          <dd>
+            <p>The system-wide limit on the total number of open
+            files has been reached.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>There was insufficient memory to create a new
+            anonymous file.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="memfd-create-2_sect4" name="memfd-create-2_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p>The <code class="function">memfd_create</code>() system
+      call first appeared in Linux 3.17. Support in the GNU C
+      library is pending.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="memfd-create-2_sect5" name="memfd-create-2_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>The <code class="function">memfd_create</code>() system
+      call is Linux-specific.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="memfd-create-2_sect6" name="memfd-create-2_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>The <code class="function">memfd_create</code>() system
+      call provides a simple alternative to manually mounting a
+      <em class="replaceable"><code>tmpfs</code></em> filesystem
+      and creating and opening a file in that filesystem. The
+      primary purpose of <code class="function">memfd_create</code>() is to create files and
+      associated file descriptors that are used with the
+      file-sealing APIs provided by <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a>.</p>
+
+      <p>The <code class="function">memfd_create</code>() system
+      call also has uses without file sealing (which is why
+      file-sealing is disabled, unless explicitly requested with
+      the <code class="constant">MFD_ALLOW_SEALING</code> flag). In
+      particular, it can be used as an alternative to creating
+      files in <em class="replaceable"><code>tmp</code></em> or as
+      an alternative to using the <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a> <code class="constant">O_TMPFILE</code> in cases where there is no
+      intention to actually link the resulting file into the
+      filesystem.</p>
+
+      <div class="refsect2">
+        <a id="memfd-create-2_sect7" name="memfd-create-2_sect7" shape="rect"> </a>
+
+        <h3>File sealing</h3>
+
+        <p>In the absence of file sealing, processes that
+        communicate via shared memory must either trust each other,
+        or take measures to deal with the possibility that an
+        untrusted peer may manipulate the shared memory region in
+        problematic ways. For example, an untrusted peer might
+        modify the contents of the shared memory at any time, or
+        shrink the shared memory region. The former possibility
+        leaves the local process vulnerable to
+        time-of-check-to-time-of-use race conditions (typically
+        dealt with by copying data from the shared memory region
+        before checking and using it). The latter possibility
+        leaves the local process vulnerable to <code class="constant">SIGBUS</code> signals when an attempt is made to
+        access a now-nonexistent location in the shared memory
+        region. (Dealing with this possibility necessitates the use
+        of a handler for the <code class="constant">SIGBUS</code>
+        signal.)</p>
+
+        <p>Dealing with untrusted peers imposes extra complexity on
+        code that employs shared memory. Memory sealing enables
+        that extra complexity to be eliminated, by allowing a
+        process to operate secure in the knowledge that its peer
+        can't modify the shared memory in an undesired fashion.</p>
+
+        <p>An example of the usage of the sealing mechanism is as
+        follows:</p>
+
+        <div class="orderedlist">
+          <ol class="orderedlist" type="1">
+            <li class="listitem">
+              <p>The first process creates a <em class="replaceable"><code>tmpfs</code></em> file using
+              <code class="function">memfd_create</code>(). The
+              call yields a file descriptor used in subsequent
+              steps.</p>
+            </li>
+
+            <li class="listitem">
+              <p>The first process sizes the file created in the
+              previous step using <a class="link" href="../htmlman2/truncate.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ftruncate</span>(2)</span></a>, maps
+              it using <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>, and
+              populates the shared memory with the desired
+              data.</p>
+            </li>
+
+            <li class="listitem">
+              <p>The first process uses the <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a>
+              <code class="constant">F_ADD_SEALS</code> operation
+              to place one or more seals on the file, in order to
+              restrict further modifications on the file. (If
+              placing the seal <code class="constant">F_SEAL_WRITE</code>, then it will be
+              necessary to first unmap the shared writable mapping
+              created in the previous step.)</p>
+            </li>
+
+            <li class="listitem">
+              <p>A second process obtains a file descriptor for the
+              <em class="replaceable"><code>tmpfs</code></em> file
+              and maps it. Among the possible ways in which this
+              could happen are the following:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="itemizedlist">
+                    <ul class="itemizedlist" style="list-style-type: disc;">
+                      <li class="listitem">
+                        <p>The process that called <code class="function">memfd_create</code>() could
+                        transfer the resulting file descriptor to
+                        the second process via a UNIX domain socket
+                        (see <a class="link" href="../htmlman7/unix.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unix</span>(7)</span></a>
+                        and <a class="link" href="../htmlman3/cmsg.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">cmsg</span>(3)</span></a>).
+                        The second process then maps the file using
+                        <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>.</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>The second process is created via
+                        <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a>
+                        and thus automatically inherits the file
+                        descriptor and mapping. (Note that in this
+                        case and the next, there is a natural trust
+                        relationship between the two processes,
+                        since they are running under the same user
+                        ID. Therefore, file sealing would not
+                        normally be necessary.)</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>The second process opens the file
+                        <code class="filename">/proc/&lt;pd&gt;/fd/&lt;fd&gt;</code>,
+                        where <em class="replaceable"><code>&lt;pid&gt;</code></em>
+                        is the PID of the first process (the one
+                        that called <code class="function">memfd_create</code>()), and
+                        <em class="replaceable"><code>&lt;fd&gt;</code></em>
+                        is the number of the file descriptor
+                        returned by the call to <code class="function">memfd_create</code>() in that
+                        process. The second process then maps the
+                        file using <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>.</p>
+                      </li>
+                    </ul>
+                  </div>
+                </blockquote>
+              </div>
+            </li>
+
+            <li class="listitem">
+              <p>The second process uses the <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a>
+              <code class="constant">F_GET_SEALS</code> operation
+              to retrieve the bit mask of seals that has been
+              applied to the file. This bit mask can be inspected
+              in order to determine what kinds of restrictions have
+              been placed on file modifications. If desired, the
+              second process can apply further seals to impose
+              additional restrictions (so long as the <code class="constant">F_SEAL_SEAL</code> seal has not yet been
+              applied).</p>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="memfd-create-2_sect8" name="memfd-create-2_sect8" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>Below are shown two example programs that demonstrate the
+      use of <code class="function">memfd_create</code>() and the
+      file sealing API.</p>
+
+      <p>The first program, <code class="filename">t_memfd_create.c</code>, creates a <em class="replaceable"><code>tmpfs</code></em> file using <code class="function">memfd_create</code>(), sets a size for the file,
+      maps it into memory, and optionally places some seals on the
+      file. The program accepts up to three command-line arguments,
+      of which the first two are required. The first argument is
+      the name to associate with the file, the second argument is
+      the size to be set for the file, and the optional third is a
+      string of characters that specify seals to be set on
+      file.</p>
+
+      <p>The second program, <code class="filename">t_get_seals.c</code>, can be used to open an
+      existing file that was created via <code class="function">memfd_create</code>() and inspect the set of seals
+      that have been applied to that file.</p>
+
+      <p>The following shell session demonstrates the use of these
+      programs. First we create a <em class="replaceable"><code>tmpfs</code></em> file and set some seals
+      on it:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$ <span class="emphasis"><em>./t_memfd_create my_memfd_file 4096 sw &amp;</em></span>
+[1] 11775
+PID: 11775; fd: 3; /proc/11775/fd/3
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>At this point, the <em class="replaceable"><code>t_memfd_create</code></em> program
+      continues to run in the background. From another program, we
+      can obtain a file descriptor for the file created by
+      <code class="function">memfd_create</code>() by opening the
+      <code class="filename">/proc/PID/fd</code> file that
+      corresponds to the descriptor opened by <code class="function">memfd_create</code>(). Using that pathname, we
+      inspect the content of the <code class="filename">/proc/PID/fd</code> symbolic link, and use our
+      <em class="replaceable"><code>t_get_seals</code></em> program
+      to view the seals that have been placed on the file:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$ <span class="emphasis"><em>readlink /proc/11775/fd/3</em></span>
+/memfd:my_memfd_file (deleted)
+$ <span class="emphasis"><em>./t_get_seals /proc/11775/fd/3</em></span>
+Existing seals: WRITE SHRINK
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="refsect2">
+        <a id="memfd-create-2_sect9" name="memfd-create-2_sect9" shape="rect"> </a>
+
+        <h3>Program source: t_memfd_create.c</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+#include &lt;sys/memfd.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;string.h&gt;
+#include &lt;stdio.h&gt;
+
+#define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); \
+                        } while (0)
+
+int
+main(int argc, char *argv[])
+{
+    int fd;
+    unsigned int seals;
+    char *addr;
+    char *name, *seals_arg;
+    ssize_t len;
+
+    if (argc &lt; 3) {
+        fprintf(stderr, "%s name size [seals]\n", argv[0]);
+        fprintf(stderr, "\t'seals' can contain any of the "
+                "following characters:\n");
+        fprintf(stderr, "\t\tg − F_SEAL_GROW\n");
+        fprintf(stderr, "\t\ts − F_SEAL_SHRINK\n");
+        fprintf(stderr, "\t\tw − F_SEAL_WRITE\n");
+        fprintf(stderr, "\t\tS − F_SEAL_SEAL\n");
+        exit(EXIT_FAILURE);
+    }
+
+    name = argv[1];
+    len = atoi(argv[2]);
+    seals_arg = argv[3];
+
+    /* Create an anonymous file in tmpfs; allow seals to be
+       placed on the file */
+
+    fd = memfd_create(name, MFD_ALLOW_SEALING);
+    if (fd == −1)
+        errExit("memfd_create");
+
+    /* Size the file as specified on the command line */
+
+    if (ftruncate(fd, len) == −1)
+        errExit("truncate");
+
+    printf("PID: %ld; fd: %d; /proc/%ld/fd/%d\n",
+            (long) getpid(), fd, (long) getpid(), fd);
+
+    /* Code to map the file and populate the mapping with data
+       omitted */
+
+    /* If a 'seals' command−line argument was supplied, set some
+       seals on the file */
+
+    if (seals_arg != NULL) {
+        seals = 0;
+
+        if (strchr(seals_arg, 'g') != NULL)
+            seals |= F_SEAL_GROW;
+        if (strchr(seals_arg, 's') != NULL)
+            seals |= F_SEAL_SHRINK;
+        if (strchr(seals_arg, 'w') != NULL)
+            seals |= F_SEAL_WRITE;
+        if (strchr(seals_arg, 'S') != NULL)
+            seals |= F_SEAL_SEAL;
+
+        if (fcntl(fd, F_ADD_SEALS, seals) == −1)
+            errExit("fcntl");
+    }
+
+    /* Keep running, so that the file created by memfd_create()
+       continues to exist */
+
+    pause();
+
+    exit(EXIT_SUCCESS);
+}
+</pre>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="memfd-create-2_sect10" name="memfd-create-2_sect10" shape="rect"> </a>
+
+        <h3>Program source: t_get_seals.c</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+#include &lt;sys/memfd.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;stdio.h&gt;
+
+#define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); \
+                        } while (0)
+
+int
+main(int argc, char *argv[])
+{
+    int fd;
+    unsigned int seals;
+
+    if (argc != 2) {
+        fprintf(stderr, "%s /proc/PID/fd/FD\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    fd = open(argv[1], O_RDWR);
+    if (fd == −1)
+        errExit("open");
+
+    seals = fcntl(fd, F_GET_SEALS);
+    if (seals == −1)
+        errExit("fcntl");
+
+    printf("Existing seals:");
+    if (seals &amp; F_SEAL_SEAL)
+        printf(" SEAL");
+    if (seals &amp; F_SEAL_GROW)
+        printf(" GROW");
+    if (seals &amp; F_SEAL_WRITE)
+        printf(" WRITE");
+    if (seals &amp; F_SEAL_SHRINK)
+        printf(" SHRINK");
+    printf("\n");
+
+    /* Code to map the file and access the contents of the
+       resulting mapping omitted */
+
+    exit(EXIT_SUCCESS);
+}
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="memfd-create-2_sect11" name="memfd-create-2_sect11" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a>, <a class="link" href="../htmlman2/truncate.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ftruncate</span>(2)</span></a>, <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>, <a class="link" href="../htmlman2/shmget.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">shmget</span>(2)</span></a>, <a class="link" href="../htmlman3/shm_open.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">shm_open</span>(3)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="memfd-create-2_sect12" name="memfd-create-2_sect12" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2014 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  and Copyright (C) 2014 David Herrmann &lt;dh.herrmann<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+)<br />
+                  <br />
+                  This program is free software; you can redistribute it and/or modify<br />
+
+                  it under the terms of the GNU General Public License as published by<br />
+
+                  the Free Software Foundation; either version 2 of the License, or<br />
+
+                  (at your option) any later version.<br />
+
+                  <br />
+                  This program is distributed in the hope that it will be useful,<br />
+
+                  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the<br />
+
+                  GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

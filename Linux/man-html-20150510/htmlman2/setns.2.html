@@ -1,0 +1,464 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>setns(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="setns(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="setns.2" name="setns.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>setns — reassociate thread with a namespace</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#define _GNU_SOURCE              /* See feature_test_macros(7) */
+#include &lt;sched.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>setns</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">fd</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">nstype</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="setns-2_sect1" name="setns-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>Given a file descriptor referring to a namespace,
+      reassociate the calling thread with that namespace.</p>
+
+      <p>The <em class="parameter"><code>fd</code></em> argument is
+      a file descriptor referring to one of the namespace entries
+      in a <code class="filename">/proc/[pid]/ns/</code> directory;
+      see <a class="link" href="../htmlman7/namespaces.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">namespaces</span>(7)</span></a> for further
+      information on <code class="filename">/proc/[pid]/ns/</code>.
+      The calling thread will be reassociated with the
+      corresponding namespace, subject to any constraints imposed
+      by the <em class="parameter"><code>nstype</code></em>
+      argument.</p>
+
+      <p>The <em class="parameter"><code>nstype</code></em>
+      argument specifies which type of namespace the calling thread
+      may be reassociated with. This argument can have one of the
+      following values:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">0</code></span></dt>
+
+          <dd>
+            <p>Allow any type of namespace to be joined.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">CLONE_NEWIPC</code> (since Linux
+          3.0)</span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>fd</code></em> must
+            refer to an IPC namespace.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">CLONE_NEWNET</code> (since Linux
+          3.0)</span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>fd</code></em> must
+            refer to a network namespace.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">CLONE_NEWNS</code> (since Linux
+          3.8)</span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>fd</code></em> must
+            refer to a mount namespace.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">CLONE_NEWPID</code> (since Linux
+          3.8)</span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>fd</code></em> must
+            refer to a descendant PID namespace.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">CLONE_NEWUSER</code> (since Linux
+          3.8)</span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>fd</code></em> must
+            refer to a user namespace.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">CLONE_NEWUTS</code> (since Linux
+          3.0)</span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>fd</code></em> must
+            refer to a UTS namespace.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>Specifying <em class="parameter"><code>nstype</code></em>
+      as 0 suffices if the caller knows (or does not care) what
+      type of namespace is referred to by <em class="parameter"><code>fd</code></em>. Specifying a nonzero value
+      for <em class="parameter"><code>nstype</code></em> is useful
+      if the caller does not know what type of namespace is
+      referred to by <em class="parameter"><code>fd</code></em> and
+      wants to ensure that the namespace is of a particular type.
+      (The caller might not know the type of the namespace referred
+      to by <em class="parameter"><code>fd</code></em> if the file
+      descriptor was opened by another process and, for example,
+      passed to the caller via a UNIX domain socket.)</p>
+
+      <p><code class="constant">CLONE_NEWPID</code> behaves
+      somewhat differently from the other <em class="parameter"><code>nstype</code></em> values: reassociating
+      the calling thread with a PID namespace changes only the PID
+      namespace that child processes of the caller will be created
+      in; it does not change the PID namespace of the caller
+      itself. Reassociating with a PID namespace is allowed only if
+      the PID namespace specified by <em class="parameter"><code>fd</code></em> is a descendant (child,
+      grandchild, etc.) of the PID namespace of the caller. For
+      further details on PID namespaces, see <a class="link" href="../htmlman7/pid_namespaces.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pid_namespaces</span>(7)</span></a>.</p>
+
+      <p>A process reassociating itself with a user namespace must
+      have the <code class="constant">CAP_SYS_ADMIN</code>
+      capability in the target user namespace. Upon successfully
+      joining a user namespace, a process is granted all
+      capabilities in that namespace, regardless of its user and
+      group IDs. A multithreaded process may not change user
+      namespace with <code class="function">setns</code>(). It is
+      not permitted to use <code class="function">setns</code>() to
+      reenter the caller's current user namespace. This prevents a
+      caller that has dropped capabilities from regaining those
+      capabilities via a call to <code class="function">setns</code>(). For security reasons, a process
+      can't join a new user namespace if it is sharing
+      filesystem-related attributes (the attributes whose sharing
+      is controlled by the <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> <code class="constant">CLONE_FS</code> flag) with another process. For
+      further details on user namespaces, see <a class="link" href="../htmlman7/user_namespaces.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">user_namespaces</span>(7)</span></a>.</p>
+
+      <p>A process may not be reassociated with a new mount
+      namespace if it is multithreaded. Changing the mount
+      namespace requires that the caller possess both <code class="constant">CAP_SYS_CHROOT</code> and <code class="constant">CAP_SYS_ADMIN</code> capabilities in its own user
+      namespace and <code class="constant">CAP_SYS_ADMIN</code> in
+      the target mount namespace. See <a class="link" href="../htmlman7/user_namespaces.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">user_namespaces</span>(7)</span></a> for
+      details on the interaction of user namespaces and mount
+      namespaces.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="setns-2_sect2" name="setns-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">setns</code>() returns
+      0. On failure, −1 is returned and <code class="varname">errno</code> is set to indicate the error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="setns-2_sect3" name="setns-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EBADF</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>fd</code></em> is not a
+            valid file descriptor.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>fd</code></em> refers to
+            a namespace whose type does not match that specified in
+            <em class="parameter"><code>nstype</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>There is problem with reassociating the thread with
+            the specified namespace.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>The caller tried to join an ancestor (parent,
+            grandparent, and so on) PID namespace.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>The caller attempted to join the user namespace in
+            which it is already a member.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>The caller shares filesystem (<code class="constant">CLONE_FS</code>) state (in particular, the
+            root directory) with other processes and tried to join
+            a new user namespace.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>The caller is multithreaded and tried to join a new
+            user namespace.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>Cannot allocate sufficient memory to change the
+            specified namespace.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The calling thread did not have the required
+            capability for this operation.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="setns-2_sect4" name="setns-2_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p>The <code class="function">setns</code>() system call
+      first appeared in Linux in kernel 3.0; library support was
+      added to glibc in version 2.14.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="setns-2_sect5" name="setns-2_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>The <code class="function">setns</code>() system call is
+      Linux-specific.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="setns-2_sect6" name="setns-2_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Not all of the attributes that can be shared when a new
+      thread is created using <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> can be changed
+      using <code class="function">setns</code>().</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="setns-2_sect7" name="setns-2_sect7" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>The program below takes two or more arguments. The first
+      argument specifies the pathname of a namespace file in an
+      existing <code class="filename">/proc/[pid]/ns/</code>
+      directory. The remaining arguments specify a command and its
+      arguments. The program opens the namespace file, joins that
+      namespace using <code class="function">setns</code>(), and
+      executes the specified command inside that namespace.</p>
+
+      <p>The following shell session demonstrates the use of this
+      program (compiled as a binary named <em class="replaceable"><code>ns_exec</code></em>) in conjunction with
+      the <code class="constant">CLONE_NEWUTS</code> example
+      program in the <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> man page (complied
+      as a binary named <em class="replaceable"><code>newuts</code></em>).</p>
+
+      <p>We begin by executing the example program in <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> in the background.
+      That program creates a child in a separate UTS namespace. The
+      child changes the hostname in its namespace, and then both
+      processes display the hostnames in their UTS namespaces, so
+      that we can see that they are different.</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$ <em class="replaceable"><code>su</code></em>                   # Need privilege for namespace operations
+Password:
+# <span class="emphasis"><em>./newuts bizarro &amp;</em></span>
+[1] 3549
+clone() returned 3550
+uts.nodename in child:  bizarro
+uts.nodename in parent: antero
+# <span class="emphasis"><em>uname −n</em></span>             # Verify hostname in the shell
+antero
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>We then run the program shown below, using it to execute a
+      shell. Inside that shell, we verify that the hostname is the
+      one set by the child created by the first program:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+# <span class="emphasis"><em>./ns_exec /proc/3550/ns/uts /bin/bash</em></span>
+# <span class="emphasis"><em>uname −n</em></span>             # Executed in shell started by ns_exec
+bizarro
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="refsect2">
+        <a id="setns-2_sect8" name="setns-2_sect8" shape="rect"> </a>
+
+        <h3>Program source</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+#define _GNU_SOURCE
+#include &lt;fcntl.h&gt;
+#include &lt;sched.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+
+#define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); \
+                        } while (0)
+
+int
+main(int argc, char *argv[])
+{
+    int fd;
+
+    if (argc &lt; 3) {
+        fprintf(stderr, "%s /proc/PID/ns/FILE cmd args...\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    fd = open(argv[1], O_RDONLY);  /* Get descriptor for namespace */
+    if (fd == −1)
+        errExit("open");
+
+    if (setns(fd, 0) == −1)        /* Join that namespace */
+        errExit("setns");
+
+    execvp(argv[2], &amp;argv[2]);     /* Execute a command in namespace */
+    errExit("execvp");
+}
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="setns-2_sect9" name="setns-2_sect9" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a>, <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a>, <a class="link" href="../htmlman2/unshare.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unshare</span>(2)</span></a>, <a class="link" href="../htmlman2/vfork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">vfork</span>(2)</span></a>, <a class="link" href="../htmlman7/namespaces.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">namespaces</span>(7)</span></a>, <a class="link" href="../htmlman7/unix.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unix</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="setns-2_sect10" name="setns-2_sect10" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2011, Eric Biederman &lt;ebiederm<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>xmission.com&gt;<br />
+
+                  and Copyright (C) 2011, 2012, Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gamil.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2_ONELINE)<br />
+                  Licensed under the GPLv2<br />
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

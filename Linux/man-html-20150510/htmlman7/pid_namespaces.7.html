@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>pid_namespaces(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="pid_namespaces(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="pid-namespaces.7" name="pid-namespaces.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>pid_namespaces — overview of Linux PID
+      namespaces</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pid-namespaces-7_sect1" name="pid-namespaces-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>For an overview of namespaces, see <a class="link" href="../htmlman7/namespaces.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">namespaces</span>(7)</span></a>.</p>
+
+      <p>PID namespaces isolate the process ID number space,
+      meaning that processes in different PID namespaces can have
+      the same PID. PID namespaces allow containers to provide
+      functionality such as suspending/resuming the set of
+      processes in the container and migrating the container to a
+      new host while the processes inside the container maintain
+      the same PIDs.</p>
+
+      <p>PIDs in a new PID namespace start at 1, somewhat like a
+      standalone system, and calls to <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a>, <a class="link" href="../htmlman2/vfork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">vfork</span>(2)</span></a>, or <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> will produce
+      processes with PIDs that are unique within the namespace.</p>
+
+      <p>Use of PID namespaces requires a kernel that is configured
+      with the <code class="constant">CONFIG_PID_NS</code>
+      option.</p>
+
+      <div class="refsect2">
+        <a id="pid-namespaces-7_sect2" name="pid-namespaces-7_sect2" shape="rect"> </a>
+
+        <h3>The namespace init process</h3>
+
+        <p>The first process created in a new namespace (i.e., the
+        process created using <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> with the
+        <code class="constant">CLONE_NEWPID</code> flag, or the
+        first child created by a process after a call to <a class="link" href="../htmlman2/unshare.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unshare</span>(2)</span></a> using the
+        <code class="constant">CLONE_NEWPID</code> flag) has the
+        PID 1, and is the "init" process for the namespace (see
+        <span class="citerefentry"><span class="refentrytitle">init</span>(1)</span>). A child process
+        that is orphaned within the namespace will be reparented to
+        this process rather than <span class="citerefentry"><span class="refentrytitle">init</span>(1)</span> (unless one of the
+        ancestors of the child in the same PID namespace employed
+        the <a class="link" href="../htmlman2/prctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">prctl</span>(2)</span></a> <code class="constant">PR_SET_CHILD_SUBREAPER</code> command to mark
+        itself as the reaper of orphaned descendant processes).</p>
+
+        <p>If the "init" process of a PID namespace terminates, the
+        kernel terminates all of the processes in the namespace via
+        a <code class="constant">SIGKILL</code> signal. This
+        behavior reflects the fact that the "init" process is
+        essential for the correct operation of a PID namespace. In
+        this case, a subsequent <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> into this PID
+        namespace will fail with the error <span class="errorname">ENOMEM</span>; it is not possible to create a
+        new processes in a PID namespace whose "init" process has
+        terminated. Such scenarios can occur when, for example, a
+        process uses an open file descriptor for a <code class="filename">/proc/[pid]/ns/pid</code> file corresponding to
+        a process that was in a namespace to <a class="link" href="../htmlman2/setns.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setns</span>(2)</span></a> into that
+        namespace after the "init" process has terminated. Another
+        possible scenario can occur after a call to <a class="link" href="../htmlman2/unshare.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unshare</span>(2)</span></a>: if the first
+        child subsequently created by a <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> terminates, then
+        subsequent calls to <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> will fail with
+        <span class="errorname">ENOMEM</span>.</p>
+
+        <p>Only signals for which the "init" process has
+        established a signal handler can be sent to the "init"
+        process by other members of the PID namespace. This
+        restriction applies even to privileged processes, and
+        prevents other members of the PID namespace from
+        accidentally killing the "init" process.</p>
+
+        <p>Likewise, a process in an ancestor namespace
+        can—subject to the usual permission checks described
+        in <a class="link" href="../htmlman2/kill.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">kill</span>(2)</span></a>\(emsend signals
+        to the "init" process of a child PID namespace only if the
+        "init" process has established a handler for that signal.
+        (Within the handler, the <em class="replaceable"><code>siginfo_t</code></em> <em class="replaceable"><code>si_pid</code></em> field described in
+        <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a> will be
+        zero.) <code class="constant">SIGKILL</code> or
+        <code class="constant">SIGSTOP</code> are treated
+        exceptionally: these signals are forcibly delivered when
+        sent from an ancestor PID namespace. Neither of these
+        signals can be caught by the "init" process, and so will
+        result in the usual actions associated with those signals
+        (respectively, terminating and stopping the process).</p>
+
+        <p>Starting with Linux 3.4, the <a class="link" href="../htmlman2/reboot.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">reboot</span>(2)</span></a> system call
+        causes a signal to be sent to the namespace "init" process.
+        See <a class="link" href="../htmlman2/reboot.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">reboot</span>(2)</span></a> for more
+        details.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pid-namespaces-7_sect3" name="pid-namespaces-7_sect3" shape="rect"> </a>
+
+        <h3>Nesting PID namespaces</h3>
+
+        <p>PID namespaces can be nested: each PID namespace has a
+        parent, except for the initial ("root") PID namespace. The
+        parent of a PID namespace is the PID namespace of the
+        process that created the namespace using <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> or <a class="link" href="../htmlman2/unshare.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unshare</span>(2)</span></a>. PID
+        namespaces thus form a tree, with all namespaces ultimately
+        tracing their ancestry to the root namespace.</p>
+
+        <p>A process is visible to other processes in its PID
+        namespace, and to the processes in each direct ancestor PID
+        namespace going back to the root PID namespace. In this
+        context, "visible" means that one process can be the target
+        of operations by another process using system calls that
+        specify a process ID. Conversely, the processes in a child
+        PID namespace can't see processes in the parent and further
+        removed ancestor namespaces. More succinctly: a process can
+        see (e.g., send signals with <a class="link" href="../htmlman2/kill.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">kill</span>(2)</span></a>, set nice values
+        with <a class="link" href="../htmlman2/getpriority.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setpriority</span>(2)</span></a>, etc.)
+        only processes contained in its own PID namespace and in
+        descendants of that namespace.</p>
+
+        <p>A process has one process ID in each of the layers of
+        the PID namespace hierarchy in which is visible, and
+        walking back though each direct ancestor namespace through
+        to the root PID namespace. System calls that operate on
+        process IDs always operate using the process ID that is
+        visible in the PID namespace of the caller. A call to
+        <a class="link" href="../htmlman2/getpid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getpid</span>(2)</span></a> always returns
+        the PID associated with the namespace in which the process
+        was created.</p>
+
+        <p>Some processes in a PID namespace may have parents that
+        are outside of the namespace. For example, the parent of
+        the initial process in the namespace (i.e., the
+        <span class="citerefentry"><span class="refentrytitle">init</span>(1)</span> process with PID 1)
+        is necessarily in another namespace. Likewise, the direct
+        children of a process that uses <a class="link" href="../htmlman2/setns.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setns</span>(2)</span></a> to cause its
+        children to join a PID namespace are in a different PID
+        namespace from the caller of <a class="link" href="../htmlman2/setns.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setns</span>(2)</span></a>. Calls to
+        <a class="link" href="../htmlman2/getpid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getppid</span>(2)</span></a> for such
+        processes return 0.</p>
+
+        <p>While processes may freely descend into child PID
+        namespaces (e.g., using <a class="link" href="../htmlman2/setns.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setns</span>(2)</span></a> with
+        <code class="constant">CLONE_NEWPID</code>), they may not
+        move in the other direction. That is to say, processes may
+        not enter any ancestor namespaces (parent, grandparent,
+        etc.). Changing PID namespaces is a one way operation.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pid-namespaces-7_sect4" name="pid-namespaces-7_sect4" shape="rect"> </a>
+
+        <h3>setns(2) and unshare(2) semantics</h3>
+
+        <p>Calls to <a class="link" href="../htmlman2/setns.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setns</span>(2)</span></a> that specify a
+        PID namespace file descriptor and calls to <a class="link" href="../htmlman2/unshare.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unshare</span>(2)</span></a> with the
+        <code class="constant">CLONE_NEWPID</code> flag cause
+        children subsequently created by the caller to be placed in
+        a different PID namespace from the caller. These calls do
+        not, however, change the PID namespace of the calling
+        process, because doing so would change the caller's idea of
+        its own PID (as reported by <code class="function">getpid</code>()), which would break many
+        applications and libraries.</p>
+
+        <p>To put things another way: a process's PID namespace
+        membership is determined when the process is created and
+        cannot be changed thereafter. Among other things, this
+        means that the parental relationship between processes
+        mirrors the parental relationship between PID namespaces:
+        the parent of a process is either in the same namespace or
+        resides in the immediate parent PID namespace.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pid-namespaces-7_sect5" name="pid-namespaces-7_sect5" shape="rect"> </a>
+
+        <h3>Compatibility of CLONE_NEWPID with other CLONE_*
+        flags</h3>
+
+        <p><code class="constant">CLONE_NEWPID</code> can't be
+        combined with some other <em class="replaceable"><code>CLONE_*</code></em> flags:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p><code class="constant">CLONE_THREAD</code>
+              requires being in the same PID namespace in order
+              that the threads in a process can send signals to
+              each other. Similarly, it must be possible to see all
+              of the threads of a processes in the <a class="link" href="../htmlman5/proc.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">proc</span>(5)</span></a>
+              filesystem.</p>
+            </li>
+
+            <li class="listitem">
+              <p><code class="constant">CLONE_SIGHAND</code>
+              requires being in the same PID namespace; otherwise
+              the process ID of the process sending a signal could
+              not be meaningfully encoded when a signal is sent
+              (see the description of the <em class="replaceable"><code>siginfo_t</code></em> type in
+              <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a>). A
+              signal queue shared by processes in multiple PID
+              namespaces will defeat that.</p>
+            </li>
+
+            <li class="listitem">
+              <p><code class="constant">CLONE_VM</code> requires
+              all of the threads to be in the same PID namespace,
+              because, from the point of view of a core dump, if
+              two processes share the same address space then they
+              are threads and will be core dumped together. When a
+              core dump is written, the PID of each thread is
+              written into the core dump. Writing the process IDs
+              could not meaningfully succeed if some of the process
+              IDs were in a parent PID namespace.</p>
+            </li>
+          </ul>
+        </div>
+
+        <p>To summarize: there is a technical requirement for each
+        of <code class="constant">CLONE_THREAD</code>, <code class="constant">CLONE_SIGHAND</code>, and <code class="constant">CLONE_VM</code> to share a PID namespace. (Note
+        furthermore that in <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> requires
+        <code class="constant">CLONE_VM</code> to be specified if
+        <code class="constant">CLONE_THREAD</code> or <code class="constant">CLONE_SIGHAND</code> is specified.) Thus, call
+        sequences such as the following will fail (with the error
+        <span class="errorname">EINVAL</span>):</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+    unshare(CLONE_NEWPID);
+    clone(..., CLONE_VM, ...);    /* Fails */
+
+    setns(fd, CLONE_NEWPID);
+    clone(..., CLONE_VM, ...);    /* Fails */
+
+    clone(..., CLONE_VM, ...);
+    setns(fd, CLONE_NEWPID);      /* Fails */
+
+    clone(..., CLONE_VM, ...);
+    unshare(CLONE_NEWPID);        /* Fails */
+</pre>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="pid-namespaces-7_sect6" name="pid-namespaces-7_sect6" shape="rect"> </a>
+
+        <h3>/proc and PID namespaces</h3>
+
+        <p>A <code class="filename">/proc</code> filesystem shows
+        (in the <code class="filename">/proc/PID</code>
+        directories) only processes visible in the PID namespace of
+        the process that performed the mount, even if the
+        <code class="filename">/proc</code> filesystem is viewed
+        from processes in other namespaces.</p>
+
+        <p>After creating a new PID namespace, it is useful for the
+        child to change its root directory and mount a new procfs
+        instance at <code class="filename">/proc</code> so that
+        tools such as <span class="citerefentry"><span class="refentrytitle">ps</span>(1)</span> work correctly. If a
+        new mount namespace is simultaneously created by including
+        <code class="constant">CLONE_NEWNS</code> in the <em class="replaceable"><code>flags</code></em> argument of <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> or <a class="link" href="../htmlman2/unshare.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unshare</span>(2)</span></a>, then it isn't
+        necessary to change the root directory: a new procfs
+        instance can be mounted directly over <code class="filename">/proc</code>.</p>
+
+        <p>From a shell, the command to mount <code class="filename">/proc</code> is:</p>
+
+        <p>$ mount -t proc proc /proc</p>
+
+        <p>Calling <a class="link" href="../htmlman2/readlink.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">readlink</span>(2)</span></a> on the path
+        <code class="filename">/proc/self</code> yields the process
+        ID of the caller in the PID namespace of the procfs mount
+        (i.e., the PID namespace of the process that mounted the
+        procfs). This can be useful for introspection purposes,
+        when a process wants to discover its PID in other
+        namespaces.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pid-namespaces-7_sect7" name="pid-namespaces-7_sect7" shape="rect"> </a>
+
+        <h3>Miscellaneous</h3>
+
+        <p>When a process ID is passed over a UNIX domain socket to
+        a process in a different PID namespace (see the description
+        of <code class="constant">SCM_CREDENTIALS</code> in
+        <a class="link" href="../htmlman7/unix.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unix</span>(7)</span></a>), it is
+        translated into the corresponding PID value in the
+        receiving process's PID namespace.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pid-namespaces-7_sect8" name="pid-namespaces-7_sect8" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>Namespaces are a Linux-specific feature.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pid-namespaces-7_sect9" name="pid-namespaces-7_sect9" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>See <a class="link" href="../htmlman7/user_namespaces.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">user_namespaces</span>(7)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pid-namespaces-7_sect10" name="pid-namespaces-7_sect10" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a>, <a class="link" href="../htmlman2/setns.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setns</span>(2)</span></a>, <a class="link" href="../htmlman2/unshare.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unshare</span>(2)</span></a>, <a class="link" href="../htmlman5/proc.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">proc</span>(5)</span></a>, <a class="link" href="../htmlman7/credentials.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">credentials</span>(7)</span></a>, <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>, <a class="link" href="../htmlman7/user_namespaces.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">user_namespaces</span>(7)</span></a>,
+      <a class="link" href="../htmlman8/switch_root.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">switch_root</span>(8)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="pid-namespaces-7_sect11" name="pid-namespaces-7_sect11" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 2013 by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  and Copyright (c) 2012 by Eric W. Biederman &lt;ebiederm<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>xmission.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

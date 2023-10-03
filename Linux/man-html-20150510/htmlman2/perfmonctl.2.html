@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>perfmonctl(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="perfmonctl(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="perfmonctl.2" name="perfmonctl.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>perfmonctl — interface to IA-64 performance
+      monitoring unit</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;syscall.h&gt;
+#include &lt;perfmon.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">long
+            <strong>perfmonctl</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">fd</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">cmd</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">void *<var class="pdparam">arg</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">narg</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">There is no glibc wrapper
+            for this system call; see NOTES.</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="perfmonctl-2_sect1" name="perfmonctl-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The IA-64-specific <code class="function">perfmonctl</code>() system call provides an
+      interface to the PMU (performance monitoring unit). The PMU
+      consists of PMD (performance monitoring data) registers and
+      PMC (performance monitoring control) registers, which gather
+      hardware statistics.</p>
+
+      <p><code class="function">perfmonctl</code>() applies the
+      operation <em class="parameter"><code>cmd</code></em> to the
+      input arguments specified by <em class="parameter"><code>arg</code></em>. The number of arguments is
+      defined by <em class="parameter"><code>narg</code></em>. The
+      <em class="parameter"><code>fd</code></em> argument specifies
+      the perfmon context to operate on.</p>
+
+      <p>Supported values for <em class="parameter"><code>cmd</code></em> are:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">PFM_CREATE_CONTEXT</code></span></dt>
+
+          <dd>
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+  <code class="function">perfmonctl</code>(<em class="parameter"><code>int fd</code></em>, <em class="parameter"><code>PFM_CREATE_CONTEXT</code></em>, <em class="parameter"><code>pfarg_context_t *ctxt</code></em>, <em class="parameter"><code>1</code></em>);
+</pre>
+            </div>
+
+            <p>Set up a context.</p>
+
+            <p>The <em class="parameter"><code>fd</code></em>
+            parameter is ignored. A new perfmon context is created
+            as specified in <em class="replaceable"><code>ctxt</code></em> and its file
+            descriptor is returned in <em class="replaceable"><code>ctxt-&gt;ctx_fd</code></em>.</p>
+
+            <p>The file descriptor can be used in subsequent calls
+            to <code class="function">perfmonctl</code>() and can
+            be used to read event notifications (type <span class="type">pfm_msg_t</span>) using <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>. The file
+            descriptor is pollable using <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a>, <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a>, and
+            <a class="link" href="../htmlman7/epoll.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll</span>(7)</span></a>.</p>
+
+            <p>The context can be destroyed by calling <a class="link" href="../htmlman2/close.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">close</span>(2)</span></a> on the file
+            descriptor.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PFM_WRITE_PMCS</code></span></dt>
+
+          <dd>
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+  <code class="function">perfmonctl</code>(<em class="parameter"><code>int fd</code></em>, <em class="parameter"><code>PFM_WRITE_PMCS</code></em>, <em class="parameter"><code>pfarg_reg_t *pmcs</code></em>, <em class="parameter"><code>n</code></em>);
+</pre>
+            </div>
+
+            <p>Set PMC registers.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PFM_WRITE_PMDS</code></span></dt>
+
+          <dd>
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+  <code class="function">perfmonctl</code>(<em class="parameter"><code>int fd</code></em>, <em class="parameter"><code>PFM_WRITE_PMDS</code></em>, <em class="parameter"><code>pfarg_reg_t *pmds</code></em>, <em class="parameter"><code>n</code></em>);
+</pre>
+            </div>
+
+            <p>Set PMD registers.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PFM_READ_PMDS</code></span></dt>
+
+          <dd>
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+  <code class="function">perfmonctl</code>(<em class="parameter"><code>int fd</code></em>, <em class="parameter"><code>PFM_READ_PMDS</code></em>, <em class="parameter"><code>pfarg_reg_t *pmds</code></em>, <em class="parameter"><code>n</code></em>);
+</pre>
+            </div>
+
+            <p>Read PMD registers.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PFM_START</code></span></dt>
+
+          <dd>
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+  <code class="function">perfmonctl</code>(<em class="parameter"><code>int fd</code></em>, <em class="parameter"><code>PFM_START</code></em>, <em class="parameter"><code>NULL</code></em>, <em class="parameter"><code>0</code></em>);
+</pre>
+            </div>
+
+            <p>Start monitoring.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PFM_STOP</code></span></dt>
+
+          <dd>
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+  <code class="function">perfmonctl</code>(<em class="parameter"><code>int fd</code></em>, <em class="parameter"><code>PFM_STOP</code></em>, <em class="parameter"><code>NULL</code></em>, <em class="parameter"><code>0</code></em>);
+</pre>
+            </div>
+
+            <p>Stop monitoring.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PFM_LOAD_CONTEXT</code></span></dt>
+
+          <dd>
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+  <code class="function">perfmonctl</code>(<em class="parameter"><code>int fd</code></em>, <em class="parameter"><code>PFM_LOAD_CONTEXT</code></em>, <em class="parameter"><code>pfarg_load_t *largs</code></em>, <em class="parameter"><code>1</code></em>);
+</pre>
+            </div>
+
+            <p>Attach the context to a thread.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PFM_UNLOAD_CONTEXT</code></span></dt>
+
+          <dd>
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+  <code class="function">perfmonctl</code>(<em class="parameter"><code>int fd</code></em>, <em class="parameter"><code>PFM_UNLOAD_CONTEXT</code></em>, <em class="parameter"><code>NULL</code></em>, <em class="parameter"><code>0</code></em>);
+</pre>
+            </div>
+
+            <p>Detach the context from a thread.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PFM_RESTART</code></span></dt>
+
+          <dd>
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+  <code class="function">perfmonctl</code>(<em class="parameter"><code>int fd</code></em>, <em class="parameter"><code>PFM_RESTART</code></em>, <em class="parameter"><code>NULL</code></em>, <em class="parameter"><code>0</code></em>);
+</pre>
+            </div>
+
+            <p>Restart monitoring after receiving an overflow
+            notification.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PFM_GET_FEATURES</code></span></dt>
+
+          <dd>
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+  <code class="function">perfmonctl</code>(<em class="parameter"><code>int fd</code></em>, <em class="parameter"><code>PFM_GET_FEARURES</code></em>, <em class="parameter"><code>pfarg_features_t *arg</code></em>, <em class="parameter"><code>1</code></em>);
+</pre>
+            </div>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PFM_DEBUG</code></span></dt>
+
+          <dd>
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+  <code class="function">perfmonctl</code>(<em class="parameter"><code>int fd</code></em>, <em class="parameter"><code>PFM_DEBUG</code></em>, <em class="parameter"><code>val</code></em>, <em class="parameter"><code>0</code></em>);
+</pre>
+            </div>
+
+            <p>If <em class="replaceable"><code>val</code></em> is
+            nonzero, enable debugging mode, otherwise disable.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PFM_GET_PMC_RESET_VAL</code></span></dt>
+
+          <dd>
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+  <code class="function">perfmonctl</code>(<em class="parameter"><code>int fd</code></em>, <em class="parameter"><code>PFM_GET_PMC_RESET_VAL</code></em>, <em class="parameter"><code>pfarg_reg_t * req</code></em>, <em class="parameter"><code>n</code></em>);
+</pre>
+            </div>
+
+            <p>Reset PMC registers to default values.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="perfmonctl-2_sect2" name="perfmonctl-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p><code class="function">perfmonctl</code>() returns zero
+      when the operation is successful. On error, −1 is
+      returned and <code class="varname">errno</code> is set to
+      indicate the cause of the error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="perfmonctl-2_sect3" name="perfmonctl-2_sect3" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p><code class="function">perfmonctl</code>() is available
+      since Linux 2.4.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="perfmonctl-2_sect4" name="perfmonctl-2_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p><code class="function">perfmonctl</code>() is
+      Linux-specific and is available only on the IA-64
+      architecture.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="perfmonctl-2_sect5" name="perfmonctl-2_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Glibc does not provide a wrapper for this system call;
+      call it using <a class="link" href="../htmlman2/syscall.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">syscall</span>(2)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="perfmonctl-2_sect6" name="perfmonctl-2_sect6" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><span class="citerefentry"><span class="refentrytitle">gprof</span>(1)</span></p>
+
+      <p>The perfmon2 interface specification</p>
+    </div>
+
+    <div class="colophon">
+      <a id="perfmonctl-2_sect7" name="perfmonctl-2_sect7" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2006 Red Hat, Inc. All Rights Reserved.<br />
+
+                  and Copyright (C) 2013 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  Written by Ivana Varekova &lt;varekova<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>redhat.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>utmp(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="utmp(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="utmp.5" name="utmp.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>utmp, wtmp — login records</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;utmp.h&gt;
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="utmp-5_sect1" name="utmp-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <em class="replaceable"><code>utmp</code></em> file
+      allows one to discover information about who is currently
+      using the system. There may be more users currently using the
+      system, because not all programs use utmp logging.</p>
+
+      <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Warning">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Warning]" src="../stylesheet/warning.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Warning</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <p><em class="replaceable"><code>utmp</code></em>
+              must not be writable by the user class "other",
+              because many system programs (foolishly) depend on
+              its integrity. You risk faked system logfiles and
+              modifications of system files if you leave <em class="replaceable"><code>utmp</code></em> writable to any
+              user other than the owner and group owner of the
+              file.</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <p>The file is a sequence of <em class="replaceable"><code>utmp</code></em> structures, declared as
+      follows in <code class="literal">&lt;</code><code class="filename">utmp.h</code><code class="literal">&gt;</code>
+      (note that this is only one of several definitions around;
+      details depend on the version of libc):</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+/* Values for ut_type field, below */
+
+#define EMPTY         0 /* Record does not contain valid info
+                           (formerly known as UT_UNKNOWN on Linux) */
+#define RUN_LVL       1 /* Change in system run-level (see
+                           
+<span class="citerefentry"><span class="refentrytitle">init</span>(8)</span>)
+*/
+#define BOOT_TIME     2 /* Time of system boot (in <em class="replaceable"><code>ut_tv</code></em>) */
+#define NEW_TIME      3 /* Time after system clock change
+                           (in <em class="replaceable"><code>ut_tv</code></em>) */
+#define OLD_TIME      4 /* Time before system clock change
+                           (in <em class="replaceable"><code>ut_tv</code></em>) */
+#define INIT_PROCESS  5 /* Process spawned by 
+<span class="citerefentry"><span class="refentrytitle">init</span>(8)</span>
+*/
+#define LOGIN_PROCESS 6 /* Session leader process for user login */
+#define USER_PROCESS  7 /* Normal process */
+#define DEAD_PROCESS  8 /* Terminated process */
+#define ACCOUNTING    9 /* Not implemented */
+
+#define UT_LINESIZE      32
+#define UT_NAMESIZE      32
+#define UT_HOSTSIZE     256
+
+struct exit_status {              /* Type for ut_exit, below */
+    short int e_termination;      /* Process termination status */
+    short int e_exit;             /* Process exit status */
+};
+
+struct utmp {
+    short   ut_type;              /* Type of record */
+    pid_t   ut_pid;               /* PID of login process */
+    char    ut_line[UT_LINESIZE]; /* Device name of tty − "/dev/" */
+    char    ut_id[4];             /* Terminal name suffix,
+                                     or inittab(5) ID */
+    char    ut_user[UT_NAMESIZE]; /* Username */
+    char    ut_host[UT_HOSTSIZE]; /* Hostname for remote login, or
+                                     kernel version for run-level
+                                     messages */
+    struct  exit_status ut_exit;  /* Exit status of a process
+                                     marked as DEAD_PROCESS; not
+                                     used by Linux init (1 */
+    /* The ut_session and ut_tv fields must be the same size when
+       compiled 32- and 64-bit.  This allows data files and shared
+       memory to be shared between 32- and 64-bit applications. */
+#if __WORDSIZE == 64 &amp;&amp; defined __WORDSIZE_COMPAT32
+    int32_t ut_session;           /* Session ID (
+<a class="link" href="../htmlman2/getsid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getsid</span>(2)</span></a>),
+                                     used for windowing */
+    struct {
+        int32_t tv_sec;           /* Seconds */
+        int32_t tv_usec;          /* Microseconds */
+    } ut_tv;                      /* Time entry was made */
+#else
+     long   ut_session;           /* Session ID */
+     struct timeval ut_tv;        /* Time entry was made */
+#endif
+
+    int32_t ut_addr_v6[4];        /* Internet address of remote
+                                     host; IPv4 address uses
+                                     just ut_addr_v6[0] */
+    char __unused[20];            /* Reserved for future use */
+};
+
+/* Backward compatibility hacks */
+#define ut_name ut_user
+#ifndef _NO_UT_TIME
+#define ut_time ut_tv.tv_sec
+#endif
+#define ut_xtime ut_tv.tv_sec
+#define ut_addr ut_addr_v6[0]
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>This structure gives the name of the special file
+      associated with the user's terminal, the user's login name,
+      and the time of login in the form of <a class="link" href="../htmlman2/time.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">time</span>(2)</span></a>. String fields are
+      terminated by a null byte ('\0') if they are shorter than the
+      size of the field.</p>
+
+      <p>The first entries ever created result from <span class="citerefentry"><span class="refentrytitle">init</span>(1)</span> processing <span class="citerefentry"><span class="refentrytitle">inittab</span>(5)</span>. Before an entry is
+      processed, though, <span class="citerefentry"><span class="refentrytitle">init</span>(1)</span> cleans up utmp by
+      setting <em class="replaceable"><code>ut_type</code></em> to
+      <code class="constant">DEAD_PROCESS</code>, clearing
+      <em class="replaceable"><code>ut_user</code></em>, <em class="replaceable"><code>ut_host</code></em>, and <em class="replaceable"><code>ut_time</code></em> with null bytes for
+      each record which <em class="replaceable"><code>ut_type</code></em> is not <code class="constant">DEAD_PROCESS</code> or <code class="constant">RUN_LVL</code> and where no process with PID
+      <em class="replaceable"><code>ut_pid</code></em> exists. If
+      no empty record with the needed <em class="replaceable"><code>ut_id</code></em> can be found,
+      <span class="citerefentry"><span class="refentrytitle">init</span>(1)</span> creates a new one. It
+      sets <em class="replaceable"><code>ut_id</code></em> from the
+      inittab, <em class="replaceable"><code>ut_pid</code></em> and
+      <em class="replaceable"><code>ut_time</code></em> to the
+      current values, and <em class="replaceable"><code>ut_type</code></em> to <code class="constant">INIT_PROCESS</code>.</p>
+
+      <p><span class="citerefentry"><span class="refentrytitle">mingetty</span>(8)</span> (or <a class="link" href="../htmlman8/agetty.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">agetty</span>(8)</span></a>) locates the
+      entry by the PID, changes <em class="replaceable"><code>ut_type</code></em> to <code class="constant">LOGIN_PROCESS</code>, changes <em class="replaceable"><code>ut_time</code></em>, sets <em class="replaceable"><code>ut_line</code></em>, and waits for
+      connection to be established. <a class="link" href="../htmlman1/login.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">login</span>(1)</span></a>, after a user has
+      been authenticated, changes <em class="replaceable"><code>ut_type</code></em> to <code class="constant">USER_PROCESS</code>, changes <em class="replaceable"><code>ut_time</code></em>, and sets <em class="replaceable"><code>ut_host</code></em> and <em class="replaceable"><code>ut_addr</code></em>. Depending on
+      <span class="citerefentry"><span class="refentrytitle">mingetty</span>(8)</span> (or <a class="link" href="../htmlman8/agetty.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">agetty</span>(8)</span></a>) and <a class="link" href="../htmlman1/login.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">login</span>(1)</span></a>, records may be
+      located by <em class="replaceable"><code>ut_line</code></em>
+      instead of the preferable <em class="replaceable"><code>ut_pid</code></em>.</p>
+
+      <p>When <span class="citerefentry"><span class="refentrytitle">init</span>(1)</span> finds that a process
+      has exited, it locates its utmp entry by <em class="replaceable"><code>ut_pid</code></em>, sets <em class="replaceable"><code>ut_type</code></em> to <code class="constant">DEAD_PROCESS</code>, and clears <em class="replaceable"><code>ut_user</code></em>, <em class="replaceable"><code>ut_host</code></em> and <em class="replaceable"><code>ut_time</code></em> with null bytes.</p>
+
+      <p><span class="citerefentry"><span class="refentrytitle">xterm</span>(1)</span> and other terminal
+      emulators directly create a <code class="constant">USER_PROCESS</code> record and generate the
+      <em class="replaceable"><code>ut_id</code></em> by using the
+      string that suffix part of the terminal name (the characters
+      following <code class="filename">/dev/[pt]ty</code>). If they
+      find a <code class="constant">DEAD_PROCESS</code> for this
+      ID, they recycle it, otherwise they create a new entry. If
+      they can, they will mark it as <code class="constant">DEAD_PROCESS</code> on exiting and it is advised
+      that they null <em class="replaceable"><code>ut_line</code></em>, <em class="replaceable"><code>ut_time</code></em>, <em class="replaceable"><code>ut_user</code></em>, and <em class="replaceable"><code>ut_host</code></em> as well.</p>
+
+      <p><span class="citerefentry"><span class="refentrytitle">telnetd</span>(8)</span> sets up a
+      <code class="constant">LOGIN_PROCESS</code> entry and leaves
+      the rest to <a class="link" href="../htmlman1/login.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">login</span>(1)</span></a> as usual. After
+      the telnet session ends, <span class="citerefentry"><span class="refentrytitle">telnetd</span>(8)</span> cleans up utmp in
+      the described way.</p>
+
+      <p>The <em class="replaceable"><code>wtmp</code></em> file
+      records all logins and logouts. Its format is exactly like
+      <em class="replaceable"><code>utmp</code></em> except that a
+      null username indicates a logout on the associated terminal.
+      Furthermore, the terminal name <code class="literal">~</code>
+      with username <span class="command"><strong>shutdown</strong></span> or <span class="command"><strong>reboot</strong></span> indicates a system
+      shutdown or reboot and the pair of terminal names
+      <code class="literal">|</code>/<code class="literal">}</code>
+      logs the old/new system time when <a class="link" href="../htmlman1/date.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">date</span>(1)</span></a> changes it.
+      <em class="replaceable"><code>wtmp</code></em> is maintained
+      by <a class="link" href="../htmlman1/login.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">login</span>(1)</span></a>, <span class="citerefentry"><span class="refentrytitle">init</span>(1)</span>, and some versions of
+      <span class="citerefentry"><span class="refentrytitle">getty</span>(8)</span> (e.g., <span class="citerefentry"><span class="refentrytitle">mingetty</span>(8)</span> or <a class="link" href="../htmlman8/agetty.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">agetty</span>(8)</span></a>). None of these
+      programs creates the file, so if it is removed,
+      record-keeping is turned off.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="utmp-5_sect2" name="utmp-5_sect2" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <p>/var/run/utmp</p>
+
+      <p>/var/log/wtmp</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="utmp-5_sect3" name="utmp-5_sect3" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>POSIX.1 does not specify a <em class="replaceable"><code>utmp</code></em> structure, but rather
+      one named <em class="replaceable"><code>utmpx</code></em>,
+      with specifications for the fields <em class="replaceable"><code>ut_type</code></em>, <em class="replaceable"><code>ut_pid</code></em>, <em class="replaceable"><code>ut_line</code></em>, <em class="replaceable"><code>ut_id</code></em>, <em class="replaceable"><code>ut_user</code></em>, and <em class="replaceable"><code>ut_tv</code></em>. POSIX.1 does not
+      specify the lengths of the <em class="replaceable"><code>ut_line</code></em> and <em class="replaceable"><code>ut_user</code></em> fields.</p>
+
+      <p>Linux defines the <em class="replaceable"><code>utmpx</code></em> structure to be the
+      same as the <em class="replaceable"><code>utmp</code></em>
+      structure.</p>
+
+      <div class="refsect2">
+        <a id="utmp-5_sect4" name="utmp-5_sect4" shape="rect"> </a>
+
+        <h3>Comparison with historical systems</h3>
+
+        <p>Linux utmp entries conform neither to v7/BSD nor to
+        System V; they are a mix of the two.</p>
+
+        <p>v7/BSD has fewer fields; most importantly it lacks
+        <em class="replaceable"><code>ut_type</code></em>, which
+        causes native v7/BSD-like programs to display (for example)
+        dead or login entries. Further, there is no configuration
+        file which allocates slots to sessions. BSD does so because
+        it lacks <em class="replaceable"><code>ut_id</code></em>
+        fields.</p>
+
+        <p>In Linux (as in System V), the <em class="replaceable"><code>ut_id</code></em> field of a record
+        will never change once it has been set, which reserves that
+        slot without needing a configuration file. Clearing
+        <em class="replaceable"><code>ut_id</code></em> may result
+        in race conditions leading to corrupted utmp entries and
+        potential security holes. Clearing the abovementioned
+        fields by filling them with null bytes is not required by
+        System V semantics, but makes it possible to run many
+        programs which assume BSD semantics and which do not modify
+        utmp. Linux uses the BSD conventions for line contents, as
+        documented above.</p>
+
+        <p>System V has no <em class="replaceable"><code>ut_host</code></em> or <em class="replaceable"><code>ut_addr_v6</code></em> fields.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="utmp-5_sect5" name="utmp-5_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Unlike various other systems, where utmp logging can be
+      disabled by removing the file, utmp must always exist on
+      Linux. If you want to disable <a class="link" href="../htmlman1/who.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">who</span>(1)</span></a>, then do not make
+      utmp world readable.</p>
+
+      <p>The file format is machine-dependent, so it is recommended
+      that it be processed only on the machine architecture where
+      it was created.</p>
+
+      <p>Note that on <em class="replaceable"><code>biarch</code></em> platforms, that is,
+      systems which can run both 32-bit and 64-bit applications
+      (x86-64, ppc64, s390x, etc.), <em class="replaceable"><code>ut_tv</code></em> is the same size in
+      32-bit mode as in 64-bit mode. The same goes for <em class="replaceable"><code>ut_session</code></em> and <em class="replaceable"><code>ut_time</code></em> if they are present.
+      This allows data files and shared memory to be shared between
+      32-bit and 64-bit applications. This is achieved by changing
+      the type of <em class="replaceable"><code>ut_session</code></em> to <em class="replaceable"><code>int32_t</code></em>, and that of
+      <em class="replaceable"><code>ut_tv</code></em> to a struct
+      with two <em class="replaceable"><code>int32_t</code></em>
+      fields <em class="replaceable"><code>tv_sec</code></em> and
+      <em class="replaceable"><code>tv_usec</code></em>. Since
+      <em class="replaceable"><code>ut_tv</code></em> may not be
+      the same as <span class="emphasis"><em>struct
+      timeval</em></span>, then instead of the call:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+gettimeofday((struct timeval *) &amp;ut.ut_tv, NULL);
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>the following method of setting this field is
+      recommended:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+struct utmp ut;
+struct timeval tv;
+
+gettimeofday(&amp;tv, NULL);
+ut.ut_tv.tv_sec = tv.tv_sec;
+ut.ut_tv.tv_usec = tv.tv_usec;
+</pre>
+          </div>
+        </blockquote>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="utmp-5_sect6" name="utmp-5_sect6" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><span class="citerefentry"><span class="refentrytitle">ac</span>(1)</span>, <a class="link" href="../htmlman1/date.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">date</span>(1)</span></a>, <a class="link" href="../htmlman1/last.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">last</span>(1)</span></a>, <a class="link" href="../htmlman1/login.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">login</span>(1)</span></a>, <a class="link" href="../htmlman1/utmpdump.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">utmpdump</span>(1)</span></a>, <a class="link" href="../htmlman1/who.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">who</span>(1)</span></a>, <a class="link" href="../htmlman3/getutent.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getutent</span>(3)</span></a>, <a class="link" href="../htmlman3/getutmp.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getutmp</span>(3)</span></a>, <a class="link" href="../htmlman3/login.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">login</span>(3)</span></a>, <a class="link" href="../htmlman3/login.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">logout</span>(3)</span></a>, <a class="link" href="../htmlman3/updwtmp.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">logwtmp</span>(3)</span></a>, <a class="link" href="../htmlman3/updwtmp.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">updwtmp</span>(3)</span></a>, <span class="citerefentry"><span class="refentrytitle">init</span>(1)</span></p>
+    </div>
+
+    <div class="colophon">
+      <a id="utmp-5_sect7" name="utmp-5_sect7" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 1993 Michael Haardt (michael<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cantor.informatik.rwth-aachen.de),<br />
+
+                  Fri Apr  2 11:32:09 MET DST 1993<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_DOC_FULL)<br />
+                  This is free documentation; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License as<br />
+
+                  published by the Free Software Foundation; either version 2 of<br />
+
+                  the License, or (at your option) any later version.<br />
+
+                  <br />
+                  The GNU General Public License's references to "object code"<br />
+
+                  and "executables" are to be interpreted as the output of any<br />
+
+                  document formatting or typesetting system, including<br />
+
+                  intermediate and printed output.<br />
+
+                  <br />
+                  This manual is distributed in the hope that it will be useful,<br />
+
+                  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+
+                  GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Modified 1993-07-25 by Rik Faith (faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu)<br />
+
+                  Modified 1995-02-26 by Michael Haardt<br />
+
+                  Modified 1996-07-20 by Michael Haardt<br />
+
+                  Modified 1997-07-02 by Nicolás Lichtmaier &lt;nick<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>debian.org&gt;<br />
+
+                  Modified 2004-10-31 by aeb, following Gwenole Beauchesne<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

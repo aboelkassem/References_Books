@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>resolv.conf(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="resolv.conf(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="resolv.conf.5" name="resolv.conf.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>resolv.conf — resolver configuration file</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+/etc/resolv.conf
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="resolv-conf-5_sect1" name="resolv-conf-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="systemitem">resolver</code> is a set of
+      routines in the C library that provide access to the Internet
+      Domain Name System (DNS). The resolver configuration file
+      contains information that is read by the resolver routines
+      the first time they are invoked by a process. The file is
+      designed to be human readable and contains a list of keywords
+      with values that provide various types of resolver
+      information. The configuration file is considered a trusted
+      source of DNS information (e.g., DNSSEC AD-bit information
+      will be returned unmodified from this source).</p>
+
+      <p>If this file does not exist, only the name server on the
+      local machine will be queried; the domain name is determined
+      from the hostname and the domain search path is constructed
+      from the domain name.</p>
+
+      <p>The different configuration options are:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><em class="replaceable"><code>nameserver</code></em> Name server IP
+          address</span></dt>
+
+          <dd>
+            <p>Internet address of a name server that the resolver
+            should query, either an IPv4 address (in dot notation),
+            or an IPv6 address in colon (and possibly dot) notation
+            as per RFC 2373. Up to <code class="constant">MAXNS</code> (currently 3, see <code class="literal">&lt;</code><code class="filename">resolv.h</code><code class="literal">&gt;</code> name servers may be listed, one
+            per keyword. If there are multiple servers, the
+            resolver library queries them in the order listed. If
+            no <em class="replaceable"><code>nameserver</code></em>
+            entries are present, the default is to use the name
+            server on the local machine. (The algorithm used is to
+            try a name server, and if the query times out, try the
+            next, until out of name servers, then repeat trying all
+            the name servers until a maximum number of retries are
+            made.)</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>domain</code></em> Local domain
+          name.</span></dt>
+
+          <dd>
+            <p>Most queries for names within this domain can use
+            short names relative to the local domain. If set to
+            '.', the root domain is considered. If no <em class="replaceable"><code>domain</code></em> entry is
+            present, the domain is determined from the local
+            hostname returned by <a class="link" href="../htmlman2/gethostname.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gethostname</span>(2)</span></a>; the
+            domain part is taken to be everything after the first
+            '.'. Finally, if the hostname does not contain a domain
+            part, the root domain is assumed.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>search</code></em> Search list for
+          host-name lookup.</span></dt>
+
+          <dd>
+            <p>The search list is normally determined from the
+            local domain name; by default, it contains only the
+            local domain name. This may be changed by listing the
+            desired domain search path following the <em class="replaceable"><code>search</code></em> keyword with
+            spaces or tabs separating the names. Resolver queries
+            having fewer than <em class="replaceable"><code>ndots</code></em> dots (default is
+            1) in them will be attempted using each component of
+            the search path in turn until a match is found. For
+            environments with multiple subdomains please read
+            <span class="emphasis"><em>options
+            ndots:</em></span><code class="literal">n</code> below
+            to avoid man-in-the-middle attacks and unnecessary
+            traffic for the root-dns-servers. Note that this
+            process may be slow and will generate a lot of network
+            traffic if the servers for the listed domains are not
+            local, and that queries will time out if no server is
+            available for one of the domains.</p>
+
+            <p>The search list is currently limited to six domains
+            with a total of 256 characters.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>sortlist</code></em></span></dt>
+
+          <dd>
+            <p>This option allows addresses returned by <a class="link" href="../htmlman3/gethostbyname.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gethostbyname</span>(3)</span></a> to
+            be sorted. A sortlist is specified by
+            IP-address-netmask pairs. The netmask is optional and
+            defaults to the natural netmask of the net. The IP
+            address and optional network pairs are separated by
+            slashes. Up to 10 pairs may be specified. Here is an
+            example:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <p>sortlist 130.155.160.0/255.255.240.0
+                130.155.0.0</p>
+              </blockquote>
+            </div>
+          </dd>
+        </dl>
+      </div>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><em class="replaceable"><code>options</code></em></span></dt>
+
+          <dd>
+            <p>Options allows certain internal resolver variables
+            to be modified. The syntax is</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><span class="emphasis"><em>options option
+                    ...</em></span></span></dt>
+                  </dl>
+                </div>
+
+                <p>where <em class="replaceable"><code>option</code></em> is one of
+                the following:</p>
+
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><em class="replaceable"><code>debug</code></em></span></dt>
+
+                    <dd>
+                      <p>Sets <code class="constant">RES_DEBUG</code> in <em class="replaceable"><code>_res.options</code></em>
+                      (effective only if glibc was built with debug
+                      support; see <a class="link" href="../htmlman3/resolver.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">resolver</span>(3)</span></a>).</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>ndots:</code></em><code class="literal">n</code></span></dt>
+
+                    <dd>
+                      <p>Sets a threshold for the number of dots
+                      which must appear in a name given to
+                      <a class="link" href="../htmlman3/resolver.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">res_query</span>(3)</span></a>
+                      (see <a class="link" href="../htmlman3/resolver.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">resolver</span>(3)</span></a>)
+                      before an <span class="emphasis"><em>initial
+                      absolute query</em></span> will be made. The
+                      default for <code class="literal">n</code> is
+                      1, meaning that if there are any dots in a
+                      name, the name will be tried first as an
+                      absolute name before any <span class="emphasis"><em>search list</em></span>
+                      elements are appended to it. The value for
+                      this option is silently capped to 15.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>timeout:</code></em><code class="literal">n</code></span></dt>
+
+                    <dd>
+                      <p>Sets the amount of time the resolver will
+                      wait for a response from a remote name server
+                      before retrying the query via a different
+                      name server. Measured in seconds, the default
+                      is <code class="constant">RES_TIMEOUT</code>
+                      (currently 5, see <code class="literal">&lt;</code><code class="filename">resolv.h</code><code class="literal">&gt;</code> The value for this
+                      option is silently capped to 30.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>attempts:</code></em><code class="literal">n</code></span></dt>
+
+                    <dd>
+                      <p>Sets the number of times the resolver will
+                      send a query to its name servers before
+                      giving up and returning an error to the
+                      calling application. The default is
+                      <code class="constant">RES_DFLRETRY</code>
+                      (currently 2, see <code class="literal">&lt;</code><code class="filename">resolv.h</code><code class="literal">&gt;</code> The value for this
+                      option is silently capped to 5.</p>
+                    </dd>
+
+                    <dt><span class="term">rotate</span></dt>
+
+                    <dd>
+                      <p>Sets <code class="constant">RES_ROTATE</code> in <em class="replaceable"><code>_res.options</code></em>,
+                      which causes round-robin selection of name
+                      servers from among those listed. This has the
+                      effect of spreading the query load among all
+                      listed servers, rather than having all
+                      clients try the first listed server first
+                      every time.</p>
+                    </dd>
+
+                    <dt><span class="term">no-check-names</span></dt>
+
+                    <dd>
+                      <p>Sets <code class="constant">RES_NOCHECKNAME</code> in
+                      <em class="replaceable"><code>_res.options</code></em>,
+                      which disables the modern BIND checking of
+                      incoming hostnames and mail names for invalid
+                      characters such as underscore (_), non-ASCII,
+                      or control characters.</p>
+                    </dd>
+
+                    <dt><span class="term">inet6</span></dt>
+
+                    <dd>
+                      <p>Sets <code class="constant">RES_USE_INET6</code> in <em class="replaceable"><code>_res.options</code></em>.
+                      This has the effect of trying an AAAA query
+                      before an A query inside the <a class="link" href="../htmlman3/gethostbyname.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gethostbyname</span>(3)</span></a>
+                      function, and of mapping IPv4 responses in
+                      IPv6 "tunneled form" if no AAAA records are
+                      found but an A record set exists.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>ip6-bytestring</code></em>
+                    (since glibc 2.3.4)</span></dt>
+
+                    <dd>
+                      <p>Sets <code class="constant">RES_USE_BSTRING</code> in
+                      <em class="replaceable"><code>_res.options</code></em>.
+                      This causes reverse IPv6 lookups to be made
+                      using the bit-label format described in RFC
+                      2673; if this option is not set, then nibble
+                      format is used.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>ip6-dotint</code></em>/<em class="replaceable"><code>no-ip6-dotint</code></em>
+                    (since glibc 2.3.4)</span></dt>
+
+                    <dd>
+                      <p>Clear/set <code class="constant">RES_NOIP6DOTINT</code> in
+                      <em class="replaceable"><code>_res.options</code></em>.
+                      When this option is clear (<em class="replaceable"><code>ip6-dotint</code></em>),
+                      reverse IPv6 lookups are made in the
+                      (deprecated) <em class="replaceable"><code>ip6.int</code></em> zone;
+                      when this option is set (<em class="replaceable"><code>no-ip6-dotint</code></em>),
+                      reverse IPv6 lookups are made in the
+                      <em class="replaceable"><code>ip6.arpa</code></em> zone
+                      by default. This option is set by
+                      default.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>edns0</code></em> (since
+                    glibc 2.6)</span></dt>
+
+                    <dd>
+                      <p>Sets <code class="constant">RES_USE_EDNSO</code> in <em class="replaceable"><code>_res.options</code></em>.
+                      This enables support for the DNS extensions
+                      described in RFC 2671.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>single-request</code></em>
+                    (since glibc 2.10)</span></dt>
+
+                    <dd>
+                      <p>Sets <code class="constant">RES_SNGLKUP</code> in <em class="replaceable"><code>_res.options</code></em>.
+                      By default, glibc performs IPv4 and IPv6
+                      lookups in parallel since version 2.9. Some
+                      appliance DNS servers cannot handle these
+                      queries properly and make the requests time
+                      out. This option disables the behavior and
+                      makes glibc perform the IPv6 and IPv4
+                      requests sequentially (at the cost of some
+                      slowdown of the resolving process).</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>single-request-reopen</code></em>
+                    (since glibc 2.9)</span></dt>
+
+                    <dd>
+                      <p>Sets <code class="constant">RES_SNGLKUPREOP</code> in
+                      <em class="replaceable"><code>_res.options</code></em>.
+                      The resolver uses the same socket for the A
+                      and AAAA requests. Some hardware mistakenly
+                      sends back only one reply. When that happens
+                      the client system will sit and wait for the
+                      second reply. Turning this option on changes
+                      this behavior so that if two requests from
+                      the same port are not handled correctly it
+                      will close the socket and open a new one
+                      before sending the second request.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>no-tld-query</code></em>
+                    (since glibc 2.14)</span></dt>
+
+                    <dd>
+                      <p>Sets <code class="constant">RES_NOTLDQUERY</code> in
+                      <em class="replaceable"><code>_res.options</code></em>.
+                      This option causes <code class="function">res_nsearch</code>() to not
+                      attempt to resolve an unqualified name as if
+                      it were a top level domain (TLD). This option
+                      can cause problems if the site has
+                      ``localhost'' as a TLD rather than having
+                      localhost on one or more elements of the
+                      search list. This option has no effect if
+                      neither RES_DEFNAMES or RES_DNSRCH is
+                      set.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>use-vc</code></em> (since
+                    glibc 2.14)</span></dt>
+
+                    <dd>
+                      <p>Sets <code class="constant">RES_USEVC</code> in <em class="replaceable"><code>_res.options</code></em>.
+                      This option forces the use of TCP for DNS
+                      resolutions.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>The <em class="replaceable"><code>domain</code></em>
+            and <em class="replaceable"><code>search</code></em>
+            keywords are mutually exclusive. If more than one
+            instance of these keywords is present, the last
+            instance wins.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>The <em class="replaceable"><code>search</code></em>
+      keyword of a system's <em class="replaceable"><code>resolv.conf</code></em> file can be
+      overridden on a per-process basis by setting the environment
+      variable <code class="constant">LOCALDOMAIN</code> to a
+      space-separated list of search domains.</p>
+
+      <p>The <em class="replaceable"><code>options</code></em>
+      keyword of a system's <em class="replaceable"><code>resolv.conf</code></em> file can be
+      amended on a per-process basis by setting the environment
+      variable <code class="constant">RES_OPTIONS</code> to a
+      space-separated list of resolver options as explained above
+      under <em class="replaceable"><code>options</code></em>.</p>
+
+      <p>The keyword and value must appear on a single line, and
+      the keyword (e.g., <em class="replaceable"><code>nameserver</code></em>) must start the
+      line. The value follows the keyword, separated by white
+      space.</p>
+
+      <p>Lines that contain a semicolon (;) or hash character (#)
+      in the first column are treated as comments.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="resolv-conf-5_sect2" name="resolv-conf-5_sect2" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <p><code class="filename">/etc/resolv.conf</code>,
+      <code class="literal">&lt;</code><code class="filename">resolv.h</code><code class="literal">&gt;</code></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="resolv-conf-5_sect3" name="resolv-conf-5_sect3" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/gethostbyname.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gethostbyname</span>(3)</span></a>, <a class="link" href="../htmlman5/host.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">host.conf</span>(5)</span></a>, <a class="link" href="../htmlman5/hosts.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">hosts</span>(5)</span></a>, <a class="link" href="../htmlman3/resolver.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">resolver</span>(3)</span></a>, <a class="link" href="../htmlman5/nsswitch.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">nsswitch.conf</span>(5)</span></a>, <a class="link" href="../htmlman7/hostname.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">hostname</span>(7)</span></a>, <span class="citerefentry"><span class="refentrytitle">named</span>(8)</span></p>
+
+      <p>Name Server Operations Guide for BIND</p>
+    </div>
+
+    <div class="colophon">
+      <a id="resolv-conf-5_sect4" name="resolv-conf-5_sect4" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 1986 The Regents of the University of California.<br />
+
+                  All rights reserved.<br />
+                  <br />
+                  %%%LICENSE_START(PERMISSIVE_MISC)<br />
+                  Redistribution and use in source and binary forms are permitted<br />
+
+                  provided that the above copyright notice and this paragraph are<br />
+
+                  duplicated in all such forms and that any documentation,<br />
+
+                  advertising materials, and other materials related to such<br />
+
+                  distribution and use acknowledge that the software was developed<br />
+
+                  by the University of California, Berkeley.  The name of the<br />
+
+                  University may not be used to endorse or promote products derived<br />
+
+                  from this software without specific prior written permission.<br />
+
+                  THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR<br />
+
+                  IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED<br />
+
+                  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  <script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>(#)resolver.5
+                  5.9 (Berkeley) 12/14/89<br />
+                  $Id: resolver.5,v 8.6 1999/05/21 00:01:02 vixie Exp $<br />
+
+                  <br />
+                  Added ndots remark by Bernhard R. Link - debian bug #182886<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

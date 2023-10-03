@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>pthread_getattr_np(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="pthread_getattr_np(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="pthread-getattr-np.3" name="pthread-getattr-np.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>pthread_getattr_np — get attributes of created
+      thread</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#define _GNU_SOURCE              /* See feature_test_macros(7) */
+#include &lt;pthread.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>pthread_getattr_np</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">pthread_t <var class="pdparam">thread</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">pthread_attr_t *<var class="pdparam">attr</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <p>Compile and link with <code class="option">−pthread</code>.</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pthread-getattr-np-3_sect1" name="pthread-getattr-np-3_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">pthread_getattr_np</code>()
+      function initializes the thread attributes object referred to
+      by <em class="parameter"><code>attr</code></em> so that it
+      contains actual attribute values describing the running
+      thread <em class="parameter"><code>thread</code></em>.</p>
+
+      <p>The returned attribute values may differ from the
+      corresponding attribute values passed in the <em class="parameter"><code>attr</code></em> object that was used to
+      create the thread using <a class="link" href="../htmlman3/pthread_create.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_create</span>(3)</span></a>. In
+      particular, the following attributes may differ:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p>the detach state, since a joinable thread may have
+            detached itself after creation;</p>
+          </li>
+
+          <li class="listitem">
+            <p>the stack size, which the implementation may align
+            to a suitable boundary.</p>
+          </li>
+
+          <li class="listitem">
+            <p>and the guard size, which the implementation may
+            round upward to a multiple of the page size, or ignore
+            (i.e., treat as 0), if the application is allocating
+            its own stack.</p>
+          </li>
+        </ul>
+      </div>
+
+      <p>Furthermore, if the stack address attribute was not set in
+      the thread attributes object used to create the thread, then
+      the returned thread attributes object will report the actual
+      stack address that the implementation selected for the
+      thread.</p>
+
+      <p>When the thread attributes object returned by <code class="function">pthread_getattr_np</code>() is no longer required,
+      it should be destroyed using <a class="link" href="../htmlman3/pthread_attr_init.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_attr_destroy</span>(3)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pthread-getattr-np-3_sect2" name="pthread-getattr-np-3_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, this function returns 0; on error, it returns
+      a nonzero error number.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pthread-getattr-np-3_sect3" name="pthread-getattr-np-3_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>Insufficient memory.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>In addition, if <em class="parameter"><code>thread</code></em> refers to the main
+      thread, then <code class="function">pthread_getattr_np</code>() can fail because of
+      errors from various underlying calls: <a class="link" href="../htmlman3/fopen.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fopen</span>(3)</span></a>, if <code class="filename">/proc/self/maps</code> can't be opened; and
+      <a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getrlimit</span>(2)</span></a>, if the
+      <code class="constant">RLIMIT_STACK</code> resource limit is
+      not supported.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pthread-getattr-np-3_sect4" name="pthread-getattr-np-3_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p>This function is available in glibc since version
+      2.2.3.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pthread-getattr-np-3_sect5" name="pthread-getattr-np-3_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>This function is a nonstandard GNU extension; hence the
+      suffix "_np" (nonportable) in the name.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pthread-getattr-np-3_sect6" name="pthread-getattr-np-3_sect6" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>The program below demonstrates the use of <code class="function">pthread_getattr_np</code>(). The program creates a
+      thread that then uses <code class="function">pthread_getattr_np</code>() to retrieve and
+      display its guard size, stack address, and stack size
+      attributes. Command-line arguments can be used to set these
+      attributes to values other than the default when creating the
+      thread. The shell sessions below demonstrate the use of the
+      program.</p>
+
+      <p>In the first run, on an x86-32 system, a thread is created
+      using default attributes:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$<span class="emphasis"><em> ulimit −s</em></span>      # No stack limit ==&gt; default stack size is 2MB
+unlimited
+$<span class="emphasis"><em> ./a.out</em></span>
+Attributes of created thread:
+        Guard size          = 4096 bytes
+        Stack address       = 0x40196000 (EOS = 0x40397000)
+        Stack size          = 0x201000 (2101248) bytes
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>In the following run, we see that if a guard size is
+      specified, it is rounded up to the next multiple of the
+      system page size (4096 bytes on x86-32):</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$<span class="emphasis"><em> ./a.out −g 4097</em></span>
+Thread attributes object after initializations:
+        Guard size          = 4097 bytes
+        Stack address       = (nil)
+        Stack size          = 0x0 (0) bytes
+
+Attributes of created thread:
+        Guard size          = 8192 bytes
+        Stack address       = 0x40196000 (EOS = 0x40397000)
+        Stack size          = 0x201000 (2101248) bytes
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>In the last run, the program manually allocates a stack
+      for the thread. In this case, the guard size attribute is
+      ignored.</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$<span class="emphasis"><em> ./a.out −g 4096 −s 0x8000 −a</em></span>
+Allocated thread stack at 0x804d000
+
+Thread attributes object after initializations:
+        Guard size          = 4096 bytes
+        Stack address       = 0x804d000 (EOS = 0x8055000)
+        Stack size          = 0x8000 (32768) bytes
+
+Attributes of created thread:
+        Guard size          = 0 bytes
+        Stack address       = 0x804d000 (EOS = 0x8055000)
+        Stack size          = 0x8000 (32768) bytes
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="refsect2">
+        <a id="pthread-getattr-np-3_sect7" name="pthread-getattr-np-3_sect7" shape="rect"> </a>
+
+        <h3>Program source</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+#define _GNU_SOURCE     /* To get pthread_getattr_np() declaration */
+#include &lt;pthread.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;errno.h&gt;
+
+#define handle_error_en(en, msg) \
+        do { errno = en; perror(msg); exit(EXIT_FAILURE); } while (0)
+
+static void
+display_stack_related_attributes(pthread_attr_t *attr, char *prefix)
+{
+    int s;
+    size_t stack_size, guard_size;
+    void *stack_addr;
+
+    s = pthread_attr_getguardsize(attr, &amp;guard_size);
+    if (s != 0)
+        handle_error_en(s, "pthread_attr_getguardsize");
+    printf("%sGuard size          = %d bytes\n", prefix, guard_size);
+
+    s = pthread_attr_getstack(attr, &amp;stack_addr, &amp;stack_size);
+    if (s != 0)
+        handle_error_en(s, "pthread_attr_getstack");
+    printf("%sStack address       = %p", prefix, stack_addr);
+    if (stack_size &gt; 0)
+        printf(" (EOS = %p)", (char *) stack_addr + stack_size);
+    printf("\n");
+    printf("%sStack size          = 0x%x (%d) bytes\n",
+            prefix, stack_size, stack_size);
+}
+
+static void
+display_thread_attributes(pthread_t thread, char *prefix)
+{
+    int s;
+    pthread_attr_t attr;
+
+    s = pthread_getattr_np(thread, &amp;attr);
+    if (s != 0)
+        handle_error_en(s, "pthread_getattr_np");
+
+    display_stack_related_attributes(&amp;attr, prefix);
+
+    s = pthread_attr_destroy(&amp;attr);
+    if (s != 0)
+        handle_error_en(s, "pthread_attr_destroy");
+}
+
+static void *           /* Start function for thread we create */
+thread_start(void *arg)
+{
+    printf("Attributes of created thread:\n");
+    display_thread_attributes(pthread_self(), "\t");
+
+    exit(EXIT_SUCCESS);         /* Terminate all threads */
+}
+
+static void
+usage(char *pname, char *msg)
+{
+    if (msg != NULL)
+        fputs(msg, stderr);
+    fprintf(stderr, "Usage: %s [−s stack−size [−a]]"
+            " [−g guard−size]\n", pname);
+    fprintf(stderr, "\t\t−a means program should allocate stack\n");
+    exit(EXIT_FAILURE);
+}
+
+static pthread_attr_t *   /* Get thread attributes from command line */
+get_thread_attributes_from_cl(int argc, char *argv[],
+                              pthread_attr_t *attrp)
+{
+    int s, opt, allocate_stack;
+    long stack_size, guard_size;
+            void *stack_addr;
+    pthread_attr_t *ret_attrp = NULL;   /* Set to attrp if we initialize
+                                           a thread attributes object */
+    allocate_stack = 0;
+    stack_size = −1;
+    guard_size = −1;
+
+    while ((opt = getopt(argc, argv, "ag:s:")) != −1) {
+        switch (opt) {
+        case 'a':   allocate_stack = 1;                     break;
+        case 'g':   guard_size = strtoul(optarg, NULL, 0);  break;
+        case 's':   stack_size = strtoul(optarg, NULL, 0);  break;
+        default:    usage(argv[0], NULL);
+        }
+    }
+
+    if (allocate_stack &amp;&amp; stack_size == −1)
+        usage(argv[0], "Specifying −a without −s makes no sense\n");
+
+    if (argc &gt; optind)
+        usage(argv[0], "Extraneous command−line arguments\n");
+
+    if (stack_size &gt;= 0 || guard_size &gt; 0) {
+        ret_attrp = attrp;
+
+        s = pthread_attr_init(attrp);
+        if (s != 0)
+            handle_error_en(s, "pthread_attr_init");
+    }
+
+    if (stack_size &gt;= 0) {
+        if (!allocate_stack) {
+            s = pthread_attr_setstacksize(attrp, stack_size);
+            if (s != 0)
+                handle_error_en(s, "pthread_attr_setstacksize");
+        } else {
+            s = posix_memalign(&amp;stack_addr, sysconf(_SC_PAGESIZE),
+                               stack_size);
+            if (s != 0)
+                handle_error_en(s, "posix_memalign");
+            printf("Allocated thread stack at %p\n\n", stack_addr);
+
+            s = pthread_attr_setstack(attrp, stack_addr, stack_size);
+            if (s != 0)
+                handle_error_en(s, "pthread_attr_setstacksize");
+        }
+    }
+
+    if (guard_size &gt;= 0) {
+        s = pthread_attr_setguardsize(attrp, guard_size);
+        if (s != 0)
+            handle_error_en(s, "pthread_attr_setstacksize");
+    }
+
+    return ret_attrp;
+}
+
+int
+main(int argc, char *argv[])
+{
+    int s;
+    pthread_t thr;
+    pthread_attr_t attr;
+    pthread_attr_t *attrp = NULL;    /* Set to &amp;attr if we initialize
+                                        a thread attributes object */
+
+    attrp = get_thread_attributes_from_cl(argc, argv, &amp;attr);
+
+    if (attrp != NULL) {
+        printf("Thread attributes object after initializations:\n");
+        display_stack_related_attributes(attrp, "\t");
+        printf("\n");
+    }
+
+    s = pthread_create(&amp;thr, attrp, &amp;thread_start, NULL);
+    if (s != 0)
+        handle_error_en(s, "pthread_create");
+
+    if (attrp != NULL) {
+        s = pthread_attr_destroy(attrp);
+        if (s != 0)
+            handle_error_en(s, "pthread_attr_destroy");
+    }
+
+    pause();    /* Terminates when other thread calls exit() */
+}
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pthread-getattr-np-3_sect8" name="pthread-getattr-np-3_sect8" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/pthread_attr_setaffinity_np.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_attr_getaffinity_np</span>(3)</span></a>,
+      <a class="link" href="../htmlman3/pthread_attr_setdetachstate.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_attr_getdetachstate</span>(3)</span></a>,
+      <a class="link" href="../htmlman3/pthread_attr_setguardsize.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_attr_getguardsize</span>(3)</span></a>,
+      <a class="link" href="../htmlman3/pthread_attr_setinheritsched.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_attr_getinheritsched</span>(3)</span></a>,
+      <a class="link" href="../htmlman3/pthread_attr_setschedparam.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_attr_getschedparam</span>(3)</span></a>,
+      <a class="link" href="../htmlman3/pthread_attr_setschedpolicy.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_attr_getschedpolicy</span>(3)</span></a>,
+      <a class="link" href="../htmlman3/pthread_attr_setscope.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_attr_getscope</span>(3)</span></a>,
+      <a class="link" href="../htmlman3/pthread_attr_setstack.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_attr_getstack</span>(3)</span></a>,
+      <a class="link" href="../htmlman3/pthread_attr_setstackaddr.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_attr_getstackaddr</span>(3)</span></a>,
+      <a class="link" href="../htmlman3/pthread_attr_setstacksize.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_attr_getstacksize</span>(3)</span></a>,
+      <a class="link" href="../htmlman3/pthread_attr_init.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_attr_init</span>(3)</span></a>,
+      <a class="link" href="../htmlman3/pthread_create.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_create</span>(3)</span></a>,
+      <a class="link" href="../htmlman7/pthreads.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthreads</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="pthread-getattr-np-3_sect9" name="pthread-getattr-np-3_sect9" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 2008 Linux Foundation, written by Michael Kerrisk<br />
+
+                      &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

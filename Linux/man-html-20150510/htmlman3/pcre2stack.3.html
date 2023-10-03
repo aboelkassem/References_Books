@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>pcre2stack(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="pcre2stack(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="pcre2stack.3" name="pcre2stack.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>PCRE2 — Perl-compatible regular expressions (revised
+      API)</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2stack-3_sect1" name="pcre2stack-3_sect1" shape="rect"> </a>
+
+      <h2>PCRE2 DISCUSSION OF STACK USAGE</h2>
+
+      <p>When you call <code class="function">pcre2_match</code>(),
+      it makes use of an internal function called <code class="function">match</code>(). This calls itself recursively at
+      branch points in the pattern, in order to remember the state
+      of the match so that it can back up and try a different
+      alternative after a failure. As matching proceeds deeper and
+      deeper into the tree of possibilities, the recursion depth
+      increases. The <code class="function">match</code>() function
+      is also called in other circumstances, for example, whenever
+      a parenthesized sub-pattern is entered, and in certain cases
+      of repetition.</p>
+
+      <p>Not all calls of <code class="function">match</code>()
+      increase the recursion depth; for an item such as a* it may
+      be called several times at the same level, after matching
+      different numbers of a's. Furthermore, in a number of cases
+      where the result of the recursive call would immediately be
+      passed back as the result of the current call (a "tail
+      recursion"), the function is just restarted instead.</p>
+
+      <p>Each time the internal <code class="function">match</code>() function is called recursively, it
+      uses memory from the process stack. For certain kinds of
+      pattern and data, very large amounts of stack may be needed,
+      despite the recognition of "tail recursion". Note that if
+      PCRE2 is compiled with the -fsanitize=address option of the
+      GCC compiler, the stack requirements are greatly
+      increased.</p>
+
+      <p>The above comments apply when <code class="function">pcre2_match</code>() is run in its normal
+      interpretive manner. If the compiled pattern was processed by
+      <code class="function">pcre2_jit_compile</code>(), and
+      just-in-time compiling was successful, and the options passed
+      to <code class="function">pcre2_match</code>() were not
+      incompatible, the matching process uses the JIT-compiled code
+      instead of the <code class="function">match</code>()
+      function. In this case, the memory requirements are handled
+      entirely differently. See the <a class="link" href="../htmlman3/pcre2jit.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2jit</span>(3)</span></a> documentation
+      for details.</p>
+
+      <p>The <code class="function">pcre2_dfa_match</code>()
+      function operates in a different way to <code class="function">pcre2_match</code>(), and uses recursion only when
+      there is a regular expression recursion or subroutine call in
+      the pattern. This includes the processing of assertion and
+      "once-only" subpatterns, which are handled like subroutine
+      calls. Normally, these are never very deep, and the limit on
+      the complexity of <code class="function">pcre2_dfa_match</code>() is controlled by the
+      amount of workspace it is given. However, it is possible to
+      write patterns with runaway infinite recursions; such
+      patterns will cause <code class="function">pcre2_dfa_match</code>() to run out of stack. At
+      present, there is no protection against this.</p>
+
+      <p>The comments that follow do NOT apply to <code class="function">pcre2_dfa_match</code>(); they are relevant only
+      for <code class="function">pcre2_match</code>() without the
+      JIT optimization.</p>
+
+      <div class="refsect2">
+        <a id="pcre2stack-3_sect2" name="pcre2stack-3_sect2" shape="rect"> </a>
+
+        <h3>Reducing <code class="function">pcre2_match</code>()'s
+        stack usage</h3>
+
+        <p>You can often reduce the amount of recursion, and
+        therefore the amount of stack used, by modifying the
+        pattern that is being matched. Consider, for example, this
+        pattern:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+([^&lt;]|&lt;(?!inet))+
+</pre>
+        </div>
+
+        <p>It matches from wherever it starts until it encounters
+        "&lt;inet" or the end of the data, and is the kind of
+        pattern that might be used when processing an XML file.
+        Each iteration of the outer parentheses matches either one
+        character that is not "&lt;" or a "&lt;" that is not
+        followed by "inet". However, each time a parenthesis is
+        processed, a recursion occurs, so this formulation uses a
+        stack frame for each matched character. For a long string,
+        a lot of stack is required. Consider now this rewritten
+        pattern, which matches exactly the same strings:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+([^&lt;]++|&lt;(?!inet))+
+</pre>
+        </div>
+
+        <p>This uses very much less stack, because runs of
+        characters that do not contain "&lt;" are "swallowed" in
+        one item inside the parentheses. Recursion happens only
+        when a "&lt;" character that is not followed by "inet" is
+        encountered (and we assume this is relatively rare). A
+        possessive quantifier is used to stop any backtracking into
+        the runs of non-"&lt;" characters, but that is not related
+        to stack usage.</p>
+
+        <p>This example shows that one way of avoiding stack
+        problems when matching long subject strings is to write
+        repeated parenthesized subpatterns to match more than one
+        character whenever possible.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2stack-3_sect3" name="pcre2stack-3_sect3" shape="rect"> </a>
+
+        <h3>Compiling PCRE2 to use heap instead of stack for
+        <code class="function">pcre2_match</code>()</h3>
+
+        <p>In environments where stack memory is constrained, you
+        might want to compile PCRE2 to use heap memory instead of
+        stack for remembering back-up points when <code class="function">pcre2_match</code>() is running. This makes it
+        run more slowly, however. Details of how to do this are
+        given in the <a class="link" href="../htmlman3/pcre2build.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2build</span>(3)</span></a>
+        documentation. When built in this way, instead of using the
+        stack, PCRE2 gets memory for remembering backup points from
+        the heap. By default, the memory is obtained by calling the
+        system <code class="function">malloc</code>() function, but
+        you can arrange to supply your own memory management
+        function. For details, see the section entitled "The match
+        context" in the <a class="link" href="../htmlman3/pcre2api.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2api</span>(3)</span></a>
+        documentation. Since the block sizes are always the same,
+        it may be possible to implement customized a memory handler
+        that is more efficient than the standard function. The
+        memory blocks obtained for this purpose are retained and
+        re-used if possible while <code class="function">pcre2_match</code>() is running. They are all
+        freed just before it exits.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2stack-3_sect4" name="pcre2stack-3_sect4" shape="rect"> </a>
+
+        <h3>Limiting <code class="function">pcre2_match</code>()'s
+        stack usage</h3>
+
+        <p>You can set limits on the number of times the internal
+        <code class="function">match</code>() function is called,
+        both in total and recursively. If a limit is exceeded,
+        <code class="function">pcre2_match</code>() returns an
+        error code. Setting suitable limits should prevent it from
+        running out of stack. The default values of the limits are
+        very large, and unlikely ever to operate. They can be
+        changed when PCRE2 is built, and they can also be set when
+        <code class="function">pcre2_match</code>() is called. For
+        details of these interfaces, see the <a class="link" href="../htmlman3/pcre2build.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2build</span>(3)</span></a>
+        documentation and the section entitled "The match context"
+        in the <a class="link" href="../htmlman3/pcre2api.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2api</span>(3)</span></a>
+        documentation.</p>
+
+        <p>As a very rough rule of thumb, you should reckon on
+        about 500 bytes per recursion. Thus, if you want to limit
+        your stack usage to 8Mb, you should set the limit at 16000
+        recursions. A 64Mb stack, on the other hand, can support
+        around 128000 recursions.</p>
+
+        <p>The <code class="function">pcre2test</code> test program
+        has a modifier called "find_limits" which, if applied to a
+        subject line, causes it to find the smallest limits that
+        allow a a pattern to match. This is done by calling
+        <code class="function">pcre2_match</code>() repeatedly with
+        different limits.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2stack-3_sect5" name="pcre2stack-3_sect5" shape="rect"> </a>
+
+        <h3>Changing stack size in Unix-like systems</h3>
+
+        <p>In Unix-like environments, there is not often a problem
+        with the stack unless very long strings are involved,
+        though the default limit on stack size varies from system
+        to system. Values from 8Mb to 64Mb are common. You can find
+        your default limit by running the command:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+ulimit -s
+</pre>
+        </div>
+
+        <p>Unfortunately, the effect of running out of stack is
+        often SIGSEGV, though sometimes a more explicit error
+        message is given. You can normally increase the limit on
+        stack size by code such as this:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+ struct rlimit rlim;
+ getrlimit(RLIMIT_STACK, &amp;rlim);
+ rlim.rlim_cur = 100*1024*1024;
+ setrlimit(RLIMIT_STACK, &amp;rlim);
+</pre>
+        </div>
+
+        <p>This reads the current limits (soft and hard) using
+        <code class="function">getrlimit</code>(), then attempts to
+        increase the soft limit to 100Mb using <code class="function">setrlimit</code>(). You must do this before
+        calling <code class="function">pcre2_match</code>().</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pcre2stack-3_sect6" name="pcre2stack-3_sect6" shape="rect"> </a>
+
+        <h3>Changing stack size in Mac OS X</h3>
+
+        <p>Using <code class="function">setrlimit</code>(), as
+        described above, should also work on Mac OS X. It is also
+        possible to set a stack size when linking a program. There
+        is a discussion about stack sizes in Mac OS X at this web
+        site: http://developer.apple.com/qa/qa2005/qa1419.html.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2stack-3_sect7" name="pcre2stack-3_sect7" shape="rect"> </a>
+
+      <h2>AUTHOR</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+Philip Hazel
+University Computing Service
+Cambridge, England.
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2stack-3_sect8" name="pcre2stack-3_sect8" shape="rect"> </a>
+
+      <h2>REVISION</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+Last updated: 21 November 2014
+Copyright (c) 1997-2014 University of Cambridge.
+</pre>
+      </div>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <thead>
+            <tr>
+              <th style="" rowspan="1" colspan="1">COPYRIGHT</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <p>This manual page is taken from the <a class="ulink" href="http://www.PCRE.org/" target="_top" shape="rect">PCRE library</a>, which is distributed under
+                the BSD license.</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

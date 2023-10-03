@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>uname(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="uname(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="uname.2" name="uname.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>uname — get name and information about current
+      kernel</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;sys/utsname.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>uname</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">struct utsname *<var class="pdparam">buf</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="uname-2_sect1" name="uname-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">uname</code>() returns system
+      information in the structure pointed to by <em class="parameter"><code>buf</code></em>. The <span class="structname">utsname</span> struct is defined in <code class="literal">&lt;</code><code class="filename">sys/utsname.h</code><code class="literal">&gt;</code></p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+struct utsname {
+    char sysname[];    /* Operating system name (e.g., "Linux") */
+    char nodename[];   /* Name within "some implementation-defined
+                          network" */
+    char release[];    /* Operating system release (e.g., "2.6.28") */
+    char version[];    /* Operating system version */
+    char machine[];    /* Hardware identifier */
+#ifdef _GNU_SOURCE
+    char domainname[]; /* NIS or YP domain name */
+#endif
+};
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>The length of the arrays in a <span class="emphasis"><em>struct utsname</em></span> is unspecified (see
+      NOTES); the fields are terminated by a null byte ('\0').</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="uname-2_sect2" name="uname-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, zero is returned. On error, −1 is
+      returned, and <code class="varname">errno</code> is set
+      appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="uname-2_sect3" name="uname-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>buf</code></em> is not
+            valid.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="uname-2_sect4" name="uname-2_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>SVr4, POSIX.1-2001. There is no <code class="function">uname</code>() call in 4.3BSD.</p>
+
+      <p>The <em class="replaceable"><code>domainname</code></em>
+      member (the NIS or YP domain name) is a GNU extension.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="uname-2_sect5" name="uname-2_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>This is a system call, and the operating system presumably
+      knows its name, release and version. It also knows what
+      hardware it runs on. So, four of the fields of the struct are
+      meaningful. On the other hand, the field <em class="replaceable"><code>nodename</code></em> is meaningless: it
+      gives the name of the present machine in some undefined
+      network, but typically machines are in more than one network
+      and have several names. Moreover, the kernel has no way of
+      knowing about such things, so it has to be told what to
+      answer here. The same holds for the additional <em class="replaceable"><code>domainname</code></em> field.</p>
+
+      <p>To this end, Linux uses the system calls <a class="link" href="../htmlman2/gethostname.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sethostname</span>(2)</span></a> and
+      <a class="link" href="../htmlman2/getdomainname.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setdomainname</span>(2)</span></a>. Note that
+      there is no standard that says that the hostname set by
+      <a class="link" href="../htmlman2/gethostname.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sethostname</span>(2)</span></a> is the same
+      string as the <em class="replaceable"><code>nodename</code></em> field of the struct
+      returned by <code class="function">uname</code>() (indeed,
+      some systems allow a 256-byte hostname and an 8-byte
+      nodename), but this is true on Linux. The same holds for
+      <a class="link" href="../htmlman2/getdomainname.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setdomainname</span>(2)</span></a> and the
+      <em class="replaceable"><code>domainname</code></em>
+      field.</p>
+
+      <p>The length of the fields in the struct varies. Some
+      operating systems or libraries use a hardcoded 9 or 33 or 65
+      or 257. Other systems use <code class="constant">SYS_NMLN</code> or <code class="constant">_SYS_NMLN</code> or <code class="constant">UTSLEN</code> or <code class="constant">_UTSNAME_LENGTH</code>. Clearly, it is a bad idea
+      to use any of these constants; just use sizeof(...). Often
+      257 is chosen in order to have room for an internet
+      hostname.</p>
+
+      <p>Part of the utsname information is also accessible via
+      <code class="filename">/proc/sys/kernel/<code class="literal">{</code></code><em class="replaceable"><code>ostype</code></em>, <em class="replaceable"><code>hostname</code></em>, <em class="replaceable"><code>osrelease</code></em>, <em class="replaceable"><code>version</code></em>, <em class="replaceable"><code>domainname</code></em>}.</p>
+
+      <div class="refsect2">
+        <a id="uname-2_sect6" name="uname-2_sect6" shape="rect"> </a>
+
+        <h3>C library/kernel ABI differences</h3>
+
+        <p>Over time, increases in the size of the <span class="structname">utsname</span> structure have led to three
+        successive versions of <code class="function">uname</code>(): <code class="function">sys_olduname</code>() (slot <em class="replaceable"><code>__NR_oldolduname</code></em>),
+        <code class="function">sys_uname</code>() (slot <em class="replaceable"><code>__NR_olduname</code></em>), and
+        <code class="function">sys_newuname</code>() (slot
+        <em class="replaceable"><code>__NR_uname)</code></em>. The
+        first one used length 9 for all fields; the second used 65;
+        the third also uses 65 but adds the <em class="replaceable"><code>domainname</code></em> field. The glibc
+        <code class="function">uname</code>() wrapper function
+        hides these details from applications, invoking the most
+        recent version of the system call provided by the
+        kernel.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="uname-2_sect7" name="uname-2_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman1/uname.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">uname</span>(1)</span></a>, <a class="link" href="../htmlman2/getdomainname.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getdomainname</span>(2)</span></a>, <a class="link" href="../htmlman2/gethostname.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gethostname</span>(2)</span></a>, <a class="link" href="../htmlman7/namespaces.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">namespaces</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="uname-2_sect8" name="uname-2_sect8" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2001 Andries Brouwer &lt;aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl&gt;.<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  2007-07-05 mtk: Added details on underlying system call interfaces<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,3654 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>elf(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="elf(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="elf.5" name="elf.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>elf — format of Executable and Linking Format (ELF)
+      files</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;elf.h&gt;
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="elf-5_sect1" name="elf-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The header file <code class="literal">&lt;</code><code class="filename">elf.h</code><code class="literal">&gt;</code>
+      defines the format of ELF executable binary files. Amongst
+      these files are normal executable files, relocatable object
+      files, core files and shared libraries.</p>
+
+      <p>An executable file using the ELF file format consists of
+      an ELF header, followed by a program header table or a
+      section header table, or both. The ELF header is always at
+      offset zero of the file. The program header table and the
+      section header table's offset in the file are defined in the
+      ELF header. The two tables describe the rest of the
+      particularities of the file.</p>
+
+      <p>This header file describes the above mentioned headers as
+      C structures and also includes structures for dynamic
+      sections, relocation sections and symbol tables.</p>
+
+      <p>The following types are used for N-bit architectures
+      (N=32,64, <span class="type">ElfN</span> stands for
+      <span class="type">Elf32</span> or <span class="type">Elf64</span>, <span class="type">uintN_t</span> stands
+      for <span class="type">uint32_t</span> or <span class="type">uint64_t</span>):</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+ElfN_Addr       Unsigned program address, uintN_t
+ElfN_Off        Unsigned file offset, uintN_t
+ElfN_Section    Unsigned section index, uint16_t
+ElfN_Versym     Unsigned version symbol information, uint16_t
+Elf_Byte        unsigned char
+ElfN_Half       uint16_t
+ElfN_Sword      int32_t
+ElfN_Word       uint32_t
+ElfN_Sxword     int64_t
+ElfN_Xword      uint64_t
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <p>The *BSD terminology is a bit different. There
+              <span class="type">Elf64_Half</span> is twice as
+              large as <span class="type">Elf32_Half</span>, and
+              <span class="type">Elf64Quarter</span> is used for
+              <span class="type">uint16_t</span>. In order to avoid
+              confusion these types are replaced by explicit ones
+              in the below.</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <p>All data structures that the file format defines follow
+      the "natural" size and alignment guidelines for the relevant
+      class. If necessary, data structures contain explicit padding
+      to ensure 4-byte alignment for 4-byte objects, to force
+      structure sizes to a multiple of 4, and so on.</p>
+
+      <p>The ELF header is described by the type <span class="type">Elf32_Ehdr</span> or <span class="type">Elf64_Ehdr</span>:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="structdef">
+            <table style="border-collapse: collapse;">
+              <colgroup span="1">
+                <col class="c1" span="1" />
+                <col class="c2" span="1" />
+                <col class="c3" span="1" />
+                <col class="c4" span="1" />
+                <col class="c5" span="1" />
+              </colgroup>
+
+              <tbody>
+                <tr>
+                  <td style="" colspan="5" align="left" rowspan="1">
+                    <div class="literallayout">
+                      #define EI_NIDENT 16
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="" colspan="5" rowspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                  typedef</td>
+
+                  <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1">struct {</td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>e_ident</code></em>[EI_NIDENT];</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint16_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>e_type</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint16_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>e_machine</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>e_version</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">ElfN_Addr</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>e_entry</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">ElfN_Off</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>e_phoff</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">ElfN_Off</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>e_shoff</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>e_flags</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint16_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>e_ehsize</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint16_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>e_phentsize</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint16_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>e_phnum</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint16_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>e_shentsize</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint16_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>e_shnum</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint16_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>e_shstrndx</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">} ElfN_Ehdr;</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>The fields have the following meanings:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><em class="parameter"><code>e_ident</code></em></span></dt>
+
+          <dd>
+            <p>This array of bytes specifies to interpret the file,
+            independent of the processor or the file's remaining
+            contents. Within this array everything is named by
+            macros, which start with the prefix <code class="constant">EI_</code> and may contain values which
+            start with the prefix <code class="constant">ELF</code>. The following macros are
+            defined:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><code class="constant">EI_MAG0</code></span></dt>
+
+                    <dd>
+                      <p>The first byte of the magic number. It
+                      must be filled with <code class="constant">ELFMAG0</code>. (0: 0x7f)</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">EI_MAG1</code></span></dt>
+
+                    <dd>
+                      <p>The second byte of the magic number. It
+                      must be filled with <code class="constant">ELFMAG1</code>. (1: 'E')</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">EI_MAG2</code></span></dt>
+
+                    <dd>
+                      <p>The third byte of the magic number. It
+                      must be filled with <code class="constant">ELFMAG2</code>. (2: 'L')</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">EI_MAG3</code></span></dt>
+
+                    <dd>
+                      <p>The fourth byte of the magic number. It
+                      must be filled with <code class="constant">ELFMAG3</code>. (3: 'F')</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">EI_CLASS</code></span></dt>
+
+                    <dd>
+                      <p>The fifth byte identifies the architecture
+                      for this binary:</p>
+
+                      <div class="blockquote">
+                        <blockquote class="blockquote">
+                          <div class="variablelist">
+                            <dl class="variablelist">
+                              <dt><span class="term"><code class="constant">ELFCLASSNONE</code></span></dt>
+
+                              <dd>
+                                <p>This class is invalid.</p>
+                              </dd>
+
+                              <dt><span class="term"><code class="constant">ELFCLASS32</code></span></dt>
+
+                              <dd>
+                                <p>This defines the 32-bit
+                                architecture. It supports machines
+                                with files and virtual address
+                                spaces up to 4 Gigabytes.</p>
+                              </dd>
+
+                              <dt><span class="term"><code class="constant">ELFCLASS64</code></span></dt>
+
+                              <dd>
+                                <p>This defines the 64-bit
+                                architecture.</p>
+                              </dd>
+                            </dl>
+                          </div>
+                        </blockquote>
+                      </div>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">EI_DATA</code></span></dt>
+
+                    <dd>
+                      <p>The sixth byte specifies the data encoding
+                      of the processor-specific data in the file.
+                      Currently these encodings are supported:</p>
+
+                      <div class="blockquote">
+                        <blockquote class="blockquote">
+                          <div class="variablelist">
+                            <dl class="variablelist">
+                              <dt><span class="term"><code class="constant">ELFDATANONE</code></span></dt>
+
+                              <dd>
+                                <p>Unknown data format.</p>
+                              </dd>
+
+                              <dt><span class="term"><code class="constant">ELFDATA2LSB</code></span></dt>
+
+                              <dd>
+                                <p>Two's complement,
+                                little-endian.</p>
+                              </dd>
+
+                              <dt><span class="term"><code class="constant">ELFDATA2MSB</code></span></dt>
+
+                              <dd>
+                                <p>Two's complement,
+                                big-endian.</p>
+                              </dd>
+                            </dl>
+                          </div>
+                        </blockquote>
+                      </div>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">EI_VERSION</code></span></dt>
+
+                    <dd>
+                      <p>The seventh byte is the version number of
+                      the ELF specification:</p>
+
+                      <div class="blockquote">
+                        <blockquote class="blockquote">
+                          <div class="variablelist">
+                            <dl class="variablelist">
+                              <dt><span class="term"><code class="constant">EV_NONE</code></span></dt>
+
+                              <dd>
+                                <p>Invalid version.</p>
+                              </dd>
+
+                              <dt><span class="term"><code class="constant">EV_CURRENT</code></span></dt>
+
+                              <dd>
+                                <p>Current version.</p>
+                              </dd>
+                            </dl>
+                          </div>
+                        </blockquote>
+                      </div>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">EI_OSABI</code></span></dt>
+
+                    <dd>
+                      <p>The eighth byte identifies the operating
+                      system and ABI to which the object is
+                      targeted. Some fields in other ELF structures
+                      have flags and values that have
+                      platform-specific meanings; the
+                      interpretation of those fields is determined
+                      by the value of this byte. For example:</p>
+
+                      <div class="blockquote">
+                        <blockquote class="blockquote">
+                          <div class="variablelist">
+                            <dl class="variablelist">
+                              <dt><span class="term"><code class="constant">ELFOSABI_NONE</code></span></dt>
+
+                              <dd>
+                                <p>Same as ELFOSABI_SYSV</p>
+                              </dd>
+
+                              <dt><span class="term"><code class="constant">ELFOSABI_SYSV</code></span></dt>
+
+                              <dd>
+                                <p>UNIX System V ABI.</p>
+                              </dd>
+
+                              <dt><span class="term"><code class="constant">ELFOSABI_HPUX</code></span></dt>
+
+                              <dd>
+                                <p>HP-UX ABI.</p>
+                              </dd>
+
+                              <dt><span class="term"><code class="constant">ELFOSABI_NETBSD</code></span></dt>
+
+                              <dd>
+                                <p>NetBSD ABI.</p>
+                              </dd>
+
+                              <dt><span class="term"><code class="constant">ELFOSABI_LINUX</code></span></dt>
+
+                              <dd>
+                                <p>Linux ABI.</p>
+                              </dd>
+
+                              <dt><span class="term"><code class="constant">ELFOSABI_SOLARIS</code></span></dt>
+
+                              <dd>
+                                <p>Solaris ABI.</p>
+                              </dd>
+
+                              <dt><span class="term"><code class="constant">ELFOSABI_IRIX</code></span></dt>
+
+                              <dd>
+                                <p>IRIX ABI.</p>
+                              </dd>
+
+                              <dt><span class="term"><code class="constant">ELFOSABI_FREEBSD</code></span></dt>
+
+                              <dd>
+                                <p>FreeBSD ABI.</p>
+                              </dd>
+
+                              <dt><span class="term"><code class="constant">ELFOSABI_TRU64</code></span></dt>
+
+                              <dd>
+                                <p>TRU64 UNIX ABI.</p>
+                              </dd>
+
+                              <dt><span class="term"><code class="constant">ELFOSABI_ARM</code></span></dt>
+
+                              <dd>
+                                <p>ARM architecture ABI.</p>
+                              </dd>
+
+                              <dt><span class="term"><code class="constant">ELFOSABI_STANDALONE</code></span></dt>
+
+                              <dd>
+                                <p>Stand-alone (embedded) ABI.</p>
+                              </dd>
+                            </dl>
+                          </div>
+                        </blockquote>
+                      </div>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">EI_ABIVERSION</code></span></dt>
+
+                    <dd>
+                      <p>The ninth byte identifies the version of
+                      the ABI to which the object is targeted. This
+                      field is used to distinguish among
+                      incompatible versions of an ABI. The
+                      interpretation of this version number is
+                      dependent on the ABI identified by the
+                      <code class="constant">EI_OSABI</code> field.
+                      Applications conforming to this specification
+                      use the value 0.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">EI_PAD</code></span></dt>
+
+                    <dd>
+                      <p>Start of padding. These bytes are reserved
+                      and set to zero. Programs which read them
+                      should ignore them. The value for
+                      <code class="constant">EI_PAD</code> will
+                      change in the future if currently unused
+                      bytes are given meanings.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">EI_NIDENT</code></span></dt>
+
+                    <dd>
+                      <p>The size of the <em class="parameter"><code>e_ident</code></em>
+                      array.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>e_type</code></em></span></dt>
+
+          <dd>
+            <p>This member of the structure identifies the object
+            file type:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><code class="constant">ET_NONE</code></span></dt>
+
+                    <dd>
+                      <p>An unknown type.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">ET_REL</code></span></dt>
+
+                    <dd>
+                      <p>A relocatable file.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">ET_EXEC</code></span></dt>
+
+                    <dd>
+                      <p>An executable file.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">ET_DYN</code></span></dt>
+
+                    <dd>
+                      <p>A shared object.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">ET_CORE</code></span></dt>
+
+                    <dd>
+                      <p>A core file.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>e_machine</code></em></span></dt>
+
+          <dd>
+            <p>This member specifies the required architecture for
+            an individual file. For example:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><code class="constant">EM_NONE</code></span></dt>
+
+                    <dd>
+                      <p>An unknown machine.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">EM_M32</code></span></dt>
+
+                    <dd>
+                      <p>AT&amp;T WE 32100.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">EM_SPARC</code></span></dt>
+
+                    <dd>
+                      <p>Sun Microsystems SPARC.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">EM_386</code></span></dt>
+
+                    <dd>
+                      <p>Intel 80386.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">EM_68K</code></span></dt>
+
+                    <dd>
+                      <p>Motorola 68000.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">EM_88K</code></span></dt>
+
+                    <dd>
+                      <p>Motorola 88000.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">EM_860</code></span></dt>
+
+                    <dd>
+                      <p>Intel 80860.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">EM_MIPS</code></span></dt>
+
+                    <dt><span class="term"><code class="constant">EM_PARISC</code></span></dt>
+
+                    <dd>
+                      <p>HP/PA.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">EM_SPARC32PLUS</code></span></dt>
+
+                    <dd>
+                      <p>SPARC with enhanced instruction set.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">EM_PPC</code></span></dt>
+
+                    <dd>
+                      <p>PowerPC.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">EM_PPC64</code></span></dt>
+
+                    <dd>
+                      <p>PowerPC 64-bit.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">EM_S390</code></span></dt>
+
+                    <dd>
+                      <p>IBM S/390</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">EM_ARM</code></span></dt>
+
+                    <dd>
+                      <p>Advanced RISC Machines</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">EM_SH</code></span></dt>
+
+                    <dd>
+                      <p>Renesas SuperH</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">EM_SPARCV9</code></span></dt>
+
+                    <dd>
+                      <p>SPARC v9 64-bit.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">EM_IA_64</code></span></dt>
+
+                    <dd>
+                      <p>Intel Itanium</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">EM_X86_64</code></span></dt>
+
+                    <dd>
+                      <p>AMD x86-64</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">EM_VAX</code></span></dt>
+
+                    <dd>
+                      <p>DEC Vax.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>e_version</code></em></span></dt>
+
+          <dd>
+            <p>This member identifies the file version:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><code class="constant">EV_NONE</code></span></dt>
+
+                    <dd>
+                      <p>Invalid version.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">EV_CURRENT</code></span></dt>
+
+                    <dd>
+                      <p>Current version.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>e_entry</code></em></span></dt>
+
+          <dd>
+            <p>This member gives the virtual address to which the
+            system first transfers control, thus starting the
+            process. If the file has no associated entry point,
+            this member holds zero.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>e_phoff</code></em></span></dt>
+
+          <dd>
+            <p>This member holds the program header table's file
+            offset in bytes. If the file has no program header
+            table, this member holds zero.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>e_shoff</code></em></span></dt>
+
+          <dd>
+            <p>This member holds the section header table's file
+            offset in bytes. If the file has no section header
+            table, this member holds zero.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>e_flags</code></em></span></dt>
+
+          <dd>
+            <p>This member holds processor-specific flags
+            associated with the file. Flag names take the form
+            EF_`machine_flag'. Currently no flags have been
+            defined.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>e_ehsize</code></em></span></dt>
+
+          <dd>
+            <p>This member holds the ELF header's size in
+            bytes.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>e_phentsize</code></em></span></dt>
+
+          <dd>
+            <p>This member holds the size in bytes of one entry in
+            the file's program header table; all entries are the
+            same size.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>e_phnum</code></em></span></dt>
+
+          <dd>
+            <p>This member holds the number of entries in the
+            program header table. Thus the product of <em class="parameter"><code>e_phentsize</code></em> and
+            <em class="parameter"><code>e_phnum</code></em> gives
+            the table's size in bytes. If a file has no program
+            header, <em class="parameter"><code>e_phnum</code></em>
+            holds the value zero.</p>
+
+            <p>If the number of entries in the program header table
+            is larger than or equal to <code class="constant">PN_XNUM</code> (0xffff), this member holds
+            <code class="constant">PN_XNUM</code> (0xffff) and the
+            real number of entries in the program header table is
+            held in the <em class="replaceable"><code>sh_info</code></em> member of the
+            initial entry in section header table. Otherwise, the
+            <em class="replaceable"><code>sh_info</code></em>
+            member of the initial entry contains the value
+            zero.</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><code class="constant">PN_XNUM</code></span></dt>
+
+                    <dd>
+                      <p>This is defined as 0xffff, the largest
+                      number <em class="parameter"><code>e_phnum</code></em> can
+                      have, specifying where the actual number of
+                      program headers is assigned.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>e_shentsize</code></em></span></dt>
+
+          <dd>
+            <p>This member holds a sections header's size in bytes.
+            A section header is one entry in the section header
+            table; all entries are the same size.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>e_shnum</code></em></span></dt>
+
+          <dd>
+            <p>This member holds the number of entries in the
+            section header table. Thus the product of <em class="parameter"><code>e_shentsize</code></em> and
+            <em class="parameter"><code>e_shnum</code></em> gives
+            the section header table's size in bytes. If a file has
+            no section header table, <em class="parameter"><code>e_shnum</code></em> holds the value
+            of zero.</p>
+
+            <p>If the number of entries in the section header table
+            is larger than or equal to <code class="constant">SHN_LORESERVE</code> (0xff00), <em class="parameter"><code>e_shnum</code></em> holds the value
+            zero and the real number of entries in the section
+            header table is held in the <em class="replaceable"><code>sh_size</code></em> member of the
+            initial entry in section header table. Otherwise, the
+            <em class="replaceable"><code>sh_size</code></em>
+            member of the initial entry in the section header table
+            holds the value zero.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>e_shstrndx</code></em></span></dt>
+
+          <dd>
+            <p>This member holds the section header table index of
+            the entry associated with the section name string
+            table. If the file has no section name string table,
+            this member holds the value <code class="constant">SHN_UNDEF</code>.</p>
+
+            <p>If the index of section name string table section is
+            larger than or equal to <code class="constant">SHN_LORESERVE</code> (0xff00), this member
+            holds <code class="constant">SHN_XINDEX</code> (0xffff)
+            and the real index of the section name string table
+            section is held in the <em class="replaceable"><code>sh_link</code></em> member of the
+            initial entry in section header table. Otherwise, the
+            <em class="replaceable"><code>sh_link</code></em>
+            member of the initial entry in section header table
+            contains the value zero.</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><code class="constant">SHN_UNDEF</code></span></dt>
+
+                    <dd>
+                      <p>This value marks an undefined, missing,
+                      irrelevant, or otherwise meaningless section
+                      reference. For example, a symbol "defined"
+                      relative to section number <code class="constant">SHN_UNDEF</code> is an undefined
+                      symbol.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">SHN_LORESERVE</code></span></dt>
+
+                    <dd>
+                      <p>This value specifies the lower bound of
+                      the range of reserved indices.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">SHN_LOPROC</code></span></dt>
+
+                    <dd>
+                      <p>Values greater than or equal to
+                      <code class="constant">SHN_HIPROC</code> are
+                      reserved for processor-specific
+                      semantics.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">SHN_HIPROC</code></span></dt>
+
+                    <dd>
+                      <p>Values less than or equal to <code class="constant">SHN_LOPROC</code> are reserved for
+                      processor-specific semantics.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">SHN_ABS</code></span></dt>
+
+                    <dd>
+                      <p>This value specifies absolute values for
+                      the corresponding reference. For example,
+                      symbols defined relative to section number
+                      <code class="constant">SHN_ABS</code> have
+                      absolute values and are not affected by
+                      relocation.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">SHN_COMMON</code></span></dt>
+
+                    <dd>
+                      <p>Symbols defined relative to this section
+                      are common symbols, such as Fortran COMMON or
+                      unallocated C external variables.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">SHN_HIRESERVE</code></span></dt>
+
+                    <dd>
+                      <p>This value specifies the upper bound of
+                      the range of reserved indices between
+                      <code class="constant">SHN_LORESERVE</code>
+                      and <code class="constant">SHN_HIRESERVE</code>, inclusive;
+                      the values do not reference the section
+                      header table. That is, the section header
+                      table does <em class="replaceable"><code>not</code></em> contain
+                      entries for the reserved indices.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+        </dl>
+      </div>
+
+      <p>An executable or shared object file's program header table
+      is an array of structures, each describing a segment or other
+      information the system needs to prepare the program for
+      execution. An object file <em class="replaceable"><code>segment</code></em> contains one or more
+      <em class="replaceable"><code>sections</code></em>. Program
+      headers are meaningful only for executable and shared object
+      files. A file specifies its own program header size with the
+      ELF header's <em class="parameter"><code>e_phentsize</code></em> and <em class="parameter"><code>e_phnum</code></em> members. The ELF
+      program header is described by the type <span class="type">Elf32_Phdr</span> or <span class="type">Elf64_Phdr</span> depending on the architecture:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="structdef">
+            <table style="border-collapse: collapse;">
+              <colgroup span="1">
+                <col class="c1" span="1" />
+                <col class="c2" span="1" />
+                <col class="c3" span="1" />
+                <col class="c4" span="1" />
+                <col class="c5" span="1" />
+              </colgroup>
+
+              <tbody>
+                <tr>
+                  <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                  typedef</td>
+
+                  <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1">struct {</td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>p_type</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">Elf32_Off</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>p_offset</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">Elf32_Addr</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>p_vaddr</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">Elf32_Addr</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>p_paddr</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>p_filesz</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>p_memsz</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>p_flags</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>p_align</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">} Elf32_Phdr;</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="structdef">
+            <table style="border-collapse: collapse;">
+              <colgroup span="1">
+                <col class="c1" span="1" />
+                <col class="c2" span="1" />
+                <col class="c3" span="1" />
+                <col class="c4" span="1" />
+                <col class="c5" span="1" />
+              </colgroup>
+
+              <tbody>
+                <tr>
+                  <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                  typedef</td>
+
+                  <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1">struct {</td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>p_type</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>p_flags</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">Elf64_Off</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>p_offset</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">Elf64_Addr</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>p_vaddr</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">Elf64_Addr</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>p_paddr</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>p_filesz</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>p_memsz</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>p_align</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">} Elf64_Phdr;</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>The main difference between the 32-bit and the 64-bit
+      program header lies in the location of the <em class="parameter"><code>p_flags</code></em> member in the total
+      struct.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><em class="parameter"><code>p_type</code></em></span></dt>
+
+          <dd>
+            <p>This member of the Phdr struct tells what kind of
+            segment this array element describes or how to
+            interpret the array element's information.</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><code class="constant">PT_NULL</code></span></dt>
+
+                    <dd>
+                      <p>The array element is unused and the other
+                      members' values are undefined. This lets the
+                      program header have ignored entries.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">PT_LOAD</code></span></dt>
+
+                    <dd>
+                      <p>The array element specifies a loadable
+                      segment, described by <em class="parameter"><code>p_filesz</code></em> and
+                      <em class="parameter"><code>p_memsz</code></em>. The
+                      bytes from the file are mapped to the
+                      beginning of the memory segment. If the
+                      segment's memory size <em class="parameter"><code>p_memsz</code></em> is
+                      larger than the file size <em class="parameter"><code>p_filesz</code></em>, the
+                      "extra" bytes are defined to hold the value 0
+                      and to follow the segment's initialized area.
+                      The file size may not be larger than the
+                      memory size. Loadable segment entries in the
+                      program header table appear in ascending
+                      order, sorted on the <em class="parameter"><code>p_vaddr</code></em>
+                      member.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">PT_DYNAMIC</code></span></dt>
+
+                    <dd>
+                      <p>The array element specifies dynamic
+                      linking information.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">PT_INTERP</code></span></dt>
+
+                    <dd>
+                      <p>The array element specifies the location
+                      and size of a null-terminated pathname to
+                      invoke as an interpreter. This segment type
+                      is meaningful only for executable files
+                      (though it may occur for shared objects).
+                      However it may not occur more than once in a
+                      file. If it is present, it must precede any
+                      loadable segment entry.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">PT_NOTE</code></span></dt>
+
+                    <dd>
+                      <p>The array element specifies the location
+                      and size for auxiliary information.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">PT_SHLIB</code></span></dt>
+
+                    <dd>
+                      <p>This segment type is reserved but has
+                      unspecified semantics. Programs that contain
+                      an array element of this type do not conform
+                      to the ABI.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">PT_PHDR</code></span></dt>
+
+                    <dd>
+                      <p>The array element, if present, specifies
+                      the location and size of the program header
+                      table itself, both in the file and in the
+                      memory image of the program. This segment
+                      type may not occur more than once in a file.
+                      Moreover, it may occur only if the program
+                      header table is part of the memory image of
+                      the program. If it is present, it must
+                      precede any loadable segment entry.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">PT_LOPROC</code></span></dt>
+
+                    <dd>
+                      <p>Values greater than or equal to
+                      <code class="constant">PT_HIPROC</code> are
+                      reserved for processor-specific
+                      semantics.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">PT_HIPROC</code></span></dt>
+
+                    <dd>
+                      <p>Values less than or equal to <code class="constant">PT_LOPROC</code> are reserved for
+                      processor-specific semantics.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">PT_GNU_STACK</code></span></dt>
+
+                    <dd>
+                      <p>GNU extension which is used by the Linux
+                      kernel to control the state of the stack via
+                      the flags set in the <em class="parameter"><code>p_flags</code></em>
+                      member.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>p_offset</code></em></span></dt>
+
+          <dd>
+            <p>This member holds the offset from the beginning of
+            the file at which the first byte of the segment
+            resides.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>p_vaddr</code></em></span></dt>
+
+          <dd>
+            <p>This member holds the virtual address at which the
+            first byte of the segment resides in memory.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>p_paddr</code></em></span></dt>
+
+          <dd>
+            <p>On systems for which physical addressing is
+            relevant, this member is reserved for the segment's
+            physical address. Under BSD this member is not used and
+            must be zero.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>p_filesz</code></em></span></dt>
+
+          <dd>
+            <p>This member holds the number of bytes in the file
+            image of the segment. It may be zero.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>p_memsz</code></em></span></dt>
+
+          <dd>
+            <p>This member holds the number of bytes in the memory
+            image of the segment. It may be zero.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>p_flags</code></em></span></dt>
+
+          <dd>
+            <p>This member holds a bit mask of flags relevant to
+            the segment:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><code class="constant">PF_X</code></span></dt>
+
+                    <dd>
+                      <p>An executable segment.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">PF_W</code></span></dt>
+
+                    <dd>
+                      <p>A writable segment.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">PF_R</code></span></dt>
+
+                    <dd>
+                      <p>A readable segment.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>A text segment commonly has the flags <code class="constant">PF_X</code> and <code class="constant">PF_R</code>. A data segment commonly has
+            <code class="constant">PF_X</code>, <code class="constant">PF_W</code> and <code class="constant">PF_R</code>.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>p_align</code></em></span></dt>
+
+          <dd>
+            <p>This member holds the value to which the segments
+            are aligned in memory and in the file. Loadable process
+            segments must have congruent values for <em class="parameter"><code>p_vaddr</code></em> and <em class="parameter"><code>p_offset</code></em>, modulo the page
+            size. Values of zero and one mean no alignment is
+            required. Otherwise, <em class="parameter"><code>p_align</code></em> should be a
+            positive, integral power of two, and <em class="parameter"><code>p_vaddr</code></em> should equal
+            <em class="parameter"><code>p_offset</code></em>,
+            modulo <em class="parameter"><code>p_align</code></em>.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>A file's section header table lets one locate all the
+      file's sections. The section header table is an array of
+      <span class="type">Elf32_Shdr</span> or <span class="type">Elf64_Shdr</span> structures. The ELF header's
+      <em class="parameter"><code>e_shoff</code></em> member gives
+      the byte offset from the beginning of the file to the section
+      header table. <em class="parameter"><code>e_shnum</code></em>
+      holds the number of entries the section header table
+      contains. <em class="parameter"><code>e_shentsize</code></em>
+      holds the size in bytes of each entry.</p>
+
+      <p>A section header table index is a subscript into this
+      array. Some section header table indices are reserved: the
+      initial entry and the indices between <code class="constant">SHN_LORESERVE</code> and <code class="constant">SHN_HIRESERVE</code>. The initial entry is used in
+      ELF extensions for <em class="parameter"><code>e_phnum</code></em>, <em class="parameter"><code>e_shnum</code></em> and <em class="replaceable"><code>e_strndx</code></em>; in other cases,
+      each field in the initial entry is set to zero. An object
+      file does not have sections for these special indices:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="variablelist">
+            <dl class="variablelist">
+              <dt><span class="term"><code class="constant">SHN_UNDEF</code></span></dt>
+
+              <dd>
+                <p>This value marks an undefined, missing,
+                irrelevant, or otherwise meaningless section
+                reference.</p>
+              </dd>
+
+              <dt><span class="term"><code class="constant">SHN_LORESERVE</code></span></dt>
+
+              <dd>
+                <p>This value specifies the lower bound of the
+                range of reserved indices.</p>
+              </dd>
+
+              <dt><span class="term"><code class="constant">SHN_LOPROC</code></span></dt>
+
+              <dd>
+                <p>Values greater than or equal to <code class="constant">SHN_HIPROC</code> are reserved for
+                processor-specific semantics.</p>
+              </dd>
+
+              <dt><span class="term"><code class="constant">SHN_HIPROC</code></span></dt>
+
+              <dd>
+                <p>Values less than or equal to <code class="constant">SHN_LOPROC</code> are reserved for
+                processor-specific semantics.</p>
+              </dd>
+
+              <dt><span class="term"><code class="constant">SHN_ABS</code></span></dt>
+
+              <dd>
+                <p>This value specifies the absolute value for the
+                corresponding reference. For example, a symbol
+                defined relative to section number <code class="constant">SHN_ABS</code> has an absolute value and
+                is not affected by relocation.</p>
+              </dd>
+
+              <dt><span class="term"><code class="constant">SHN_COMMON</code></span></dt>
+
+              <dd>
+                <p>Symbols defined relative to this section are
+                common symbols, such as FORTRAN COMMON or
+                unallocated C external variables.</p>
+              </dd>
+
+              <dt><span class="term"><code class="constant">SHN_HIRESERVE</code></span></dt>
+
+              <dd>
+                <p>This value specifies the upper bound of the
+                range of reserved indices. The system reserves
+                indices between <code class="constant">SHN_LORESERVE</code> and <code class="constant">SHN_HIRESERVE</code>, inclusive. The
+                section header table does not contain entries for
+                the reserved indices.</p>
+              </dd>
+            </dl>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>The section header has the following structure:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="structdef">
+            <table style="border-collapse: collapse;">
+              <colgroup span="1">
+                <col class="c1" span="1" />
+                <col class="c2" span="1" />
+                <col class="c3" span="1" />
+                <col class="c4" span="1" />
+                <col class="c5" span="1" />
+              </colgroup>
+
+              <tbody>
+                <tr>
+                  <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                  typedef</td>
+
+                  <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1">struct {</td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sh_name</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sh_type</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sh_flags</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">Elf32_Addr</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sh_addr</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">Elf32_Off</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sh_offset</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sh_size</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sh_link</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sh_info</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sh_addralign</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sh_entsize</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">} Elf32_Shdr;</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="structdef">
+            <table style="border-collapse: collapse;">
+              <colgroup span="1">
+                <col class="c1" span="1" />
+                <col class="c2" span="1" />
+                <col class="c3" span="1" />
+                <col class="c4" span="1" />
+                <col class="c5" span="1" />
+              </colgroup>
+
+              <tbody>
+                <tr>
+                  <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                  typedef</td>
+
+                  <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1">struct {</td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sh_name</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sh_type</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sh_flags</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">Elf64_Addr</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sh_addr</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">Elf64_Off</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sh_offset</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sh_size</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sh_link</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sh_info</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sh_addralign</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sh_entsize</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">} Elf64_Shdr;</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>No real differences exist between the 32-bit and 64-bit
+      section headers.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><em class="parameter"><code>sh_name</code></em></span></dt>
+
+          <dd>
+            <p>This member specifies the name of the section. Its
+            value is an index into the section header string table
+            section, giving the location of a null-terminated
+            string.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>sh_type</code></em></span></dt>
+
+          <dd>
+            <p>This member categorizes the section's contents and
+            semantics.</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><code class="constant">SHT_NULL</code></span></dt>
+
+                    <dd>
+                      <p>This value marks the section header as
+                      inactive. It does not have an associated
+                      section. Other members of the section header
+                      have undefined values.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">SHT_PROGBITS</code></span></dt>
+
+                    <dd>
+                      <p>This section holds information defined by
+                      the program, whose format and meaning are
+                      determined solely by the program.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">SHT_SYMTAB</code></span></dt>
+
+                    <dd>
+                      <p>This section holds a symbol table.
+                      Typically, <code class="constant">SHT_SYMTAB</code> provides symbols
+                      for link editing, though it may also be used
+                      for dynamic linking. As a complete symbol
+                      table, it may contain many symbols
+                      unnecessary for dynamic linking. An object
+                      file can also contain a <code class="constant">SHT_DYNSYM</code> section.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">SHT_STRTAB</code></span></dt>
+
+                    <dd>
+                      <p>This section holds a string table. An
+                      object file may have multiple string table
+                      sections.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">SHT_RELA</code></span></dt>
+
+                    <dd>
+                      <p>This section holds relocation entries with
+                      explicit addends, such as type <span class="type">Elf32_Rela</span> for the 32-bit class
+                      of object files. An object may have multiple
+                      relocation sections.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">SHT_HASH</code></span></dt>
+
+                    <dd>
+                      <p>This section holds a symbol hash table. An
+                      object participating in dynamic linking must
+                      contain a symbol hash table. An object file
+                      may have only one hash table.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">SHT_DYNAMIC</code></span></dt>
+
+                    <dd>
+                      <p>This section holds information for dynamic
+                      linking. An object file may have only one
+                      dynamic section.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">SHT_NOTE</code></span></dt>
+
+                    <dd>
+                      <p>This section holds information that marks
+                      the file in some way.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">SHT_NOBITS</code></span></dt>
+
+                    <dd>
+                      <p>A section of this type occupies no space
+                      in the file but otherwise resembles
+                      <code class="constant">SHT_PROGBITS</code>.
+                      Although this section contains no bytes, the
+                      <em class="parameter"><code>sh_offset</code></em>
+                      member contains the conceptual file
+                      offset.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">SHT_REL</code></span></dt>
+
+                    <dd>
+                      <p>This section holds relocation offsets
+                      without explicit addends, such as type
+                      <span class="type">Elf32_Rel</span> for the
+                      32-bit class of object files. An object file
+                      may have multiple relocation sections.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">SHT_SHLIB</code></span></dt>
+
+                    <dd>
+                      <p>This section is reserved but has
+                      unspecified semantics.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">SHT_DYNSYM</code></span></dt>
+
+                    <dd>
+                      <p>This section holds a minimal set of
+                      dynamic linking symbols. An object file can
+                      also contain a <code class="constant">SHT_SYMTAB</code> section.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">SHT_LOPROC</code></span></dt>
+
+                    <dd>
+                      <p>This value up to and including
+                      <code class="constant">SHT_HIPROC</code> is
+                      reserved for processor-specific
+                      semantics.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">SHT_HIPROC</code></span></dt>
+
+                    <dd>
+                      <p>This value down to and including
+                      <code class="constant">SHT_LOPROC</code> is
+                      reserved for processor-specific
+                      semantics.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">SHT_LOUSER</code></span></dt>
+
+                    <dd>
+                      <p>This value specifies the lower bound of
+                      the range of indices reserved for application
+                      programs.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">SHT_HIUSER</code></span></dt>
+
+                    <dd>
+                      <p>This value specifies the upper bound of
+                      the range of indices reserved for application
+                      programs. Section types between <code class="constant">SHT_LOUSER</code> and <code class="constant">SHT_HIUSER</code> may be used by
+                      the application, without conflicting with
+                      current or future system-defined section
+                      types.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>sh_flags</code></em></span></dt>
+
+          <dd>
+            <p>Sections support one-bit flags that describe
+            miscellaneous attributes. If a flag bit is set in
+            <em class="parameter"><code>sh_flags</code></em>, the
+            attribute is "on" for the section. Otherwise, the
+            attribute is "off" or does not apply. Undefined
+            attributes are set to zero.</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><code class="constant">SHF_WRITE</code></span></dt>
+
+                    <dd>
+                      <p>This section contains data that should be
+                      writable during process execution.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">SHF_ALLOC</code></span></dt>
+
+                    <dd>
+                      <p>This section occupies memory during
+                      process execution. Some control sections do
+                      not reside in the memory image of an object
+                      file. This attribute is off for those
+                      sections.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">SHF_EXECINSTR</code></span></dt>
+
+                    <dd>
+                      <p>This section contains executable machine
+                      instructions.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">SHF_MASKPROC</code></span></dt>
+
+                    <dd>
+                      <p>All bits included in this mask are
+                      reserved for processor-specific
+                      semantics.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>sh_addr</code></em></span></dt>
+
+          <dd>
+            <p>If this section appears in the memory image of a
+            process, this member holds the address at which the
+            section's first byte should reside. Otherwise, the
+            member contains zero.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>sh_offset</code></em></span></dt>
+
+          <dd>
+            <p>This member's value holds the byte offset from the
+            beginning of the file to the first byte in the section.
+            One section type, <code class="constant">SHT_NOBITS</code>, occupies no space in the
+            file, and its <em class="parameter"><code>sh_offset</code></em> member locates
+            the conceptual placement in the file.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>sh_size</code></em></span></dt>
+
+          <dd>
+            <p>This member holds the section's size in bytes.
+            Unless the section type is <code class="constant">SHT_NOBITS</code>, the section occupies
+            <em class="parameter"><code>sh_size</code></em> bytes
+            in the file. A section of type <code class="constant">SHT_NOBITS</code> may have a nonzero size,
+            but it occupies no space in the file.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>sh_link</code></em></span></dt>
+
+          <dd>
+            <p>This member holds a section header table index link,
+            whose interpretation depends on the section type.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>sh_info</code></em></span></dt>
+
+          <dd>
+            <p>This member holds extra information, whose
+            interpretation depends on the section type.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>sh_addralign</code></em></span></dt>
+
+          <dd>
+            <p>Some sections have address alignment constraints. If
+            a section holds a doubleword, the system must ensure
+            doubleword alignment for the entire section. That is,
+            the value of <em class="parameter"><code>sh_addr</code></em> must be congruent
+            to zero, modulo the value of <em class="parameter"><code>sh_addralign</code></em>. Only zero
+            and positive integral powers of two are allowed. Values
+            of zero or one mean the section has no alignment
+            constraints.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>sh_entsize</code></em></span></dt>
+
+          <dd>
+            <p>Some sections hold a table of fixed-sized entries,
+            such as a symbol table. For such a section, this member
+            gives the size in bytes for each entry. This member
+            contains zero if the section does not hold a table of
+            fixed-size entries.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>Various sections hold program and control information:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><em class="replaceable"><code>.bss</code></em></span></dt>
+
+          <dd>
+            <p>This section holds uninitialized data that
+            contributes to the program's memory image. By
+            definition, the system initializes the data with zeros
+            when the program begins to run. This section is of type
+            <code class="constant">SHT_NOBITS</code>. The attribute
+            types are <code class="constant">SHF_ALLOC</code> and
+            <code class="constant">SHF_WRITE</code>.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.comment</code></em></span></dt>
+
+          <dd>
+            <p>This section holds version control information. This
+            section is of type <code class="constant">SHT_PROGBITS</code>. No attribute types are
+            used.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.ctors</code></em></span></dt>
+
+          <dd>
+            <p>This section holds initialized pointers to the C++
+            constructor functions. This section is of type
+            <code class="constant">SHT_PROGBITS</code>. The
+            attribute types are <code class="constant">SHF_ALLOC</code> and <code class="constant">SHF_WRITE</code>.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.data</code></em></span></dt>
+
+          <dd>
+            <p>This section holds initialized data that contribute
+            to the program's memory image. This section is of type
+            <code class="constant">SHT_PROGBITS</code>. The
+            attribute types are <code class="constant">SHF_ALLOC</code> and <code class="constant">SHF_WRITE</code>.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.data1</code></em></span></dt>
+
+          <dd>
+            <p>This section holds initialized data that contribute
+            to the program's memory image. This section is of type
+            <code class="constant">SHT_PROGBITS</code>. The
+            attribute types are <code class="constant">SHF_ALLOC</code> and <code class="constant">SHF_WRITE</code>.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.debug</code></em></span></dt>
+
+          <dd>
+            <p>This section holds information for symbolic
+            debugging. The contents are unspecified. This section
+            is of type <code class="constant">SHT_PROGBITS</code>.
+            No attribute types are used.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.dtors</code></em></span></dt>
+
+          <dd>
+            <p>This section holds initialized pointers to the C++
+            destructor functions. This section is of type
+            <code class="constant">SHT_PROGBITS</code>. The
+            attribute types are <code class="constant">SHF_ALLOC</code> and <code class="constant">SHF_WRITE</code>.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.dynamic</code></em></span></dt>
+
+          <dd>
+            <p>This section holds dynamic linking information. The
+            section's attributes will include the <code class="constant">SHF_ALLOC</code> bit. Whether the
+            <code class="constant">SHF_WRITE</code> bit is set is
+            processor-specific. This section is of type
+            <code class="constant">SHT_DYNAMIC</code>. See the
+            attributes above.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.dynstr</code></em></span></dt>
+
+          <dd>
+            <p>This section holds strings needed for dynamic
+            linking, most commonly the strings that represent the
+            names associated with symbol table entries. This
+            section is of type <code class="constant">SHT_STRTAB</code>. The attribute type used
+            is <code class="constant">SHF_ALLOC</code>.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.dynsym</code></em></span></dt>
+
+          <dd>
+            <p>This section holds the dynamic linking symbol table.
+            This section is of type <code class="constant">SHT_DYNSYM</code>. The attribute used is
+            <code class="constant">SHF_ALLOC</code>.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.fini</code></em></span></dt>
+
+          <dd>
+            <p>This section holds executable instructions that
+            contribute to the process termination code. When a
+            program exits normally the system arranges to execute
+            the code in this section. This section is of type
+            <code class="constant">SHT_PROGBITS</code>. The
+            attributes used are <code class="constant">SHF_ALLOC</code> and <code class="constant">SHF_EXECINSTR</code>.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.gnu.version</code></em></span></dt>
+
+          <dd>
+            <p>This section holds the version symbol table, an
+            array of <span class="type">ElfN_Half</span> elements.
+            This section is of type <em class="replaceable"><code>SHT_GNU_versym</code></em>. The
+            attribute type used is <code class="constant">SHF_ALLOC</code>.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.gnu.version_d</code></em></span></dt>
+
+          <dd>
+            <p>This section holds the version symbol definitions, a
+            table of <span class="type">ElfN_Verdef</span>
+            structures. This section is of type <em class="replaceable"><code>SHT_GNU_verdef</code></em>. The
+            attribute type used is <code class="constant">SHF_ALLOC</code>.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.gnu.version_r</code></em></span></dt>
+
+          <dd>
+            <p>This section holds the version symbol needed
+            elements, a table of <span class="type">ElfN_Verneed</span> structures. This section is
+            of type <em class="replaceable"><code>SHT_GNU_versym</code></em>. The
+            attribute type used is <code class="constant">SHF_ALLOC</code>.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.got</code></em></span></dt>
+
+          <dd>
+            <p>This section holds the global offset table. This
+            section is of type <code class="constant">SHT_PROGBITS</code>. The attributes are
+            processor-specific.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.hash</code></em></span></dt>
+
+          <dd>
+            <p>This section holds a symbol hash table. This section
+            is of type <code class="constant">SHT_HASH</code>. The
+            attribute used is <code class="constant">SHF_ALLOC</code>.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.init</code></em></span></dt>
+
+          <dd>
+            <p>This section holds executable instructions that
+            contribute to the process initialization code. When a
+            program starts to run the system arranges to execute
+            the code in this section before calling the main
+            program entry point. This section is of type
+            <code class="constant">SHT_PROGBITS</code>. The
+            attributes used are <code class="constant">SHF_ALLOC</code> and <code class="constant">SHF_EXECINSTR</code>.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.interp</code></em></span></dt>
+
+          <dd>
+            <p>This section holds the pathname of a program
+            interpreter. If the file has a loadable segment that
+            includes the section, the section's attributes will
+            include the <code class="constant">SHF_ALLOC</code>
+            bit. Otherwise, that bit will be off. This section is
+            of type <code class="constant">SHT_PROGBITS</code>.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.line</code></em></span></dt>
+
+          <dd>
+            <p>This section holds line number information for
+            symbolic debugging, which describes the correspondence
+            between the program source and the machine code. The
+            contents are unspecified. This section is of type
+            <code class="constant">SHT_PROGBITS</code>. No
+            attribute types are used.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.note</code></em></span></dt>
+
+          <dd>
+            <p>This section holds information in the "Note Section"
+            format. This section is of type <code class="constant">SHT_NOTE</code>. No attribute types are
+            used. OpenBSD native executables usually contain a
+            <em class="replaceable"><code>.note.openbsd.ident</code></em>
+            section to identify themselves, for the kernel to
+            bypass any compatibility ELF binary emulation tests
+            when loading the file.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.note.GNU-stack</code></em></span></dt>
+
+          <dd>
+            <p>This section is used in Linux object files for
+            declaring stack attributes. This section is of type
+            <code class="constant">SHT_PROGBITS</code>. The only
+            attribute used is <code class="constant">SHF_EXECINSTR</code>. This indicates to the
+            GNU linker that the object file requires an executable
+            stack.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.plt</code></em></span></dt>
+
+          <dd>
+            <p>This section holds the procedure linkage table. This
+            section is of type <code class="constant">SHT_PROGBITS</code>. The attributes are
+            processor-specific.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.relNAME</code></em></span></dt>
+
+          <dd>
+            <p>This section holds relocation information as
+            described below. If the file has a loadable segment
+            that includes relocation, the section's attributes will
+            include the <code class="constant">SHF_ALLOC</code>
+            bit. Otherwise, the bit will be off. By convention,
+            "NAME" is supplied by the section to which the
+            relocations apply. Thus a relocation section for
+            <em class="replaceable"><code>.text</code></em>
+            normally would have the name <em class="replaceable"><code>.rel.text</code></em>. This section
+            is of type <code class="constant">SHT_REL</code>.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.relaNAME</code></em></span></dt>
+
+          <dd>
+            <p>This section holds relocation information as
+            described below. If the file has a loadable segment
+            that includes relocation, the section's attributes will
+            include the <code class="constant">SHF_ALLOC</code>
+            bit. Otherwise, the bit will be off. By convention,
+            "NAME" is supplied by the section to which the
+            relocations apply. Thus a relocation section for
+            <em class="replaceable"><code>.text</code></em>
+            normally would have the name <em class="replaceable"><code>.rela.text</code></em>. This
+            section is of type <code class="constant">SHT_RELA</code>.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.rodata</code></em></span></dt>
+
+          <dd>
+            <p>This section holds read-only data that typically
+            contributes to a nonwritable segment in the process
+            image. This section is of type <code class="constant">SHT_PROGBITS</code>. The attribute used is
+            <code class="constant">SHF_ALLOC</code>.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.rodata1</code></em></span></dt>
+
+          <dd>
+            <p>This section holds read-only data that typically
+            contributes to a nonwritable segment in the process
+            image. This section is of type <code class="constant">SHT_PROGBITS</code>. The attribute used is
+            <code class="constant">SHF_ALLOC</code>.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.shstrtab</code></em></span></dt>
+
+          <dd>
+            <p>This section holds section names. This section is of
+            type <code class="constant">SHT_STRTAB</code>. No
+            attribute types are used.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.strtab</code></em></span></dt>
+
+          <dd>
+            <p>This section holds strings, most commonly the
+            strings that represent the names associated with symbol
+            table entries. If the file has a loadable segment that
+            includes the symbol string table, the section's
+            attributes will include the <code class="constant">SHF_ALLOC</code> bit. Otherwise, the bit
+            will be off. This section is of type <code class="constant">SHT_STRTAB</code>.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.symtab</code></em></span></dt>
+
+          <dd>
+            <p>This section holds a symbol table. If the file has a
+            loadable segment that includes the symbol table, the
+            section's attributes will include the <code class="constant">SHF_ALLOC</code> bit. Otherwise, the bit
+            will be off. This section is of type <code class="constant">SHT_SYMTAB</code>.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>.text</code></em></span></dt>
+
+          <dd>
+            <p>This section holds the "text", or executable
+            instructions, of a program. This section is of type
+            <code class="constant">SHT_PROGBITS</code>. The
+            attributes used are <code class="constant">SHF_ALLOC</code> and <code class="constant">SHF_EXECINSTR</code>.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>String table sections hold null-terminated character
+      sequences, commonly called strings. The object file uses
+      these strings to represent symbol and section names. One
+      references a string as an index into the string table
+      section. The first byte, which is index zero, is defined to
+      hold a null byte ('\0'). Similarly, a string table's last
+      byte is defined to hold a null byte, ensuring null
+      termination for all strings.</p>
+
+      <p>An object file's symbol table holds information needed to
+      locate and relocate a program's symbolic definitions and
+      references. A symbol table index is a subscript into this
+      array.</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="structdef">
+            <table style="border-collapse: collapse;">
+              <colgroup span="1">
+                <col class="c1" span="1" />
+                <col class="c2" span="1" />
+                <col class="c3" span="1" />
+                <col class="c4" span="1" />
+                <col class="c5" span="1" />
+              </colgroup>
+
+              <tbody>
+                <tr>
+                  <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                  typedef</td>
+
+                  <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1">struct {</td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>st_name</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">Elf32_Addr</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>st_value</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>st_size</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>st_info</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>st_other</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint16_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>st_shndx</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">} Elf32_Sym;</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="structdef">
+            <table style="border-collapse: collapse;">
+              <colgroup span="1">
+                <col class="c1" span="1" />
+                <col class="c2" span="1" />
+                <col class="c3" span="1" />
+                <col class="c4" span="1" />
+                <col class="c5" span="1" />
+              </colgroup>
+
+              <tbody>
+                <tr>
+                  <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                  typedef</td>
+
+                  <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1">struct {</td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>st_name</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>st_info</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>st_other</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint16_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>st_shndx</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">Elf64_Addr</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>st_value</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>st_size</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">} Elf64_Sym;</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>The 32-bit and 64-bit versions have the same members, just
+      in a different order.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><em class="parameter"><code>st_name</code></em></span></dt>
+
+          <dd>
+            <p>This member holds an index into the object file's
+            symbol string table, which holds character
+            representations of the symbol names. If the value is
+            nonzero, it represents a string table index that gives
+            the symbol name. Otherwise, the symbol table has no
+            name.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>st_value</code></em></span></dt>
+
+          <dd>
+            <p>This member gives the value of the associated
+            symbol.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>st_size</code></em></span></dt>
+
+          <dd>
+            <p>Many symbols have associated sizes. This member
+            holds zero if the symbol has no size or an unknown
+            size.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>st_info</code></em></span></dt>
+
+          <dd>
+            <p>This member specifies the symbol's type and binding
+            attributes:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><code class="constant">STT_NOTYPE</code></span></dt>
+
+                    <dd>
+                      <p>The symbol's type is not defined.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">STT_OBJECT</code></span></dt>
+
+                    <dd>
+                      <p>The symbol is associated with a data
+                      object.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">STT_FUNC</code></span></dt>
+
+                    <dd>
+                      <p>The symbol is associated with a function
+                      or other executable code.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">STT_SECTION</code></span></dt>
+
+                    <dd>
+                      <p>The symbol is associated with a section.
+                      Symbol table entries of this type exist
+                      primarily for relocation and normally have
+                      <code class="constant">STB_LOCAL</code>
+                      bindings.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">STT_FILE</code></span></dt>
+
+                    <dd>
+                      <p>By convention, the symbol's name gives the
+                      name of the source file associated with the
+                      object file. A file symbol has <code class="constant">STB_LOCAL</code> bindings, its
+                      section index is <code class="constant">SHN_ABS</code>, and it precedes
+                      the other <code class="constant">STB_LOCAL</code> symbols of the
+                      file, if it is present.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">STT_LOPROC</code></span></dt>
+
+                    <dd>
+                      <p>This value up to and including
+                      <code class="constant">STT_HIPROC</code> is
+                      reserved for processor-specific
+                      semantics.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">STT_HIPROC</code></span></dt>
+
+                    <dd>
+                      <p>This value down to and including
+                      <code class="constant">STT_LOPROC</code> is
+                      reserved for processor-specific
+                      semantics.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">STB_LOCAL</code></span></dt>
+
+                    <dd>
+                      <p>Local symbols are not visible outside the
+                      object file containing their definition.
+                      Local symbols of the same name may exist in
+                      multiple files without interfering with each
+                      other.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">STB_GLOBAL</code></span></dt>
+
+                    <dd>
+                      <p>Global symbols are visible to all object
+                      files being combined. One file's definition
+                      of a global symbol will satisfy another
+                      file's undefined reference to the same
+                      symbol.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">STB_WEAK</code></span></dt>
+
+                    <dd>
+                      <p>Weak symbols resemble global symbols, but
+                      their definitions have lower precedence.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">STB_LOPROC</code></span></dt>
+
+                    <dd>
+                      <p>This value up to and including
+                      <code class="constant">STB_HIPROC</code> is
+                      reserved for processor-specific
+                      semantics.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">STB_HIPROC</code></span></dt>
+
+                    <dd>
+                      <p>This value down to and including
+                      <code class="constant">STB_LOPROC</code> is
+                      reserved for processor-specific
+                      semantics.</p>
+
+                      <p>There are macros for packing and unpacking
+                      the binding and type fields:</p>
+
+                      <p><code class="function">ELF32_ST_BIND</code>(info) or
+                      <code class="function">ELF64_ST_BIND</code>(info) extract
+                      a binding from an <em class="parameter"><code>st_info</code></em>
+                      value.</p>
+
+                      <p><code class="function">ELF32_ST_TYPE</code>(info) or
+                      <code class="function">ELF64_ST_TYPE</code>(info)</p>
+                    </dd>
+                  </dl>
+                </div>
+
+                <p>extract a type from an <em class="parameter"><code>st_info</code></em> value.</p>
+
+                <div class="itemizedlist">
+                  <ul class="itemizedlist" style="list-style-type: disc;">
+                    <li class="listitem">
+                      <p><code class="constant">ELF32_ST_INFO</code>(bind, type)
+                      or <code class="constant">ELF64_ST_INFO</code>(bind,
+                      type)</p>
+                    </li>
+                  </ul>
+                </div>
+
+                <p>convert a binding and a type into an <em class="parameter"><code>st_info</code></em> value.</p>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>st_other</code></em></span></dt>
+
+          <dd>
+            <p>This member defines the symbol visibility.</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><code class="constant">STV_DEFAULT</code></span></dt>
+
+                    <dd>
+                      <p>Default symbol visibility rules.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">STV_INTERNAL</code></span></dt>
+
+                    <dd>
+                      <p>Processor-specific hidden class.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">STV_HIDDEN</code></span></dt>
+
+                    <dd>
+                      <p>Symbol is unavailable in other
+                      modules.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">STV_PROTECTED</code></span></dt>
+
+                    <dd>
+                      <p>Not preemptible, not exported.</p>
+                    </dd>
+                  </dl>
+                </div>
+
+                <p>There are macros for extracting the visibility
+                type:</p>
+
+                <p><code class="function">ELF32_ST_VISIBILITY</code>(other) or
+                <code class="function">ELF64_ST_VISIBILITY</code>(other)</p>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>st_shndx</code></em></span></dt>
+
+          <dd>
+            <p>Every symbol table entry is "defined" in relation to
+            some section. This member holds the relevant section
+            header table index.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>Relocation is the process of connecting symbolic
+      references with symbolic definitions. Relocatable files must
+      have information that describes how to modify their section
+      contents, thus allowing executable and shared object files to
+      hold the right information for a process's program image.
+      Relocation entries are these data.</p>
+
+      <p>Relocation structures that do not need an addend:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="structdef">
+            <table style="border-collapse: collapse;">
+              <colgroup span="1">
+                <col class="c1" span="1" />
+                <col class="c2" span="1" />
+                <col class="c3" span="1" />
+                <col class="c4" span="1" />
+                <col class="c5" span="1" />
+              </colgroup>
+
+              <tbody>
+                <tr>
+                  <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                  typedef</td>
+
+                  <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1">struct {</td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">Elf32_Addr</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>r_offset</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>r_info</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">} Elf32_Rel;</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="structdef">
+            <table style="border-collapse: collapse;">
+              <colgroup span="1">
+                <col class="c1" span="1" />
+                <col class="c2" span="1" />
+                <col class="c3" span="1" />
+                <col class="c4" span="1" />
+                <col class="c5" span="1" />
+              </colgroup>
+
+              <tbody>
+                <tr>
+                  <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                  typedef</td>
+
+                  <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1">struct {</td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">Elf64_Addr</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>r_offset</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>r_info</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">} Elf64_Rel;</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>Relocation structures that need an addend:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="structdef">
+            <table style="border-collapse: collapse;">
+              <colgroup span="1">
+                <col class="c1" span="1" />
+                <col class="c2" span="1" />
+                <col class="c3" span="1" />
+                <col class="c4" span="1" />
+                <col class="c5" span="1" />
+              </colgroup>
+
+              <tbody>
+                <tr>
+                  <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                  typedef</td>
+
+                  <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1">struct {</td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">Elf32_Addr</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>r_offset</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>r_info</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">int32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>r_addend</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">} Elf32_Rela;</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="structdef">
+            <table style="border-collapse: collapse;">
+              <colgroup span="1">
+                <col class="c1" span="1" />
+                <col class="c2" span="1" />
+                <col class="c3" span="1" />
+                <col class="c4" span="1" />
+                <col class="c5" span="1" />
+              </colgroup>
+
+              <tbody>
+                <tr>
+                  <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                  typedef</td>
+
+                  <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1">struct {</td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">Elf64_Addr</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>r_offset</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>r_info</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">int64_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>r_addend</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">} Elf64_Rela;</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><em class="parameter"><code>r_offset</code></em></span></dt>
+
+          <dd>
+            <p>This member gives the location at which to apply the
+            relocation action. For a relocatable file, the value is
+            the byte offset from the beginning of the section to
+            the storage unit affected by the relocation. For an
+            executable file or shared object, the value is the
+            virtual address of the storage unit affected by the
+            relocation.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>r_info</code></em></span></dt>
+
+          <dd>
+            <p>This member gives both the symbol table index with
+            respect to which the relocation must be made and the
+            type of relocation to apply. Relocation types are
+            processor-specific. When the text refers to a
+            relocation entry's relocation type or symbol table
+            index, it means the result of applying <em class="replaceable"><code>ELF[32|64]_R_TYPE</code></em> or
+            <em class="replaceable"><code>ELF[32|64]_R_SYM</code></em>,
+            respectively, to the entry's <em class="parameter"><code>r_info</code></em> member.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>r_addend</code></em></span></dt>
+
+          <dd>
+            <p>This member specifies a constant addend used to
+            compute the value to be stored into the relocatable
+            field.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>The .dynamic section contains a series of structures that
+      hold relevant dynamic linking information. The d_tag member
+      controls the interpretation of d_un.</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+typedef struct {
+    Elf32_Sword    d_tag;
+    union {
+        Elf32_Word d_val;
+        Elf32_Addr d_ptr;
+    } d_un;
+} Elf32_Dyn;
+extern Elf32_Dyn _DYNAMIC[];
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+typedef struct {
+    Elf64_Sxword    d_tag;
+    union {
+        Elf64_Xword d_val;
+        Elf64_Addr  d_ptr;
+    } d_un;
+} Elf64_Dyn;
+extern Elf64_Dyn _DYNAMIC[];
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><em class="replaceable"><code>d_tag</code></em></span></dt>
+
+          <dd>
+            <p>This member may have any of the following
+            values:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><code class="constant">DT_NULL</code></span></dt>
+
+                    <dd>
+                      <p>Marks end of dynamic section</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">DT_NEEDED</code></span></dt>
+
+                    <dd>
+                      <p>String table offset to name of a needed
+                      library</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">DT_PLTRELSZ</code></span></dt>
+
+                    <dd>
+                      <p>Size in bytes of PLT relocs</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">DT_PLTGOT</code></span></dt>
+
+                    <dd>
+                      <p>Address of PLT and/or GOT</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">DT_HASH</code></span></dt>
+
+                    <dd>
+                      <p>Address of symbol hash table</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">DT_STRTAB</code></span></dt>
+
+                    <dd>
+                      <p>Address of string table</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">DT_SYMTAB</code></span></dt>
+
+                    <dd>
+                      <p>Address of symbol table</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">DT_RELA</code></span></dt>
+
+                    <dd>
+                      <p>Address of Rela relocs table</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">DT_RELASZ</code></span></dt>
+
+                    <dd>
+                      <p>Size in bytes of Rela table</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">DT_RELAENT</code></span></dt>
+
+                    <dd>
+                      <p>Size in bytes of a Rela table entry</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">DT_STRSZ</code></span></dt>
+
+                    <dd>
+                      <p>Size in bytes of string table</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">DT_SYMENT</code></span></dt>
+
+                    <dd>
+                      <p>Size in bytes of a symbol table entry</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">DT_INIT</code></span></dt>
+
+                    <dd>
+                      <p>Address of the initialization function</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">DT_FINI</code></span></dt>
+
+                    <dd>
+                      <p>Address of the termination function</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">DT_SONAME</code></span></dt>
+
+                    <dd>
+                      <p>String table offset to name of shared
+                      object</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">DT_RPATH</code></span></dt>
+
+                    <dd>
+                      <p>String table offset to library search path
+                      (deprecated)</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">DT_SYMBOLIC</code></span></dt>
+
+                    <dd>
+                      <p>Alert linker to search this shared object
+                      before the executable for symbols</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">DT_REL</code></span></dt>
+
+                    <dd>
+                      <p>Address of Rel relocs table</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">DT_RELSZ</code></span></dt>
+
+                    <dd>
+                      <p>Size in bytes of Rel table</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">DT_RELENT</code></span></dt>
+
+                    <dd>
+                      <p>Size in bytes of a Rel table entry</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">DT_PLTREL</code></span></dt>
+
+                    <dd>
+                      <p>Type of reloc the PLT refers (Rela or
+                      Rel)</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">DT_DEBUG</code></span></dt>
+
+                    <dd>
+                      <p>Undefined use for debugging</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">DT_TEXTREL</code></span></dt>
+
+                    <dd>
+                      <p>Absence of this indicates no relocs should
+                      apply to a nonwritable segment</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">DT_JMPREL</code></span></dt>
+
+                    <dd>
+                      <p>Address of reloc entries solely for the
+                      PLT</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">DT_BIND_NOW</code></span></dt>
+
+                    <dd>
+                      <p>Instruct dynamic linker to process all
+                      relocs before transferring control to the
+                      executable</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">DT_RUNPATH</code></span></dt>
+
+                    <dd>
+                      <p>String table offset to library search
+                      path</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">DT_LOPROC</code></span></dt>
+
+                    <dd>
+                      <p>Start of processor-specific semantics</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">DT_HIPROC</code></span></dt>
+
+                    <dd>
+                      <p>End of processor-specific semantics</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>d_val</code></em></span></dt>
+
+          <dd>
+            <p>This member represents integer values with various
+            interpretations.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>d_ptr</code></em></span></dt>
+
+          <dd>
+            <p>This member represents program virtual addresses.
+            When interpreting these addresses, the actual address
+            should be computed based on the original file value and
+            memory base address. Files do not contain relocation
+            entries to fixup these addresses.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">_DYNAMIC</code></span></dt>
+
+          <dd>
+            <p>Array containing all the dynamic structures in the
+            .dynamic section. This is automatically populated by
+            the linker.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="elf-5_sect2" name="elf-5_sect2" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>ELF first appeared in System V. The ELF format is an
+      adopted standard.</p>
+
+      <p>The extensions for <em class="parameter"><code>e_phnum</code></em>, <em class="parameter"><code>e_shnum</code></em> and <em class="replaceable"><code>e_strndx</code></em> respectively are
+      Linux extensions. Sun, BSD and AMD64 also support them; for
+      further information, look under SEE ALSO.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="elf-5_sect3" name="elf-5_sect3" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><span class="citerefentry"><span class="refentrytitle">as</span>(1)</span>, <span class="citerefentry"><span class="refentrytitle">gdb</span>(1)</span>, <span class="citerefentry"><span class="refentrytitle">ld</span>(1)</span>, <span class="citerefentry"><span class="refentrytitle">objdump</span>(1)</span>, <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>, <a class="link" href="../htmlman5/core.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">core</span>(5)</span></a></p>
+
+      <p>Hewlett-Packard, <span class="emphasis"><em>Elf-64 Object
+      File Format</em></span>.</p>
+
+      <p>Santa Cruz Operation, <span class="emphasis"><em>System V
+      Application Binary Interface</em></span>.</p>
+
+      <p>UNIX System Laboratories, "Object Files", <span class="emphasis"><em>Executable and Linking Format
+      (ELF)</em></span>.</p>
+
+      <p>Sun Microsystems, <span class="emphasis"><em>Linker and
+      Libraries Guide</em></span>.</p>
+
+      <p>AMD64 ABI Draft, <span class="emphasis"><em>System V
+      Application Binary Interface AMD64 Architecture Processor
+      Supplement</em></span>.</p>
+    </div>
+
+    <div class="colophon">
+      <a id="elf-5_sect4" name="elf-5_sect4" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                   
+                  $OpenBSD: elf.5,v 1.12 2003/10/27 20:23:58 jmc Exp $<br />
+
+                  Copyright (c) 1999 Jeroen Ruigrok van der Werven<br />
+
+                  All rights reserved.<br />
+                  <br />
+                  %%%LICENSE_START(PERMISSIVE_MISC)<br />
+                  Redistribution and use in source and binary forms, with or without<br />
+
+                  modification, are permitted provided that the following conditions<br />
+
+                  are met:<br />
+                  1. Redistributions of source code must retain the above copyright<br />
+
+                    notice, this list of conditions and the following disclaimer.<br />
+
+                  2. Redistributions in binary form must reproduce the above copyright<br />
+
+                    notice, this list of conditions and the following disclaimer in the<br />
+
+                    documentation and/or other materials provided with the distribution.<br />
+
+                  <br />
+                  THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND<br />
+
+                  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE<br />
+
+                  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE<br />
+
+                  ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE<br />
+
+                  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL<br />
+
+                  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS<br />
+
+                  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)<br />
+
+                  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT<br />
+
+                  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY<br />
+
+                  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF<br />
+
+                  SUCH DAMAGE.<br />
+                  %%%LICENSE_END<br />
+                  <br />
+                  $FreeBSD: src/share/man/man5/elf.5,v 1.21 2001/10/01 16:09:23 ru Exp $<br />
+
+                  <br />
+                  Slightly adapted - aeb, 2004-01-01<br />
+
+                  2005-07-15, Mike Frysinger &lt;vapier<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gentoo.org&gt;, various fixes<br />
+
+                  2007-10-11, Mike Frysinger &lt;vapier<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gentoo.org&gt;, various fixes<br />
+
+                  2007-12-08, mtk, Converted from mdoc to man macros<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

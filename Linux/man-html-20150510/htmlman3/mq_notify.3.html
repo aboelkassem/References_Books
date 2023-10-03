@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>mq_notify(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="mq_notify(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="mq-notify.3" name="mq-notify.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>mq_notify — register for notification when a message
+      is available</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;mqueue.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>mq_notify</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">mqd_t <var class="pdparam">mqdes</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const struct sigevent *<var class="pdparam">sevp</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <p>Link with <code class="option">−lrt</code>.</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mq-notify-3_sect1" name="mq-notify-3_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">mq_notify</code>() allows the
+      calling process to register or unregister for delivery of an
+      asynchronous notification when a new message arrives on the
+      empty message queue referred to by the descriptor <em class="parameter"><code>mqdes</code></em>.</p>
+
+      <p>The <em class="parameter"><code>sevp</code></em> argument
+      is a pointer to a <span class="structname">sigevent</span>
+      structure. For the definition and general details of this
+      structure, see <a class="link" href="../htmlman7/sigevent.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigevent</span>(7)</span></a>.</p>
+
+      <p>If <em class="parameter"><code>sevp</code></em> is a
+      non-null pointer, then <code class="function">mq_notify</code>() registers the calling process
+      to receive message notification. The <code class="function">sigev_notify</code> field of the <span class="structname">sigevent</span> structure to which <em class="parameter"><code>sevp</code></em> points specifies how
+      notification is to be performed. This field has one of the
+      following values:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">SIGEV_NONE</code></span></dt>
+
+          <dd>
+            <p>A "null" notification: the calling process is
+            registered as the target for notification, but when a
+            message arrives, no notification is sent.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">SIGEV_SIGNAL</code></span></dt>
+
+          <dd>
+            <p>Notify the process by sending the signal specified
+            in <code class="function">sigev_signo</code>. See
+            <a class="link" href="../htmlman7/sigevent.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigevent</span>(7)</span></a> for
+            general details. The <code class="varname">si_code</code> field of the <span class="type">siginfo_t</span> structure will be set to
+            <code class="constant">SI_MESGQ</code>. In addition,
+            <code class="varname">si_pid</code> will be set to the
+            PID of the process that sent the message, and
+            <code class="varname">si_uid</code> will be set to the
+            real user ID of the sending process.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">SIGEV_THREAD</code></span></dt>
+
+          <dd>
+            <p>Upon message delivery, invoke <code class="function">sigev_notify_function</code> as if it were
+            the start function of a new thread. See <a class="link" href="../htmlman7/sigevent.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigevent</span>(7)</span></a> for
+            details.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>Only one process can be registered to receive notification
+      from a message queue.</p>
+
+      <p>If <em class="parameter"><code>sevp</code></em> is NULL,
+      and the calling process is currently registered to receive
+      notifications for this message queue, then the registration
+      is removed; another process can then register to receive a
+      message notification for this queue.</p>
+
+      <p>Message notification occurs only when a new message
+      arrives and the queue was previously empty. If the queue was
+      not empty at the time <code class="function">mq_notify</code>() was called, then a notification
+      will occur only after the queue is emptied and a new message
+      arrives.</p>
+
+      <p>If another process or thread is waiting to read a message
+      from an empty queue using <a class="link" href="../htmlman3/mq_receive.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_receive</span>(3)</span></a>, then any
+      message notification registration is ignored: the message is
+      delivered to the process or thread calling <a class="link" href="../htmlman3/mq_receive.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_receive</span>(3)</span></a>, and the
+      message notification registration remains in effect.</p>
+
+      <p>Notification occurs once: after a notification is
+      delivered, the notification registration is removed, and
+      another process can register for message notification. If the
+      notified process wishes to receive the next notification, it
+      can use <code class="function">mq_notify</code>() to request
+      a further notification. This should be done before emptying
+      all unread messages from the queue. (Placing the queue in
+      nonblocking mode is useful for emptying the queue of messages
+      without blocking once it is empty.)</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mq-notify-3_sect2" name="mq-notify-3_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success <code class="function">mq_notify</code>()
+      returns 0; on error, −1 is returned, with <code class="varname">errno</code> set to indicate the error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mq-notify-3_sect3" name="mq-notify-3_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EBADF</span></span></dt>
+
+          <dd>
+            <p>The descriptor specified in <em class="parameter"><code>mqdes</code></em> is invalid.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EBUSY</span></span></dt>
+
+          <dd>
+            <p>Another process has already registered to receive
+            notification for this message queue.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="replaceable"><code>sevp−&gt;sigev_notify</code></em>
+            is not one of the permitted values; or <em class="replaceable"><code>sevp−&gt;sigev_notify</code></em>
+            is <code class="constant">SIGEV_SIGNAL</code> and
+            <em class="replaceable"><code>sevp−&gt;sigev_signo</code></em>
+            is not a valid signal number.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>Insufficient memory.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>POSIX.1-2008 says that an implementation <code class="function">may</code> generate an <span class="errorname">EINVAL</span> error if <em class="parameter"><code>sevp</code></em> is NULL, and the caller is
+      not currently registered to receive notifications for the
+      queue <em class="parameter"><code>mqdes</code></em>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mq-notify-3_sect4" name="mq-notify-3_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>POSIX.1-2001.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mq-notify-3_sect5" name="mq-notify-3_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <div class="refsect2">
+        <a id="mq-notify-3_sect6" name="mq-notify-3_sect6" shape="rect"> </a>
+
+        <h3>C library/kernel ABI differences</h3>
+
+        <p>In the glibc implementation, the <code class="function">mq_notify</code>() library function is
+        implemented on top of the system call of the same name.
+        When <em class="parameter"><code>sevp</code></em> is NULL,
+        or specifies a notification mechanism other than
+        <code class="constant">SIGEV_THREAD</code>, the library
+        function directly invokes the system call. For <code class="constant">SIGEV_THREAD</code>, much of the implementation
+        resides within the library, rather than the kernel. (This
+        is necessarily so, since the thread involved in handling
+        the notification is one that must be managed by the C
+        library POSIX threads implementation.) The implementation
+        involves the use of a raw <a class="link" href="../htmlman7/netlink.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">netlink</span>(7)</span></a> socket and
+        creates a new thread for each notification that is
+        delivered to the process.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mq-notify-3_sect7" name="mq-notify-3_sect7" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>The following program registers a notification request for
+      the message queue named in its command-line argument.
+      Notification is performed by creating a thread. The thread
+      executes a function which reads one message from the queue
+      and then terminates the process.</p>
+
+      <div class="refsect2">
+        <a id="mq-notify-3_sect8" name="mq-notify-3_sect8" shape="rect"> </a>
+
+        <h3>Program source</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+#include &lt;pthread.h&gt;
+#include &lt;mqueue.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+
+#define handle_error(msg) \
+    do { perror(msg); exit(EXIT_FAILURE); } while (0)
+
+static void                     /* Thread start function */
+tfunc(union sigval sv)
+{
+    struct mq_attr attr;
+    ssize_t nr;
+    void *buf;
+    mqd_t mqdes = *((mqd_t *) sv.sival_ptr);
+
+    /* Determine max. msg size; allocate buffer to receive msg */
+
+    if (mq_getattr(mqdes, &amp;attr) == −1)
+        handle_error("mq_getattr");
+    buf = malloc(attr.mq_msgsize);
+    if (buf == NULL)
+        handle_error("malloc");
+
+    nr = mq_receive(mqdes, buf, attr.mq_msgsize, NULL);
+    if (nr == −1)
+        handle_error("mq_receive");
+
+    printf("Read %zd bytes from MQ\n", nr);
+    free(buf);
+    exit(EXIT_SUCCESS);         /* Terminate the process */
+}
+
+int
+main(int argc, char *argv[])
+{
+    mqd_t mqdes;
+    struct sigevent sev;
+
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s &lt;mq−name&gt;\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    mqdes = mq_open(argv[1], O_RDONLY);
+    if (mqdes == (mqd_t) −1)
+        handle_error("mq_open");
+
+    sev.sigev_notify = SIGEV_THREAD;
+    sev.sigev_notify_function = tfunc;
+    sev.sigev_notify_attributes = NULL;
+    sev.sigev_value.sival_ptr = &amp;mqdes;   /* Arg. to thread func. */
+    if (mq_notify(mqdes, &amp;sev) == −1)
+        handle_error("mq_notify");
+
+    pause();    /* Process will be terminated by thread function */
+}
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mq-notify-3_sect9" name="mq-notify-3_sect9" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/mq_close.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_close</span>(3)</span></a>, <a class="link" href="../htmlman3/mq_getattr.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_getattr</span>(3)</span></a>, <a class="link" href="../htmlman3/mq_open.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_open</span>(3)</span></a>, <a class="link" href="../htmlman3/mq_receive.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_receive</span>(3)</span></a>, <a class="link" href="../htmlman3/mq_send.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_send</span>(3)</span></a>, <a class="link" href="../htmlman3/mq_unlink.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_unlink</span>(3)</span></a>, <a class="link" href="../htmlman7/mq_overview.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_overview</span>(7)</span></a>, <a class="link" href="../htmlman7/sigevent.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigevent</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="mq-notify-3_sect10" name="mq-notify-3_sect10" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    t<br />
+                  Copyright (C) 2006 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

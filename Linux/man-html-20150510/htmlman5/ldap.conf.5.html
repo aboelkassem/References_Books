@@ -1,0 +1,972 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>ldap.conf(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="ldap.conf(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="ldap.conf.5" name="ldap.conf.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>ldap.conf, .ldaprc — LDAP configuration
+      file/environment variables</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ETCDIR/ldap.conf, ldaprc, .ldaprc, $LDAP&lt;option-name&gt;
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ldap-conf-5_sect1" name="ldap-conf-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>If the environment variable <code class="constant">LDAPNOINIT</code> is defined, all defaulting is
+      disabled.</p>
+
+      <p>The <em class="replaceable"><code>ldap.conf</code></em>
+      configuration file is used to set system-wide defaults to be
+      applied when running <em class="citetitle">ldap</em>
+      clients.</p>
+
+      <p>Users may create an optional configuration file,
+      <em class="replaceable"><code>ldaprc</code></em> or
+      <em class="replaceable"><code>.ldaprc</code></em>, in their
+      home directory which will be used to override the system-wide
+      defaults file. The file <em class="replaceable"><code>ldaprc</code></em> in the current working
+      directory is also used.</p>
+
+      <p>Additional configuration files can be specified using the
+      <code class="constant">LDAPCONF</code> and <code class="constant">LDAPRC</code> environment variables. <code class="constant">LDAPCONF</code> may be set to the path of a
+      configuration file. This path can be absolute or relative to
+      the current working directory. The <code class="constant">LDAPRC</code>, if defined, should be the basename
+      of a file in the current working directory or in the user's
+      home directory.</p>
+
+      <p>Environmental variables may also be used to augment the
+      file based defaults. The name of the variable is the option
+      name with an added prefix of <code class="constant">LDAP</code>. For example, to define <code class="constant">BASE</code> via the environment, set the variable
+      <code class="constant">LDAPBASE</code> to the desired
+      value.</p>
+
+      <p>Some options are user-only. Such options are ignored if
+      present in the <em class="replaceable"><code>ldap.conf</code></em> (or file specified
+      by <code class="constant">LDAPCONF</code>).</p>
+
+      <p>Thus the following files and variables are read, in
+      order:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+    variable     $LDAPNOINIT, and if that is not set:
+    system file  ETCDIR/ldap.conf,
+    user files   $HOME/ldaprc,  $HOME/.ldaprc,  ./ldaprc,
+    system file  $LDAPCONF,
+    user files   $HOME/$LDAPRC, $HOME/.$LDAPRC, ./$LDAPRC,
+    variables    $LDAP&lt;uppercase option name&gt;.
+</pre>
+      </div>
+
+      <p>Settings late in the list override earlier ones.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ldap-conf-5_sect2" name="ldap-conf-5_sect2" shape="rect"> </a>
+
+      <h2>SYNTAX</h2>
+
+      <p>The configuration options are case-insensitive; their
+      value, on a case by case basis, may be case-sensitive.</p>
+
+      <p>Blank lines are ignored.</p>
+
+      <p>Lines beginning with a hash mark (`#') are comments, and
+      ignored.</p>
+
+      <p>Valid lines are made of an option's name (a sequence of
+      non-blanks, conventionally written in uppercase, although not
+      required), followed by a value. The value starts with the
+      first non-blank character after the option's name, and
+      terminates at the end of the line, or at the last sequence of
+      blanks before the end of the line. The tokenization of the
+      value, if any, is delegated to the handler(s) for that
+      option, if any. Quoting values that contain blanks may be
+      incorrect, as the quotes would become part of the value. For
+      example,</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        # Wrong - erroneous quotes:
+        URI     "ldap:// ldaps://"
+
+        # Right - space-separated list of URIs, without quotes:
+        URI     ldap:// ldaps://
+
+        # Right - DN syntax needs quoting for Example, Inc:
+        BASE    ou=IT staff,o="Example, Inc",c=US
+        # or:
+        BASE    ou=IT staff,o=Example2C Inc,c=US
+
+        # Wrong - comment on same line as option:
+        DEREF   never           # Never follow aliases
+</pre>
+      </div>
+
+      <p>A line cannot be longer than LINE_MAX, which should be
+      more than 2000 bytes on all platforms. There is no mechanism
+      to split a long line on multiple lines, either for
+      beautification or to overcome the above limit.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ldap-conf-5_sect3" name="ldap-conf-5_sect3" shape="rect"> </a>
+
+      <h2>OPTIONS</h2>
+
+      <p>The different configuration options are:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>URI
+          &lt;ldap[si]://[name[:port]]
+          ...&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies the URI(s) of an LDAP server(s) to which
+            the <code class="constant">LDAP</code> library should
+            connect. The URI scheme may be any of <em class="citetitle">ldap</em>, <em class="replaceable"><code>ldaps</code></em> or <em class="replaceable"><code>ldapi</code></em>, which refer to
+            LDAP over TCP, LDAP over SSL (TLS) and LDAP over IPC
+            (UNIX domain sockets), respectively. Each server's name
+            can be specified as a domain-style name or an IP
+            address literal. Optionally, the server's name can
+            followed by a ':' and the port number the LDAP server
+            is listening on. If no port number is provided, the
+            default port for the scheme is used (389 for ldap://,
+            636 for ldaps://). For LDAP over IPC, <em class="replaceable"><code>name</code></em> is the name of the
+            socket, and no <em class="replaceable"><code>port</code></em> is required, nor
+            allowed; note that directory separators must be
+            URL-encoded, like any other characters that are special
+            to URLs; so the socket</p>
+
+            <p>/usr/local/var/ldapi</p>
+
+            <p>must be specified as</p>
+
+            <p>ldapi://%2Fusr%2Flocal%2Fvar%2Fldapi</p>
+
+            <p>A space separated list of URIs may be provided.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>BASE
+          &lt;base&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies the default base DN to use when performing
+            ldap operations. The base must be specified as a
+            Distinguished Name in LDAP format.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>BINDDN
+          &lt;dn&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies the default bind DN to use when performing
+            ldap operations. The bind DN must be specified as a
+            Distinguished Name in LDAP format. <span class="emphasis"><em>This is a user-only
+            option.</em></span></p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>DEREF
+          &lt;when&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies how alias dereferencing is done when
+            performing a search. The <em class="replaceable"><code>&lt;when&gt;</code></em> can be
+            specified as one of the following keywords:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><em class="replaceable"><code>never</code></em></span></dt>
+
+                    <dd>
+                      <p>Aliases are never dereferenced. This is
+                      the default.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>searching</code></em></span></dt>
+
+                    <dd>
+                      <p>Aliases are dereferenced in subordinates
+                      of the base object, but not in locating the
+                      base object of the search.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>finding</code></em></span></dt>
+
+                    <dd>
+                      <p>Aliases are only dereferenced when
+                      locating the base object of the search.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>always</code></em></span></dt>
+
+                    <dd>
+                      <p>Aliases are dereferenced both in searching
+                      and in locating the base object of the
+                      search.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>HOST
+          &lt;name[:port] ...&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies the name(s) of an LDAP server(s) to which
+            the <code class="constant">LDAP</code> library should
+            connect. Each server's name can be specified as a
+            domain-style name or an IP address and optionally
+            followed by a ':' and the port number the ldap server
+            is listening on. A space separated list of hosts may be
+            provided. <code class="constant">HOST</code> is
+            deprecated in favor of <code class="constant">URI</code>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>NETWORK_TIMEOUT
+          &lt;integer&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies the timeout (in seconds) after which the
+            poll(2)/select(2) following a connect(2) returns in
+            case of no activity.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>PORT
+          &lt;port&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies the default port used when connecting to
+            LDAP servers(s). The port may be specified as a number.
+            <code class="constant">PORT</code> is deprecated in
+            favor of <em class="replaceable"><code>URI.</code></em></p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>REFERRALS
+          &lt;on/true/yes/off/false/no&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies if the client should automatically follow
+            referrals returned by LDAP servers. The default is on.
+            Note that the command line tools <a class="link" href="../htmlman1/ldapsearch.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldapsearch</span>(1)</span></a> &amp;co
+            always override this option.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>SIZELIMIT
+          &lt;integer&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies a size limit (number of entries) to use
+            when performing searches. The number should be a
+            non-negative integer. <code class="constant">SIZELIMIT</code> of zero (0) specifies a
+            request for unlimited search size. Please note that the
+            server may still apply any server-side limit on the
+            amount of entries that can be returned by a search
+            operation.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>TIMELIMIT
+          &lt;integer&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies a time limit (in seconds) to use when
+            performing searches. The number should be a
+            non-negative integer. <code class="constant">TIMELIMIT</code> of zero (0) specifies
+            unlimited search time to be used. Please note that the
+            server may still apply any server-side limit on the
+            duration of a search operation. <span class="emphasis"><em>VERSION {2|3}</em></span> Specifies what
+            version of the LDAP protocol should be used.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>TIMEOUT
+          &lt;integer&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies a timeout (in seconds) after which calls
+            to synchronous LDAP APIs will abort if no response is
+            received. Also used for any <a class="link" href="../htmlman3/ldap_result.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldap_result</span>(3)</span></a> calls
+            where a NULL timeout parameter is supplied.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ldap-conf-5_sect4" name="ldap-conf-5_sect4" shape="rect"> </a>
+
+      <h2>SASL OPTIONS</h2>
+
+      <p>If OpenLDAP is built with Simple Authentication and
+      Security Layer support, there are more options you can
+      specify.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>SASL_MECH
+          &lt;mechanism&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies the SASL mechanism to use. <span class="emphasis"><em>This is a user-only
+            option.</em></span></p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>SASL_REALM
+          &lt;realm&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies the SASL realm. <span class="emphasis"><em>This is a user-only
+            option.</em></span></p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>SASL_AUTHCID
+          &lt;authcid&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies the authentication identity. <span class="emphasis"><em>This is a user-only
+            option.</em></span></p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>SASL_AUTHZID
+          &lt;authcid&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies the proxy authorization identity.
+            <span class="emphasis"><em>This is a user-only
+            option.</em></span></p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>SASL_SECPROPS
+          &lt;properties&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies Cyrus SASL security properties. The
+            <em class="replaceable"><code>&lt;properties&gt;</code></em> can
+            be specified as a comma-separated list of the
+            following:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><em class="replaceable"><code>none</code></em></span></dt>
+
+                    <dd>
+                      <p>(without any other properties) causes the
+                      properties defaults ("noanonymous,noplain")
+                      to be cleared.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>noplain</code></em></span></dt>
+
+                    <dd>
+                      <p>disables mechanisms susceptible to simple
+                      passive attacks.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>noactive</code></em></span></dt>
+
+                    <dd>
+                      <p>disables mechanisms susceptible to active
+                      attacks.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>nodict</code></em></span></dt>
+
+                    <dd>
+                      <p>disables mechanisms susceptible to passive
+                      dictionary attacks.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>noanonymous</code></em></span></dt>
+
+                    <dd>
+                      <p>disables mechanisms which support
+                      anonymous login.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>forwardsec</code></em></span></dt>
+
+                    <dd>
+                      <p>requires forward secrecy between
+                      sessions.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>passcred</code></em></span></dt>
+
+                    <dd>
+                      <p>requires mechanisms which pass client
+                      credentials (and allows mechanisms which can
+                      pass credentials to do so).</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>minssf=&lt;factor&gt;</code></em></span></dt>
+
+                    <dd>
+                      <p>specifies the minimum acceptable
+                      <span class="emphasis"><em>security strength
+                      factor</em></span> as an integer
+                      approximating the effective key length used
+                      for encryption. 0 (zero) implies no
+                      protection, 1 implies integrity protection
+                      only, 56 allows DES or other weak ciphers,
+                      112 allows triple DES and other strong
+                      ciphers, 128 allows RC4, Blowfish and other
+                      modern strong ciphers. The default is 0.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>maxssf=&lt;factor&gt;</code></em></span></dt>
+
+                    <dd>
+                      <p>specifies the maximum acceptable
+                      <span class="emphasis"><em>security strength
+                      factor</em></span> as an integer (see
+                      <em class="replaceable"><code>minssf</code></em>
+                      description). The default is <code class="constant">INT_MAX</code>.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>maxbufsize=&lt;factor&gt;</code></em></span></dt>
+
+                    <dd>
+                      <p>specifies the maximum security layer
+                      receive buffer size allowed. 0 disables
+                      security layers. The default is 65536.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ldap-conf-5_sect5" name="ldap-conf-5_sect5" shape="rect"> </a>
+
+      <h2>GSSAPI OPTIONS</h2>
+
+      <p>If OpenLDAP is built with Generic Security Services
+      Application Programming Interface support, there are more
+      options you can specify.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>GSSAPI_SIGN
+          &lt;on/true/yes/off/false/no&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies if GSSAPI signing (GSS_C_INTEG_FLAG)
+            should be used. The default is off.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>GSSAPI_ENCRYPT
+          &lt;on/true/yes/off/false/no&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies if GSSAPI encryption (GSS_C_INTEG_FLAG and
+            GSS_C_CONF_FLAG) should be used. The default is
+            off.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>GSSAPI_ALLOW_REMOTE_PRINCIPAL
+          &lt;on/true/yes/off/false/no&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies if GSSAPI based authentication should try
+            to form the target principal name out of the
+            ldapServiceName or dnsHostName attribute of the targets
+            RootDSE entry. The default is off.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ldap-conf-5_sect6" name="ldap-conf-5_sect6" shape="rect"> </a>
+
+      <h2>TLS OPTIONS</h2>
+
+      <p>If OpenLDAP is built with Transport Layer Security
+      support, there are more options you can specify. These
+      options are used when an <span class="emphasis"><em>ldaps://
+      URI</em></span> is selected (by default or otherwise) or when
+      the application negotiates TLS by issuing the LDAP StartTLS
+      operation.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>TLS_CACERT
+          &lt;filename&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies the file that contains certificates for
+            all of the Certificate Authorities the client will
+            recognize.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>TLS_CACERTDIR
+          &lt;path&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies the path of a directory that contains
+            Certificate Authority certificates in separate
+            individual files. The <code class="constant">TLS_CACERT</code> is always used before
+            <em class="replaceable"><code>TLS_CACERTDIR.</code></em> This
+            parameter is ignored with GnuTLS.</p>
+
+            <p>When using Mozilla NSS, &lt;path&gt; may contain a
+            Mozilla NSS cert/key database. If &lt;path&gt; contains
+            a Mozilla NSS cert/key database and CA cert files,
+            OpenLDAP will use the cert/key database and will ignore
+            the CA cert files.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>TLS_CERT
+          &lt;filename&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies the file that contains the client
+            certificate. <span class="emphasis"><em>This is a
+            user-only option.</em></span></p>
+
+            <p>When using Mozilla NSS, if using a cert/key database
+            (specified with TLS_CACERTDIR), TLS_CERT specifies the
+            name of the certificate to use:</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+        TLS_CERT Certificate for Sam Carter
+</pre>
+            </div>
+
+            <p>If using a token other than the internal built in
+            token, specify the token name first, followed by a
+            colon:</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+        TLS_CERT my hardware device:Certificate for Sam Carter
+</pre>
+            </div>
+
+            <p>Use certutil -L to list the certificates by
+            name:</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+        certutil -d /path/to/certdbdir -L
+</pre>
+            </div>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>TLS_KEY
+          &lt;filename&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies the file that contains the private key
+            that matches the certificate stored in the <code class="constant">TLS_CERT</code> file. Currently, the private
+            key must not be protected with a password, so it is of
+            critical importance that the key file is protected
+            carefully. <span class="emphasis"><em>This is a
+            user-only option.</em></span></p>
+
+            <p>When using Mozilla NSS, TLS_KEY specifies the name
+            of a file that contains the password for the key for
+            the certificate specified with TLS_CERT. The modutil
+            command can be used to turn off password protection for
+            the cert/key database. For example, if TLS_CACERTDIR
+            specifies /home/scarter/.moznss as the location of the
+            cert/key database, use modutil to change the password
+            to the empty string:</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+        modutil -dbdir ~/.moznss -changepw 'NSS Certificate DB'
+</pre>
+            </div>
+
+            <p>You must have the old password, if any. Ignore the
+            WARNING about the running browser. Press 'Enter' for
+            the new password.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>TLS_CIPHER_SUITE
+          &lt;cipher-suite-spec&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies acceptable cipher suite and preference
+            order. &lt;cipher-suite-spec&gt; should be a cipher
+            specification for the TLS library in use (OpenSSL,
+            GnuTLS, or Mozilla NSS). Example:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="blockquote">
+                  <blockquote class="blockquote">
+                    <div class="variablelist">
+                      <dl class="variablelist">
+                        <dt><span class="term"><em class="replaceable"><code>OpenSSL:</code></em></span></dt>
+
+                        <dd>
+                          <p>TLS_CIPHER_SUITE
+                          HIGH:MEDIUM:+SSLv2</p>
+                        </dd>
+
+                        <dt><span class="term"><em class="replaceable"><code>GnuTLS:</code></em></span></dt>
+
+                        <dd>
+                          <p>TLS_CIPHER_SUITE
+                          SECURE256:!AES-128-CBC</p>
+                        </dd>
+                      </dl>
+                    </div>
+                  </blockquote>
+                </div>
+
+                <p>To check what ciphers a given spec selects in
+                OpenSSL, use:</p>
+
+                <div class="informalexample">
+                  <pre class="programlisting" xml:space="preserve">
+        openssl ciphers −v &lt;cipher-suite-spec&gt;
+</pre>
+                </div>
+
+                <p>With GnuTLS the available specs can be found in
+                the manual page of <a class="link" href="../htmlman1/gnutls-cli.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gnutls-cli</span>(1)</span></a>
+                (see the description of the option <code class="option">−−priority</code>).</p>
+
+                <p>In older versions of GnuTLS, where
+                gnutls−cli does not support the option
+                −−priority, you can obtain the —
+                more limited — list of ciphers by
+                calling:</p>
+
+                <div class="informalexample">
+                  <pre class="programlisting" xml:space="preserve">
+        gnutls−cli −l
+</pre>
+                </div>
+
+                <p>When using Mozilla NSS, the OpenSSL cipher suite
+                specifications are used and translated into the
+                format used internally by Mozilla NSS. There isn't
+                an easy way to list the cipher suites from the
+                command line. The authoritative list is in the
+                source code for Mozilla NSS in the file sslinfo.c
+                in the structure</p>
+
+                <div class="informalexample">
+                  <pre class="programlisting" xml:space="preserve">
+        static const SSLCipherSuiteInfo suiteInfo[]
+</pre>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>TLS_PROTOCOL_MIN
+          &lt;major&gt;[.&lt;minor&gt;]</em></span></span></dt>
+
+          <dd>
+            <p>Specifies minimum SSL/TLS protocol version that will
+            be negotiated. If the server doesn't support at least
+            that version, the SSL handshake will fail. To require
+            TLS 1.x or higher, set this option to 3.(x+1),
+            e.g.,</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+        TLS_PROTOCOL_MIN 3.2
+</pre>
+            </div>
+
+            <p>would require TLS 1.1. Specifying a minimum that is
+            higher than that supported by the OpenLDAP
+            implementation will result in it requiring the highest
+            level that it does support. This parameter is ignored
+            with GnuTLS.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>TLS_RANDFILE
+          &lt;filename&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies the file to obtain random bits from when
+            /dev/[u]random is not available. Generally set to the
+            name of the EGD/PRNGD socket. The environment variable
+            RANDFILE can also be used to specify the filename. This
+            parameter is ignored with GnuTLS and Mozilla NSS.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>TLS_REQCERT
+          &lt;level&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies what checks to perform on server
+            certificates in a TLS session, if any. The <em class="replaceable"><code>&lt;level&gt;</code></em> can be
+            specified as one of the following keywords:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><em class="replaceable"><code>never</code></em></span></dt>
+
+                    <dd>
+                      <p>The client will not request or check any
+                      server certificate.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>allow</code></em></span></dt>
+
+                    <dd>
+                      <p>The server certificate is requested. If no
+                      certificate is provided, the session proceeds
+                      normally. If a bad certificate is provided,
+                      it will be ignored and the session proceeds
+                      normally.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>try</code></em></span></dt>
+
+                    <dd>
+                      <p>The server certificate is requested. If no
+                      certificate is provided, the session proceeds
+                      normally. If a bad certificate is provided,
+                      the session is immediately terminated.</p>
+                    </dd>
+
+                    <dt><span class="term"><span class="emphasis"><em>demand |
+                    hard</em></span></span></dt>
+
+                    <dd>
+                      <p>These keywords are equivalent. The server
+                      certificate is requested. If no certificate
+                      is provided, or a bad certificate is
+                      provided, the session is immediately
+                      terminated. This is the default setting.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>TLS_CRLCHECK
+          &lt;level&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies if the Certificate Revocation List (CRL)
+            of the CA should be used to verify if the server
+            certificates have not been revoked. This requires
+            <code class="constant">TLS_CACERTDIR</code> parameter
+            to be set. This parameter is ignored with GnuTLS and
+            Mozilla NSS. <em class="replaceable"><code>&lt;level&gt;</code></em> can be
+            specified as one of the following keywords:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><em class="replaceable"><code>none</code></em></span></dt>
+
+                    <dd>
+                      <p>No CRL checks are performed</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>peer</code></em></span></dt>
+
+                    <dd>
+                      <p>Check the CRL of the peer certificate</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>all</code></em></span></dt>
+
+                    <dd>
+                      <p>Check the CRL for a whole certificate
+                      chain</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>TLS_CRLFILE
+          &lt;filename&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Specifies the file containing a Certificate
+            Revocation List to be used to verify if the server
+            certificates have not been revoked. This parameter is
+            only supported with GnuTLS and Mozilla NSS.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ldap-conf-5_sect7" name="ldap-conf-5_sect7" shape="rect"> </a>
+
+      <h2>ENVIRONMENT VARIABLES</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">LDAPNOINIT</code></span></dt>
+
+          <dd>
+            <p>disable all defaulting</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">LDAPCONF</code></span></dt>
+
+          <dd>
+            <p>path of a configuration file</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">LDAPRC</code></span></dt>
+
+          <dd>
+            <p>basename of ldaprc file in $HOME or $CWD</p>
+          </dd>
+
+          <dt><span class="term">LDAP&lt;option-name&gt;</span></dt>
+
+          <dd>
+            <p>Set &lt;option-name&gt; as from ldap.conf</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ldap-conf-5_sect8" name="ldap-conf-5_sect8" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><em class="replaceable"><code>ETCDIR/ldap.conf</code></em></span></dt>
+
+          <dd>
+            <p>system-wide ldap configuration file</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>$HOME/ldaprc,
+          $HOME/.ldaprc</em></span></span></dt>
+
+          <dd>
+            <p>user ldap configuration file</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>$CWD/ldaprc</code></em></span></dt>
+
+          <dd>
+            <p>local ldap configuration file</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ldap-conf-5_sect9" name="ldap-conf-5_sect9" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/ldap.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldap</span>(3)</span></a>, <a class="link" href="../htmlman3/ldap_get_option.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldap_set_option</span>(3)</span></a>,
+      <a class="link" href="../htmlman3/ldap_result.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldap_result</span>(3)</span></a>,
+      <span class="citerefentry"><span class="refentrytitle">openssl</span>(1)</span>, <span class="citerefentry"><span class="refentrytitle">sasl</span>(3)</span></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ldap-conf-5_sect10" name="ldap-conf-5_sect10" shape="rect"> </a>
+
+      <h2>AUTHOR</h2>
+
+      <p>Kurt Zeilenga, The OpenLDAP Project</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ldap-conf-5_sect11" name="ldap-conf-5_sect11" shape="rect"> </a>
+
+      <h2>ACKNOWLEDGEMENTS</h2>
+
+      <p><span class="emphasis"><em>OpenLDAP Software</em></span>
+      is developed and maintained by The OpenLDAP Project
+      &lt;<a class="literalurl" href="http://www.openldap.org/" target="_top" shape="rect">http://www.openldap.org/</a>&gt;. <span class="emphasis"><em>OpenLDAP Software</em></span> is derived from
+      University of Michigan LDAP 3.3 Release.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                  See the following documents: <a class="ulink" href="../openldap-COPYRIGHT.html" target="_top" shape="rect">COPYRIGHT</a>, <a class="ulink" href="../openldap-LICENSE.html" target="_top" shape="rect">LICENSE</a><br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

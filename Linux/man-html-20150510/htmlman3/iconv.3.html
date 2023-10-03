@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>iconv(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="iconv(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="iconv.3" name="iconv.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>iconv — perform character set conversion</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;iconv.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">size_t
+            <strong>iconv</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">iconv_t <var class="pdparam">cd</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">char **<var class="pdparam">inbuf</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">size_t *<var class="pdparam">inbytesleft</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">char **<var class="pdparam">outbuf</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">size_t *<var class="pdparam">outbytesleft</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="iconv-3_sect1" name="iconv-3_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">iconv</code>() function
+      converts a sequence of characters in one character encoding
+      to a sequence of characters in another character encoding.
+      The <em class="parameter"><code>cd</code></em> argument is a
+      conversion descriptor, previously created by a call to
+      <a class="link" href="../htmlman3/iconv_open.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">iconv_open</span>(3)</span></a>; the
+      conversion descriptor defines the character encodings that
+      <code class="function">iconv</code>() uses for the
+      conversion. The <em class="parameter"><code>inbuf</code></em>
+      argument is the address of a variable that points to the
+      first character of the input sequence; <em class="parameter"><code>inbytesleft</code></em> indicates the
+      number of bytes in that buffer. The <em class="parameter"><code>outbuf</code></em> argument is the address
+      of a variable that points to the first byte available in the
+      output buffer; <em class="parameter"><code>outbytesleft</code></em> indicates the
+      number of bytes available in the output buffer.</p>
+
+      <p>The main case is when <em class="parameter"><code>inbuf</code></em> is not NULL and
+      *<em class="parameter"><code>inbuf</code></em> is not NULL.
+      In this case, the <code class="function">iconv</code>()
+      function converts the multibyte sequence starting at
+      *<em class="parameter"><code>inbuf</code></em> to a multibyte
+      sequence starting at *<em class="parameter"><code>outbuf</code></em>. At most *<em class="parameter"><code>inbytesleft</code></em> bytes, starting at
+      *<em class="parameter"><code>inbuf</code></em>, will be read.
+      At most *<em class="parameter"><code>outbytesleft</code></em>
+      bytes, starting at *<em class="parameter"><code>outbuf</code></em>, will be written.</p>
+
+      <p>The <code class="function">iconv</code>() function
+      converts one multibyte character at a time, and for each
+      character conversion it increments *<em class="parameter"><code>inbuf</code></em> and decrements
+      *<em class="parameter"><code>inbytesleft</code></em> by the
+      number of converted input bytes, it increments *<em class="parameter"><code>outbuf</code></em> and decrements
+      *<em class="parameter"><code>outbytesleft</code></em> by the
+      number of converted output bytes, and it updates the
+      conversion state contained in <em class="parameter"><code>cd</code></em>. If the character encoding
+      of the input is stateful, the <code class="function">iconv</code>() function can also convert a
+      sequence of input bytes to an update to the conversion state
+      without producing any output bytes; such input is called a
+      <span class="emphasis"><em>shift sequence</em></span>. The
+      conversion can stop for four reasons:</p>
+
+      <div class="orderedlist">
+        <ol class="orderedlist" type="1">
+          <li class="listitem">
+            <p>An invalid multibyte sequence is encountered in the
+            input. In this case, it sets <code class="varname">errno</code> to <span class="errorname">EILSEQ</span> and returns <span class="emphasis"><em>(size_t) −1</em></span>.
+            *<em class="parameter"><code>inbuf</code></em> is left
+            pointing to the beginning of the invalid multibyte
+            sequence.</p>
+          </li>
+
+          <li class="listitem">
+            <p>The input byte sequence has been entirely converted,
+            that is, *<em class="parameter"><code>inbytesleft</code></em> has gone down
+            to 0. In this case, <code class="function">iconv</code>() returns the number of
+            nonreversible conversions performed during this
+            call.</p>
+          </li>
+
+          <li class="listitem">
+            <p>An incomplete multibyte sequence is encountered in
+            the input, and the input byte sequence terminates after
+            it. In this case, it sets <code class="varname">errno</code> to <span class="errorname">EINVAL</span> and returns <span class="emphasis"><em>(size_t) −1</em></span>.
+            *<em class="parameter"><code>inbuf</code></em> is left
+            pointing to the beginning of the incomplete multibyte
+            sequence.</p>
+          </li>
+
+          <li class="listitem">
+            <p>The output buffer has no more room for the next
+            converted character. In this case, it sets <code class="varname">errno</code> to <span class="errorname">E2BIG</span> and returns <span class="emphasis"><em>(size_t) −1</em></span>.</p>
+          </li>
+        </ol>
+      </div>
+
+      <p>A different case is when <em class="parameter"><code>inbuf</code></em> is NULL or *<em class="parameter"><code>inbuf</code></em> is NULL, but <em class="parameter"><code>outbuf</code></em> is not NULL and
+      *<em class="parameter"><code>outbuf</code></em> is not NULL.
+      In this case, the <code class="function">iconv</code>()
+      function attempts to set <em class="parameter"><code>cd</code></em>'s conversion state to the
+      initial state and store a corresponding shift sequence at
+      *<em class="parameter"><code>outbuf</code></em>. At most
+      *<em class="parameter"><code>outbytesleft</code></em> bytes,
+      starting at *<em class="parameter"><code>outbuf</code></em>,
+      will be written. If the output buffer has no more room for
+      this reset sequence, it sets <code class="varname">errno</code> to <span class="errorname">E2BIG</span> and returns <span class="emphasis"><em>(size_t) −1</em></span>. Otherwise, it
+      increments *<em class="parameter"><code>outbuf</code></em>
+      and decrements *<em class="parameter"><code>outbytesleft</code></em> by the number of
+      bytes written.</p>
+
+      <p>A third case is when <em class="parameter"><code>inbuf</code></em> is NULL or *<em class="parameter"><code>inbuf</code></em> is NULL, and <em class="parameter"><code>outbuf</code></em> is NULL or *<em class="parameter"><code>outbuf</code></em> is NULL. In this case,
+      the <code class="function">iconv</code>() function sets
+      <em class="parameter"><code>cd</code></em>'s conversion state
+      to the initial state.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="iconv-3_sect2" name="iconv-3_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>The <code class="function">iconv</code>() function returns
+      the number of characters converted in a nonreversible way
+      during this call; reversible conversions are not counted. In
+      case of error, it sets <code class="varname">errno</code> and
+      returns <span class="emphasis"><em>(size_t)
+      −1</em></span>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="iconv-3_sect3" name="iconv-3_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <p>The following errors can occur, among others:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">E2BIG</span></span></dt>
+
+          <dd>
+            <p>There is not sufficient room at *<em class="parameter"><code>outbuf</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EILSEQ</span></span></dt>
+
+          <dd>
+            <p>An invalid multibyte sequence has been encountered
+            in the input.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>An incomplete multibyte sequence has been
+            encountered in the input.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="iconv-3_sect4" name="iconv-3_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p>This function is available in glibc since version 2.1.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="iconv-3_sect5" name="iconv-3_sect5" shape="rect"> </a>
+
+      <h2>ATTRIBUTES</h2>
+
+      <p>For an explanation of the terms used in this section, see
+      <a class="link" href="../htmlman7/attributes.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">attributes</span>(7)</span></a>.</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">Interface</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Attribute</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Value</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><code class="literal">iconv</code>()</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Thread safety</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">MT-Safe race:cd</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>The <code class="function">iconv</code>() function is
+      MT-Safe, as long as callers arrange for mutual exclusion on
+      the <em class="parameter"><code>cd</code></em> argument.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="iconv-3_sect6" name="iconv-3_sect6" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>POSIX.1-2001.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="iconv-3_sect7" name="iconv-3_sect7" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Although <em class="parameter"><code>inbuf</code></em> and
+      <em class="parameter"><code>outbuf</code></em> are typed as
+      <span class="emphasis"><em>char **</em></span>, this does not
+      mean that the objects they point can be interpreted as C
+      strings or as arrays of characters: the interpretation of
+      character byte sequences is handled internally by the
+      conversion functions. In some encodings, a zero byte may be a
+      valid part of a multibyte character.</p>
+
+      <p>The caller of <code class="function">iconv</code>() must
+      ensure that the pointers passed to the function are suitable
+      for accessing characters in the appropriate character set.
+      This includes ensuring correct alignment on platforms that
+      have tight restrictions on alignment.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="iconv-3_sect8" name="iconv-3_sect8" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/iconv_close.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">iconv_close</span>(3)</span></a>, <a class="link" href="../htmlman3/iconv_open.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">iconv_open</span>(3)</span></a>, <a class="link" href="../htmlman8/iconvconfig.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">iconvconfig</span>(8)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="iconv-3_sect9" name="iconv-3_sect9" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) Bruno Haible &lt;haible<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>clisp.cons.org&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_DOC_ONEPARA)<br />
+                  This is free documentation; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License as<br />
+
+                  published by the Free Software Foundation; either version 2 of<br />
+
+                  the License, or (at your option) any later version.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  References consulted:<br />
+                    GNU glibc-2 source code and manual<br />
+
+                    OpenGroup's Single UNIX specification<br />
+
+                  http://www.UNIX-systems.org/online.html<br />
+                  <br />
+                  2000-06-30 correction by Yuichi SATO &lt;sato<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>complex.eng.hokudai.ac.jp&gt;<br />
+
+                  2000-11-15 aeb, fixed prototype<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

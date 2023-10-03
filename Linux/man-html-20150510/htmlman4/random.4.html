@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>random(4) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="random(4) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index4.html" shape="rect">Section 4</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="random.4" name="random.4" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>random, urandom — kernel random number source
+      devices</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;linux/random.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>ioctl</strong>(</code></td>
+
+            <td rowspan="1" colspan="1"><var class="pdparam">fd</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1"><var class="pdparam">RNDrequest</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1"><var class="pdparam">param</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="random-4_sect1" name="random-4_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The character special files <code class="filename">/dev/random</code> and <code class="filename">/dev/urandom</code> (present since Linux 1.3.30)
+      provide an interface to the kernel's random number generator.
+      File <code class="filename">/dev/random</code> has major
+      device number 1 and minor device number 8. File <code class="filename">/dev/urandom</code> has major device number 1 and
+      minor device number 9.</p>
+
+      <p>The random number generator gathers environmental noise
+      from device drivers and other sources into an entropy pool.
+      The generator also keeps an estimate of the number of bits of
+      noise in the entropy pool. From this entropy pool random
+      numbers are created.</p>
+
+      <p>When read, the <code class="filename">/dev/random</code>
+      device will return random bytes only within the estimated
+      number of bits of noise in the entropy pool. <code class="filename">/dev/random</code> should be suitable for uses
+      that need very high quality randomness such as one-time pad
+      or key generation. When the entropy pool is empty, reads from
+      <code class="filename">/dev/random</code> will block until
+      additional environmental noise is gathered. If <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a> is called for
+      <code class="filename">/dev/random</code> with the flag
+      <code class="constant">O_NONBLOCK</code>, a subsequent
+      <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> will not block if
+      the requested number of bytes is not available. Instead, the
+      available bytes are returned. If no byte is available,
+      <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> will return -1 and
+      <code class="varname">errno</code> will be set to
+      <span class="errorname">EAGAIN</span>.</p>
+
+      <p>A read from the <code class="filename">/dev/urandom</code>
+      device will not block waiting for more entropy. If there is
+      not sufficient entropy, a pseudorandom number generator is
+      used to create the requested bytes. As a result, in this case
+      the returned values are theoretically vulnerable to a
+      cryptographic attack on the algorithms used by the driver.
+      Knowledge of how to do this is not available in the current
+      unclassified literature, but it is theoretically possible
+      that such an attack may exist. If this is a concern in your
+      application, use <code class="filename">/dev/random</code>
+      instead. <code class="constant">O_NONBLOCK</code> has no
+      effect when opening <code class="filename">/dev/urandom</code>. When calling <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> for the device
+      <code class="filename">/dev/urandom</code>, signals will not
+      be handled until after the requested random bytes have been
+      generated.</p>
+
+      <p>Since Linux 3.16, a <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> from <code class="filename">/dev/urandom</code> will return at most 32 MB. A
+      <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> from <code class="filename">/dev/random</code> will return at most 512 bytes
+      (340 bytes on Linux kernels before version 2.6.12).</p>
+
+      <p>Writing to <code class="filename">/dev/random</code> or
+      <code class="filename">/dev/urandom</code> will update the
+      entropy pool with the data written, but this will not result
+      in a higher entropy count. This means that it will impact the
+      contents read from both files, but it will not make reads
+      from <code class="filename">/dev/random</code> faster.</p>
+
+      <div class="refsect2">
+        <a id="random-4_sect2" name="random-4_sect2" shape="rect"> </a>
+
+        <h3>Usage</h3>
+
+        <p>If you are unsure about whether you should use
+        <code class="filename">/dev/random</code> or <code class="filename">/dev/urandom</code>, then probably you want to
+        use the latter. As a general rule, <code class="filename">/dev/urandom</code> should be used for
+        everything except long-lived GPG/SSL/SSH keys.</p>
+
+        <p>If a seed file is saved across reboots as recommended
+        below (all major Linux distributions have done this since
+        2000 at least), the output is cryptographically secure
+        against attackers without local root access as soon as it
+        is reloaded in the boot sequence, and perfectly adequate
+        for network encryption session keys. Since reads from
+        <code class="filename">/dev/random</code> may block, users
+        will usually want to open it in nonblocking mode (or
+        perform a read with timeout), and provide some sort of user
+        notification if the desired entropy is not immediately
+        available.</p>
+
+        <p>The kernel random-number generator is designed to
+        produce a small amount of high-quality seed material to
+        seed a cryptographic pseudo-random number generator
+        (CPRNG). It is designed for security, not speed, and is
+        poorly suited to generating large amounts of random data.
+        Users should be very economical in the amount of seed
+        material that they read from <code class="filename">/dev/urandom</code> (and <code class="filename">/dev/random</code>); unnecessarily reading large
+        quantities of data from this device will have a negative
+        impact on other users of the device.</p>
+
+        <p>The amount of seed material required to generate a
+        cryptographic key equals the effective key size of the key.
+        For example, a 3072-bit RSA or Diffie-Hellman private key
+        has an effective key size of 128 bits (it requires about
+        2^128 operations to break) so a key generator needs only
+        128 bits (16 bytes) of seed material from <code class="filename">/dev/random</code>.</p>
+
+        <p>While some safety margin above that minimum is
+        reasonable, as a guard against flaws in the CPRNG
+        algorithm, no cryptographic primitive available today can
+        hope to promise more than 256 bits of security, so if any
+        program reads more than 256 bits (32 bytes) from the kernel
+        random pool per invocation, or per reasonable reseed
+        interval (not less than one minute), that should be taken
+        as a sign that its cryptography is <code class="function">not</code> skillfully implemented.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="random-4_sect3" name="random-4_sect3" shape="rect"> </a>
+
+        <h3>Configuration</h3>
+
+        <p>If your system does not have <code class="filename">/dev/random</code> and <code class="filename">/dev/urandom</code> created already, they can be
+        created with the following commands:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+    mknod −m 666 /dev/random c 1 8
+    mknod −m 666 /dev/urandom c 1 9
+    chown root:root /dev/random /dev/urandom
+</pre>
+        </div>
+
+        <p>When a Linux system starts up without much operator
+        interaction, the entropy pool may be in a fairly
+        predictable state. This reduces the actual amount of noise
+        in the entropy pool below the estimate. In order to
+        counteract this effect, it helps to carry entropy pool
+        information across shut-downs and start-ups. To do this,
+        add the following lines to an appropriate script which is
+        run during the Linux system start-up sequence:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+    echo "Initializing random number generator..."
+    random_seed=/var/run/random-seed
+    # Carry a random seed from start-up to start-up
+    # Load and then save the whole entropy pool
+    if [ −f $random_seed ]; then
+        cat $random_seed &gt;/dev/urandom
+    else
+        touch $random_seed
+    fi
+    chmod 600 $random_seed
+    poolfile=/proc/sys/kernel/random/poolsize
+    [ −r $poolfile ] &amp;&amp; bytes=`cat $poolfile` || bytes=512
+    dd if=/dev/urandom of=$random_seed count=1 bs=$bytes
+</pre>
+        </div>
+
+        <p>Also, add the following lines in an appropriate script
+        which is run during the Linux system shutdown:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+    # Carry a random seed from shut-down to start-up
+    # Save the whole entropy pool
+    echo "Saving random seed..."
+    random_seed=/var/run/random-seed
+    touch $random_seed
+    chmod 600 $random_seed
+    poolfile=/proc/sys/kernel/random/poolsize
+    [ −r $poolfile ] &amp;&amp; bytes=`cat $poolfile` || bytes=512
+    dd if=/dev/urandom of=$random_seed count=1 bs=$bytes
+</pre>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="random-4_sect4" name="random-4_sect4" shape="rect"> </a>
+
+        <h3>/proc Interface</h3>
+
+        <p>The files in the directory <code class="filename">/proc/sys/kernel/random</code> (present since
+        2.3.16) provide an additional interface to the <code class="filename">/dev/random</code> device.</p>
+
+        <p>The read-only file <code class="function">entropy_avail</code> gives the available
+        entropy. Normally, this will be 4096 (bits), a full entropy
+        pool.</p>
+
+        <p>The file <code class="function">poolsize</code> gives
+        the size of the entropy pool. The semantics of this file
+        vary across kernel versions:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="variablelist">
+              <dl class="variablelist">
+                <dt><span class="term">Linux 2.4:</span></dt>
+
+                <dd>
+                  <p>This file gives the size of the entropy pool
+                  in <code class="function">bytes</code>. Normally,
+                  this file will have the value 512, but it is
+                  writable, and can be changed to any value for
+                  which an algorithm is available. The choices are
+                  32, 64, 128, 256, 512, 1024, or 2048.</p>
+                </dd>
+
+                <dt><span class="term">Linux 2.6:</span></dt>
+
+                <dd>
+                  <p>This file is read-only, and gives the size of
+                  the entropy pool in <code class="function">bits</code>. It contains the value
+                  4096.</p>
+                </dd>
+              </dl>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>The file <code class="function">read_wakeup_threshold</code> contains the number
+        of bits of entropy required for waking up processes that
+        sleep waiting for entropy from <code class="filename">/dev/random</code>. The default is 64. The file
+        <code class="function">write_wakeup_threshold</code>
+        contains the number of bits of entropy below which we wake
+        up processes that do a <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a> or <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a> for write access
+        to <code class="filename">/dev/random</code>. These values
+        can be changed by writing to the files.</p>
+
+        <p>The read-only files <code class="function">uuid</code>
+        and <code class="function">boot_id</code> contain random
+        strings like 6fd5a44b-35f4-4ad4-a9b9-6b9be13e1fe9. The
+        former is generated afresh for each read, the latter was
+        generated once.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="random-4_sect5" name="random-4_sect5" shape="rect"> </a>
+
+        <h3>ioctl(2) interface</h3>
+
+        <p>The following <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> requests are
+        defined on file descriptors connected to either
+        <code class="filename">/dev/random</code> or <code class="filename">/dev/urandom</code>. All requests performed will
+        interact with the input entropy pool impacting both
+        <code class="filename">/dev/random</code> and <code class="filename">/dev/urandom</code>. The <code class="constant">CAP_SYS_ADMIN</code> capability is required for
+        all requests except <code class="constant">RNDGETENTCNT</code>.</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">RNDGETENTCNT</code></span></dt>
+
+            <dd>
+              <p>Retrieve the entropy count of the input pool, the
+              contents will be the same as the <code class="function">entropy_avail</code> file under proc. The
+              result will be stored in the int pointed to by the
+              argument.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">RNDADDTOENTCNT</code></span></dt>
+
+            <dd>
+              <p>Increment or decrement the entropy count of the
+              input pool by the value pointed to by the
+              argument.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">RNDGETPOOL</code></span></dt>
+
+            <dd>
+              <p>Removed in Linux 2.6.9.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">RNDADDENTROPY</code></span></dt>
+
+            <dd>
+              <p>Add some additional entropy to the input pool,
+              incrementing the entropy count. This differs from
+              writing to <code class="filename">/dev/random</code>
+              or <code class="filename">/dev/urandom</code>, which
+              only adds some data but does not increment the
+              entropy count. The following structure is used:</p>
+
+              <div class="structdef">
+                <table style="border-collapse: collapse;">
+                  <colgroup span="1">
+                    <col class="c1" span="1" />
+                    <col class="c2" span="1" />
+                    <col class="c3" span="1" />
+                    <col class="c4" span="1" />
+                    <col class="c5" span="1" />
+                  </colgroup>
+
+                  <tbody>
+                    <tr>
+                      <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                      <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">rand_pool_info</span> {</td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>entropy_count</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"> </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>buf_size</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"> </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u32</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>buf</code></em>[0];</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"> </td>
+                    </tr>
+
+                    <tr>
+                      <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <p>Here <em class="parameter"><code>entropy_count</code></em> is the
+              value added to (or subtracted from) the entropy
+              count, and <em class="parameter"><code>buf</code></em> is the buffer of
+              size <em class="parameter"><code>buf_size</code></em>
+              which gets added to the entropy pool.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">RNDZAPENTCNT</code>, <code class="constant">RNDCLEARPOOL</code></span></dt>
+
+            <dd>
+              <p>Zero the entropy count of all pools and add some
+              system data (such as wall clock) to the pools.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="random-4_sect6" name="random-4_sect6" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <p>/dev/random</p>
+
+      <p>/dev/urandom</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="random-4_sect7" name="random-4_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/getrandom.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getrandom</span>(2)</span></a>, <a class="link" href="../htmlman1/mknod.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mknod</span>(1)</span></a></p>
+
+      <p>RFC 1750, "Randomness Recommendations for Security"</p>
+    </div>
+
+    <div class="colophon">
+      <a id="random-4_sect8" name="random-4_sect8" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 1997 John S. Kallal (kallal<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>voicenet.com)<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_DOC_ONEPARA)<br />
+                  This is free documentation; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License as<br />
+
+                  published by the Free Software Foundation; either version 2 of<br />
+
+                  the License, or (at your option) any later version.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Some changes by tytso and aeb.<br />
+
+                  <br />
+                  2004-12-16, John V. Belmonte/mtk, Updated init and quit scripts<br />
+
+                  2004-04-08, AEB, Improved description of read from /dev/urandom<br />
+
+                  2008-06-20, George Spelvin &lt;linux<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>horizon.com&gt;,<br />
+
+                              Matt Mackall &lt;mpm<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>selenic.com&gt;<br />
+
+                      Add a Usage subsection that recommends most users to use<br />
+
+                      /dev/urandom, and emphasizes parsimonious usage of /dev/random.<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

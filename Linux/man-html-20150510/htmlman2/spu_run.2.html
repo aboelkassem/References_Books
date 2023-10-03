@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>spu_run(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="spu_run(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="spu-run.2" name="spu-run.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>spu_run — execute an SPU context</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;sys/spu.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>spu_run</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">fd</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">unsigned int *<var class="pdparam">npc</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">unsigned int *<var class="pdparam">event</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">There is no glibc wrapper
+            for this system call; see NOTES.</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="spu-run-2_sect1" name="spu-run-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">spu_run</code>() system call is
+      used on PowerPC machines that implement the Cell Broadband
+      Engine Architecture in order to access Synergistic Processor
+      Units (SPUs). The <em class="parameter"><code>fd</code></em>
+      argument is a file descriptor returned by <a class="link" href="../htmlman2/spu_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">spu_create</span>(2)</span></a> that refers
+      to a specific SPU context. When the context gets scheduled to
+      a physical SPU, it starts execution at the instruction
+      pointer passed in <em class="parameter"><code>npc</code></em>.</p>
+
+      <p>Execution of SPU code happens synchronously, meaning that
+      <code class="function">spu_run</code>() blocks while the SPU
+      is still running. If there is a need to execute SPU code in
+      parallel with other code on either the main CPU or other
+      SPUs, a new thread of execution must be created first (e.g.,
+      using <a class="link" href="../htmlman3/pthread_create.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_create</span>(3)</span></a>).</p>
+
+      <p>When <code class="function">spu_run</code>() returns, the
+      current value of the SPU program counter is written to
+      <em class="parameter"><code>npc</code></em>, so successive
+      calls to <code class="function">spu_run</code>() can use the
+      same <em class="parameter"><code>npc</code></em> pointer.</p>
+
+      <p>The <em class="parameter"><code>event</code></em> argument
+      provides a buffer for an extended status code. If the SPU
+      context was created with the <code class="constant">SPU_CREATE_EVENTS_ENABLED</code> flag, then this
+      buffer is populated by the Linux kernel before <code class="function">spu_run</code>() returns.</p>
+
+      <p>The status code may be one (or more) of the following
+      constants:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">SPE_EVENT_DMA_ALIGNMENT</code></span></dt>
+
+          <dd>
+            <p>A DMA alignment error occurred.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">SPE_EVENT_INVALID_DMA</code></span></dt>
+
+          <dd>
+            <p>An invalid MFC DMA command was attempted.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">SPE_EVENT_SPE_DATA_STORAGE</code></span></dt>
+
+          <dd>
+            <p>A DMA storage error occurred.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">SPE_EVENT_SPE_ERROR</code></span></dt>
+
+          <dd>
+            <p>An illegal instruction was executed.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>NULL is a valid value for the <em class="parameter"><code>event</code></em> argument. In this case,
+      the events will not be reported to the calling process.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="spu-run-2_sect2" name="spu-run-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">spu_run</code>()
+      returns the value of the <em class="replaceable"><code>spu_status</code></em> register. On
+      error, it returns −1 and sets <code class="varname">errno</code> to one of the error codes listed
+      below.</p>
+
+      <p>The <em class="replaceable"><code>spu_status</code></em>
+      register value is a bit mask of status codes and optionally a
+      14-bit code returned from the <code class="literal">stop-and-signal</code> instruction on the SPU. The
+      bit masks for the status codes are:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">0x02</span></dt>
+
+          <dd>
+            <p>SPU was stopped by a <code class="literal">stop-and-signal</code> instruction.</p>
+          </dd>
+
+          <dt><span class="term">0x04</span></dt>
+
+          <dd>
+            <p>SPU was stopped by a <code class="literal">halt</code> instruction.</p>
+          </dd>
+
+          <dt><span class="term">0x08</span></dt>
+
+          <dd>
+            <p>SPU is waiting for a channel.</p>
+          </dd>
+
+          <dt><span class="term">0x10</span></dt>
+
+          <dd>
+            <p>SPU is in single-step mode.</p>
+          </dd>
+
+          <dt><span class="term">0x20</span></dt>
+
+          <dd>
+            <p>SPU has tried to execute an invalid instruction.</p>
+          </dd>
+
+          <dt><span class="term">0x40</span></dt>
+
+          <dd>
+            <p>SPU has tried to access an invalid channel.</p>
+          </dd>
+
+          <dt><span class="term">0x3fff0000</span></dt>
+
+          <dd>
+            <p>The bits masked with this value contain the code
+            returned from a <code class="literal">stop-and-signal</code> instruction. These
+            bits are valid only if the 0x02 bit is set.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>If <code class="function">spu_run</code>() has not
+      returned an error, one or more bits among the lower eight
+      ones are always set.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="spu-run-2_sect3" name="spu-run-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EBADF</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>fd</code></em> is not a
+            valid file descriptor.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>npc</code></em> is not a
+            valid pointer, or <em class="parameter"><code>event</code></em> is non-NULL and an
+            invalid pointer.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINTR</span></span></dt>
+
+          <dd>
+            <p>A signal occurred while <code class="function">spu_run</code>() was in progress; see
+            <a class="link" href="../htmlman7/signal.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(7)</span></a>. The
+            <em class="parameter"><code>npc</code></em> value has
+            been updated to the new program counter value if
+            necessary.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>fd</code></em> is not a
+            valid file descriptor returned from <a class="link" href="../htmlman2/spu_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">spu_create</span>(2)</span></a>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>There was not enough memory available to handle a
+            page fault resulting from a Memory Flow Controller
+            (MFC) direct memory access.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOSYS</span></span></dt>
+
+          <dd>
+            <p>The functionality is not provided by the current
+            system, because either the hardware does not provide
+            SPUs or the spufs module is not loaded.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="spu-run-2_sect4" name="spu-run-2_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p>The <code class="function">spu_run</code>() system call
+      was added to Linux in kernel 2.6.16.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="spu-run-2_sect5" name="spu-run-2_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>This call is Linux-specific and implemented only by the
+      PowerPC architecture. Programs using this system call are not
+      portable.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="spu-run-2_sect6" name="spu-run-2_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Glibc does not provide a wrapper for this system call;
+      call it using <a class="link" href="../htmlman2/syscall.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">syscall</span>(2)</span></a>. Note however,
+      that <code class="function">spu_run</code>() is meant to be
+      used from libraries that implement a more abstract interface
+      to SPUs, not to be used from regular applications. See
+      <a class="literalurl" href="http://www.bsc.es/projects/deepcomputing/linuxoncell/" target="_top" shape="rect">http://www.bsc.es/projects/deepcomputing/linuxoncell/</a>
+      for the recommended libraries.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="spu-run-2_sect7" name="spu-run-2_sect7" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>The following is an example of running a simple,
+      one-instruction SPU program with the <code class="function">spu_run</code>() system call.</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;stdlib.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;fcntl.h&gt;
+
+#define handle_error(msg) \
+    do { perror(msg); exit(EXIT_FAILURE); } while (0)
+
+int main(void)
+{
+    int context, fd, spu_status;
+    uint32_t instruction, npc;
+
+    context = spu_create("/spu/example−context", 0, 0755);
+    if (context == −1)
+        handle_error("spu_create");
+
+    /* write a 'stop 0x1234' instruction to the SPU's
+     * local store memory
+     */
+    instruction = 0x00001234;
+
+    fd = open("/spu/example−context/mem", O_RDWR);
+    if (fd == −1)
+        handle_error("open");
+    write(fd, &amp;instruction, sizeof(instruction));
+
+    /* set npc to the starting instruction address of the
+     * SPU program. Since we wrote the instruction at the
+     * start of the mem file, the entry point will be 0x0
+     */
+    npc = 0;
+
+    spu_status = spu_run(context, &amp;npc, NULL);
+    if (spu_status == −1)
+        handle_error("open");
+
+    /* we should see a status code of 0x1234002:
+     *   0x00000002 (spu was stopped due to stop−and−signal)
+     * | 0x12340000 (the stop−and−signal code)
+     */
+    printf("SPU Status: 0x%08x\n", spu_status);
+
+    exit(EXIT_SUCCESS);
+}
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="spu-run-2_sect8" name="spu-run-2_sect8" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/close.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">close</span>(2)</span></a>, <a class="link" href="../htmlman2/spu_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">spu_create</span>(2)</span></a>, <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>, <a class="link" href="../htmlman7/spufs.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">spufs</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="spu-run-2_sect9" name="spu-run-2_sect9" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) International Business Machines Corp., 2006<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_SW_3_PARA)<br />
+                  This program is free software; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License as<br />
+
+                  published by the Free Software Foundation; either version 2 of<br />
+
+                  the License, or (at your option) any later version.<br />
+
+                  <br />
+                  This program is distributed in the hope that it will be useful,<br />
+
+                  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See<br />
+
+                  the GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  HISTORY:<br />
+                  2005-09-28, created by Arnd Bergmann &lt;arndb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>de.ibm.com&gt;<br />
+
+                  2006-06-16, revised by Eduardo M. Fleury &lt;efleury<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>br.ibm.com&gt;<br />
+
+                  2007-07-10, some polishing by mtk<br />
+
+                  2007-09-28, updates for newer kernels, added example<br />
+
+                              by Jeremy Kerr &lt;jk<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>ozlabs.org&gt;<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,1476 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>hwclock(8) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="hwclock(8) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index8.html" shape="rect">Section 8</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="hwclock.8" name="hwclock.8" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>hwclock — read or set the hardware clock (RTC)</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">hwclock</code></p>
+      </div>
+
+      <div class="cmdsynopsis">
+        <p>[function]</p>
+      </div>
+
+      <div class="cmdsynopsis">
+        <p>[ option ... ]</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="hwclock-8_sect1" name="hwclock-8_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><span class="command"><strong>hwclock</strong></span> is a
+      tool for accessing the Hardware Clock. It can: display the
+      Hardware Clock time; set the Hardware Clock to a specified
+      time; set the Hardware Clock from the System Clock; set the
+      System Clock from the Hardware Clock; compensate for Hardware
+      Clock drift; correct the System Clock timescale; set the
+      kernel's timezone, NTP timescale, and epoch (Alpha only);
+      compare the System and Hardware Clocks; and predict future
+      Hardware Clock values based on its drift rate.</p>
+
+      <p>Since v2.26 important changes were made to the
+      <code class="option">−−hctosys</code> function,
+      the <code class="option">−−directisa</code>
+      option, and a new option <code class="option">−−update−drift</code> was added.
+      See their respective sections below.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="hwclock-8_sect2" name="hwclock-8_sect2" shape="rect"> </a>
+
+      <h2>FUNCTIONS</h2>
+
+      <p>The following functions are mutually exclusive, only one
+      can be given at a time. If none are given the default is
+      <code class="option">−−show</code>.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="option">−−adjust</code></span></dt>
+
+          <dd>
+            <p>Add or subtract time from the Hardware Clock to
+            account for systematic drift since the last time the
+            clock was set or adjusted. See the discussion below,
+            under <span class="emphasis"><em>The Adjust
+            Function</em></span>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−c,
+          −−compare</code></span></dt>
+
+          <dd>
+            <p>Periodically compare the Hardware Clock to the
+            System Time and output the difference every 10 seconds.
+            This will also print the frequency offset and tick.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−getepoch</code></span></dt>
+
+          <dt><span class="term"><code class="option">−−setepoch</code></span></dt>
+
+          <dd>
+            <p>These functions are for Alpha machines only.</p>
+
+            <p>Read and set the kernel's Hardware Clock epoch
+            value. Epoch is the number of years into AD to which a
+            zero year value in the Hardware Clock refers. For
+            example, if you are using the convention that the year
+            counter in your Hardware Clock contains the number of
+            full years since 1952, then the kernel's Hardware Clock
+            epoch value must be 1952.</p>
+
+            <p>The set function requires using the <code class="option">−−epoch</code> option.</p>
+
+            <p>This epoch value is used whenever <span class="command"><strong>hwclock</strong></span> reads or sets
+            the Hardware Clock.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−predict</code></span></dt>
+
+          <dd>
+            <p>Predict what the Hardware Clock will read in the
+            future based upon the time given by the <code class="option">−−date</code> option and the
+            information in <code class="filename">/etc/adjtime</code>. This is useful, for
+            example, to account for drift when setting a Hardware
+            Clock wakeup (aka alarm). See <a class="link" href="../htmlman8/rtcwake.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rtcwake</span>(8)</span></a>.</p>
+
+            <p>Do not use this function if the Hardware Clock is
+            being modified by anything other than the current
+            operating system's <span class="command"><strong>hwclock</strong></span> command, such
+            as '11 minute mode' or from dual-booting another
+            OS.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−r,
+          −−show</code></span></dt>
+
+          <dt><span class="term"><code class="option">−−get</code></span></dt>
+        </dl>
+      </div>
+
+      <p>Read the Hardware Clock and print the time on standard
+      output. The time shown is always in local time, even if you
+      keep your Hardware Clock in UTC. See the <code class="option">−−localtime</code> option.</p>
+
+      <p>Showing the Hardware Clock time is the default when no
+      function is specified.</p>
+
+      <p>The <code class="option">−−get</code> function
+      also applies drift correction to the time read, based upon
+      the information in <code class="filename">/etc/adjtime</code>. Do not use this function if
+      the Hardware Clock is being modified by anything other than
+      the current operating system's <span class="command"><strong>hwclock</strong></span> command, such as
+      '11 minute mode' or from dual-booting another OS.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="option">−s,
+          −−hctosys</code></span></dt>
+
+          <dd>
+            <p>Set the System Clock from the Hardware Clock. The
+            time read from the Hardware Clock is compensated to
+            account for systematic drift before using it to set the
+            System Clock. See the discussion below, under
+            <span class="emphasis"><em>The Adjust
+            Function</em></span>.</p>
+
+            <p>The System Clock must be kept in the UTC timescale
+            for date-time applications to work correctly in
+            conjunction with the timezone configured for the
+            system. If the Hardware Clock is kept in local time
+            then the time read from it must be shifted to the UTC
+            timescale before using it to set the System Clock. The
+            <code class="option">−−hctosys</code>
+            function does this based upon the information in the
+            <code class="filename">/etc/adjtime</code> file or the
+            command line arguments <code class="option">−−localtime</code> and
+            <code class="option">−−utc</code>. Note: no
+            daylight saving adjustment is made. See the discussion
+            below under <span class="emphasis"><em>LOCAL vs
+            UTC</em></span>.</p>
+
+            <p>The kernel also keeps a timezone value, the
+            <code class="option">−−hctosys</code>
+            function sets it to the timezone configured for the
+            system. The system timezone is configured by the TZ
+            environment variable or the <code class="filename">/etc/localtime</code> file, as <a class="link" href="../htmlman3/tzset.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tzset</span>(3)</span></a> would
+            interpret them. The obsolete tz_dsttime field of the
+            kernel's timezone value is set to zero. (For details on
+            what this field used to mean, see <a class="link" href="../htmlman2/gettimeofday.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">settimeofday</span>(2)</span></a>.)</p>
+
+            <p>When used in a startup script, making the
+            <code class="option">−−hctosys</code>
+            function the first caller of <a class="link" href="../htmlman2/gettimeofday.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">settimeofday</span>(2)</span></a> from
+            boot, it will set the NTP '11 minute mode' timescale
+            via the <span class="command"><strong>persistent_clock_is_local</strong></span>
+            kernel variable. If the Hardware Clock's timescale
+            configuration is changed then a reboot is required to
+            inform the kernel. See the discussion below, under
+            <span class="emphasis"><em>Automatic Hardware Clock
+            Synchronization by the Kernel</em></span>.</p>
+
+            <p>This is a good function to use in one of the system
+            startup scripts before the file systems are mounted
+            read/write.</p>
+
+            <p>This function should never be used on a running
+            system. Jumping system time will cause problems, such
+            as, corrupted filesystem timestamps. Also, if something
+            has changed the Hardware Clock, like NTP's '11 minute
+            mode', then <code class="option">−−hctosys</code> will set the time
+            incorrectly by including drift compensation.</p>
+
+            <p>Drift compensation can be inhibited by setting the
+            drift factor in <code class="filename">/etc/adjtime</code> to zero. This setting
+            will be persistent as long as the <code class="option">−−update−drift</code> option
+            is not used with <code class="option">−−systohc</code> at shutdown (or
+            anywhere else). Another way to inhibit this is by using
+            the <code class="option">−−noadjfile</code>
+            option when calling the <code class="option">−−hctosys</code> function. A third
+            method is to delete the <code class="filename">/etc/adjtime <span class="emphasis"><em>file</em></span></code>. <span class="command"><strong>Hwclock</strong></span> will then
+            default to using the UTC timescale for the Hardware
+            Clock. If the Hardware Clock is ticking local time it
+            will need to be defined in the file. This can be done
+            by calling <span class="emphasis"><em>hwclock
+            −−localtime
+            −−adjust</em></span>; when the file is not
+            present this command will not actually adjust the
+            Clock, but it will create the file with local time
+            configured, and a drift factor of zero.</p>
+
+            <p>A condition under which inhibiting <span class="command"><strong>hwclock</strong></span>'s drift
+            correction may be desired is when dual-booting multiple
+            operating systems. If while this instance of Linux is
+            stopped, another OS changes the Hardware Clock's value,
+            then when this instance is started again the drift
+            correction applied will be incorrect.</p>
+
+            <p>For <span class="command"><strong>hwclock</strong></span>'s drift
+            correction to work properly it is imperative that
+            nothing changes the Hardware Clock while its Linux
+            instance is not running.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−set</code></span></dt>
+
+          <dd>
+            <p>Set the Hardware Clock to the time given by the
+            <code class="option">−−date</code> option,
+            and update the timestamps in <code class="filename">/etc/adjtime</code>. With the <code class="option">−−update−drift</code> option
+            (re)calculate the drift factor.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−systz</code></span></dt>
+
+          <dd>
+            <p>This is an alternate to the <code class="option">−−hctosys</code> function that
+            does not read the Hardware Clock nor set the System
+            Clock; consequently there is not any drift correction.
+            It is intended to be used in a startup script on
+            systems with kernels above version 2.6 where you know
+            the System Clock has been set from the Hardware Clock
+            by the kernel during boot.</p>
+
+            <p>It does the following things that are detailed above
+            in the <code class="option">−−hctosys</code> function:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="itemizedlist">
+                  <ul class="itemizedlist" style="list-style-type: disc;">
+                    <li class="listitem">
+                      <p>Corrects the System Clock timescale to UTC
+                      as needed. Only instead of accomplishing this
+                      by setting the System Clock, <span class="command"><strong>hwclock</strong></span>
+                      simply informs the kernel and it handles the
+                      change.</p>
+                    </li>
+
+                    <li class="listitem">
+                      <p>Sets the kernel's NTP '11 minute mode'
+                      timescale.</p>
+                    </li>
+
+                    <li class="listitem">
+                      <p>Sets the kernel's timezone.</p>
+                    </li>
+                  </ul>
+                </div>
+
+                <p>The first two are only available on the first
+                call of <a class="link" href="../htmlman2/gettimeofday.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">settimeofday</span>(2)</span></a>
+                after boot. Consequently this option only makes
+                sense when used in a startup script. If the
+                Hardware Clocks timescale configuration is changed
+                then a reboot would be required to inform the
+                kernel.</p>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><code class="option">−w,
+          −−systohc</code></span></dt>
+
+          <dd>
+            <p>Set the Hardware Clock from the System Clock, and
+            update the timestamps in <code class="filename">/etc/adjtime</code>. With the <code class="option">−−update−drift</code> option
+            (re)calculate the drift factor.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−V,
+          −−version</code></span></dt>
+
+          <dd>
+            <p>Display version information and exit.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−h,
+          −−help</code></span></dt>
+
+          <dd>
+            <p>Display help text and exit.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="hwclock-8_sect3" name="hwclock-8_sect3" shape="rect"> </a>
+
+      <h2>OPTIONS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="option">−−adjfile=filename</code></span></dt>
+
+          <dd>
+            <p>Override the default <code class="filename">/etc/adjtime <span class="emphasis"><em>file
+            path</em></span></code>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−badyear</code></span></dt>
+
+          <dd>
+            <p>Indicate that the Hardware Clock is incapable of
+            storing years outside the range 1994-1999. There is a
+            problem in some BIOSes (almost all Award BIOSes made
+            between 4/26/94 and 5/31/95) wherein they are unable to
+            deal with years after 1999. If one attempts to set the
+            year-of-century value to something less than 94 (or 95
+            in some cases), the value that actually gets set is 94
+            (or 95). Thus, if you have one of these machines,
+            <span class="command"><strong>hwclock</strong></span>
+            cannot set the year after 1999 and cannot use the value
+            of the clock as the true time in the normal way.</p>
+
+            <p>To compensate for this (without your getting a BIOS
+            update, which would definitely be preferable), always
+            use <code class="option">−−badyear</code>
+            if you have one of these machines. When <span class="command"><strong>hwclock</strong></span> knows it's
+            working with a brain-damaged clock, it ignores the year
+            part of the Hardware Clock value and instead tries to
+            guess the year based on the last calibrated date in the
+            adjtime file, by assuming that date is within the past
+            year. For this to work, you had better do a
+            <span class="emphasis"><em>hwclock
+            −−set</em></span> or <span class="emphasis"><em>hwclock
+            −−systohc</em></span> at least once a
+            year!</p>
+
+            <p>Though <span class="command"><strong>hwclock</strong></span> ignores the
+            year value when it reads the Hardware Clock, it sets
+            the year value when it sets the clock. It sets it to
+            1995, 1996, 1997, or 1998, whichever one has the same
+            position in the leap year cycle as the true year. That
+            way, the Hardware Clock inserts leap days where they
+            belong. Again, if you let the Hardware Clock run for
+            more than a year without setting it, this scheme could
+            be defeated and you could end up losing a day.</p>
+
+            <p><span class="command"><strong>hwclock</strong></span> warns you
+            that you probably need <code class="option">−−badyear</code> whenever it finds
+            your Hardware Clock set to 1994 or 1995.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−date=date_string</code></span></dt>
+
+          <dd>
+            <p>You need this option if you specify the <code class="option">−−set</code> or <code class="option">−−predict</code> functions,
+            otherwise it is ignored. It specifies the time to which
+            to set the Hardware Clock, or the time for which to
+            predict the Hardware Clock reading. The value of this
+            option is used as an argument to the <a class="link" href="../htmlman1/date.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">date</span>(1)</span></a> program's
+            \-\-date option. For example:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <p><span class="emphasis"><em>hwclock
+                −−set
+                −−date='</em></span>2011-08-14
+                16:45:05'</p>
+
+                <p>The argument must be in local time, even if you
+                keep your Hardware Clock in UTC. See the
+                <code class="option">−−localtime</code>
+                option. The argument must not be a relative time
+                like "+5 minutes", because <span class="command"><strong>hwclock</strong></span>'s
+                precision depends upon correlation between the
+                argument's value and when the enter key is
+                pressed.</p>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−debug</code></span></dt>
+
+          <dd>
+            <p>Display a lot of information about what <span class="command"><strong>hwclock</strong></span> is doing
+            internally. Some of its functions are complex and this
+            output can help you understand how the program
+            works.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−directisa</code></span></dt>
+
+          <dd>
+            <p>This option is meaningful for: ISA compatible
+            machines including x86, and x86_64; and Alpha (which
+            has a similar Hardware Clock interface). For other
+            machines, it has no effect. This option tells
+            <span class="command"><strong>hwclock</strong></span>
+            to use explicit I/O instructions to access the Hardware
+            Clock. Without this option, <span class="command"><strong>hwclock</strong></span> will use the
+            rtc device, which it assumes to be driven by the RTC
+            device driver. As of v2.26 it will no longer
+            automatically use directisa when the rtc driver is
+            unavailable; this was causing an unsafe condition that
+            could allow two processes to access the Hardware Clock
+            at the same time. Direct hardware access from userspace
+            should only be used for testing, troubleshooting, and
+            as a last resort when all other methods fail. See the
+            <code class="option">−−rtc</code>
+            option.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−f,
+          −−rtc=<em class="parameter"><code>filename</code></em></code></span></dt>
+
+          <dd>
+            <p>Override <span class="command"><strong>hwclock</strong></span>'s default rtc
+            device file name. Otherwise it will use the first one
+            found in this order:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="informalexample">
+                  <pre class="programlisting" xml:space="preserve">
+<code class="filename">/dev/rtc</code>
+<code class="filename">/dev/rtc0</code>
+<code class="filename">/dev/misc/rtc</code>
+</pre>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>For <em class="replaceable"><code>IA-64:</code></em></p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <p><code class="filename">/dev/efirtc</code></p>
+
+                <p><code class="filename">/dev/misc/efirtc</code></p>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−localtime</code></span></dt>
+
+          <dt><span class="term"><code class="option">−u,
+          −−utc</code></span></dt>
+
+          <dd>
+            <p>Indicate which timescale the Hardware Clock is set
+            to.</p>
+
+            <p>The Hardware Clock may be configured to use either
+            the UTC or the local timescale, but nothing in the
+            clock itself says which alternative is being used. The
+            <code class="option">−−localtime</code> or
+            <code class="option">−−utc</code> options
+            give this information to the <span class="command"><strong>hwclock</strong></span> command. If
+            you specify the wrong one (or specify neither and take
+            a wrong default), both setting and reading the Hardware
+            Clock will be incorrect.</p>
+
+            <p>If you specify neither <code class="option">−−utc</code> nor <code class="option">−−localtime</code> then the one
+            last given with a set function (<code class="option">−−set</code>, <code class="option">−−systohc</code>, or <code class="option">−−adjust</code>), as recorded in
+            <code class="filename">/etc/adjtime</code>, will be
+            used. If the adjtime file doesn't exist, the default is
+            UTC.</p>
+
+            <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+              <table border="0" summary="Note">
+                <tr>
+                  <td rowspan="2" align="center" valign="top" width="25" colspan="1"><img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+                  <th align="left" rowspan="1" colspan="1">Note</th>
+                </tr>
+
+                <tr>
+                  <td align="left" valign="top" rowspan="1" colspan="1">
+                    <p>Daylight saving time changes may be
+                    inconsistent when the Hardware Clock is kept in
+                    local time. See the discussion below under
+                    <span class="emphasis"><em>LOCAL vs
+                    UTC</em></span>.</p>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−noadjfile</code></span></dt>
+
+          <dd>
+            <p>Disable the facilities provided by <code class="filename">/etc/adjtime</code>. <span class="command"><strong>hwclock</strong></span> will not read
+            nor write to that file with this option. Either
+            <code class="option">−−utc</code> or
+            <code class="option">−−localtime</code>
+            must be specified when using this option.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−test</code></span></dt>
+
+          <dd>
+            <p>Do not actually change anything on the system, i.e.,
+            the Clocks or adjtime file. This is useful, especially
+            in conjunction with <code class="option">−−debug</code>, in learning about
+            the internal operations of hwclock.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−update−drift</code></span></dt>
+
+          <dd>
+            <p>Update the Hardware Clock's drift factor in
+            <code class="filename">/etc/adjtime</code>. It is used
+            with <code class="option">−−set</code> or
+            <code class="option">−−systohc</code>,
+            otherwise it is ignored.</p>
+
+            <p>A minimum four hour period between settings is
+            required. This is to avoid invalid calculations. The
+            longer the period, the more precise the resulting drift
+            factor will be.</p>
+
+            <p>This option was added in v2.26, because it is
+            typical for systems to call <span class="emphasis"><em>hwclock
+            −−systohc</em></span> at shutdown; with the
+            old behaviour this would automatically (re)calculate
+            the drift factor which caused several problems:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="itemizedlist">
+                  <ul class="itemizedlist" style="list-style-type: disc;">
+                    <li class="listitem">
+                      <p>When using ntpd with an '11 minute mode'
+                      kernel the drift factor would be clobbered to
+                      near zero.</p>
+                    </li>
+
+                    <li class="listitem">
+                      <p>It would not allow the use of 'cold' drift
+                      correction. With most configurations using
+                      'cold' drift will yield favorable results.
+                      Cold, means when the machine is turned off
+                      which can have a significant impact on the
+                      drift factor.</p>
+                    </li>
+
+                    <li class="listitem">
+                      <p>(Re)calculating drift factor on every
+                      shutdown delivers suboptimal results. For
+                      example, if ephemeral conditions cause the
+                      machine to be abnormally hot the drift factor
+                      calculation would be out of range.</p>
+                    </li>
+                  </ul>
+                </div>
+
+                <p>Having <span class="command"><strong>hwclock</strong></span> calculate
+                the drift factor is a good starting point, but for
+                optimal results it will likely need to be adjusted
+                by directly editing the <code class="filename">/etc/adjtime</code> file. For most
+                configurations once a machine's optimal drift
+                factor is crafted it should not need to be changed.
+                Therefore, the old behavior to automatically
+                (re)calculate drift was changed and now requires
+                this option to be used. See the discussion below,
+                under <span class="emphasis"><em>The Adjust
+                Function</em></span>.</p>
+              </blockquote>
+            </div>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="hwclock-8_sect4" name="hwclock-8_sect4" shape="rect"> </a>
+
+      <h2>OPTIONS FOR ALPHA MACHINES ONLY</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="option">−−arc</code></span></dt>
+
+          <dd>
+            <p>This option is equivalent to <code class="option">−−epoch=</code>1980 and is used to
+            specify the most common epoch on Alphas with ARC
+            console (but Ruffians have an epoch of 1900).</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−epoch=year</code></span></dt>
+
+          <dd>
+            <p>Specifies the year which is the beginning of the
+            Hardware Clock's epoch, that is the number of years
+            into AD to which a zero value in the Hardware Clock's
+            year counter refers. It is used together with the
+            <code class="option">−−setepoch</code>
+            option to set the kernel's idea of the epoch of the
+            Hardware Clock.</p>
+
+            <p>For example, on a Digital Unix machine:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <p><span class="emphasis"><em>hwclock
+                −−setepoch
+                −−epoch=</em></span>1952</p>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−funky−toy</code></span></dt>
+
+          <dt><span class="term"><code class="option">−−jensen</code></span></dt>
+
+          <dd>
+            <p>These two options specify what kind of Alpha machine
+            you have. They are invalid if you do not have an Alpha
+            and are usually unnecessary if you do; <span class="command"><strong>hwclock</strong></span> should be
+            able to determine what it is running on when
+            <code class="filename">/proc</code> is mounted.</p>
+
+            <p>The <code class="option">−−jensen</code>
+            option is used for Jensen models; <code class="option">−−funky−toy</code> means
+            that the machine requires the UF bit instead of the UIP
+            bit in the Hardware Clock to detect a time transition.
+            "Toy" in the option name refers to the Time Of Year
+            facility of the machine.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−srm</code></span></dt>
+
+          <dd>
+            <p>This option is equivalent to <code class="option">−−epoch=</code>1900 and is used to
+            specify the most common epoch on Alphas with SRM
+            console.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="hwclock-8_sect5" name="hwclock-8_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <div class="refsect2">
+        <a id="hwclock-8_sect6" name="hwclock-8_sect6" shape="rect"> </a>
+
+        <h3>Clocks in a Linux System</h3>
+
+        <p>There are two types of date-time clocks:</p>
+
+        <p><span class="emphasis"><em>The Hardware
+        Clock:</em></span> This clock is an independent hardware
+        device, with its own power domain (battery, capacitor,
+        etc), that operates when the machine is powered off, or
+        even unplugged.</p>
+
+        <p>On an ISA compatible system, this clock is specified as
+        part of the ISA standard. A control program can read or set
+        this clock only to a whole second, but it can also detect
+        the edges of the 1 second clock ticks, so the clock
+        actually has virtually infinite precision.</p>
+
+        <p>This clock is commonly called the hardware clock, the
+        real time clock, the RTC, the BIOS clock, and the CMOS
+        clock. Hardware Clock, in its capitalized form, was coined
+        for use by <span class="command"><strong>hwclock</strong></span>. The Linux kernel
+        also refers to it as the persistent clock.</p>
+
+        <p>Some non-ISA systems have a few real time clocks with
+        only one of them having its own power domain. A very low
+        power external I2C or SPI clock chip might be used with a
+        backup battery as the hardware clock to initialize a more
+        functional integrated real-time clock which is used for
+        most other purposes.</p>
+
+        <p><span class="emphasis"><em>The System Clock:</em></span>
+        This clock is part of the Linux kernel and is driven by a
+        timer interrupt. (On an ISA machine, the timer interrupt is
+        part of the ISA standard.) It has meaning only while Linux
+        is running on the machine. The System Time is the number of
+        seconds since 00:00:00 January 1, 1970 UTC (or more
+        succinctly, the number of seconds since 1969 UTC). The
+        System Time is not an integer, though. It has virtually
+        infinite precision.</p>
+
+        <p>The System Time is the time that matters. The Hardware
+        Clock's basic purpose is to keep time when Linux is not
+        running so that the System Clock can be initialized from it
+        at boot. Note that in DOS, for which ISA was designed, the
+        Hardware Clock is the only real time clock.</p>
+
+        <p>It is important that the System Time not have any
+        discontinuities such as would happen if you used the
+        <a class="link" href="../htmlman1/date.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">date</span>(1)</span></a> program to set it
+        while the system is running. You can, however, do whatever
+        you want to the Hardware Clock while the system is running,
+        and the next time Linux starts up, it will do so with the
+        adjusted time from the Hardware Clock. Note: currently this
+        is not possible on most systems because <span class="emphasis"><em>hwclock −−systohc</em></span> is
+        called at shutdown.</p>
+
+        <p>The Linux kernel's timezone is set by <span class="command"><strong>hwclock</strong></span>. But don't be
+        misled -- almost nobody cares what timezone the kernel
+        thinks it is in. Instead, programs that care about the
+        timezone (perhaps because they want to display a local time
+        for you) almost always use a more traditional method of
+        determining the timezone: They use the TZ environment
+        variable or the <code class="filename">/etc/localtime</code> file, as explained in the
+        man page for <a class="link" href="../htmlman3/tzset.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tzset</span>(3)</span></a>. However, some
+        programs and fringe parts of the Linux kernel such as
+        filesystems use the kernel's timezone value. An example is
+        the vfat filesystem. If the kernel timezone value is wrong,
+        the vfat filesystem will report and set the wrong
+        timestamps on files. Another example is the kernel's NTP
+        '11 minute mode.' If the kernel's timezone value and/or the
+        <span class="command"><strong>persistent_clock_is_local</strong></span>
+        variable are wrong, then the Hardware Clock will be set
+        incorrectly by '11 minute mode.' See the discussion below,
+        under <span class="emphasis"><em>Automatic Hardware Clock
+        Synchronization by the Kernel</em></span>.</p>
+
+        <p><span class="command"><strong>hwclock</strong></span>
+        sets the kernel's timezone to the value indicated by TZ or
+        <code class="filename">/etc/localtime <span class="emphasis"><em>with the</em></span></code> <code class="option">−−hctosys</code> or <code class="option">−−systz</code> functions.</p>
+
+        <p>The kernel's timezone value actually consists of two
+        parts: 1) a field tz_minuteswest indicating how many
+        minutes local time (not adjusted for DST) lags behind UTC,
+        and 2) a field tz_dsttime indicating the type of Daylight
+        Savings Time (DST) convention that is in effect in the
+        locality at the present time. This second field is not used
+        under Linux and is always zero. See also <a class="link" href="../htmlman2/gettimeofday.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">settimeofday</span>(2)</span></a>.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="hwclock-8_sect7" name="hwclock-8_sect7" shape="rect"> </a>
+
+        <h3>User access and setuid</h3>
+
+        <p>Sometimes, you need to install <span class="command"><strong>hwclock</strong></span> setuid root. If
+        you want users other than the superuser to be able to
+        display the clock value using the direct ISA I/O method,
+        install it setuid root. If you have the rtc device
+        interface on your system, or are on a non-ISA compatible
+        system, there is probably no need for users to have the
+        direct ISA I/O method, so do not bother. See the
+        <code class="option">−−rtc</code> option.</p>
+
+        <p>In any case, hwclock will not allow you to set anything
+        unless you have the superuser real uid. (This restriction
+        is not necessary if you haven't installed setuid root, but
+        it's there for now.)</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="hwclock-8_sect8" name="hwclock-8_sect8" shape="rect"> </a>
+
+        <h3>Hardware Clock Access Methods</h3>
+
+        <p><span class="command"><strong>hwclock</strong></span>
+        uses many different ways to get and set Hardware Clock
+        values. The most normal way is to do I/O to the rtc device
+        special file, which is presumed to be driven by the rtc
+        device driver. Also, Linux systems using the rtc framework
+        with udev, are capable of supporting multiple Hardware
+        Clocks. This may bring about the need to override the
+        default rtc device by specifying one with the <code class="option">−−rtc</code> option.</p>
+
+        <p>However, this method is not always available as older
+        systems do not have an rtc driver. On these systems, the
+        method of accessing the Hardware Clock depends on the
+        system hardware.</p>
+
+        <p>On an ISA compatible system, <span class="command"><strong>hwclock</strong></span> can directly
+        access the "CMOS memory" registers that constitute the
+        clock, by doing I/O to Ports 0x70 and 0x71. It does this
+        with actual I/O instructions and consequently can only do
+        it if running with superuser effective userid. This method
+        may be used by specifying the <code class="option">−−directisa</code> option.</p>
+
+        <p>This is a really poor method of accessing the clock, for
+        all the reasons that userspace programs are generally not
+        supposed to do direct I/O and disable interrupts.
+        <span class="command"><strong>hwclock</strong></span>
+        provides it for testing, troubleshooting, and because it
+        may be the only method available on ISA compatible and
+        Alpha systems which do not have a working rtc device
+        driver.</p>
+
+        <p>In the case of a Jensen Alpha, there is no way for
+        <span class="command"><strong>hwclock</strong></span> to
+        execute those I/O instructions, and so it uses instead the
+        <code class="filename">/dev/port</code> device special
+        file, which provides almost as low-level an interface to
+        the I/O subsystem.</p>
+
+        <p>On an m68k system, <span class="command"><strong>hwclock</strong></span> can access the
+        clock with the console driver, via the device special file
+        <code class="filename">/dev/tty1</code>.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="hwclock-8_sect9" name="hwclock-8_sect9" shape="rect"> </a>
+
+        <h3>The Adjust Function</h3>
+
+        <p>The Hardware Clock is usually not very accurate.
+        However, much of its inaccuracy is completely predictable -
+        it gains or loses the same amount of time every day. This
+        is called systematic drift. <span class="command"><strong>hwclock</strong></span>'s <code class="option">−−adjust</code> function lets you
+        apply systematic drift corrections to the Hardware
+        Clock.</p>
+
+        <p>It works like this: <span class="command"><strong>hwclock</strong></span> keeps a file,
+        <code class="filename">/etc/adjtime</code>, that keeps some
+        historical information. This is called the adjtime
+        file.</p>
+
+        <p>Suppose you start with no adjtime file. You issue a
+        <span class="emphasis"><em>hwclock
+        −−set</em></span> command to set the Hardware
+        Clock to the true current time. <span class="command"><strong>hwclock</strong></span> creates the
+        adjtime file and records in it the current time as the last
+        time the clock was calibrated. Five days later, the clock
+        has gained 10 seconds, so you issue a <span class="emphasis"><em>hwclock −−set
+        −−update−drift</em></span> command to set
+        it back 10 seconds. <span class="command"><strong>hwclock</strong></span> updates the
+        adjtime file to show the current time as the last time the
+        clock was calibrated, and records 2 seconds per day as the
+        systematic drift rate. 24 hours go by, and then you issue a
+        <span class="emphasis"><em>hwclock
+        −−adjust</em></span> command. <span class="command"><strong>hwclock</strong></span> consults the
+        adjtime file and sees that the clock gains 2 seconds per
+        day when left alone and that it has been left alone for
+        exactly one day. So it subtracts 2 seconds from the
+        Hardware Clock. It then records the current time as the
+        last time the clock was adjusted. Another 24 hours go by
+        and you issue another <span class="emphasis"><em>hwclock
+        −−adjust</em></span>. <span class="command"><strong>hwclock</strong></span> does the same
+        thing: subtracts 2 seconds and updates the adjtime file
+        with the current time as the last time the clock was
+        adjusted.</p>
+
+        <p>When you use the <code class="option">−−update−drift</code> option
+        with <code class="option">−−set</code> or
+        <code class="option">−−systohc</code>, the
+        systematic drift rate is (re)calculated by comparing the
+        fully drift corrected current Hardware Clock time with the
+        new set time, from that it derives the 24 hour drift rate
+        based on the last calibrated timestamp from the adjtime
+        file. This updated drift factor is then saved in
+        <code class="filename">/etc/adjtime</code>.</p>
+
+        <p>A small amount of error creeps in when the Hardware
+        Clock is set, so <code class="option">−−adjust</code> refrains from making
+        any adjustment that is less than 1 second. Later on, when
+        you request an adjustment again, the accumulated drift will
+        be more than 1 second and <code class="option">−−adjust</code> will make the
+        adjustment including any fractional amount.</p>
+
+        <p><span class="emphasis"><em>hwclock
+        −−hctosys</em></span> also uses the adjtime
+        file data to compensate the value read from the Hardware
+        Clock before using it to set the System Clock. It does not
+        share the 1 second limitation of <code class="option">−−adjust</code>, and will correct
+        sub-second drift values immediately. It does not change the
+        Hardware Clock time nor the adjtime file. This may
+        eliminate the need to use <code class="option">−−adjust</code>, unless something else
+        on the system needs the Hardware Clock to be
+        compensated.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="hwclock-8_sect10" name="hwclock-8_sect10" shape="rect"> </a>
+
+        <h3>The Adjtime File</h3>
+
+        <p>While named for its historical purpose of controlling
+        adjustments only, it actually contains other information
+        used by <span class="command"><strong>hwclock</strong></span> from one
+        invocation to the next.</p>
+
+        <p>The format of the adjtime file is, in ASCII:</p>
+
+        <p>Line 1: Three numbers, separated by blanks: 1) the
+        systematic drift rate in seconds per day, floating point
+        decimal; 2) the resulting number of seconds since 1969 UTC
+        of most recent adjustment or calibration, decimal integer;
+        3) zero (for compatibility with <span class="citerefentry"><span class="refentrytitle">clock</span>(8)</span>) as a decimal
+        integer.</p>
+
+        <p>Line 2: One number: the resulting number of seconds
+        since 1969 UTC of most recent calibration. Zero if there
+        has been no calibration yet or it is known that any
+        previous calibration is moot (for example, because the
+        Hardware Clock has been found, since that calibration, not
+        to contain a valid time). This is a decimal integer.</p>
+
+        <p>Line 3: "UTC" or "LOCAL". Tells whether the Hardware
+        Clock is set to Coordinated Universal Time or local time.
+        You can always override this value with options on the
+        <span class="command"><strong>hwclock</strong></span>
+        command line.</p>
+
+        <p>You can use an adjtime file that was previously used
+        with the <span class="command"><strong>clock</strong></span>(8) program with
+        <span class="command"><strong>hwclock</strong></span>.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="hwclock-8_sect11" name="hwclock-8_sect11" shape="rect"> </a>
+
+        <h3>Automatic Hardware Clock Synchronization by the
+        Kernel</h3>
+
+        <p>You should be aware of another way that the Hardware
+        Clock is kept synchronized in some systems. The Linux
+        kernel has a mode wherein it copies the System Time to the
+        Hardware Clock every 11 minutes. This is a good mode to use
+        when you are using something sophisticated like NTP to keep
+        your System Clock synchronized. (NTP is a way to keep your
+        System Time synchronized either to a time server somewhere
+        on the network or to a radio clock hooked up to your
+        system. See RFC 1305.)</p>
+
+        <p>This mode (we'll call it '11 minute mode') is off until
+        something turns it on. The NTP daemon ntpd is one thing
+        that turns it on. You can turn it off by running anything,
+        including <span class="emphasis"><em>hwclock
+        −−hctosys</em></span>, that sets the System
+        Clock the old fashioned way. However, if the NTP daemon is
+        still running, it will turn 11 minute mode back on again
+        the next time it synchronizes the System Clock.</p>
+
+        <p>When '11 minute mode' is active the 64 bit of the
+        kernel's <span class="command"><strong>time_status</strong></span> variable is
+        unset. The status variable can be checked with the
+        <span class="emphasis"><em>adjtimex --print</em></span> or
+        <span class="command"><strong>ntptime</strong></span>
+        commands.</p>
+
+        <p>If your system runs with '11 minute mode' on, it may
+        need to use either <code class="option">−−hctosys</code> or <code class="option">−−systz</code> in a startup script,
+        especially if the Hardware Clock is configured to use the
+        local timescale. Unless the kernel is informed of what
+        timescale the Hardware Clock is using, it may clobber it
+        with the wrong one. The kernel uses UTC by default.</p>
+
+        <p>The first userspace command to set the System Clock
+        informs the kernel what timescale the Hardware Clock is
+        using. This happens via the <span class="command"><strong>persistent_clock_is_local</strong></span>
+        kernel variable. If <code class="option">−−hctosys</code> or <code class="option">−−systz</code> is the first, it will
+        set this variable according to the adjtime file or the
+        appropriate command-line argument. Note that when using
+        this capability and the Hardware Clock timescale
+        configuration is changed, then a reboot is required to
+        notify the kernel.</p>
+
+        <p><span class="emphasis"><em>hwclock
+        −−adjust</em></span> should not be used with
+        NTP '11 minute mode.'</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="hwclock-8_sect12" name="hwclock-8_sect12" shape="rect"> </a>
+
+        <h3>ISA Hardware Clock Century value</h3>
+
+        <p>There is some sort of standard that defines CMOS memory
+        Byte 50 on an ISA machine as an indicator of what century
+        it is. <span class="command"><strong>hwclock</strong></span> does not use or
+        set that byte because there are some machines that don't
+        define the byte that way, and it really isn't necessary
+        anyway, since the year-of-century does a good job of
+        implying which century it is.</p>
+
+        <p>If you have a bona fide use for a CMOS century byte,
+        contact the <span class="command"><strong>hwclock</strong></span> maintainer; an
+        option may be appropriate.</p>
+
+        <p>Note that this section is only relevant when you are
+        using the "direct ISA" method of accessing the Hardware
+        Clock. ACPI provides a standard way to access century
+        values, when they are supported by the hardware.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="hwclock-8_sect13" name="hwclock-8_sect13" shape="rect"> </a>
+
+      <h2>DATE-TIME CONFIGURATION</h2>
+
+      <div class="refsect2">
+        <a id="hwclock-8_sect14" name="hwclock-8_sect14" shape="rect"> </a>
+
+        <h3>Keeping Time without External Synchronization</h3>
+
+        <p>This discussion is based on the following
+        conditions:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>Nothing is running that alters the date-time
+              clocks, e.g., <span class="citerefentry"><span class="refentrytitle">ntpd</span>(1)</span>, cron jobs, et
+              al.</p>
+            </li>
+
+            <li class="listitem">
+              <p>The system timezone is configured for the correct
+              local time. See below <span class="emphasis"><em>POSIX vs 'RIGHT'</em></span>.</p>
+            </li>
+
+            <li class="listitem">
+              <div class="informalexample">
+                <pre class="programlisting" xml:space="preserve">
+Early in startup the following are called in this order:
+  <span class="emphasis"><em>adjtimex −−tick</em></span><span class="emphasis"><em>&lt;value&gt; </em></span><code class="option">−−frequency</code><em class="replaceable"><code>&lt;value&gt;</code></em>
+</pre>
+              </div>
+
+              <p><span class="emphasis"><em>hwclock
+              −−hctosys</em></span></p>
+            </li>
+
+            <li class="listitem">
+              <p>During shutdown the following is called:</p>
+            </li>
+          </ul>
+        </div>
+
+        <p><span class="emphasis"><em>hwclock
+        −−systohc</em></span></p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <p><code class="literal">*</code> Systems without
+            <span class="command"><strong>adjtimex</strong></span>
+            may use <span class="command"><strong>ntptime</strong></span>.</p>
+          </blockquote>
+        </div>
+
+        <p>Whether maintaining precision time with <span class="citerefentry"><span class="refentrytitle">ntpd</span>(1)</span> or not, it makes
+        sense to configure the system to keep reasonably good
+        date-time on its own.</p>
+
+        <p>The first step in making that happen is having a clear
+        understanding of the big picture. There are two completely
+        separate hardware devices running at their own speed and
+        drifting away from the 'correct' time at their own rates.
+        The methods and software for drift correction are different
+        for each of them. However, most systems are configured to
+        exchange values between these two clocks at startup and
+        shutdown. Now the individual device's time keeping errors
+        are transferred back and forth between each other. Attempt
+        to configure drift correction for only one of them, and the
+        other's drift will be overlaid upon it. If the big picture
+        is not kept in mind, confusion will soon ensue.</p>
+
+        <p>This problem can be avoided when configuring drift
+        correction for the System Clock by simply not shutting down
+        the machine. This, plus the fact that all of <span class="command"><strong>hwclock</strong></span>'s precision
+        (including calculating drift factors) depends upon the
+        System Clock's rate being correct, means that configuration
+        of the System Clock should be done first.</p>
+
+        <p>The System Clock drift is corrected with the
+        <span class="command"><strong>adjtimex</strong></span>(8)
+        command's <code class="option">−−tick</code>
+        and <code class="option">−−frequency</code>
+        options. These two work together, tick is the course
+        adjustment and frequency is the fine adjustment. (For
+        system that do not have an <span class="command"><strong>adjtimex</strong></span> package,
+        <span class="emphasis"><em>ntptime −f</em></span>
+        <em class="replaceable"><code>&lt;ppm&gt;</code></em> may
+        be use instead.)</p>
+
+        <p>Some Linux distributions attempt to automatically
+        calculate the System Clock drift with <span class="command"><strong>adjtimex</strong></span>'s compare
+        operation. Trying to correct one drifting clock by using
+        another drifting clock as a reference is akin to a dog
+        trying to catch its own tail. Success may happen
+        eventually, but great effort and frustration will likely
+        precede it. This automation may yield an improvement over
+        no configuration, but expecting optimum results would be in
+        error. A better choice for manual configuration would be
+        <span class="command"><strong>adjtimex</strong></span>'s
+        <span class="emphasis"><em>−−log</em></span>options.</p>
+
+        <p>It may be more effective to simply track the System
+        Clock drift with <span class="emphasis"><em>ntpdate
+        −q</em></span> , or <span class="emphasis"><em>date
+        −Ins</em></span> and a precision timepiece, and then
+        calculate the correction manually.</p>
+
+        <p>After setting the tick and frequency values, continue to
+        test and refine the adjustments until the System Clock
+        keeps good time. See <span class="citerefentry"><span class="refentrytitle">adjtimex</span>(8)</span>
+        for more information and the example demonstrating manual
+        drift calculations.</p>
+
+        <p>Once the System Clock is ticking smoothly, move on to
+        the Hardware Clock.</p>
+
+        <p>As a rule, cold drift will work best for most use cases.
+        This should be true even for 24/7 machines whose normal
+        downtime consists of a reboot. In that case the drift
+        factor value makes little difference, but on the rare
+        occasion that the machine is shutdown for an extended
+        period then cold drift should yield better results.</p>
+
+        <p><span class="emphasis"><em>Steps to calculate cold
+        drift:</em></span></p>
+
+        <div class="orderedlist">
+          <ol class="orderedlist" type="1">
+            <li class="listitem">
+              <p>Confirm that <span class="command"><strong>ntpd</strong></span>(1) will not be
+              launched at startup.</p>
+            </li>
+
+            <li class="listitem">
+              <p>The <span class="emphasis"><em>System
+              Clock</em></span>time must be correct at
+              shutdown!</p>
+            </li>
+
+            <li class="listitem">
+              <p>Shutdown the system.</p>
+            </li>
+
+            <li class="listitem">
+              <p>Let an extended period pass without changing the
+              Hardware Clock.</p>
+            </li>
+
+            <li class="listitem">
+              <p>Start the system.</p>
+            </li>
+
+            <li class="listitem">
+              <p>Immediately use <span class="command"><strong>hwclock</strong></span> to set the
+              correct time with the <code class="option">−−update−drift</code>
+              option.</p>
+            </li>
+          </ol>
+        </div>
+
+        <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+          <table border="0" summary="Note">
+            <tr>
+              <td rowspan="2" align="center" valign="top" width="25" colspan="1"><img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+              <th align="left" rowspan="1" colspan="1">Note</th>
+            </tr>
+
+            <tr>
+              <td align="left" valign="top" rowspan="1" colspan="1">
+                <p>If step six uses
+                −−systohc<code class="literal">,</code>
+                then the System Clock must be set correctly (step
+                6a) just before doing so.</p>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <p>Having <span class="command"><strong>hwclock</strong></span> calculate the
+        drift factor is a good starting point, but for optimal
+        results it will likely need to be adjusted by directly
+        editing the <code class="filename">/etc/adjtime</code>
+        file. Continue to test and refine the drift factor until
+        the Hardware Clock is corrected properly at startup. To
+        check this, first make sure that the System Time is correct
+        before shutdown and then use <span class="emphasis"><em>ntpdate −q</em></span>, or
+        <span class="emphasis"><em>date −Ins</em></span> and
+        a precision timepiece, immediately after startup.</p>
+
+        <p>Both clocks typically use a quartz crystal oscillator.
+        Crystals are used for reference oscillators in electronics
+        because by most measures they produce a very clean and
+        stable sine wave. Their greatest shortcoming is that they
+        have a Positive Temperature Coefficient; meaning that their
+        frequency increases as the temperature increases and vise
+        versa. Therefore, both the Hardware and System Clock's
+        drift rate changes with intrinsic and extrinsic machine
+        temperatures. These characteristics will vary by machine
+        depending upon its design.</p>
+
+        <p>Drift correction strategies are many, but as a general
+        guide the goal would be to find a longterm average. A year
+        long average to take into account seasonal ambient
+        temperature shifts may be a good target period. So perhaps
+        the date-time advances a bit in the summer and declines a
+        bit in the winter, but at the end of a year it balances to
+        zero.</p>
+
+        <p>If this is beginning to sound futile, it is not. Left on
+        its own a machine can lose 3 seconds per day or more.
+        Accumulated drift over a year may easily exceed half an
+        hour. Using carefully crafted drift corrections can make a
+        significant improvement in a machine's ability to keep
+        reasonably good date-time.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="hwclock-8_sect15" name="hwclock-8_sect15" shape="rect"> </a>
+
+        <h3>LOCAL vs UTC</h3>
+
+        <p>Keeping the Hardware Clock in a local timescale causes
+        inconsistent daylight saving time results:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>If Linux is running during a daylight saving time
+              change, the time written to the Hardware Clock will
+              be adjusted for the change.</p>
+            </li>
+
+            <li class="listitem">
+              <p>If Linux is NOT running during a daylight saving
+              time change, the time read from the Hardware Clock
+              will NOT be adjusted for the change.</p>
+            </li>
+          </ul>
+        </div>
+
+        <p>The Hardware Clock on an ISA compatible system keeps
+        only a date and time, it has no concept of timezone nor
+        daylight saving. Therefore, when <span class="command"><strong>hwclock</strong></span> is told that it
+        is in local time, it assumes it is in the 'correct' local
+        time and makes no adjustments to the time read from it.</p>
+
+        <p>Linux handles daylight saving time changes transparently
+        only when the Hardware Clock is kept in the UTC timescale.
+        Doing so is made easy for system administrators as
+        <span class="command"><strong>hwclock</strong></span> uses
+        local time for its output and as the argument to the
+        <code class="option">−−date</code> option.</p>
+
+        <p>POSIX systems, like Linux, are designed to have the
+        System Clock operate in the UTC timescale. The Hardware
+        Clock's purpose is to initialize the System Clock, so also
+        keeping it in UTC makes sense.</p>
+
+        <p>Linux does, however, attempt to accommodate the Hardware
+        Clock being in the local timescale. This is primarily for
+        dual-booting with older versions of MS Windows. From
+        Windows 7 on, the RealTimeIsUniversal registry key is
+        supposed to be working properly so that its Hardware Clock
+        can be kept in UTC.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="hwclock-8_sect16" name="hwclock-8_sect16" shape="rect"> </a>
+
+        <h3>POSIX vs 'RIGHT'</h3>
+
+        <p>A discussion on date-time configuration would be
+        incomplete without addressing timezones, this is mostly
+        well covered by <a class="link" href="../htmlman3/tzset.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tzset</span>(3)</span></a>. One area that
+        seems to have no documentation is the 'right' directory of
+        the Time Zone Database, sometimes called tz or
+        zoneinfo.</p>
+
+        <p>There are two separate databases in the zoneinfo system,
+        posix and 'right'. 'Right' (now named zoneinfo−leaps)
+        includes leap seconds and posix does not. To use the
+        'right' database the System Clock must be set to (UTC +
+        leap seconds), which is equivalent to (TAI − 10).
+        This allows calculating the exact number of seconds between
+        two dates that cross a leap second epoch. The System Clock
+        is then converted to the correct civil time, including UTC,
+        by using the 'right' timezone files which subtract the leap
+        seconds. Note: this configuration is considered
+        experimental and is known to have issues.</p>
+
+        <p>To configure a system to use a particular database all
+        of the files located in its directory must be copied to the
+        root of <code class="filename">/usr/share/zoneinfo</code>.
+        Files are never used directly from the posix or 'right'
+        subdirectories, e.g., TZ='<span class="command"><strong>right/Europe/Dublin</strong></span>'.
+        This habit was becoming so common that the upstream
+        zoneinfo project restructured the system's file tree by
+        moving the posix and 'right' subdirectories out of the
+        zoneinfo directory and into sibling directories:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+<code class="filename">/usr/share/zoneinfo</code>
+<code class="filename">/usr/share/zoneinfo−posix</code>
+</pre>
+            </div>
+
+            <p><code class="filename">/usr/share/zoneinfo−leaps</code></p>
+
+            <p>Unfortunately, some Linux distributions are changing
+            it back to the old tree structure in their packages. So
+            the problem of system administrators reaching into the
+            'right' subdirectory persists. This causes the system
+            timezone to be configured to include leap seconds while
+            the zoneinfo database is still configured to exclude
+            them. Then when an application such as a World Clock
+            needs the South_Pole timezone file; or an email MTA, or
+            <span class="command"><strong>hwclock</strong></span>
+            needs the UTC timezone file; they fetch it from the
+            root of <code class="filename">/usr/share/zoneinfo</code> , because that is
+            what they are supposed to do. Those files exclude leap
+            seconds, but the System Clock now includes them,
+            causing an incorrect time conversion.</p>
+
+            <p>Attempting to mix and match files from these
+            separate databases will not work, because they each
+            require the System Clock to use a different timescale.
+            The zoneinfo database must be configured to use either
+            posix or 'right', as described above.</p>
+          </blockquote>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="hwclock-8_sect17" name="hwclock-8_sect17" shape="rect"> </a>
+
+      <h2>ENVIRONMENT VARIABLES</h2>
+
+      <p><code class="constant">TZ</code></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="hwclock-8_sect18" name="hwclock-8_sect18" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+<code class="filename">/etc/adjtime</code>
+<code class="filename">/etc/localtime</code>
+<code class="filename">/dev/rtc</code>
+<code class="filename">/dev/rtc0</code>
+<code class="filename">/dev/misc/rtc</code>
+<code class="filename">/dev/efirtc</code>
+<code class="filename">/dev/misc/efirtc</code>
+<code class="filename">/dev/port</code>
+<code class="filename">/dev/tty1</code>
+</pre>
+      </div>
+
+      <p><code class="filename">/proc/cpuinfo</code></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="hwclock-8_sect19" name="hwclock-8_sect19" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman1/date.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">date</span>(1)</span></a>, <span class="citerefentry"><span class="refentrytitle">adjtimex</span>(8)</span>, <a class="link" href="../htmlman2/gettimeofday.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gettimeofday</span>(2)</span></a>, <a class="link" href="../htmlman2/gettimeofday.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">settimeofday</span>(2)</span></a>,
+      <span class="citerefentry"><span class="refentrytitle">crontab</span>(1)</span>, <a class="link" href="../htmlman3/tzset.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tzset</span>(3)</span></a></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="hwclock-8_sect20" name="hwclock-8_sect20" shape="rect"> </a>
+
+      <h2>AUTHORS</h2>
+
+      <p>Written by Bryan Henderson, September 1996
+      (bryanh@giraffe-data.com), based on work done on the
+      <span class="citerefentry"><span class="refentrytitle">clock</span>(8)</span> program by Charles
+      Hedrick, Rob Hooft, and Harald Koenig. See the source code
+      for complete history and credits.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="hwclock-8_sect21" name="hwclock-8_sect21" shape="rect"> </a>
+
+      <h2>AVAILABILITY</h2>
+
+      <p>The hwclock command is part of the util-linux package and
+      is available from
+      ftp://ftp.kernel.org/pub/linux/utils/util-linux/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    hwclock.8.in -- man page for util-linux' hwclock<br />
+
+                  <br />
+                  2015-01-07 J William Piggott<br />
+                  Authored new section: DATE-TIME CONFIGURATION.<br />
+
+                  Subsections: Keeping Time..., LOCAL vs UTC, POSIX vs 'RIGHT'.<br />
+
+                  Errata and drop outdated language.<br />
+
+                  Updates for v2.26<br />
+                  <br />
+                  <br />
+                  -------------------------------<br />
+                  Included for troff portability.<br />
+
+                  Continuation line for .TP header.<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,850 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>sfdisk(8) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="sfdisk(8) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index8.html" shape="rect">Section 8</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="sfdisk.8" name="sfdisk.8" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>sfdisk — display or manipulate a disk partition
+      table</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">sfdisk</code> [options] device [
+        <code class="option">−N</code> partition−number
+        ]</p>
+      </div>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">sfdisk</code> [options]
+        command</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sfdisk-8_sect1" name="sfdisk-8_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><span class="command"><strong>sfdisk</strong></span> is a
+      script-oriented tool for partitioning any block device.</p>
+
+      <p>Since version 2.26 <span class="command"><strong>sfdisk</strong></span> supports MBR (DOS),
+      GPT, SUN and SGI disk labels, but no longer provides any
+      functionality for CHS (Cylinder-Head-Sector) addressing. CHS
+      has never been important for Linux, and this addressing
+      concept does not make any sense for new devices.</p>
+
+      <p><span class="command"><strong>sfdisk</strong></span>
+      (since version 2.26) aligns start and end of the partitions
+      to block-device I/O limits when relative sizes are specified,
+      or when the default values are used.</p>
+
+      <p><span class="command"><strong>sfdisk</strong></span> does
+      not create the standard system partitions for SGI and SUN
+      disk labels like <a class="link" href="../htmlman8/fdisk.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fdisk</span>(8)</span></a> does. It is
+      necessary to explicitly create all partitions including
+      whole-disk system partitions.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sfdisk-8_sect2" name="sfdisk-8_sect2" shape="rect"> </a>
+
+      <h2>COMMANDS</h2>
+
+      <p>The commands are mutually exclusive.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">[<code class="option">−N</code> <em class="parameter"><code>partition-number</code></em>]</span></dt>
+
+          <dd>
+            <p>The default <span class="command"><strong>sfdisk</strong></span> command is to
+            read the specification for the desired partitioning of
+            <em class="parameter"><code>device</code></em> from
+            standard input, and then create a partition table
+            according to the specification. See below for the
+            description of the input format. If standard input is a
+            terminal, then <span class="command"><strong>sfdisk</strong></span> starts an
+            interactive session.</p>
+
+            <p>If the option <code class="option">−N</code>
+            is specified, then the changes are applied to the
+            partition addressed by <em class="parameter"><code>partition-number</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−a,
+          −−activate <em class="parameter"><code>device</code></em> [<em class="parameter"><code>partition−number</code></em>...]</code></span></dt>
+
+          <dd>
+            <p>Switch on the bootable flag. If no <em class="parameter"><code>partition-number</code></em> is
+            specified, then all partitions with an enabled flag are
+            listed.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−d,
+          −−dump <em class="parameter"><code>device</code></em></code></span></dt>
+
+          <dd>
+            <p>Dump the partitions of a device in a format that is
+            usable as input to sfdisk. See the section <span class="emphasis"><em>BACKING UP THE PARTITION
+            TABLE</em></span>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−g,
+          −−show−geometry [<em class="parameter"><code>device</code></em>...]</code></span></dt>
+
+          <dd>
+            <p>List the geometry of all or the specified
+            devices.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−l,
+          −−list [<em class="parameter"><code>device</code></em>...]</code></span></dt>
+
+          <dd>
+            <p>List the partitions of all or the specified devices.
+            This command can be used together with <code class="option">−−verify</code>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−part−attrs <span class="emphasis"><em>device partno [</em></span><em class="parameter"><code>attrs</code></em>]</code></span></dt>
+
+          <dd>
+            <p>Change the GPT partition attribute bits. If
+            <span class="command"><strong>attrs</strong></span> is
+            not specified, then print the current partition
+            settings. The <span class="command"><strong>attrs</strong></span> argument is a
+            comma- or space-delimited list of bits. The currently
+            supported attribute bits are: RequiredPartiton,
+            NoBlockIOProtocol, LegacyBIOSBootable and GUID-specific
+            bits in the range from 48 to 63. For example, the
+            string "RequiredPartiton,50,51" sets three bits.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−part−label <span class="emphasis"><em>device partno [</em></span><em class="parameter"><code>label</code></em>]</code></span></dt>
+
+          <dd>
+            <p>Change the GPT partition name (label). If
+            <span class="command"><strong>label</strong></span> is
+            not specified, then print the current partition
+            label.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−part−type <span class="emphasis"><em>device partno [</em></span><em class="parameter"><code>type</code></em>]</code></span></dt>
+
+          <dd>
+            <p>Change the partition type. If <span class="command"><strong>type</strong></span> is not
+            specified, then print the current partition type. The
+            <span class="command"><strong>type</strong></span>
+            argument is hexadecimal for MBR, or a GUID for GPT. For
+            backward compatibility the options <code class="option">−c</code> and <code class="option">−−id</code> have the same
+            meaning.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−part−uuid <span class="emphasis"><em>device partno [</em></span><em class="parameter"><code>uuid</code></em>]</code></span></dt>
+
+          <dd>
+            <p>Change the GPT partition UUID. If <span class="command"><strong>uuid</strong></span> is not
+            specified, then print the current partition UUID.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−s,
+          −−show−size [<em class="parameter"><code>device</code></em>...]</code></span></dt>
+
+          <dd>
+            <p>List the sizes of all or the specified devices.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−T,
+          −−list−types</code></span></dt>
+
+          <dd>
+            <p>Print all supported types for the current disk label
+            or the label specified by <code class="option">−−label</code>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−V,
+          −−verify</code></span></dt>
+
+          <dd>
+            <p>Test whether the partition table and partitions seem
+            correct.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sfdisk-8_sect3" name="sfdisk-8_sect3" shape="rect"> </a>
+
+      <h2>OPTIONS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="option">−A,
+          −−append</code></span></dt>
+
+          <dd>
+            <p>Don't create a new partition table, but only append
+            the specified partitions.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−b,
+          −−backup</code></span></dt>
+
+          <dd>
+            <p>Back up the current partition table sectors before
+            starting the partitioning. The default backup file name
+            is ~/sfdisk-&lt;device&gt;-&lt;offset&gt;.bak; to use
+            another name see <code class="option">−−backup−file</code>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−color[<em class="replaceable"><code>=when</code></em>]</code></span></dt>
+
+          <dd>
+            <p>Colorize the output. The optional argument
+            <span class="command"><strong>when</strong></span> can
+            be <span class="command"><strong>auto</strong></span>,
+            <span class="emphasis"><em>never or</em></span>
+            <em class="replaceable"><code>always.</code></em> If
+            the <span class="command"><strong>when</strong></span>
+            argument is omitted, it defaults to <span class="command"><strong>auto</strong></span>. The colors can
+            be disabled, for the current built-in default see
+            <code class="option">−−help</code> output.
+            See also the COLORS section.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−f,
+          −−force</code></span></dt>
+
+          <dd>
+            <p>Disable all consistency checking.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−Linux</code></span></dt>
+
+          <dd>
+            <p>Deprecated and ignored option. Partitioning that is
+            compatible with Linux (and other modern OS) is the
+            default.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−n,
+          −−no−act</code></span></dt>
+
+          <dd>
+            <p>Do everything except writing to the device.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−no−reread</code></span></dt>
+
+          <dd>
+            <p>Do not check through the re-read-partition-table
+            ioctl whether the device is in use.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−O,
+          −−backup−file <em class="parameter"><code>path</code></em></code></span></dt>
+
+          <dd>
+            <p>Override the default backup file name. Note that the
+            device name and offset are always appended to the file
+            name.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−o,
+          −−output <em class="parameter"><code>list</code></em></code></span></dt>
+
+          <dd>
+            <p>Specify which output columns to print. Use
+            <code class="option">−−help</code> to get a
+            list of all supported columns.</p>
+
+            <p>The default list of columns may be extended if
+            <span class="command"><strong>list</strong></span> is
+            specified in the format <em class="replaceable"><code>+list</code></em> (e.g.
+            <code class="option">−o +UUID</code>).</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−q,
+          −−quiet</code></span></dt>
+
+          <dd>
+            <p>Suppress extra info messages.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−u,
+          −−unit S</code></span></dt>
+
+          <dd>
+            <p>Deprecated option. Only the sector unit is
+            supported.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−X,
+          −−label <em class="parameter"><code>type</code></em></code></span></dt>
+
+          <dd>
+            <p>Specify the disk label type (e.g. <span class="command"><strong>dos</strong></span>, <span class="command"><strong>gpt</strong></span>, ...). If this
+            option is not given, then <span class="command"><strong>sfdisk</strong></span> defaults to
+            the existing label, but if there is no label on the
+            device yet, then the type defaults to <span class="command"><strong>dos</strong></span>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−Y,
+          −−label−nested <em class="parameter"><code>type</code></em></code></span></dt>
+
+          <dd>
+            <p>Force editing of a nested disk label. The primary
+            disk label has to exist already. This option allows to
+            edit for example a hybrid/protective MBR on devices
+            with GPT.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−v,
+          −−version</code></span></dt>
+
+          <dd>
+            <p>Display version information and exit.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−h,
+          −−help</code></span></dt>
+
+          <dd>
+            <p>Display help text and exit.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sfdisk-8_sect4" name="sfdisk-8_sect4" shape="rect"> </a>
+
+      <h2>INPUT FORMATS</h2>
+
+      <p><span class="command"><strong>sfdisk</strong></span>
+      supports two input formats and generic header lines.</p>
+
+      <p><span class="emphasis"><em>Header lines</em></span></p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>The optional header lines specify generic information
+          that apply to the partition table. The header-line format
+          is:</p>
+
+          <div class="blockquote">
+            <blockquote class="blockquote">
+              <div class="informalexample">
+                <pre class="programlisting" xml:space="preserve">
+<span class="emphasis"><em>&lt;name&gt;: &lt;value&gt;</em></span>
+</pre>
+              </div>
+            </blockquote>
+          </div>
+
+          <p>The currently recognized headers are:</p>
+
+          <div class="blockquote">
+            <blockquote class="blockquote">
+              <div class="variablelist">
+                <dl class="variablelist">
+                  <dt><span class="term"><span class="command"><strong>unit</strong></span></span></dt>
+
+                  <dd>
+                    <p>Specify the partitioning unit. The only
+                    supported unit is <span class="command"><strong>sectors</strong></span>.</p>
+                  </dd>
+
+                  <dt><span class="term"><span class="command"><strong>label</strong></span></span></dt>
+
+                  <dd>
+                    <p>Specify the partition table type. For
+                    example <span class="command"><strong>dos</strong></span> or
+                    <span class="command"><strong>gpt</strong></span>.</p>
+                  </dd>
+
+                  <dt><span class="term">label-id</span></dt>
+
+                  <dd>
+                    <p>Specify the partition table identifier. It
+                    should be a hexadecimal number (with a 0x
+                    prefix) for MBR and a UUID for GPT.</p>
+                  </dd>
+                </dl>
+              </div>
+            </blockquote>
+          </div>
+
+          <p>Note that it is only possible to use header lines
+          before the first partition is specified in the input.</p>
+        </blockquote>
+      </div>
+
+      <p><span class="emphasis"><em>Unnamed-fields
+      format</em></span></p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="blockquote">
+            <blockquote class="blockquote">
+              <div class="informalexample">
+                <pre class="programlisting" xml:space="preserve">
+<span class="emphasis"><em>start size type bootable</em></span>
+</pre>
+              </div>
+            </blockquote>
+          </div>
+
+          <p>where each line fills one partition descriptor.</p>
+
+          <p>Fields are separated by whitespace, or by comma or
+          semicolon possibly followed by whitespace; initial and
+          trailing whitespace is ignored. Numbers can be octal,
+          decimal or hexadecimal; decimal is the default. When a
+          field is absent or empty, a default value is used. But
+          when the <em class="parameter"><code>−N</code></em>
+          option (change a single partition) is given, the default
+          for each field is its previous value.</p>
+
+          <p>The default value of <span class="command"><strong>start</strong></span> is the first
+          non-assigned sector aligned according to device I/O
+          limits. The default start offset for the first partition
+          is 1 MiB. The offset may be followed by the
+          multiplicative suffixes (KiB, MiB, GiB, TiB, PiB, EiB,
+          ZiB and YiB) then the number is interpreted as offset in
+          bytes.</p>
+
+          <p>The default value of <span class="command"><strong>size</strong></span> is as much as
+          possible (until the next partition or end-of-device). A
+          '+' can be used instead of a number for size, which also
+          means as much as possible. The size may be followed by
+          the multiplicative suffixes (KiB, MiB, GiB, TiB, PiB,
+          EiB, ZiB and YiB), then the number is interpreted as size
+          of the partition in bytes and then the size is aligned
+          according to the device I/O limits. The default is to
+          interpret the number as number of sectors.</p>
+
+          <p>The partition <span class="command"><strong>type</strong></span> is given in hex
+          for MBR (DOS), without the 0x prefix, a GUID string for
+          GPT, or a shortcut:</p>
+
+          <div class="blockquote">
+            <blockquote class="blockquote">
+              <div class="variablelist">
+                <dl class="variablelist">
+                  <dt><span class="term"><code class="constant">L</code></span></dt>
+
+                  <dd>
+                    <p>Linux; means 83 for MBR and
+                    0FC63DAF-8483-4772-8E79-3D69D8477DE4 for
+                    GPT.</p>
+                  </dd>
+
+                  <dt><span class="term"><code class="constant">S</code></span></dt>
+
+                  <dd>
+                    <p>swap area; means 82 for MBR and
+                    0657FD6D-A4AB-43C4-84E5-0933C84B4F4F for
+                    GPT</p>
+                  </dd>
+
+                  <dt><span class="term"><code class="constant">E</code></span></dt>
+
+                  <dd>
+                    <p>extended partition; means 5 for MBR</p>
+                  </dd>
+
+                  <dt><span class="term"><code class="constant">H</code></span></dt>
+
+                  <dd>
+                    <p>home partition; means
+                    933AC7E1-2EB4-4F13-B844-0E14E2AEF915 for
+                    GPT</p>
+                  </dd>
+
+                  <dt><span class="term"><code class="constant">X</code></span></dt>
+
+                  <dd>
+                    <p>linux extended partition; means 85 for
+                    MBR.</p>
+                  </dd>
+                </dl>
+              </div>
+            </blockquote>
+          </div>
+
+          <p><span class="command"><strong>bootable</strong></span>
+          is specified as [<code class="literal">*</code>|<span class="emphasis"><em>-</em></span>], with as default
+          not-bootable. (The value of this field is irrelevant for
+          Linux - when Linux runs it has been booted already - but
+          might play a role for certain boot loaders and for other
+          operating systems.)</p>
+        </blockquote>
+      </div>
+
+      <p><span class="emphasis"><em>Named-fields
+      format</em></span></p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>This format is more readable, robust, extendible and
+          allows to specify additional information (e.g. a UUID).
+          It is recommended to use this format to keep your scripts
+          more readable.</p>
+
+          <div class="blockquote">
+            <blockquote class="blockquote">
+              <div class="informalexample">
+                <pre class="programlisting" xml:space="preserve">
+[<span class="emphasis"><em>device <code class="literal">:</code></em></span>]<span class="emphasis"><em> name</em></span>[<code class="literal">=</code><span class="command"><strong>value</strong></span>], ...
+</pre>
+              </div>
+            </blockquote>
+          </div>
+
+          <p>The <em class="parameter"><code>device</code></em>
+          field is optional. <span class="command"><strong>sfdisk</strong></span>extracts the
+          partition number from the device name. It allows to
+          specify the partitions in random order. This
+          functionality is mostly used by <code class="option">−−dump</code>. Don't use it if you
+          are not sure.</p>
+
+          <p>The <span class="command"><strong>value</strong></span> can be between
+          quotation marks (e.g. name="This is partition name"). The
+          currently supported fields are:</p>
+
+          <div class="blockquote">
+            <blockquote class="blockquote">
+              <div class="variablelist">
+                <dl class="variablelist">
+                  <dt><span class="term"><em class="replaceable"><code>start=</code></em><code class="literal">number</code></span></dt>
+
+                  <dd>
+                    <p>The first non-assigned sector aligned
+                    according to device I/O limits. The default
+                    start offset for the first partition is 1 MiB.
+                    The offset may be followed by the
+                    multiplicative suffixes (KiB, MiB, GiB, TiB,
+                    PiB, EiB, ZiB and YiB) then the number is
+                    interpreted as offset in bytes.</p>
+                  </dd>
+
+                  <dt><span class="term"><em class="replaceable"><code>size=</code></em><code class="literal">number</code></span></dt>
+
+                  <dd>
+                    <p>Specify the partition size in sectors. The
+                    number may be followed by the multiplicative
+                    suffixes (KiB, MiB, GiB, TiB, PiB, EiB, ZiB and
+                    YiB), then it's interpreted as size in bytes
+                    and the size is aligned according to device I/O
+                    limits.</p>
+                  </dd>
+
+                  <dt><span class="term"><span class="command"><strong>bootable</strong></span></span></dt>
+
+                  <dd>
+                    <p>Mark the partition as bootable.</p>
+                  </dd>
+
+                  <dt><span class="term"><em class="replaceable"><code>attrs=</code></em><code class="literal">string</code></span></dt>
+
+                  <dd>
+                    <p>Partition attributes, usually GPT partition
+                    attribute bits. See <code class="option">−−part−attrs</code>
+                    for more details about the GPT-bits string
+                    format.</p>
+                  </dd>
+
+                  <dt><span class="term"><em class="replaceable"><code>uuid=</code></em><code class="literal">string</code></span></dt>
+
+                  <dd>
+                    <p>GPT partition UUID.</p>
+                  </dd>
+
+                  <dt><span class="term"><em class="replaceable"><code>name=</code></em><code class="literal">string</code></span></dt>
+
+                  <dd>
+                    <p>GPT partition name.</p>
+                  </dd>
+
+                  <dt><span class="term"><em class="replaceable"><code>type=</code></em><code class="literal">code</code></span></dt>
+
+                  <dd>
+                    <p>A hexadecimal number (without 0x) for an MBR
+                    partition, or a GUID for a GPT partition. For
+                    backward compatibility the <em class="replaceable"><code>Id=</code></em> field has
+                    the same meaning.</p>
+                  </dd>
+                </dl>
+              </div>
+            </blockquote>
+          </div>
+        </blockquote>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sfdisk-8_sect5" name="sfdisk-8_sect5" shape="rect"> </a>
+
+      <h2>BACKING UP THE PARTITION TABLE</h2>
+
+      <p>It is recommended to save the layout of your devices.
+      <span class="command"><strong>sfdisk</strong></span> supports
+      two ways.</p>
+
+      <p>Use the <code class="option">−−dump</code>
+      option to save a description of the device layout to a text
+      file. The dump format is suitable for later <span class="command"><strong>sfdisk</strong></span> input. For
+      example:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+<span class="emphasis"><em>sfdisk --dump /dev/sda &gt; sda.dump</em></span>
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>This can later be restored by:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p><span class="emphasis"><em>sfdisk /dev/sda &lt;
+          sda.dump</em></span></p>
+        </blockquote>
+      </div>
+
+      <p>If you want to do a full (binary) backup of all sectors
+      where the partition table is stored, then use the
+      <code class="option">−−backup</code> option. It
+      writes the sectors to
+      ~/sfdisk-&lt;device&gt;-&lt;offset&gt;.bak files. The default
+      name of the backup file can be changed with the <code class="option">−−backup−file</code> option. The
+      backup files contain only raw data from the <em class="parameter"><code>device</code></em>. Note that the same
+      concept of backup files is used by <a class="link" href="../htmlman8/wipefs.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">wipefs</span>(8)</span></a>. For example:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+<span class="emphasis"><em>sfdisk --backup /dev/sda</em></span>
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>The GPT header can later be restored by:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+<span class="emphasis"><em>dd if=~/sfdisk-sda-0x00000200.bak of=/dev/sda seek=$((0x00000200)) bs=1 conv=notrunc</em></span>
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>Note that <span class="command"><strong>sfdisk</strong></span> since version 2.26
+      no longer provides the <code class="option">−I</code>
+      option to restore sectors. <span class="emphasis"><em>dd
+      (1)</em></span> provides all necessary functionality.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sfdisk-8_sect6" name="sfdisk-8_sect6" shape="rect"> </a>
+
+      <h2>COLORS</h2>
+
+      <p>Implicit coloring can be disabled by an empty file
+      <code class="filename">/etc/terminal-colors.d/sfdisk.disable</code>.</p>
+
+      <p>See <a class="link" href="../htmlman5/terminal-colors.d.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">terminal-colors.d</span>(5)</span></a> for
+      more details about colorization configuration. The logical
+      color names supported by <span class="command"><strong>sfdisk</strong></span> are:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="command"><strong>header</strong></span></span></dt>
+
+          <dd>
+            <p>The header of the output tables.</p>
+          </dd>
+
+          <dt><span class="term"><span class="command"><strong>warn</strong></span></span></dt>
+
+          <dd>
+            <p>The warning messages.</p>
+          </dd>
+
+          <dt><span class="term"><span class="command"><strong>welcome</strong></span></span></dt>
+
+          <dd>
+            <p>The welcome message.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sfdisk-8_sect7" name="sfdisk-8_sect7" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Since version 2.26 <span class="command"><strong>sfdisk</strong></span> no longer provides
+      the <code class="option">−R</code> or <code class="option">−−re−read</code> option to force
+      the kernel to reread the partition table. Use <span class="emphasis"><em>blockdev −−rereadpt</em></span>
+      instead.</p>
+
+      <p>Since version 2.26 <span class="command"><strong>sfdisk</strong></span> does not provide the
+      <code class="option">−−DOS</code>, <code class="option">−−IBM</code>, <code class="option">−−DOS−extended</code>,
+      <code class="option">−−unhide</code>,
+      <code class="option">−−show−extended</code>,
+      <code class="option">−−cylinders</code>,
+      <code class="option">−−heads</code>, <code class="option">−−sectors</code>, <code class="option">−−inside−outer</code>,
+      <code class="option">−−not−inside−outer</code>
+      options.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sfdisk-8_sect8" name="sfdisk-8_sect8" shape="rect"> </a>
+
+      <h2>ENVIRONMENT</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><em class="replaceable"><code>SFDISK_DEBUG=all</code></em></span></dt>
+
+          <dd>
+            <p>enables sfdisk debug output.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>LIBFDISK_DEBUG=all</code></em></span></dt>
+
+          <dd>
+            <p>enables libfdisk debug output.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>LIBBLKID_DEBUG=all</code></em></span></dt>
+
+          <dd>
+            <p>enables libblkid debug output.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>LIBSMARTCOLS_DEBUG=all</code></em></span></dt>
+
+          <dd>
+            <p>enables libsmartcols debug output.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sfdisk-8_sect9" name="sfdisk-8_sect9" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman8/fdisk.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fdisk</span>(8)</span></a>, <a class="link" href="../htmlman8/cfdisk.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">cfdisk</span>(8)</span></a>, <span class="citerefentry"><span class="refentrytitle">parted</span>(8)</span>, <span class="citerefentry"><span class="refentrytitle">partprobe</span>(8)</span>, <a class="link" href="../htmlman8/partx.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">partx</span>(8)</span></a></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sfdisk-8_sect10" name="sfdisk-8_sect10" shape="rect"> </a>
+
+      <h2>AUTHOR</h2>
+
+      <p>Karel Zak &lt;kzak@redhat.com&gt;</p>
+
+      <p>The current sfdisk implementation is based on the original
+      sfdisk from Andries E. Brouwer.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sfdisk-8_sect11" name="sfdisk-8_sect11" shape="rect"> </a>
+
+      <h2>AVAILABILITY</h2>
+
+      <p>The sfdisk command is part of the util-linux package and
+      is available from
+      ftp://ftp.kernel.org/pub/linux/utils/util-linux/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    sfdisk.8 -- man page for sfdisk<br />
+
+                  Copyright (C) 2014 Karel Zak &lt;kzak<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>redhat.com&gt;<br />
+
+                  <br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,992 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>feature_test_macros(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="feature_test_macros(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="feature-test-macros.7" name="feature-test-macros.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>feature_test_macros — feature test macros</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;features.h&gt;
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="feature-test-macros-7_sect1" name="feature-test-macros-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>Feature test macros allow the programmer to control the
+      definitions that are exposed by system header files when a
+      program is compiled.</p>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <p>In order to be effective, a feature test macro
+              <span class="emphasis"><em>must be defined before
+              including any header files</em></span>. This can be
+              done either in the compilation command (<span class="emphasis"><em>cc −DMACRO=value</em></span>) or
+              by defining the macro within the source code before
+              including any headers.</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <p>Some feature test macros are useful for creating portable
+      applications, by preventing nonstandard definitions from
+      being exposed. Other macros can be used to expose nonstandard
+      definitions that are not exposed by default. The precise
+      effects of each of the feature test macros described below
+      can be ascertained by inspecting the <code class="literal">&lt;</code><code class="filename">features.h</code><code class="literal">&gt;</code>
+      header file.</p>
+
+      <div class="refsect2">
+        <a id="feature-test-macros-7_sect2" name="feature-test-macros-7_sect2" shape="rect"> </a>
+
+        <h3>Specification of feature test macro requirements in
+        manual pages</h3>
+
+        <p>When a function requires that a feature test macro is
+        defined, the manual page SYNOPSIS typically includes a note
+        of the following form (this example from the <a class="link" href="../htmlman2/acct.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">acct</span>(2)</span></a> manual page):</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+<span class="emphasis"><em>#include &lt;unistd.h&gt;</em></span>
+</pre>
+            </div>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+  <code class="function">int acct</code>(<em class="parameter"><code>const char *filename</code></em>);
+</pre>
+            </div>
+
+            <p>Feature Test Macro Requirements for glibc (see
+            <a class="link" href="../htmlman7/feature_test_macros.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">feature_test_macros</span>(7)</span></a>):</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <p><code class="function">acct</code>():
+                _BSD_SOURCE || (_XOPEN_SOURCE &amp;&amp;
+                _XOPEN_SOURCE &lt; 500)</p>
+              </blockquote>
+            </div>
+
+            <p>The <em class="replaceable"><code>||</code></em>
+            means that in order to obtain the declaration of
+            <a class="link" href="../htmlman2/acct.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">acct</span>(2)</span></a> from
+            <code class="literal">&lt;</code><code class="filename">unistd.h</code><code class="literal">&gt;</code> <em class="replaceable"><code>either</code></em> of the following
+            macro definitions must be made before including any
+            header files:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="informalexample">
+                  <pre class="programlisting" xml:space="preserve">
+#define _BSD_SOURCE
+#define _XOPEN_SOURCE        /* or any value &lt; 500 */
+</pre>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>Alternatively, equivalent definitions can be
+            included in the compilation command:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="informalexample">
+                  <pre class="programlisting" xml:space="preserve">
+cc −D_BSD_SOURCE
+cc −D_XOPEN_SOURCE           # Or any value &lt; 500
+</pre>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>Note that, as described below, <span class="emphasis"><em>some feature test macros are defined by
+            default</em></span>, so that it may not always be
+            necessary to explicitly specify the feature test
+            macro(s) shown in the SYNOPSIS.</p>
+
+            <p>In a few cases, manual pages use a shorthand for
+            expressing the feature test macro requirements (this
+            example from <a class="link" href="../htmlman2/readahead.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">readahead</span>(2)</span></a>):</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="informalexample">
+                  <pre class="programlisting" xml:space="preserve">
+<span class="emphasis"><em>#define _GNU_SOURCE</em></span>
+<span class="emphasis"><em>#include &lt;fcntl.h&gt;</em></span>
+
+  <code class="function">ssize_t readahead</code>(<em class="parameter"><code>int fd</code></em>, <em class="parameter"><code>off64_t *offset</code></em>, <em class="parameter"><code>size_t count</code></em>);
+</pre>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>This format is employed in cases where only a single
+            feature test macro can be used to expose the function
+            declaration, and that macro is not defined by
+            default.</p>
+          </blockquote>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="feature-test-macros-7_sect3" name="feature-test-macros-7_sect3" shape="rect"> </a>
+
+        <h3>Feature test macros understood by glibc</h3>
+
+        <p>The following paragraphs explain how feature test macros
+        are handled in Linux glibc 2.<em class="replaceable"><code>x</code></em>, <em class="replaceable"><code>x</code></em> &gt; 0.</p>
+
+        <p>Linux glibc understands the following feature test
+        macros:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">__STRICT_ANSI__</code></span></dt>
+
+            <dd>
+              <p>ISO Standard C. This macro is implicitly defined
+              by <span class="citerefentry"><span class="refentrytitle">gcc</span>(1)</span> when invoked
+              with, for example, the <code class="option">−std=c99</code> or <code class="option">−ansi</code> flag.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">_POSIX_C_SOURCE</code></span></dt>
+
+            <dd>
+              <p>Defining this macro causes header files to expose
+              definitions as follows:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="itemizedlist">
+                    <ul class="itemizedlist" style="list-style-type: disc;">
+                      <li class="listitem">
+                        <p>The value 1 exposes definitions
+                        conforming to POSIX.1-1990 and ISO C
+                        (1990).</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>The value 2 or greater additionally
+                        exposes definitions for POSIX.2-1992.</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>The value 199309L or greater
+                        additionally exposes definitions for
+                        POSIX.1b (real-time extensions).</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>The value 199506L or greater
+                        additionally exposes definitions for
+                        POSIX.1c (threads).</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>(Since glibc 2.3.3) The value 200112L or
+                        greater additionally exposes definitions
+                        corresponding to the POSIX.1-2001 base
+                        specification (excluding the XSI extension)
+                        and also causes C95 (since glibc 2.12) and
+                        C99 (since glibc 2.10) features to be
+                        exposed.</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>(Since glibc 2.10) The value 200809L or
+                        greater additionally exposes definitions
+                        corresponding to the POSIX.1-2008 base
+                        specification (excluding the XSI
+                        extension).</p>
+                      </li>
+                    </ul>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="constant">_POSIX_SOURCE</code></span></dt>
+
+            <dd>
+              <p>Defining this obsolete macro with any value is
+              equivalent to defining <code class="constant">_POSIX_C_SOURCE</code> with the value
+              1.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">_XOPEN_SOURCE</code></span></dt>
+
+            <dd>
+              <p>Defining this macro causes header files to expose
+              definitions as follows:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="itemizedlist">
+                    <ul class="itemizedlist" style="list-style-type: disc;">
+                      <li class="listitem">
+                        <p>Defining with any value exposes
+                        definitions conforming to POSIX.1, POSIX.2,
+                        and XPG4.</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>The value 500 or greater additionally
+                        exposes definitions for SUSv2 (UNIX
+                        98).</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>(Since glibc 2.2) The value 600 or
+                        greater additionally exposes definitions
+                        for SUSv3 (UNIX 03; i.e., the POSIX.1-2001
+                        base specification plus the XSI extension)
+                        and C99 definitions.</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>(Since glibc 2.10) The value 700 or
+                        greater additionally exposes definitions
+                        for SUSv4 (i.e., the POSIX.1-2008 base
+                        specification plus the XSI extension).</p>
+                      </li>
+                    </ul>
+                  </div>
+                </blockquote>
+              </div>
+
+              <p>If <code class="constant">__STRICT_ANSI__</code>
+              is not defined, or <code class="constant">_XOPEN_SOURCE</code> is defined with a
+              value greater than or equal to 500 <em class="replaceable"><code>and</code></em> neither
+              <code class="constant">_POSIX_SOURCE</code> not
+              <code class="constant">_POSIX_C_SOURCE</code> is
+              explicitly defined, then the following macros are
+              implicitly defined:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="itemizedlist">
+                    <ul class="itemizedlist" style="list-style-type: disc;">
+                      <li class="listitem">
+                        <p><code class="constant">_POSIX_SOURCE</code> is defined
+                        with the value 1.</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p><code class="constant">_POSIX_C_SOURCE</code> is
+                        defined, according to the value of
+                        <code class="constant">_XOPEN_SOURCE</code>:</p>
+
+                        <div class="blockquote">
+                          <blockquote class="blockquote">
+                            <div class="variablelist">
+                              <dl class="variablelist">
+                                <dt><span class="term"><code class="constant">_XOPEN_SOURCE</code>
+                                &lt; 500</span></dt>
+
+                                <dd>
+                                  <p><code class="constant">_POSIX_C_SOURCE</code>
+                                  is defined with the value 2.</p>
+                                </dd>
+
+                                <dt><span class="term">500 &lt;=
+                                <code class="constant">_XOPEN_SOURCE</code>
+                                &lt; 600</span></dt>
+
+                                <dd>
+                                  <p><code class="constant">_POSIX_C_SOURCE</code>
+                                  is defined with the value
+                                  199506L.</p>
+                                </dd>
+
+                                <dt><span class="term">600 &lt;=
+                                <code class="constant">_XOPEN_SOURCE</code>
+                                &lt; 700</span></dt>
+
+                                <dd>
+                                  <p><code class="constant">_POSIX_C_SOURCE</code>
+                                  is defined with the value
+                                  200112L.</p>
+                                </dd>
+
+                                <dt><span class="term">700 &lt;=
+                                <code class="constant">_XOPEN_SOURCE</code>
+                                (since glibc 2.10)</span></dt>
+
+                                <dd>
+                                  <p><code class="constant">_POSIX_C_SOURCE</code>
+                                  is defined with the value
+                                  200809L.</p>
+                                </dd>
+                              </dl>
+                            </div>
+                          </blockquote>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="constant">_XOPEN_SOURCE_EXTENDED</code></span></dt>
+
+            <dd>
+              <p>If this macro is defined, and <code class="constant">_XOPEN_SOURCE</code> is defined, then
+              expose definitions corresponding to the XPG4v2
+              (SUSv1) UNIX extensions (UNIX 95). This macro is also
+              implicitly defined if <code class="constant">_XOPEN_SOURCE</code> is defined with a
+              value of 500 or more.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">_ISOC99_SOURCE</code> (since glibc
+            2.1.3)</span></dt>
+
+            <dd>
+              <p>Exposes declarations consistent with the ISO C99
+              standard.</p>
+
+              <p>Earlier glibc 2.1.x versions recognized an
+              equivalent macro named <code class="constant">_ISOC9X_SOURCE</code> (because the C99
+              standard had not then been finalized). Although the
+              use of this macro is obsolete, glibc continues to
+              recognize it for backward compatibility.</p>
+
+              <p>Defining <code class="constant">_ISOC99_SOURCE</code> also exposes ISO C
+              (1990) Amendment 1 ("C95") definitions. (The primary
+              change in C95 was support for international character
+              sets.)</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">_ISOC11_SOURCE</code> (since glibc
+            2.16)</span></dt>
+
+            <dd>
+              <p>Exposes declarations consistent with the ISO C11
+              standard. Defining this macro also enables C99 and
+              C95 features (like <code class="constant">_ISOC99_SOURCE</code>).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">_LARGEFILE64_SOURCE</code></span></dt>
+
+            <dd>
+              <p>Expose definitions for the alternative API
+              specified by the LFS (Large File Summit) as a
+              "transitional extension" to the Single UNIX
+              Specification. (See <a class="literalurl" href="http://opengroup.org/platform/lfs.html" target="_top" shape="rect">http://opengroup.org/platform/lfs.html</a> The
+              alternative API consists of a set of new objects
+              (i.e., functions and types) whose names are suffixed
+              with "64" (e.g., <em class="replaceable"><code>off64_t</code></em> versus
+              <em class="replaceable"><code>off_t</code></em>,
+              <code class="function">lseek64</code>() versus
+              <code class="function">lseek</code>(), etc.). New
+              programs should not employ this macro; instead
+              <em class="replaceable"><code>_FILE_OFFSET_BITS=64</code></em>
+              should be employed.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">_LARGEFILE_SOURCE</code></span></dt>
+
+            <dd>
+              <p>This macro was historically used to expose certain
+              functions (specifically <a class="link" href="../htmlman3/fseeko.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fseeko</span>(3)</span></a> and
+              <a class="link" href="../htmlman3/fseeko.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ftello</span>(3)</span></a>) that
+              address limitations of earlier APIs (<a class="link" href="../htmlman3/fseek.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fseek</span>(3)</span></a> and
+              <a class="link" href="../htmlman3/fseek.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ftell</span>(3)</span></a>) that use
+              <span class="emphasis"><em>long int</em></span> for
+              file offsets. This macro is implicitly defined if
+              <code class="constant">_XOPEN_SOURCE</code> is
+              defined with a value greater than or equal to 500.
+              New programs should not employ this macro; defining
+              <code class="constant">_XOPEN_SOURCE</code> as just
+              described or defining <code class="constant">_FILE_OFFSET_BITS</code> with the value 64
+              is the preferred mechanism to achieve the same
+              result.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">_FILE_OFFSET_BITS</code></span></dt>
+
+            <dd>
+              <p>Defining this macro with the value 64
+              automatically converts references to 32-bit functions
+              and data types related to file I/O and filesystem
+              operations into references to their 64-bit
+              counterparts. This is useful for performing I/O on
+              large files (&gt; 2 Gigabytes) on 32-bit systems.
+              (Defining this macro permits correctly written
+              programs to use large files with only a recompilation
+              being required.)</p>
+
+              <p>64-bit systems naturally permit file sizes greater
+              than 2 Gigabytes, and on those systems this macro has
+              no effect.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">_BSD_SOURCE</code> (deprecated since glibc
+            2.20)</span></dt>
+
+            <dd>
+              <p>Defining this macro with any value causes header
+              files to expose BSD-derived definitions.</p>
+
+              <p>In glibc versions up to and including 2.18,
+              defining this macro also causes BSD definitions to be
+              preferred in some situations where standards
+              conflict, unless one or more of <code class="constant">_SVID_SOURCE</code>, <code class="constant">_POSIX_SOURCE</code>, <code class="constant">_POSIX_C_SOURCE</code>, <code class="constant">_XOPEN_SOURCE</code>, <code class="constant">_XOPEN_SOURCE_EXTENDED</code>, or
+              <code class="constant">_GNU_SOURCE</code> is defined,
+              in which case BSD definitions are disfavored. Since
+              glibc 2.19, <code class="constant">_BSD_SOURCE</code>
+              no longer causes BSD definitions to be preferred in
+              case of conflicts.</p>
+
+              <p>Since glibc 2.20, this macro is deprecated. It now
+              has the same effect as defining <code class="constant">_DEFAULT_SOURCE</code>, but generates a
+              compile-time warning (unless <code class="constant">_DEFAULT_SOURCE</code> is also defined).
+              Use <code class="constant">_DEFAULT_SOURCE</code>
+              instead. To allow code that requires <code class="constant">_BSD_SOURCE</code> in glibc 2.19 and
+              earlier and <code class="constant">_DEFAULT_SOURCE</code> in glibc 2.20 and
+              later to compile without warnings, define <em class="replaceable"><code>both</code></em> <code class="constant">_BSD_SOURCE</code> and <code class="constant">_DEFAULT_SOURCE</code>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">_SVID_SOURCE</code> (deprecated since glibc
+            2.20)</span></dt>
+
+            <dd>
+              <p>Defining this macro with any value causes header
+              files to expose System V-derived definitions. (SVID
+              == System V Interface Definition; see <a class="link" href="../htmlman7/standards.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">standards</span>(7)</span></a>.)</p>
+
+              <p>Since glibc 2.20, this macro is deprecated in the
+              same fashion as <code class="constant">_BSD_SOURCE</code>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">_DEFAULT_SOURCE</code> (since glibc
+            2.19)</span></dt>
+
+            <dd>
+              <p>This macro can be defined to ensure that the
+              "default" definitions are provided even when the
+              defaults would otherwise be disabled, as happens when
+              individual macros are explicitly defined, or the
+              compiler is invoked in one of its "standard" modes
+              (e.g., <span class="emphasis"><em>cc
+              −std=c99</em></span>). Defining <code class="constant">_DEFAULT_SOURCE</code> without defining
+              other individual macros or invoking the compiler in
+              one of its "standard" modes has no effect.</p>
+
+              <p>The "default" definitions comprise those required
+              by POSIX.1-2008 as well as various definitions
+              derived from BSD and System V. On glibc 2.19 and
+              earlier, these defaults were approximately equivalent
+              to explicitly defining the following:</p>
+
+              <p>cc −D_BSD_SOURCE −D_SVID_SOURCE
+              −D_POSIX_C_SOURCE=200809</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">_ATFILE_SOURCE</code> (since glibc
+            2.4)</span></dt>
+
+            <dd>
+              <p>Defining this macro with any value causes header
+              files to expose declarations of a range of functions
+              with the suffix "at"; see <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">openat</span>(2)</span></a>. Since
+              glibc 2.10, this macro is also implicitly defined if
+              <code class="constant">_POSIX_C_SOURCE</code> is
+              defined with a value greater than or equal to
+              200809L.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">_GNU_SOURCE</code></span></dt>
+
+            <dd>
+              <p>Defining this macro (with any value) implicitly
+              defines <code class="constant">_ATFILE_SOURCE</code>,
+              <code class="constant">_LARGEFILE64_SOURCE</code>,
+              <code class="constant">_ISOC99_SOURCE</code>,
+              <code class="constant">_XOPEN_SOURCE_EXTENDED</code>,
+              <code class="constant">_POSIX_SOURCE</code>,
+              <code class="constant">_POSIX_C_SOURCE</code> with
+              the value 200809L (200112L in glibc versions before
+              2.10; 199506L in glibc versions before 2.5; 199309L
+              in glibc versions before 2.1) and <code class="constant">_XOPEN_SOURCE</code> with the value 700
+              (600 in glibc versions before 2.10; 500 in glibc
+              versions before 2.2). In addition, various
+              GNU-specific extensions are also exposed.</p>
+
+              <p>Since glibc 2.19, defining <code class="constant">_GNU_SOURCE</code> also has the effect of
+              implicitly defining <code class="constant">_DEFAULT_SOURCE</code>. In glibc versions
+              before 2.20, defining <code class="constant">_GNU_SOURCE</code> also had the effect of
+              implicitly defining <code class="constant">_BSD_SOURCE</code> and <code class="constant">_SVID_SOURCE</code>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">_REENTRANT</code></span></dt>
+
+            <dd>
+              <p>Defining this macro exposes definitions of certain
+              reentrant functions. For multithreaded programs, use
+              <span class="emphasis"><em>cc
+              −pthread</em></span> instead.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">_THREAD_SAFE</code></span></dt>
+
+            <dd>
+              <p>Synonym for <code class="constant">_REENTRANT</code>, provided for
+              compatibility with some other implementations.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">_FORTIFY_SOURCE</code> (since glibc
+            2.3.4)</span></dt>
+
+            <dd>
+              <p>Defining this macro causes some lightweight checks
+              to be performed to detect some buffer overflow errors
+              when employing various string and memory manipulation
+              functions (for example, <a class="link" href="../htmlman3/memcpy.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">memcpy</span>(3)</span></a>,
+              <a class="link" href="../htmlman3/memset.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">memset</span>(3)</span></a>,
+              <a class="link" href="../htmlman3/stpcpy.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">stpcpy</span>(3)</span></a>,
+              <a class="link" href="../htmlman3/strcpy.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">strcpy</span>(3)</span></a>,
+              <a class="link" href="../htmlman3/strcpy.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">strncpy</span>(3)</span></a>,
+              <a class="link" href="../htmlman3/strcat.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">strcat</span>(3)</span></a>,
+              <a class="link" href="../htmlman3/strcat.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">strncat</span>(3)</span></a>,
+              <a class="link" href="../htmlman3/printf.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sprintf</span>(3)</span></a>,
+              <a class="link" href="../htmlman3/printf.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">snprintf</span>(3)</span></a>,
+              <a class="link" href="../htmlman3/printf.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">vsprintf</span>(3)</span></a>,
+              <a class="link" href="../htmlman3/printf.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">vsnprintf</span>(3)</span></a>,
+              <a class="link" href="../htmlman3/gets.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gets</span>(3)</span></a>, and wide
+              character variants thereof). For some functions,
+              argument consistency is checked; for example, a check
+              is made that <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a> has been
+              supplied with a <em class="replaceable"><code>mode</code></em> argument when
+              the specified flags include <code class="constant">O_CREAT</code>. Not all problems are
+              detected, just some common cases.</p>
+
+              <p>If <code class="constant">_FORTIFY_SOURCE</code>
+              is set to 1, with compiler optimization level 1
+              (<span class="emphasis"><em>gcc
+              −O1</em></span>) and above, checks that
+              shouldn't change the behavior of conforming programs
+              are performed. With <code class="constant">_FORTIFY_SOURCE</code> set to 2, some more
+              checking is added, but some conforming programs might
+              fail.</p>
+
+              <p>Some of the checks can be performed at compile
+              time (via macros logic implemented in header files),
+              and result in compiler warnings; other checks take
+              place at run time, and result in a run-time error if
+              the check fails.</p>
+
+              <p>Use of this macro requires compiler support,
+              available with <span class="citerefentry"><span class="refentrytitle">gcc</span>(1)</span>
+              since version 4.0.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="feature-test-macros-7_sect4" name="feature-test-macros-7_sect4" shape="rect"> </a>
+
+        <h3>Default definitions, implicit definitions, and
+        combining definitions</h3>
+
+        <p>If no feature test macros are explicitly defined, then
+        the following feature test macros are defined by default:
+        <code class="constant">_BSD_SOURCE</code> (in glibc 2.19
+        and earlier), <code class="constant">_SVID_SOURCE</code>
+        (in glibc 2.19 and earlier), <code class="constant">_DEFAULT_SOURCE</code> (since glibc 2.19),
+        <code class="constant">_POSIX_SOURCE</code>, and
+        <code class="constant">_POSIX_C_SOURCE</code>=200809L
+        (200112L in glibc versions before 2.10; 199506L in glibc
+        versions before 2.4; 199309L in glibc versions before
+        2.1).</p>
+
+        <p>If any of <code class="constant">__STRICT_ANSI__</code>,
+        <code class="constant">_ISOC99_SOURCE</code>, <code class="constant">_POSIX_SOURCE</code>, <code class="constant">_POSIX_C_SOURCE</code>, <code class="constant">_XOPEN_SOURCE</code>, <code class="constant">_XOPEN_SOURCE_EXTENDED</code>, <code class="constant">_BSD_SOURCE</code> (in glibc 2.19 and earlier),
+        or <code class="constant">_SVID_SOURCE</code> (in glibc
+        2.19 and earlier) is explicitly defined, then <code class="constant">_BSD_SOURCE</code>, <code class="constant">_SVID_SOURCE</code>, and <code class="constant">_DEFAULT_SOURCE</code> are not defined by
+        default.</p>
+
+        <p>If <code class="constant">_POSIX_SOURCE</code> and
+        <code class="constant">_POSIX_C_SOURCE</code> are not
+        explicitly defined, and either <code class="constant">__STRICT_ANSI__</code> is not defined or
+        <code class="constant">_XOPEN_SOURCE</code> is defined with
+        a value of 500 or more, then</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p><code class="constant">_POSIX_SOURCE</code> is
+              defined with the value 1; and</p>
+            </li>
+
+            <li class="listitem">
+              <p><code class="constant">_POSIX_C_SOURCE</code> is
+              defined with one of the following values:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="itemizedlist">
+                    <ul class="itemizedlist" style="list-style-type: circle;">
+                      <li class="listitem">
+                        <p>2, if <code class="constant">_XOPEN_SOURCE</code> is defined
+                        with a value less than 500;</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>199506L, if <code class="constant">_XOPEN_SOURCE</code> is defined
+                        with a value greater than or equal to 500
+                        and less than 600; or</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>(since glibc 2.4) 200112L, if
+                        <code class="constant">_XOPEN_SOURCE</code>
+                        is defined with a value greater than or
+                        equal to 600 and less than 700.</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>(Since glibc 2.10) 200809L, if
+                        <code class="constant">_XOPEN_SOURCE</code>
+                        is defined with a value greater than or
+                        equal to 700.</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>Older versions of glibc do not know
+                        about the values 200112L and 200809L for
+                        <code class="constant">_POSIX_C_SOURCE</code>, and the
+                        setting of this macro will depend on the
+                        glibc version.</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p>If <code class="constant">_XOPEN_SOURCE</code> is
+                        undefined, then the setting of <code class="constant">_POSIX_C_SOURCE</code> depends
+                        on the glibc version: 199506L, in glibc
+                        versions before 2.4; 200112L, in glibc 2.4
+                        to 2.9; and 200809L, since glibc 2.10.</p>
+                      </li>
+                    </ul>
+                  </div>
+                </blockquote>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <p>Multiple macros can be defined; the results are
+        additive.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="feature-test-macros-7_sect5" name="feature-test-macros-7_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>POSIX.1 specifies <code class="constant">_POSIX_C_SOURCE</code>, <code class="constant">_POSIX_SOURCE</code>, and <code class="constant">_XOPEN_SOURCE</code>. <code class="constant">_XOPEN_SOURCE_EXTENDED</code> was specified by
+      XPG4v2 (aka SUSv1).</p>
+
+      <p><code class="constant">_FILE_OFFSET_BITS</code> is not
+      specified by any standard, but is employed on some other
+      implementations.</p>
+
+      <p><code class="constant">_BSD_SOURCE</code>, <code class="constant">_SVID_SOURCE</code>, <code class="constant">_DEFAULT_SOURCE</code>, <code class="constant">_ATFILE_SOURCE</code>, <code class="constant">_GNU_SOURCE</code>, <code class="constant">_FORTIFY_SOURCE</code>, <code class="constant">_REENTRANT</code>, and <code class="constant">_THREAD_SAFE</code> are specific to Linux
+      (glibc).</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="feature-test-macros-7_sect6" name="feature-test-macros-7_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p><code class="literal">&lt;</code><code class="filename">features.h</code><code class="literal">&gt;</code>
+      is a Linux/glibc-specific header file. Other systems have an
+      analogous file, but typically with a different name. This
+      header file is automatically included by other header files
+      as required: it is not necessary to explicitly include it in
+      order to employ feature test macros.</p>
+
+      <p>According to which of the above feature test macros are
+      defined, <code class="literal">&lt;</code><code class="filename">features.h</code><code class="literal">&gt;</code>
+      internally defines various other macros that are checked by
+      other glibc header files. These macros have names prefixed by
+      two underscores (e.g., <code class="constant">__USE_MISC</code>). Programs should <em class="replaceable"><code>never</code></em> define these macros
+      directly: instead, the appropriate feature test macro(s) from
+      the list above should be employed.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="feature-test-macros-7_sect7" name="feature-test-macros-7_sect7" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>The program below can be used to explore how the various
+      feature test macros are set depending on the glibc version
+      and what feature test macros are explicitly set. The
+      following shell session, on a system with glibc 2.10, shows
+      some examples of what we would see:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$ <code class="filename">cc ftm.c</code>
+$ <em class="replaceable"><code>./a.out</code></em>
+_POSIX_SOURCE defined
+_POSIX_C_SOURCE defined: 200809L
+_BSD_SOURCE defined
+_SVID_SOURCE defined
+_ATFILE_SOURCE defined
+$ <code class="filename">cc −D_XOPEN_SOURCE=500 ftm.c</code>
+$ <em class="replaceable"><code>./a.out</code></em>
+_POSIX_SOURCE defined
+_POSIX_C_SOURCE defined: 199506L
+_XOPEN_SOURCE defined: 500
+$ <code class="filename">cc −D_GNU_SOURCE ftm.c</code>
+$ <em class="replaceable"><code>./a.out</code></em>
+_POSIX_SOURCE defined
+_POSIX_C_SOURCE defined: 200809L
+_ISOC99_SOURCE defined
+_XOPEN_SOURCE defined: 700
+_XOPEN_SOURCE_EXTENDED defined
+_LARGEFILE64_SOURCE defined
+_BSD_SOURCE defined
+_SVID_SOURCE defined
+_ATFILE_SOURCE defined
+_GNU_SOURCE defined
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="refsect2">
+        <a id="feature-test-macros-7_sect8" name="feature-test-macros-7_sect8" shape="rect"> </a>
+
+        <h3>Program source</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+/* ftm.c */
+
+#include &lt;stdio.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;stdlib.h&gt;
+
+int
+main(int argc, char *argv[])
+{
+#ifdef _POSIX_SOURCE
+    printf("_POSIX_SOURCE defined\n");
+#endif
+
+#ifdef _POSIX_C_SOURCE
+    printf("_POSIX_C_SOURCE defined: %ldL\n", (long) _POSIX_C_SOURCE);
+#endif
+
+#ifdef _ISOC99_SOURCE
+    printf("_ISOC99_SOURCE defined\n");
+#endif
+
+#ifdef _ISOC11_SOURCE
+    printf("_ISOC11_SOURCE defined\n");
+#endif
+
+#ifdef _XOPEN_SOURCE
+    printf("_XOPEN_SOURCE defined: %d\n", _XOPEN_SOURCE);
+#endif
+
+#ifdef _XOPEN_SOURCE_EXTENDED
+    printf("_XOPEN_SOURCE_EXTENDED defined\n");
+#endif
+
+#ifdef _LARGEFILE64_SOURCE
+    printf("_LARGEFILE64_SOURCE defined\n");
+#endif
+
+#ifdef _FILE_OFFSET_BITS
+    printf("_FILE_OFFSET_BITS defined: %d\n", _FILE_OFFSET_BITS);
+#endif
+
+#ifdef _BSD_SOURCE
+    printf("_BSD_SOURCE defined\n");
+#endif
+
+#ifdef _SVID_SOURCE
+    printf("_SVID_SOURCE defined\n");
+#endif
+
+#ifdef _DEFAULT_SOURCE
+    printf("_DEFAULT_SOURCE defined\n");
+#endif
+
+#ifdef _ATFILE_SOURCE
+    printf("_ATFILE_SOURCE defined\n");
+#endif
+
+#ifdef _GNU_SOURCE
+    printf("_GNU_SOURCE defined\n");
+#endif
+
+#ifdef _REENTRANT
+    printf("_REENTRANT defined\n");
+#endif
+
+#ifdef _THREAD_SAFE
+    printf("_THREAD_SAFE defined\n");
+#endif
+
+#ifdef _FORTIFY_SOURCE
+    printf("_FORTIFY_SOURCE defined\n");
+#endif
+
+    exit(EXIT_SUCCESS);
+}
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="feature-test-macros-7_sect9" name="feature-test-macros-7_sect9" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman7/libc.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">libc</span>(7)</span></a>, <a class="link" href="../htmlman7/standards.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">standards</span>(7)</span></a></p>
+
+      <p>The section "Feature Test Macros" under <span class="emphasis"><em>info libc</em></span>.</p>
+
+      <p><code class="filename">/usr/include/features.h</code></p>
+    </div>
+
+    <div class="colophon">
+      <a id="feature-test-macros-7_sect10" name="feature-test-macros-7_sect10" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    This manpage is Copyright (C) 2006, Michael Kerrisk<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

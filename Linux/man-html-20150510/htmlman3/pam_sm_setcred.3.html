@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>pam_sm_setcred(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="pam_sm_setcred(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry" title="pam_sm_setcred(3) — Linux manual pages">
+    <a id="pam-sm-setcred.3" name="pam-sm-setcred.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <a id="pam_sm_setcred-name" name="pam_sm_setcred-name" shape="rect"> </a>
+
+      <h2>Name</h2>
+
+      <p>pam_sm_setcred — PAM service function to alter
+      credentials</p>
+    </div>
+
+    <div class="refsynopsisdiv" title="Synopsis">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <a id="pam_sm_setcred-synopsis" name="pam_sm_setcred-synopsis" shape="rect"> </a>
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#define PAM_SM_AUTH
+</pre>
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;security/pam_modules.h&gt;
+</pre>
+
+        <table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">PAM_EXTERN int
+            <strong>pam_sm_setcred</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">pam_handle_t *<var class="pdparam">pamh</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">flags</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">argc</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const char **<var class="pdparam">argv</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1" title="DESCRIPTION">
+      <a id="pam_sm_setcred-description" name="pam_sm_setcred-description" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">pam_sm_setcred</code> function
+      is the service module's implementation of the <a class="link" href="../htmlman3/pam_setcred.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_setcred</span>(3)</span></a>
+      interface.</p>
+
+      <p>This function performs the task of altering the
+      credentials of the user with respect to the corresponding
+      authorization scheme. Generally, an authentication module may
+      have access to more information about a user than their
+      authentication token. This function is used to make such
+      information available to the application. It should only be
+      called <span class="emphasis"><em>after</em></span> the user
+      has been authenticated but before a session has been
+      established.</p>
+
+      <p>Valid flags, which may be logically OR'd with <span class="emphasis"><em>PAM_SILENT</em></span>, are:</p>
+
+      <div class="variablelist">
+        <dl>
+          <dt><span class="term">PAM_SILENT</span></dt>
+
+          <dd>
+            <p>Do not emit any messages.</p>
+          </dd>
+
+          <dt><span class="term">PAM_ESTABLISH_CRED</span></dt>
+
+          <dd>
+            <p>Initialize the credentials for the user.</p>
+          </dd>
+
+          <dt><span class="term">PAM_DELETE_CRED</span></dt>
+
+          <dd>
+            <p>Delete the credentials associated with the
+            authentication service.</p>
+          </dd>
+
+          <dt><span class="term">PAM_REINITIALIZE_CRED</span></dt>
+
+          <dd>
+            <p>Reinitialize the user credentials.</p>
+          </dd>
+
+          <dt><span class="term">PAM_REFRESH_CRED</span></dt>
+
+          <dd>
+            <p>Extend the lifetime of the user credentials.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>The way the <span class="emphasis"><em>auth</em></span>
+      stack is navigated in order to evaluate the <code class="function">pam_setcred</code>() function call, independent of
+      the <code class="function">pam_sm_setcred</code>() return
+      codes, is exactly the same way that it was navigated when
+      evaluating the <code class="function">pam_authenticate</code>() library call. Typically,
+      if a stack entry was ignored in evaluating <code class="function">pam_authenticate</code>(), it will be ignored when
+      libpam evaluates the <code class="function">pam_setcred</code>() function call. Otherwise, the
+      return codes from each module specific <code class="function">pam_sm_setcred</code>() call are treated as
+      <span class="emphasis"><em>required</em></span>.</p>
+    </div>
+
+    <div class="refsect1" title="RETURN VALUES">
+      <a id="pam_sm_setcred-return_values" name="pam_sm_setcred-return_values" shape="rect"> </a>
+
+      <h2>RETURN VALUES</h2>
+
+      <div class="variablelist">
+        <dl>
+          <dt><span class="term">PAM_CRED_UNAVAIL</span></dt>
+
+          <dd>
+            <p>This module cannot retrieve the user's
+            credentials.</p>
+          </dd>
+
+          <dt><span class="term">PAM_CRED_EXPIRED</span></dt>
+
+          <dd>
+            <p>The user's credentials have expired.</p>
+          </dd>
+
+          <dt><span class="term">PAM_CRED_ERR</span></dt>
+
+          <dd>
+            <p>This module was unable to set the credentials of the
+            user.</p>
+          </dd>
+
+          <dt><span class="term">PAM_SUCCESS</span></dt>
+
+          <dd>
+            <p>The user credential was successfully set.</p>
+          </dd>
+
+          <dt><span class="term">PAM_USER_UNKNOWN</span></dt>
+
+          <dd>
+            <p>The user is not known to this authentication
+            module.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>These, non-<span class="emphasis"><em>PAM_SUCCESS</em></span>, return values will
+      typically lead to the credential stack <span class="emphasis"><em>failing</em></span>. The first such error will
+      dominate in the return value of <code class="function">pam_setcred</code>().</p>
+    </div>
+
+    <div class="refsect1" title="SEE ALSO">
+      <a id="pam_sm_setcred-see_also" name="pam_sm_setcred-see_also" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/pam.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam</span>(3)</span></a>, <a class="link" href="../htmlman3/pam_authenticate.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_authenticate</span>(3)</span></a>,
+      <a class="link" href="../htmlman3/pam_setcred.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_setcred</span>(3)</span></a>, <a class="link" href="../htmlman3/pam_sm_authenticate.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_sm_authenticate</span>(3)</span></a>,
+      <a class="link" href="../htmlman3/pam_strerror.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_strerror</span>(3)</span></a>,
+      <span class="citerefentry"><span class="refentrytitle">PAM</span>(8)</span></p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  See <a class="ulink" href="../linuxpam-copyright.html" target="_top" shape="rect">Linux-PAM copyright notice</a> for more information.
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

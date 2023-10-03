@@ -1,0 +1,722 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>ld.so(8) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="ld.so(8) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index8.html" shape="rect">Section 8</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="ld.so.8" name="ld.so.8" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>ld.so, ld-linux.so* — dynamic linker/loader</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ld-so-8_sect1" name="ld-so-8_sect1" shape="rect"> </a>
+
+      <h2>SYNOPSIS</h2>
+
+      <p>The dynamic linker can be run either indirectly by running
+      some dynamically linked program or library (in which case no
+      command-line options to the dynamic linker can be passed and,
+      in the ELF case, the dynamic linker which is stored in the
+      <em class="replaceable"><code>.interp</code></em> section of
+      the program is executed) or directly by running:</p>
+
+      <p><code class="filename">/lib/ld-linux.so.*</code> [OPTIONS]
+      [PROGRAM [ARGUMENTS]]</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ld-so-8_sect2" name="ld-so-8_sect2" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The programs <span class="command"><strong>ld.so</strong></span> and <span class="command"><strong>ld-linux.so*</strong></span> find and load
+      the shared libraries needed by a program, prepare the program
+      to run, and then run it.</p>
+
+      <p>Linux binaries require dynamic linking (linking at run
+      time) unless the <code class="option">−static</code>
+      option was given to <span class="citerefentry"><span class="refentrytitle">ld</span>(1)</span> during compilation.</p>
+
+      <p>The program <span class="command"><strong>ld.so</strong></span> handles a.out
+      binaries, a format used long ago; <span class="command"><strong>ld-linux.so*</strong></span> handles ELF
+      (<code class="filename">/lib/ld-linux.so.1</code> for libc5,
+      <code class="filename">/lib/ld-linux.so.2</code> for glibc2),
+      which everybody has been using for years now. Otherwise, both
+      have the same behavior, and use the same support files and
+      programs <span class="citerefentry"><span class="refentrytitle">ldd</span>(1)</span>, <a class="link" href="../htmlman8/ldconfig.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldconfig</span>(8)</span></a>, and
+      <code class="filename">/etc/ld.so.conf</code>.</p>
+
+      <p>When resolving library dependencies, the dynamic linker
+      first inspects each dependency string to see if it contains a
+      slash (this can occur if a library pathname containing
+      slashes was specified at link time). If a slash is found,
+      then the dependency string is interpreted as a (relative or
+      absolute) pathname, and the library is loaded using that
+      pathname.</p>
+
+      <p>If a library dependency does not contain a slash, then it
+      is searched for in the following order:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p>(ELF only) Using the directories specified in the
+            DT_RPATH dynamic section attribute of the binary if
+            present and DT_RUNPATH attribute does not exist. Use of
+            DT_RPATH is deprecated.</p>
+          </li>
+
+          <li class="listitem">
+            <p>Using the environment variable <code class="envar">LD_LIBRARY_PATH</code>. Except if the
+            executable is a set-user-ID/set-group-ID binary, in
+            which case it is ignored.</p>
+          </li>
+
+          <li class="listitem">
+            <p>(ELF only) Using the directories specified in the
+            DT_RUNPATH dynamic section attribute of the binary if
+            present.</p>
+          </li>
+
+          <li class="listitem">
+            <p>From the cache file <code class="filename">/etc/ld.so.cache</code>, which contains a
+            compiled list of candidate libraries previously found
+            in the augmented library path. If, however, the binary
+            was linked with the <code class="option">−z
+            nodeflib</code> linker option, libraries in the default
+            library paths are skipped. Libraries installed in
+            hardware capability directories (see below) are
+            preferred to other libraries.</p>
+          </li>
+
+          <li class="listitem">
+            <p>In the default path <code class="filename">/lib</code>, and then <code class="filename">/usr/lib</code>. (On some 64-bit
+            archiectures, the default spaths for 64-bit libraries
+            are <code class="filename">/lib64</code>, and then
+            <code class="filename">/usr/lib64</code>.) If the
+            binary was linked with the <code class="option">−z nodeflib</code> linker option, this
+            step is skipped.</p>
+          </li>
+        </ul>
+      </div>
+
+      <div class="refsect2">
+        <a id="ld-so-8_sect3" name="ld-so-8_sect3" shape="rect"> </a>
+
+        <h3>Rpath token expansion</h3>
+
+        <p><span class="command"><strong>ld.so</strong></span>
+        understands certain strings in an rpath specification
+        (DT_RPATH or DT_RUNPATH); those strings are substituted as
+        follows</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="function">$ORIGIN</code>(<em class="parameter"><code>or equivalently
+            ${ORIGIN}</code></em>)</span></dt>
+
+            <dd>
+              <p>This expands to the directory containing the
+              program or shared library. Thus, an application
+              located in <code class="filename">somedir/app</code>
+              could be compiled with</p>
+
+              <p>gcc −Wl,−rpath,'$ORIGIN/../lib'</p>
+
+              <p>so that it finds an associated shared library in
+              <code class="filename">somedir/lib</code> no matter
+              where <code class="filename">somedir</code> is
+              located in the directory hierarchy. This facilitates
+              the creation of "turn-key" applications that do not
+              need to be installed into special directories, but
+              can instead be unpacked into any directory and still
+              find their own shared libraries.</p>
+            </dd>
+
+            <dt><span class="term"><code class="function">$LIB</code>(<em class="parameter"><code>or
+            equivalently ${LIB}</code></em>)</span></dt>
+
+            <dd>
+              <p>This expands to <span class="command"><strong>lib</strong></span> or <span class="command"><strong>lib64</strong></span> depending on
+              the architecture (e.g., on x86-64, it expands to
+              <span class="command"><strong>lib64</strong></span>
+              and on x86-32, it expands to <span class="command"><strong>lib</strong></span>).</p>
+            </dd>
+
+            <dt><span class="term"><code class="function">$PLATFORM</code>(<em class="parameter"><code>or equivalently
+            ${PLATFORM}</code></em>)</span></dt>
+
+            <dd>
+              <p>This expands to a string corresponding to the
+              processor type of the host system (e.g., "x86_64").
+              On some architectures, the Linux kernel doesn't
+              provide a platform string to the dynamic linker. The
+              value of this string is taken from the <code class="constant">AT_PLATFORM</code> value in the auxiliary
+              vector (see <a class="link" href="../htmlman3/getauxval.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getauxval</span>(3)</span></a>).</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ld-so-8_sect4" name="ld-so-8_sect4" shape="rect"> </a>
+
+      <h2>OPTIONS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="option">−−list</code></span></dt>
+
+          <dd>
+            <p>List all dependencies and how they are resolved.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−verify</code></span></dt>
+
+          <dd>
+            <p>Verify that program is dynamically linked and this
+            dynamic linker can handle it.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−inhibit−cache</code></span></dt>
+
+          <dd>
+            <p>Do not use <code class="filename">/etc/ld.so.cache</code>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−library−path
+          path</code></span></dt>
+
+          <dd>
+            <p>Use <span class="command"><strong>path</strong></span> instead of
+            <code class="envar">LD_LIBRARY_PATH</code> environment
+            variable setting (see below).</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−inhibit−rpath
+          list</code></span></dt>
+
+          <dd>
+            <p>Ignore RPATH and RUNPATH information in object names
+            in <span class="command"><strong>list</strong></span>.
+            This option is ignored if <span class="command"><strong>ld.so</strong></span> is set-user-ID
+            or set-group-ID.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−audit list</code></span></dt>
+
+          <dd>
+            <p>Use objects named in <span class="command"><strong>list</strong></span> as auditors.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ld-so-8_sect5" name="ld-so-8_sect5" shape="rect"> </a>
+
+      <h2>ENVIRONMENT</h2>
+
+      <p>Among the more important environment variables are the
+      following:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="envar">LD_ASSUME_KERNEL</code></span></dt>
+
+          <dd>
+            <p>(glibc since 2.2.3) Each shared library can inform
+            the dynamic linker of the minimum kernel ABI version
+            that it requires. (This requirement is encoded in an
+            ELF note section that is viewable via <span class="emphasis"><em>readelf −n</em></span> as a
+            section labeled <code class="constant">NT_GNU_ABI_TAG</code>.) At run time, the
+            dynamic linker determines the ABI version of the
+            running kernel and will reject loading shared libraries
+            that specify minimum ABI versions that exceed that ABI
+            version.</p>
+
+            <p><code class="envar">LD_ASSUME_KERNEL</code> can be
+            used to cause the dynamic linker to assume that it is
+            running on a system with a different kernel ABI
+            version. For example, the following command line causes
+            the dynamic linker to assume it is running on Linux
+            2.2.5 when loading the shared libraries required by
+            <span class="command"><strong>myprog</strong></span>:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="informalexample">
+                  <pre class="programlisting" xml:space="preserve">
+$ <span class="emphasis"><em>LD_ASSUME_KERNEL=2.2.5 ./myprog</em></span>
+</pre>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>On systems that provide multiple versions of a
+            shared library (in different directories in the search
+            path) that have different minimum kernel ABI version
+            requirements, <code class="envar">LD_ASSUME_KERNEL</code> can be used to select
+            the version of the library that is used (dependent on
+            the directory search order). Historically, the most
+            common use of the <code class="envar">LD_ASSUME_KERNEL</code> feature was to manually
+            select the older LinuxThreads POSIX threads
+            implementation on systems that provided both
+            LinuxThreads and NPTL (which latter was typically the
+            default on such systems); see <a class="link" href="../htmlman7/pthreads.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthreads</span>(7)</span></a>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="envar">LD_BIND_NOW</code></span></dt>
+
+          <dd>
+            <p>(libc5; glibc since 2.1.1) If set to a nonempty
+            string, causes the dynamic linker to resolve all
+            symbols at program startup instead of deferring
+            function call resolution to the point when they are
+            first referenced. This is useful when using a
+            debugger.</p>
+          </dd>
+
+          <dt><span class="term"><code class="envar">LD_LIBRARY_PATH</code></span></dt>
+
+          <dd>
+            <p>A colon-separated list of directories in which to
+            search for ELF libraries at execution-time. Similar to
+            the <code class="constant">PATH</code> environment
+            variable. Ignored in set-user-ID and set-group-ID
+            programs.</p>
+          </dd>
+
+          <dt><span class="term"><code class="envar">LD_PRELOAD</code></span></dt>
+
+          <dd>
+            <p>A list of additional, user-specified, ELF shared
+            libraries to be loaded before all others. The items of
+            the list can be separated by spaces or colons. This can
+            be used to selectively override functions in other
+            shared libraries. The libraries are searched for using
+            the rules given under DESCRIPTION. For
+            set-user-ID/set-group-ID ELF binaries, preload
+            pathnames containing slashes are ignored, and libraries
+            in the standard search directories are loaded only if
+            the set-user-ID mode bit is enabled on the library
+            file.</p>
+          </dd>
+
+          <dt><span class="term"><code class="envar">LD_TRACE_LOADED_OBJECTS</code></span></dt>
+
+          <dd>
+            <p>(ELF only) If set to a nonempty string, causes the
+            program to list its dynamic library dependencies, as if
+            run by <span class="citerefentry"><span class="refentrytitle">ldd</span>(1)</span>, instead of
+            running normally.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>Then there are lots of more or less obscure variables,
+      many obsolete or only for internal use.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="envar">LD_AOUT_LIBRARY_PATH</code></span></dt>
+
+          <dd>
+            <p>(libc5) Version of <code class="envar">LD_LIBRARY_PATH</code> for a.out binaries only.
+            Old versions of ld−linux.so.1 also supported
+            <code class="envar">LD_ELF_LIBRARY_PATH</code>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="envar">LD_AOUT_PRELOAD</code></span></dt>
+
+          <dd>
+            <p>(libc5) Version of <code class="envar">LD_PRELOAD</code> for a.out binaries only. Old
+            versions of ld−linux.so.1 also supported
+            <code class="envar">LD_ELF_PRELOAD</code>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="envar">LD_AUDIT</code></span></dt>
+
+          <dd>
+            <p>(glibc since 2.4) A colon-separated list of
+            user-specified, ELF shared objects to be loaded before
+            all others in a separate linker namespace (i.e., one
+            that does not intrude upon the normal symbol bindings
+            that would occur in the process). These libraries can
+            be used to audit the operation of the dynamic linker.
+            <code class="envar">LD_AUDIT</code> is ignored for
+            set-user-ID/set-group-ID binaries.</p>
+
+            <p>The dynamic linker will notify the audit libraries
+            at so-called auditing checkpoints—for example,
+            loading a new library, resolving a symbol, or calling a
+            symbol from another shared object—by calling an
+            appropriate function within the audit library. For
+            details, see <a class="link" href="../htmlman7/rtld-audit.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rtld-audit</span>(7)</span></a>. The
+            auditing interface is largely compatible with that
+            provided on Solaris, as described in its <span class="emphasis"><em>Linker and Libraries Guide</em></span>,
+            in the chapter <span class="emphasis"><em>Runtime
+            Linker Auditing Interface</em></span>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="envar">LD_BIND_NOT</code></span></dt>
+
+          <dd>
+            <p>(glibc since 2.1.95) Do not update the GOT (global
+            offset table) and PLT (procedure linkage table) after
+            resolving a symbol.</p>
+          </dd>
+
+          <dt><span class="term"><code class="envar">LD_DEBUG</code></span></dt>
+
+          <dd>
+            <p>(glibc since 2.1) Output verbose debugging
+            information about the dynamic linker. If set to
+            <code class="literal">all</code> prints all debugging
+            information it has, if set to <code class="literal">help</code> prints a help message about which
+            categories can be specified in this environment
+            variable. Since glibc 2.3.4, <code class="envar">LD_DEBUG</code> is ignored for
+            set-user-ID/set-group-ID binaries.</p>
+          </dd>
+
+          <dt><span class="term"><code class="envar">LD_DEBUG_OUTPUT</code></span></dt>
+
+          <dd>
+            <p>(glibc since 2.1) File in which <code class="envar">LD_DEBUG</code> output should be written. The
+            default is standard error. <code class="envar">LD_DEBUG_OUTPUT</code> is ignored for
+            set-user-ID/set-group-ID binaries.</p>
+          </dd>
+
+          <dt><span class="term"><code class="envar">LD_DYNAMIC_WEAK</code></span></dt>
+
+          <dd>
+            <p>(glibc since 2.1.91) Allow weak symbols to be
+            overridden (reverting to old glibc behavior). For
+            security reasons, since glibc 2.3.4, <code class="envar">LD_DYNAMIC_WEAK</code> is ignored for
+            set-user-ID/set-group-ID binaries.</p>
+          </dd>
+
+          <dt><span class="term"><code class="envar">LD_HWCAP_MASK</code></span></dt>
+
+          <dd>
+            <p>(glibc since 2.1) Mask for hardware
+            capabilities.</p>
+          </dd>
+
+          <dt><span class="term"><code class="envar">LD_KEEPDIR</code></span></dt>
+
+          <dd>
+            <p>(a.out only)(libc5) Don't ignore the directory in
+            the names of a.out libraries to be loaded. Use of this
+            option is strongly discouraged.</p>
+          </dd>
+
+          <dt><span class="term"><code class="envar">LD_NOWARN</code></span></dt>
+
+          <dd>
+            <p>(a.out only)(libc5) Suppress warnings about a.out
+            libraries with incompatible minor version numbers.</p>
+          </dd>
+
+          <dt><span class="term"><code class="envar">LD_ORIGIN_PATH</code></span></dt>
+
+          <dd>
+            <p>(glibc since 2.1) Path where the binary is found
+            (for non-set-user-ID programs). For security reasons,
+            since glibc 2.4, <code class="envar">LD_ORIGIN_PATH</code> is ignored for
+            set-user-ID/set-group-ID binaries.</p>
+          </dd>
+
+          <dt><span class="term"><code class="envar">LD_POINTER_GUARD</code></span></dt>
+
+          <dd>
+            <p>(glibc since 2.4) Set to 0 to disable pointer
+            guarding. Any other value enables pointer guarding,
+            which is also the default. Pointer guarding is a
+            security mechanism whereby some pointers to code stored
+            in writable program memory (return addresses saved by
+            <a class="link" href="../htmlman3/setjmp.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setjmp</span>(3)</span></a> or function
+            pointers used by various glibc internals) are mangled
+            semi-randomly to make it more difficult for an attacker
+            to hijack the pointers for use in the event of a buffer
+            overrun or stack-smashing attack.</p>
+          </dd>
+
+          <dt><span class="term"><code class="envar">LD_PROFILE</code></span></dt>
+
+          <dd>
+            <p>(glibc since 2.1) The name of a (single) shared
+            object to be profiled, specified either as a pathname
+            or a soname. Profiling output is appended to the file
+            whose name is: "<em class="replaceable"><code>$LD_PROFILE_OUTPUT</code></em>/<em class="replaceable"><code>$LD_PROFILE</code></em>.profile".</p>
+          </dd>
+
+          <dt><span class="term"><code class="envar">LD_PROFILE_OUTPUT</code></span></dt>
+
+          <dd>
+            <p>(glibc since 2.1) Directory where <code class="envar">LD_PROFILE</code> output should be written. If
+            this variable is not defined, or is defined as an empty
+            string, then the default is <code class="filename">/var/tmp</code>. <code class="envar">LD_PROFILE_OUTPUT</code> is ignored for
+            set-user-ID and set-group-ID programs, which always use
+            <code class="filename">/var/profile</code>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="envar">LD_SHOW_AUXV</code></span></dt>
+
+          <dd>
+            <p>(glibc since 2.1) Show auxiliary array passed up
+            from the kernel. For security reasons, since glibc
+            2.3.5, <code class="envar">LD_SHOW_AUXV</code> is
+            ignored for set-user-ID/set-group-ID binaries.</p>
+          </dd>
+
+          <dt><span class="term"><code class="envar">LD_TRACE_PRELINKING</code></span></dt>
+
+          <dd>
+            <p>(glibc since 2.4) Trace prelinking of the object
+            whose name is assigned to this environment variable.
+            (Use <span class="citerefentry"><span class="refentrytitle">ldd</span>(1)</span> to get a list of
+            the objects that might be traced.) If the object name
+            is not recognized, then all prelinking activity is
+            traced.</p>
+          </dd>
+
+          <dt><span class="term"><code class="envar">LD_USE_LOAD_BIAS</code></span></dt>
+
+          <dd>
+            <p>By default (i.e., if this variable is not defined),
+            executables and prelinked shared objects will honor
+            base addresses of their dependent libraries and
+            (nonprelinked) position-independent executables (PIEs)
+            and other shared objects will not honor them. If
+            <code class="envar">LD_USE_LOAD_BIAS</code> is defined
+            with the value 1, both executables and PIEs will honor
+            the base addresses. If <code class="envar">LD_USE_LOAD_BIAS</code> is defined with the
+            value 0, neither executables nor PIEs will honor the
+            base addresses. This variable is ignored by set-user-ID
+            and set-group-ID programs.</p>
+          </dd>
+
+          <dt><span class="term"><code class="envar">LD_VERBOSE</code></span></dt>
+
+          <dd>
+            <p>(glibc since 2.1) If set to a nonempty string,
+            output symbol versioning information about the program
+            if the <code class="envar">LD_TRACE_LOADED_OBJECTS</code> environment
+            variable has been set.</p>
+          </dd>
+
+          <dt><span class="term"><code class="envar">LD_WARN</code></span></dt>
+
+          <dd>
+            <p>(ELF only)(glibc since 2.1.3) If set to a nonempty
+            string, warn about unresolved symbols.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">LDD_ARGV0</code></span></dt>
+
+          <dd>
+            <p>(libc5) <code class="varname">argv</code>[0] to be
+            used by <span class="citerefentry"><span class="refentrytitle">ldd</span>(1)</span> when none is
+            present.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ld-so-8_sect6" name="ld-so-8_sect6" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="filename">/lib/ld.so</code></span></dt>
+
+          <dd>
+            <p>a.out dynamic linker/loader</p>
+          </dd>
+
+          <dt><span class="term"><code class="filename">/lib/ld−linux.so.{1,2}</code></span></dt>
+
+          <dd>
+            <p>ELF dynamic linker/loader</p>
+          </dd>
+
+          <dt><span class="term"><code class="filename">/etc/ld.so.cache</code></span></dt>
+
+          <dd>
+            <p>File containing a compiled list of directories in
+            which to search for libraries and an ordered list of
+            candidate libraries.</p>
+          </dd>
+
+          <dt><span class="term"><code class="filename">/etc/ld.so.preload</code></span></dt>
+
+          <dd>
+            <p>File containing a whitespace-separated list of ELF
+            shared libraries to be loaded before the program.</p>
+          </dd>
+
+          <dt><span class="term">lib*.so*</span></dt>
+
+          <dd>
+            <p>shared libraries</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ld-so-8_sect7" name="ld-so-8_sect7" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>The <span class="command"><strong>ld.so</strong></span>
+      functionality is available for executables compiled using
+      libc version 4.4.3 or greater. ELF functionality is available
+      since Linux 1.1.52 and libc5.</p>
+
+      <div class="refsect2">
+        <a id="ld-so-8_sect8" name="ld-so-8_sect8" shape="rect"> </a>
+
+        <h3>Hardware capabilities</h3>
+
+        <p>Some libraries are compiled using hardware-specific
+        instructions which do not exist on every CPU. Such
+        libraries should be installed in directories whose names
+        define the required hardware capabilities, such as
+        <code class="filename">/usr/lib/sse2/</code>. The dynamic
+        linker checks these directories against the hardware of the
+        machine and selects the most suitable version of a given
+        library. Hardware capability directories can be cascaded to
+        combine CPU features. The list of supported hardware
+        capability names depends on the CPU. The following names
+        are currently recognized:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><span class="command"><strong>Alpha</strong></span></span></dt>
+
+            <dd>
+              <p>ev4, ev5, ev56, ev6, ev67</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">MIPS</code></span></dt>
+
+            <dd>
+              <p>loongson2e, loongson2f, octeon, octeon2</p>
+            </dd>
+
+            <dt><span class="term"><span class="command"><strong>PowerPC</strong></span></span></dt>
+
+            <dd>
+              <p>4xxmac, altivec, arch_2_05, arch_2_06, booke,
+              cellbe, dfp, efpdouble, efpsingle, fpu, ic_snoop,
+              mmu, notb, pa6t, power4, power5, power5+, power6x,
+              ppc32, ppc601, ppc64, smt, spe, ucache, vsx</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SPARC</code></span></dt>
+
+            <dd>
+              <p>flush, muldiv, stbar, swap, ultra3, v9, v9v,
+              v9v2</p>
+            </dd>
+
+            <dt><span class="term"><span class="command"><strong>s390</strong></span></span></dt>
+
+            <dd>
+              <p>dfp, eimm, esan3, etf3enh, g5, highgprs, hpage,
+              ldisp, msa, stfle, z900, z990, z9-109, z10, zarch</p>
+            </dd>
+
+            <dt><span class="term"><code class="function">x86</code>(<em class="parameter"><code>32-bitonly</code></em>)</span></dt>
+
+            <dd>
+              <p>acpi, apic, clflush, cmov, cx8, dts, fxsr, ht,
+              i386, i486, i586, i686, mca, mmx, mtrr, pat, pbe,
+              pge, pn, pse36, sep, ss, sse, sse2, tm</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ld-so-8_sect9" name="ld-so-8_sect9" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><span class="citerefentry"><span class="refentrytitle">ld</span>(1)</span>, <span class="citerefentry"><span class="refentrytitle">ldd</span>(1)</span>, <span class="citerefentry"><span class="refentrytitle">pldd</span>(1)</span>, <span class="citerefentry"><span class="refentrytitle">sprof</span>(1)</span>, <a class="link" href="../htmlman3/dlopen.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">dlopen</span>(3)</span></a>, <a class="link" href="../htmlman3/getauxval.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getauxval</span>(3)</span></a>, <a class="link" href="../htmlman7/rtld-audit.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rtld-audit</span>(7)</span></a>, <a class="link" href="../htmlman8/ldconfig.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldconfig</span>(8)</span></a>, <a class="link" href="../htmlman8/sln.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sln</span>(8)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="ld-so-8_sect10" name="ld-so-8_sect10" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    %%%LICENSE_START(PUBLIC_DOMAIN)<br />
+                  This is in the public domain<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

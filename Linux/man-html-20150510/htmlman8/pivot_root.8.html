@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>pivot_root(8) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="pivot_root(8) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index8.html" shape="rect">Section 8</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="pivot-root.8" name="pivot-root.8" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>pivot_root — change the root filesystem</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">pivot_root</code> new_root
+        put_old</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pivot-root-8_sect1" name="pivot-root-8_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><span class="command"><strong>pivot_root</strong></span>
+      moves the root file system of the current process to the
+      directory <em class="parameter"><code>put_old</code></em> and
+      makes <em class="parameter"><code>new_root</code></em> the
+      new root file system. Since <a class="link" href="../htmlman8/pivot_root.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pivot_root</span>(8)</span></a> simply calls
+      <a class="link" href="../htmlman2/pivot_root.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pivot_root</span>(2)</span></a>, we refer to
+      the man page of the latter for further details.</p>
+
+      <p>Note that, depending on the implementation of <span class="command"><strong>pivot_root</strong></span>, root and cwd of
+      the caller may or may not change. The following is a sequence
+      for invoking <span class="command"><strong>pivot_root</strong></span> that works in
+      either case, assuming that <span class="command"><strong>pivot_root</strong></span> and <span class="command"><strong>chroot</strong></span> are in the current
+      <code class="constant">PATH</code>:</p>
+
+      <p>cd <em class="parameter"><code>new_root</code></em></p>
+
+      <p>pivot_root . <em class="parameter"><code>put_old</code></em></p>
+
+      <p>exec chroot . <span class="command"><strong>command</strong></span></p>
+
+      <p>Note that <span class="command"><strong>chroot</strong></span> must be available
+      under the old root and under the new root, because
+      <span class="command"><strong>pivot_root</strong></span> may
+      or may not have implicitly changed the root directory of the
+      shell.</p>
+
+      <p>Note that <span class="emphasis"><em>exec
+      chroot</em></span> changes the running executable, which is
+      necessary if the old root directory should be unmounted
+      afterwards. Also note that standard input, output, and error
+      may still point to a device on the old root file system,
+      keeping it busy. They can easily be changed when invoking
+      <span class="command"><strong>chroot</strong></span> (see
+      below; note the absence of leading slashes to make it work
+      whether <span class="command"><strong>pivot_root</strong></span> has changed the
+      shell's root or not).</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pivot-root-8_sect2" name="pivot-root-8_sect2" shape="rect"> </a>
+
+      <h2>OPTIONS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="option">−V</code>, <code class="option">−−version</code></span></dt>
+
+          <dd>
+            <p>Display version information and exit.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−h</code>, <code class="option">−−help</code></span></dt>
+
+          <dd>
+            <p>Display help text and exit.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pivot-root-8_sect3" name="pivot-root-8_sect3" shape="rect"> </a>
+
+      <h2>EXAMPLES</h2>
+
+      <p>Change the root file system to /dev/hda1 from an
+      interactive shell:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+mount /dev/hda1 /new-root
+cd /new-root
+pivot_root . old-root
+exec chroot . sh &lt;dev/console &gt;dev/console 2&gt;&amp;1
+umount /old-root
+</pre>
+      </div>
+
+      <p>Mount the new root file system over NFS from
+      10.0.0.1:/my_root and run <span class="command"><strong>init</strong></span>:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ifconfig lo 127.0.0.1 up   # for portmap
+# configure Ethernet or such
+portmap   # for lockd (implicitly started by mount)
+mount -o ro 10.0.0.1:/my_root /mnt
+killall portmap   # portmap keeps old root busy
+cd /mnt
+pivot_root . old_root
+exec chroot . sh -c 'umount /old_root; exec /sbin/init' \
+  &lt;dev/console &gt;dev/console 2&gt;&amp;1
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pivot-root-8_sect4" name="pivot-root-8_sect4" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman1/chroot.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chroot</span>(1)</span></a>, <a class="link" href="../htmlman8/mount.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mount</span>(8)</span></a>, <a class="link" href="../htmlman2/pivot_root.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pivot_root</span>(2)</span></a>, <a class="link" href="../htmlman8/switch_root.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">switch_root</span>(8)</span></a>, <a class="link" href="../htmlman8/umount.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">umount</span>(8)</span></a></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pivot-root-8_sect5" name="pivot-root-8_sect5" shape="rect"> </a>
+
+      <h2>AVAILABILITY</h2>
+
+      <p>The pivot_root command is part of the util-linux package
+      and is available from
+      ftp://ftp.kernel.org/pub/linux/utils/util-linux/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

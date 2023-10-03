@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>tzfile(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="tzfile(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="tzfile.5" name="tzfile.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>tzfile — timezone information</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="tzfile-5_sect1" name="tzfile-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>This page describes the structure of the timezone files
+      used by <a class="link" href="../htmlman3/tzset.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tzset</span>(3)</span></a>. These files are
+      typically found under one of the directories <code class="filename">/usr/lib/zoneinfo</code> or <code class="filename">/usr/share/zoneinfo</code>.</p>
+
+      <p>Timezone information files begin with a 44-byte header
+      structured as follows:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p>The magic four-byte sequence "TZif" identifying this
+            as a timezone information file.</p>
+          </li>
+
+          <li class="listitem">
+            <p>A single character identifying the version of the
+            file's format: either an ASCII NUL ('\0') or a '2'
+            (<em class="replaceable"><code>0x32</code></em>).</p>
+          </li>
+
+          <li class="listitem">
+            <p>Fifteen bytes containing zeros reserved for future
+            use.</p>
+          </li>
+
+          <li class="listitem">
+            <p>Six four-byte values of type <em class="replaceable"><code>long</code></em>, written in a
+            "standard" byte order (the high-order byte of the value
+            is written first). These values are, in order:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><em class="replaceable"><code>tzh_ttisgmtcnt</code></em></span></dt>
+
+                    <dd>
+                      <p>The number of UTC/local indicators stored
+                      in the file.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>tzh_ttisstdcnt</code></em></span></dt>
+
+                    <dd>
+                      <p>The number of standard/wall indicators
+                      stored in the file.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>tzh_leapcnt</code></em></span></dt>
+
+                    <dd>
+                      <p>The number of leap seconds for which data
+                      is stored in the file.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>tzh_timecnt</code></em></span></dt>
+
+                    <dd>
+                      <p>The number of "transition times" for which
+                      data is stored in the file.</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>tzh_typecnt</code></em></span></dt>
+
+                    <dd>
+                      <p>The number of "local time types" for which
+                      data is stored in the file (must not be
+                      zero).</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>tzh_charcnt</code></em></span></dt>
+
+                    <dd>
+                      <p>The number of characters of "timezone
+                      abbreviation strings" stored in the file.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <p>The above header is followed by <em class="replaceable"><code>tzh_timecnt</code></em> four-byte values
+      of type <em class="replaceable"><code>long</code></em>,
+      sorted in ascending order. These values are written in
+      "standard" byte order. Each is used as a transition time (as
+      returned by <a class="link" href="../htmlman2/time.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">time</span>(2)</span></a>) at which the rules
+      for computing local time change. Next come <em class="replaceable"><code>tzh_timecnt</code></em> one-byte values
+      of type <span class="emphasis"><em>unsigned char</em></span>;
+      each one tells which of the different types of "local time"
+      types described in the file is associated with the
+      same-indexed transition time. These values serve as indices
+      into an array of <em class="replaceable"><code>ttinfo</code></em> structures (with
+      <em class="replaceable"><code>tzh_typecnt</code></em>
+      entries) that appear next in the file; these structures are
+      defined as follows:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="structdef">
+            <table style="border-collapse: collapse;">
+              <colgroup span="1">
+                <col class="c1" span="1" />
+                <col class="c2" span="1" />
+                <col class="c3" span="1" />
+                <col class="c4" span="1" />
+                <col class="c5" span="1" />
+              </colgroup>
+
+              <tbody>
+                <tr>
+                  <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                  struct</td>
+
+                  <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">ttinfo</span> {</td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">long</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>tt_gmtoff</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>tt_isdst</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned int</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>tt_abbrind</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>Each structure is written as a four-byte value for
+      <em class="parameter"><code>tt_gmtoff</code></em> of type
+      <em class="replaceable"><code>long</code></em>, in a standard
+      byte order, followed by a one-byte value for <em class="parameter"><code>tt_isdst</code></em> and a one-byte value
+      for <em class="parameter"><code>tt_abbrind</code></em>. In
+      each structure, <em class="parameter"><code>tt_gmtoff</code></em> gives the number of
+      seconds to be added to UTC, <em class="parameter"><code>tt_isdst</code></em> tells whether
+      <em class="replaceable"><code>tm_isdst</code></em> should be
+      set by <a class="link" href="../htmlman3/ctime.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">localtime</span>(3)</span></a>, and
+      <em class="parameter"><code>tt_abbrind</code></em> serves as
+      an index into the array of timezone abbreviation characters
+      that follow the <em class="replaceable"><code>ttinfo</code></em> structure(s) in the
+      file.</p>
+
+      <p>Then there are <em class="replaceable"><code>tzh_leapcnt</code></em> pairs of
+      four-byte values, written in standard byte order; the first
+      value of each pair gives the time (as returned by <a class="link" href="../htmlman2/time.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">time</span>(2)</span></a>) at which a leap
+      second occurs; the second gives the <em class="replaceable"><code>total</code></em> number of leap seconds
+      to be applied after the given time. The pairs of values are
+      sorted in ascending order by time.</p>
+
+      <p>Then there are <em class="replaceable"><code>tzh_ttisstdcnt</code></em> standard/wall
+      indicators, each stored as a one-byte value; they tell
+      whether the transition times associated with local time types
+      were specified as standard time or wall clock time, and are
+      used when a timezone file is used in handling POSIX-style
+      timezone environment variables.</p>
+
+      <p>Finally, there are <em class="replaceable"><code>tzh_ttisgmtcnt</code></em> UTC/local
+      indicators, each stored as a one-byte value; they tell
+      whether the transition times associated with local time types
+      were specified as UTC or local time, and are used when a
+      timezone file is used in handling POSIX-style timezone
+      environment variables.</p>
+
+      <p><a class="link" href="../htmlman3/ctime.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">localtime</span>(3)</span></a> uses the first
+      standard-time <em class="replaceable"><code>ttinfo</code></em> structure in the file
+      (or simply the first <em class="replaceable"><code>ttinfo</code></em> structure in the
+      absence of a standard-time structure) if either <em class="replaceable"><code>tzh_timecnt</code></em> is zero or the
+      time argument is less than the first transition time recorded
+      in the file.</p>
+
+      <div class="refsect2">
+        <a id="tzfile-5_sect2" name="tzfile-5_sect2" shape="rect"> </a>
+
+        <h3>Version 2 format</h3>
+
+        <p>For version-2-format timezone files, the above header
+        and data is followed by a second header and data, identical
+        in format except that eight bytes are used for each
+        transition time or leap-second time (and that the version
+        byte in the header record is <em class="replaceable"><code>0x32</code></em> rather than <em class="replaceable"><code>0x00</code></em>). After the second
+        header and data comes a newline-enclosed,
+        POSIX-TZ-environment-variable-style string for use in
+        handling instants after the last transition time stored in
+        the file (with nothing between the newlines if there is no
+        POSIX representation for such instants).</p>
+
+        <p>The second section of the timezone file consists of
+        another 44-byte header record, identical in structure to
+        the one at the beginning of the file, except that it
+        applies to the data that follows, which is also identical
+        in structure to the first section of the timezone file,
+        with the following differences:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>The transition time values, after the header, are
+              eight-byte values.</p>
+            </li>
+
+            <li class="listitem">
+              <p>In each leap second record, the leap second value
+              is an eight-byte value. The accumulated leap second
+              count is still a four-byte value.</p>
+            </li>
+          </ul>
+        </div>
+
+        <p>In all cases, the eight-byte time values are given in
+        the "standard" byte order, the high-order byte first.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="tzfile-5_sect3" name="tzfile-5_sect3" shape="rect"> </a>
+
+        <h3>POSIX timezone string</h3>
+
+        <p>The second eight-byte time value section is followed by
+        an optional third section: a single ASCII newline character
+        ('\n'), then a text string followed by a second newline
+        character. The text string is a POSIX timezone string,
+        whose format is described in the <a class="link" href="../htmlman3/tzset.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tzset</span>(3)</span></a> manual page.</p>
+
+        <p>The POSIX timezone string defines a rule for computing
+        transition times that follow the last transition time
+        explicitly specified in the timezone information file.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="tzfile-5_sect4" name="tzfile-5_sect4" shape="rect"> </a>
+
+        <h3>Summary of the timezone information file format</h3>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+Four-byte value section
+(header version <em class="replaceable"><code>0x00</code></em> or <em class="replaceable"><code>0x32</code></em>)
+        Header record
+        Four-byte transition times
+        Transition time index
+        <em class="replaceable"><code>ttinfo</code></em> structures
+        Timezone abbreviation array
+        Leap second records
+        Standard/Wall array
+        UTC/Local array
+
+Eight-byte value section
+(only if first header version is <em class="replaceable"><code>0x32</code></em>,
+the second header's version is also <em class="replaceable"><code>0x32</code></em>)
+        Header record
+        Eight-byte transition times
+        Transition time index
+        <em class="replaceable"><code>ttinfo</code></em> structures
+        Timezone abbreviation array
+        Leap second records
+        Standard/Wall array
+        UTC/Local array
+
+Third section
+(optional, only in <em class="replaceable"><code>0x32</code></em> version files)
+        Newline character
+        Timezone string
+        Newline character
+</pre>
+            </div>
+          </blockquote>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="tzfile-5_sect5" name="tzfile-5_sect5" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/ctime.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ctime</span>(3)</span></a>, <a class="link" href="../htmlman3/tzset.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tzset</span>(3)</span></a>, <a class="link" href="../htmlman8/tzselect.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tzselect</span>(8)</span></a>,</p>
+
+      <p><code class="filename">timezone/tzfile.h</code> in the
+      glibc source tree</p>
+    </div>
+
+    <div class="colophon">
+      <a id="tzfile-5_sect6" name="tzfile-5_sect6" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    %%%LICENSE_START(PUBLIC_DOMAIN)<br />
+                  This file is in the public domain, so clarified as of<br />
+
+                  1996-06-05 by Arthur David Olson &lt;arthur_david_olson<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>nih.gov&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  <script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>(#)tzfile.5 7.11<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

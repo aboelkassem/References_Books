@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>slapo-chain(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="slapo-chain(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="slapo-chain.5" name="slapo-chain.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>slapo−chain — chain overlay to slapd</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ETCDIR/slapd.conf
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-chain-5_sect1" name="slapo-chain-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <em class="replaceable"><code>chain</code></em>
+      overlay to <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a> allows automatic
+      referral chasing. Any time a referral is returned (except for
+      bind operations), it is chased by using an instance of the
+      ldap backend. If operations are performed with an identity
+      (i.e. after a bind), that identity can be asserted while
+      chasing the referrals by means of the <span class="emphasis"><em>identity assertion</em></span> feature of
+      back-ldap (see <a class="link" href="../htmlman5/slapd-ldap.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-ldap</span>(5)</span></a> for details),
+      which is essentially based on the <span class="emphasis"><em>proxied authorization</em></span> control [RFC
+      4370]. Referral chasing can be controlled by the client by
+      issuing the <em class="replaceable"><code>chaining</code></em> control (see
+      <em class="replaceable"><code>draft-sermersheim-ldap-chaining</code></em>
+      for details.)</p>
+
+      <p>The config directives that are specific to the <em class="replaceable"><code>chain</code></em> overlay are prefixed by
+      <em class="replaceable"><code>chain−</code></em>, to
+      avoid potential conflicts with directives specific to the
+      underlying database or to other stacked overlays.</p>
+
+      <p>There are very few chain overlay specific directives;
+      however, directives related to the instances of the
+      <em class="citetitle">ldap</em> backend that may be
+      implicitly instantiated by the overlay may assume a special
+      meaning when used in conjunction with this overlay. They are
+      described in <a class="link" href="../htmlman5/slapd-ldap.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-ldap</span>(5)</span></a>, and they
+      also need to be prefixed by <em class="replaceable"><code>chain−</code></em>.</p>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <p>This overlay is built into the <em class="citetitle">ldap</em> backend; it is not a separate
+              module.</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">verlay chain</span></dt>
+
+          <dd>
+            <p>This directive adds the chain overlay to the current
+            backend. The chain overlay may be used with any
+            backend, but it is mainly intended for use with local
+            storage backends that may return referrals. It is
+            useless in conjunction with the <em class="replaceable"><code>slapd−ldap</code></em> and
+            <em class="replaceable"><code>slapd−meta</code></em>
+            backends because they already exploit the libldap
+            specific referral chase feature. [Note: this may change
+            in the future, as the <span class="citerefentry"><span class="refentrytitle">ldap</span>(5)</span> and <span class="citerefentry"><span class="refentrytitle">meta</span>(5)</span> backends might no
+            longer chase referrals on their own.]</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>chain−cache−uri
+          {FALSE|true}</em></span></span></dt>
+
+          <dd>
+            <p>This directive instructs the <em class="replaceable"><code>chain</code></em> overlay to cache
+            connections to URIs parsed out of referrals that are
+            not predefined, to be reused for later chaining. These
+            URIs inherit the properties configured for the
+            underlying <a class="link" href="../htmlman5/slapd-ldap.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-ldap</span>(5)</span></a> before
+            any occurrence of the <em class="replaceable"><code>chain−uri</code></em>
+            directive; basically, they are chained anonymously.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>chain−chaining [resolve=&lt;r&gt;]
+          [continuation=&lt;c&gt;]
+          [critical]</em></span></span></dt>
+
+          <dd>
+            <p>This directive enables the <em class="replaceable"><code>chaining</code></em> control (see
+            <em class="replaceable"><code>draft-sermersheim-ldap-chaining</code></em>
+            for details) with the desired resolve and continuation
+            behaviors and criticality. The <em class="replaceable"><code>resolve</code></em> parameter
+            refers to the behavior while discovering a resource,
+            namely when accessing the object indicated by the
+            request DN; the <em class="replaceable"><code>continuation</code></em> parameter
+            refers to the behavior while handling intermediate
+            responses, which is mostly significant for the search
+            operation, but may affect extended operations that
+            return intermediate responses. The values <code class="literal">r</code> and <code class="literal">c</code>
+            can be any of <em class="replaceable"><code>chainingPreferred</code></em>,
+            <em class="replaceable"><code>chainingRequired</code></em>,
+            <em class="replaceable"><code>referralsPreferred</code></em>,
+            <em class="replaceable"><code>referralsRequired</code></em>. If
+            the <em class="replaceable"><code>critical</code></em>
+            flag affects the control criticality if provided. [This
+            control is experimental and its support may change in
+            the future.]</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>chain−max−depth
+          &lt;n&gt;</em></span></span></dt>
+
+          <dd>
+            <p>In case a referral is returned during referral
+            chasing, further chasing occurs at most <em class="replaceable"><code>&lt;n&gt;</code></em> levels deep.
+            Set to <code class="constant">1</code> (the default) to
+            disable further referral chasing.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>chain−return−error
+          {FALSE|true}</em></span></span></dt>
+
+          <dd>
+            <p>In case referral chasing fails, the real error is
+            returned instead of the original referral. In case
+            multiple referral URIs are present, only the first
+            error is returned. This behavior may not be always
+            appropriate nor desirable, since failures in referral
+            chasing might be better resolved by the client (e.g.
+            when caused by distributed authentication issues).</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>chain−uri
+          &lt;ldapuri&gt;</em></span></span></dt>
+
+          <dd>
+            <p>This directive instantiates a new underlying
+            <em class="citetitle">ldap</em> database and instructs
+            it about which URI to contact to chase referrals. As
+            opposed to what stated in <a class="link" href="../htmlman5/slapd-ldap.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-ldap</span>(5)</span></a>, only
+            one URI can appear after this directive; all subsequent
+            <a class="link" href="../htmlman5/slapd-ldap.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-ldap</span>(5)</span></a>
+            directives prefixed by <em class="replaceable"><code>chain−</code></em> refer to
+            this specific instance of a remote server.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>Directives for configuring the underlying ldap database
+      may also be required, as shown in this example:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+overlay                 chain
+chain−rebind−as−user    FALSE
+
+chain−uri               "ldap://ldap1.example.com"
+chain−rebind−as−user    TRUE
+chain−idassert−bind     bindmethod="simple"
+                        binddn="cn=Auth,dc=example,dc=com"
+                        credentials="secret"
+                        mode="self"
+
+chain−uri               "ldap://ldap2.example.com"
+chain−idassert−bind     bindmethod="simple"
+                        binddn="cn=Auth,dc=example,dc=com"
+                        credentials="secret"
+                        mode="none"
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>Any valid directives for the ldap database may be used;
+      see <a class="link" href="../htmlman5/slapd-ldap.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-ldap</span>(5)</span></a> for details.
+      Multiple occurrences of the <em class="replaceable"><code>chain−uri</code></em> directive may
+      appear, to define multiple "trusted" URIs where operations
+      with <span class="emphasis"><em>identity
+      assertion</em></span> are chained. All URIs not listed in the
+      configuration are chained anonymously. All <a class="link" href="../htmlman5/slapd-ldap.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-ldap</span>(5)</span></a> directives
+      appearing before the first occurrence of <em class="replaceable"><code>chain−uri</code></em> are inherited
+      by all URIs, unless specifically overridden inside each URI
+      configuration.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-chain-5_sect2" name="slapo-chain-5_sect2" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">ETCDIR/slapd.conf</span></dt>
+
+          <dd>
+            <p>default slapd configuration file</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-chain-5_sect3" name="slapo-chain-5_sect3" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a>, <a class="link" href="../htmlman5/slapd-config.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-config</span>(5)</span></a>, <a class="link" href="../htmlman5/slapd-ldap.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-ldap</span>(5)</span></a>, <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapo-chain-5_sect4" name="slapo-chain-5_sect4" shape="rect"> </a>
+
+      <h2>AUTHOR</h2>
+
+      <p>Originally implemented by Howard Chu; extended by
+      Pierangelo Masarati.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                  See the following documents: <a class="ulink" href="../openldap-COPYRIGHT.html" target="_top" shape="rect">COPYRIGHT</a>, <a class="ulink" href="../openldap-LICENSE.html" target="_top" shape="rect">LICENSE</a><br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

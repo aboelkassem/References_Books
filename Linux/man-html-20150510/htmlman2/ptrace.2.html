@@ -1,0 +1,2075 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>ptrace(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="ptrace(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="ptrace.2" name="ptrace.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>ptrace — process trace</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;sys/ptrace.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">long
+            <strong>ptrace</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">enum __ptrace_request <var class="pdparam">request</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">pid_t <var class="pdparam">pid</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">void *<var class="pdparam">addr</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">void *<var class="pdparam">data</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ptrace-2_sect1" name="ptrace-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">ptrace</code>() system call
+      provides a means by which one process (the "tracer") may
+      observe and control the execution of another process (the
+      "tracee"), and examine and change the tracee's memory and
+      registers. It is primarily used to implement breakpoint
+      debugging and system call tracing.</p>
+
+      <p>A tracee first needs to be attached to the tracer.
+      Attachment and subsequent commands are per thread: in a
+      multithreaded process, every thread can be individually
+      attached to a (potentially different) tracer, or left not
+      attached and thus not debugged. Therefore, "tracee" always
+      means "(one) thread", never "a (possibly multithreaded)
+      process". Ptrace commands are always sent to a specific
+      tracee using a call of the form</p>
+
+      <p>ptrace(PTRACE_foo, pid, ...)</p>
+
+      <p>where <em class="parameter"><code>pid</code></em> is the
+      thread ID of the corresponding Linux thread.</p>
+
+      <p>(Note that in this page, a "multithreaded process" means a
+      thread group consisting of threads created using the
+      <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> <code class="constant">CLONE_THREAD</code> flag.)</p>
+
+      <p>A process can initiate a trace by calling <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> and having the
+      resulting child do a <code class="constant">PTRACE_TRACEME</code>, followed (typically) by an
+      <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>. Alternatively,
+      one process may commence tracing another process using
+      <code class="constant">PTRACE_ATTACH</code> or <code class="constant">PTRACE_SEIZE</code>.</p>
+
+      <p>While being traced, the tracee will stop each time a
+      signal is delivered, even if the signal is being ignored. (An
+      exception is <code class="constant">SIGKILL</code>, which has
+      its usual effect.) The tracer will be notified at its next
+      call to <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a> (or one of the
+      related "wait" system calls); that call will return a
+      <em class="replaceable"><code>status</code></em> value
+      containing information that indicates the cause of the stop
+      in the tracee. While the tracee is stopped, the tracer can
+      use various ptrace requests to inspect and modify the tracee.
+      The tracer then causes the tracee to continue, optionally
+      ignoring the delivered signal (or even delivering a different
+      signal instead).</p>
+
+      <p>If the <code class="constant">PTRACE_O_TRACEEXEC</code>
+      option is not in effect, all successful calls to <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a> by the traced
+      process will cause it to be sent a <code class="constant">SIGTRAP</code> signal, giving the parent a chance
+      to gain control before the new program begins execution.</p>
+
+      <p>When the tracer is finished tracing, it can cause the
+      tracee to continue executing in a normal, untraced mode via
+      <code class="constant">PTRACE_DETACH</code>.</p>
+
+      <p>The value of <em class="parameter"><code>request</code></em> determines the action
+      to be performed:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">PTRACE_TRACEME</code></span></dt>
+
+          <dd>
+            <p>Indicate that this process is to be traced by its
+            parent. A process probably shouldn't make this request
+            if its parent isn't expecting to trace it. (<em class="parameter"><code>pid</code></em>, <em class="parameter"><code>addr</code></em>, and <em class="parameter"><code>data</code></em> are ignored.)</p>
+
+            <p>The <code class="constant">PTRACE_TRACEME</code>
+            request is used only by the tracee; the remaining
+            requests are used only by the tracer. In the following
+            requests, <em class="parameter"><code>pid</code></em>
+            specifies the thread ID of the tracee to be acted on.
+            For requests other than <code class="constant">PTRACE_ATTACH</code>, <code class="constant">PTRACE_SEIZE</code>, <code class="constant">PTRACE_INTERRUPT</code>, and <code class="constant">PTRACE_KILL</code>, the tracee must be
+            stopped.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PTRACE_PEEKTEXT</code>, <code class="constant">PTRACE_PEEKDATA</code></span></dt>
+
+          <dd>
+            <p>Read a word at the address <em class="parameter"><code>addr</code></em> in the tracee's
+            memory, returning the word as the result of the
+            <code class="function">ptrace</code>() call. Linux does
+            not have separate text and data address spaces, so
+            these two requests are currently equivalent.
+            (<em class="parameter"><code>data</code></em> is
+            ignored; but see NOTES.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PTRACE_PEEKUSER</code></span></dt>
+
+          <dd>
+            <p>Read a word at offset <em class="parameter"><code>addr</code></em> in the tracee's USER
+            area, which holds the registers and other information
+            about the process (see <code class="literal">&lt;</code><code class="filename">sys/user.h</code><code class="literal">&gt;</code> The word is returned as the
+            result of the <code class="function">ptrace</code>()
+            call. Typically, the offset must be word-aligned,
+            though this might vary by architecture. See NOTES.
+            (<em class="parameter"><code>data</code></em> is
+            ignored; but see NOTES.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PTRACE_POKETEXT</code>, <code class="constant">PTRACE_POKEDATA</code></span></dt>
+
+          <dd>
+            <p>Copy the word <em class="parameter"><code>data</code></em> to the address
+            <em class="parameter"><code>addr</code></em> in the
+            tracee's memory. As for <code class="constant">PTRACE_PEEKTEXT</code> and <code class="constant">PTRACE_PEEKDATA</code>, these two requests
+            are currently equivalent.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PTRACE_POKEUSER</code></span></dt>
+
+          <dd>
+            <p>Copy the word <em class="parameter"><code>data</code></em> to offset <em class="parameter"><code>addr</code></em> in the tracee's USER
+            area. As for <code class="constant">PTRACE_PEEKUSER</code>, the offset must
+            typically be word-aligned. In order to maintain the
+            integrity of the kernel, some modifications to the USER
+            area are disallowed.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PTRACE_GETREGS</code>, <code class="constant">PTRACE_GETFPREGS</code></span></dt>
+
+          <dd>
+            <p>Copy the tracee's general-purpose or floating-point
+            registers, respectively, to the address <em class="parameter"><code>data</code></em> in the tracer. See
+            <code class="literal">&lt;</code><code class="filename">sys/user.h</code><code class="literal">&gt;</code> for information on the format of
+            this data. (<em class="parameter"><code>addr</code></em> is ignored.) Note
+            that SPARC systems have the meaning of <em class="parameter"><code>data</code></em> and <em class="parameter"><code>addr</code></em> reversed; that is,
+            <em class="parameter"><code>data</code></em> is ignored
+            and the registers are copied to the address <em class="parameter"><code>addr</code></em>. <code class="constant">PTRACE_GETREGS</code> and <code class="constant">PTRACE_GETFPREGS</code> are not present on
+            all architectures.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PTRACE_GETREGSET</code> (since Linux
+          2.6.34)</span></dt>
+
+          <dd>
+            <p>Read the tracee's registers. <em class="parameter"><code>addr</code></em> specifies, in an
+            architecture-dependent way, the type of registers to be
+            read. <code class="constant">NT_PRSTATUS</code> (with
+            numerical value 1) usually results in reading of
+            general-purpose registers. If the CPU has, for example,
+            floating-point and/or vector registers, they can be
+            retrieved by setting <em class="parameter"><code>addr</code></em> to the corresponding
+            <em class="replaceable"><code>NT_foo</code></em>
+            constant. <em class="parameter"><code>data</code></em>
+            points to a <span class="emphasis"><em>struct
+            iovec</em></span>, which describes the destination
+            buffer's location and length. On return, the kernel
+            modifies <em class="replaceable"><code>iov.len</code></em> to indicate the
+            actual number of bytes returned.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PTRACE_SETREGS</code>, <code class="constant">PTRACE_SETFPREGS</code></span></dt>
+
+          <dd>
+            <p>Modify the tracee's general-purpose or
+            floating-point registers, respectively, from the
+            address <em class="parameter"><code>data</code></em> in
+            the tracer. As for <code class="constant">PTRACE_POKEUSER</code>, some general-purpose
+            register modifications may be disallowed. (<em class="parameter"><code>addr</code></em> is ignored.) Note
+            that SPARC systems have the meaning of <em class="parameter"><code>data</code></em> and <em class="parameter"><code>addr</code></em> reversed; that is,
+            <em class="parameter"><code>data</code></em> is ignored
+            and the registers are copied from the address
+            <em class="parameter"><code>addr</code></em>.
+            <code class="constant">PTRACE_SETREGS</code> and
+            <code class="constant">PTRACE_SETFPREGS</code> are not
+            present on all architectures.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PTRACE_SETREGSET</code> (since Linux
+          2.6.34)</span></dt>
+
+          <dd>
+            <p>Modify the tracee's registers. The meaning of
+            <em class="parameter"><code>addr</code></em> and
+            <em class="parameter"><code>data</code></em> is
+            analogous to <code class="constant">PTRACE_GETREGSET</code>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PTRACE_GETSIGINFO</code> (since Linux
+          2.3.99-pre6)</span></dt>
+
+          <dd>
+            <p>Retrieve information about the signal that caused
+            the stop. Copy a <span class="type">siginfo_t</span>
+            structure (see <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a>) from
+            the tracee to the address <em class="parameter"><code>data</code></em> in the tracer.
+            (<em class="parameter"><code>addr</code></em> is
+            ignored.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PTRACE_SETSIGINFO</code> (since Linux
+          2.3.99-pre6)</span></dt>
+
+          <dd>
+            <p>Set signal information: copy a <span class="type">siginfo_t</span> structure from the address
+            <em class="parameter"><code>data</code></em> in the
+            tracer to the tracee. This will affect only signals
+            that would normally be delivered to the tracee and were
+            caught by the tracer. It may be difficult to tell these
+            normal signals from synthetic signals generated by
+            <code class="function">ptrace</code>() itself.
+            (<em class="parameter"><code>addr</code></em> is
+            ignored.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PTRACE_PEEKSIGINFO</code> (since Linux
+          3.10)</span></dt>
+
+          <dd>
+            <p>Retrieve <span class="type">siginfo_t</span>
+            structures without removing signals from a queue.
+            <em class="parameter"><code>addr</code></em> points to
+            a <em class="replaceable"><code>ptrace_peeksiginfo_args</code></em>
+            structure that specifies the ordinal position from
+            which copying of signals should start, and the number
+            of signals to copy. <span class="type">siginfo_t</span>
+            structures are copied into the buffer pointed to by
+            <em class="parameter"><code>data</code></em>. The
+            return value contains the number of copied signals
+            (zero indicates that there is no signal corresponding
+            to the specified ordinal position). Within the returned
+            <em class="replaceable"><code>siginfo</code></em>
+            structures, the <em class="replaceable"><code>si_code</code></em> field includes
+            information (<code class="constant">__SI_CHLD</code>,
+            <code class="constant">__SI_FAULT</code>, etc.) that
+            are not otherwise exposed to user space.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="structdef">
+            <table style="border-collapse: collapse;">
+              <colgroup span="1">
+                <col class="c1" span="1" />
+                <col class="c2" span="1" />
+                <col class="c3" span="1" />
+                <col class="c4" span="1" />
+                <col class="c5" span="1" />
+              </colgroup>
+
+              <tbody>
+                <tr>
+                  <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                  struct</td>
+
+                  <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">ptrace_peeksiginfo_args</span> {</td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">u64</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>off</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      
+                      /* Ordinal position in queue at which<br />
+
+                      to start copying signals */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">u32</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>flags</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      
+                      /* PTRACE_PEEKSIGINFO_SHARED or 0 */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">s32</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>nr</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      
+                      /* Number of signals to copy */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p>Currently, there is only one flag, <code class="constant">PTRACE_PEEKSIGINFO_SHARED</code>, for dumping
+          signals from the process-wide signal queue. If this flag
+          is not set, signals are read from the per-thread queue of
+          the specified thread.</p>
+        </blockquote>
+      </div>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">PTRACE_GETSIGMASK</code> (since Linux
+          3.11)</span></dt>
+
+          <dd>
+            <p>Place a copy of the mask of blocked signals (see
+            <a class="link" href="../htmlman2/sigprocmask.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigprocmask</span>(2)</span></a>) in
+            the buffer pointed to by <em class="parameter"><code>data</code></em>, which should be a
+            pointer to a buffer of type <span class="type">sigset_t</span>. The <em class="parameter"><code>addr</code></em> argument contains
+            the size of the buffer pointed to by <em class="parameter"><code>data</code></em> (i.e., <em class="replaceable"><code>sizeof(sigset_t)</code></em>).</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PTRACE_SETSIGMASK</code> (since Linux
+          3.11)</span></dt>
+
+          <dd>
+            <p>Change the mask of blocked signals (see <a class="link" href="../htmlman2/sigprocmask.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigprocmask</span>(2)</span></a>) to
+            the value specified in the buffer pointed to by
+            <em class="parameter"><code>data</code></em>, which
+            should be a pointer to a buffer of type <span class="type">sigset_t</span>. The <em class="parameter"><code>addr</code></em> argument contains
+            the size of the buffer pointed to by <em class="parameter"><code>data</code></em> (i.e., <em class="replaceable"><code>sizeof(sigset_t)</code></em>).</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PTRACE_SETOPTIONS</code> (since Linux 2.4.6;
+          see BUGS for caveats)</span></dt>
+
+          <dd>
+            <p>Set ptrace options from <em class="parameter"><code>data</code></em>. (<em class="parameter"><code>addr</code></em> is ignored.)
+            <em class="parameter"><code>data</code></em> is
+            interpreted as a bit mask of options, which are
+            specified by the following flags:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><code class="constant">PTRACE_O_EXITKILL</code> (since
+                    Linux 3.8)</span></dt>
+
+                    <dd>
+                      <p>If a tracer sets this flag, a <code class="constant">SIGKILL</code> signal will be sent
+                      to every tracee if the tracer exits. This
+                      option is useful for ptrace jailers that want
+                      to ensure that tracees can never escape the
+                      tracer's control.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">PTRACE_O_TRACECLONE</code> (since
+                    Linux 2.5.46)</span></dt>
+
+                    <dd>
+                      <p>Stop the tracee at the next <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a>
+                      and automatically start tracing the newly
+                      cloned process, which will start with a
+                      <code class="constant">SIGSTOP</code>, or
+                      <code class="constant">PTRACE_EVENT_STOP</code> if
+                      <code class="constant">PTRACE_SEIZE</code>
+                      was used. A <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a>
+                      by the tracer will return a <em class="replaceable"><code>status</code></em> value
+                      such that</p>
+
+                      <div class="informalexample">
+                        <pre class="programlisting" xml:space="preserve">
+  status&gt;&gt;8 == (SIGTRAP | (PTRACE_EVENT_CLONE&lt;&lt;8))
+</pre>
+                      </div>
+
+                      <p>The PID of the new process can be
+                      retrieved with <code class="constant">PTRACE_GETEVENTMSG</code>.</p>
+
+                      <p>This option may not catch <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a>
+                      calls in all cases. If the tracee calls
+                      <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a>
+                      with the <code class="constant">CLONE_VFORK</code> flag,
+                      <code class="constant">PTRACE_EVENT_VFORK</code> will be
+                      delivered instead if <code class="constant">PTRACE_O_TRACEVFORK</code> is set;
+                      otherwise if the tracee calls <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a>
+                      with the exit signal set to <code class="constant">SIGCHLD</code>, <code class="constant">PTRACE_EVENT_FORK</code> will be
+                      delivered if <code class="constant">PTRACE_O_TRACEFORK</code> is
+                      set.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">PTRACE_O_TRACEEXEC</code> (since
+                    Linux 2.5.46)</span></dt>
+
+                    <dd>
+                      <p>Stop the tracee at the next <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>.
+                      A <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a>
+                      by the tracer will return a <em class="replaceable"><code>status</code></em> value
+                      such that</p>
+
+                      <div class="informalexample">
+                        <pre class="programlisting" xml:space="preserve">
+  status&gt;&gt;8 == (SIGTRAP | (PTRACE_EVENT_EXEC&lt;&lt;8))
+</pre>
+                      </div>
+
+                      <p>If the execing thread is not a thread
+                      group leader, the thread ID is reset to
+                      thread group leader's ID before this stop.
+                      Since Linux 3.0, the former thread ID can be
+                      retrieved with <code class="constant">PTRACE_GETEVENTMSG</code>.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">PTRACE_O_TRACEEXIT</code> (since
+                    Linux 2.5.60)</span></dt>
+
+                    <dd>
+                      <p>Stop the tracee at exit. A <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a>
+                      by the tracer will return a <em class="replaceable"><code>status</code></em> value
+                      such that</p>
+
+                      <div class="informalexample">
+                        <pre class="programlisting" xml:space="preserve">
+  status&gt;&gt;8 == (SIGTRAP | (PTRACE_EVENT_EXIT&lt;&lt;8))
+</pre>
+                      </div>
+
+                      <p>The tracee's exit status can be retrieved
+                      with <code class="constant">PTRACE_GETEVENTMSG</code>.</p>
+
+                      <p>The tracee is stopped early during process
+                      exit, when registers are still available,
+                      allowing the tracer to see where the exit
+                      occurred, whereas the normal exit
+                      notification is done after the process is
+                      finished exiting. Even though context is
+                      available, the tracer cannot prevent the exit
+                      from happening at this point.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">PTRACE_O_TRACEFORK</code> (since
+                    Linux 2.5.46)</span></dt>
+
+                    <dd>
+                      <p>Stop the tracee at the next <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a>
+                      and automatically start tracing the newly
+                      forked process, which will start with a
+                      <code class="constant">SIGSTOP</code>, or
+                      <code class="constant">PTRACE_EVENT_STOP</code> if
+                      <code class="constant">PTRACE_SEIZE</code>
+                      was used. A <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a>
+                      by the tracer will return a <em class="replaceable"><code>status</code></em> value
+                      such that</p>
+
+                      <div class="informalexample">
+                        <pre class="programlisting" xml:space="preserve">
+  status&gt;&gt;8 == (SIGTRAP | (PTRACE_EVENT_FORK&lt;&lt;8))
+</pre>
+                      </div>
+
+                      <p>The PID of the new process can be
+                      retrieved with <code class="constant">PTRACE_GETEVENTMSG</code>.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">PTRACE_O_TRACESYSGOOD</code> (since
+                    Linux 2.4.6)</span></dt>
+
+                    <dd>
+                      <p>When delivering system call traps, set bit
+                      7 in the signal number (i.e., deliver
+                      <em class="replaceable"><code>SIGTRAP|0x80</code></em>).
+                      This makes it easy for the tracer to
+                      distinguish normal traps from those caused by
+                      a system call. (<code class="constant">PTRACE_O_TRACESYSGOOD</code> may
+                      not work on all architectures.)</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">PTRACE_O_TRACEVFORK</code> (since
+                    Linux 2.5.46)</span></dt>
+
+                    <dd>
+                      <p>Stop the tracee at the next <a class="link" href="../htmlman2/vfork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">vfork</span>(2)</span></a>
+                      and automatically start tracing the newly
+                      vforked process, which will start with a
+                      <code class="constant">SIGSTOP</code>, or
+                      <code class="constant">PTRACE_EVENT_STOP</code> if
+                      <code class="constant">PTRACE_SEIZE</code>
+                      was used. A <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a>
+                      by the tracer will return a <em class="replaceable"><code>status</code></em> value
+                      such that</p>
+
+                      <div class="informalexample">
+                        <pre class="programlisting" xml:space="preserve">
+  status&gt;&gt;8 == (SIGTRAP | (PTRACE_EVENT_VFORK&lt;&lt;8))
+</pre>
+                      </div>
+
+                      <p>The PID of the new process can be
+                      retrieved with <code class="constant">PTRACE_GETEVENTMSG</code>.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">PTRACE_O_TRACEVFORKDONE</code>
+                    (since Linux 2.5.60)</span></dt>
+
+                    <dd>
+                      <p>Stop the tracee at the completion of the
+                      next <a class="link" href="../htmlman2/vfork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">vfork</span>(2)</span></a>.
+                      A <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a>
+                      by the tracer will return a <em class="replaceable"><code>status</code></em> value
+                      such that</p>
+
+                      <div class="informalexample">
+                        <pre class="programlisting" xml:space="preserve">
+  status&gt;&gt;8 == (SIGTRAP | (PTRACE_EVENT_VFORK_DONE&lt;&lt;8))
+</pre>
+                      </div>
+
+                      <p>The PID of the new process can (since
+                      Linux 2.6.18) be retrieved with <code class="constant">PTRACE_GETEVENTMSG</code>.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">PTRACE_O_TRACESECCOMP</code> (since
+                    Linux 3.5)</span></dt>
+
+                    <dd>
+                      <p>Stop the tracee when a <a class="link" href="../htmlman2/seccomp.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">seccomp</span>(2)</span></a>
+                      <code class="constant">SECCOMP_RET_TRACE</code> rule is
+                      triggered. A <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a>
+                      by the tracer will return a <em class="replaceable"><code>status</code></em> value
+                      such that</p>
+
+                      <div class="informalexample">
+                        <pre class="programlisting" xml:space="preserve">
+  status&gt;&gt;8 == (SIGTRAP | (PTRACE_EVENT_SECCOMP&lt;&lt;8))
+</pre>
+                      </div>
+
+                      <p>While this triggers a <code class="constant">PTRACE_EVENT</code> stop, it is
+                      similar to a syscall-enter-stop, in that the
+                      tracee has not yet entered the syscall that
+                      seccomp triggered on. The seccomp event
+                      message data (from the <code class="constant">SECCOMP_RET_DATA</code> portion of
+                      the seccomp filter rule) can be retrieved
+                      with <code class="constant">PTRACE_GETEVENTMSG</code>.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PTRACE_GETEVENTMSG</code> (since Linux
+          2.5.46)</span></dt>
+
+          <dd>
+            <p>Retrieve a message (as an <span class="type">unsigned long</span>) about the ptrace event
+            that just happened, placing it at the address
+            <em class="parameter"><code>data</code></em> in the
+            tracer. For <code class="constant">PTRACE_EVENT_EXIT</code>, this is the
+            tracee's exit status. For <code class="constant">PTRACE_EVENT_FORK</code>, <code class="constant">PTRACE_EVENT_VFORK</code>, <code class="constant">PTRACE_EVENT_VFORK_DONE</code>, and
+            <code class="constant">PTRACE_EVENT_CLONE</code>, this
+            is the PID of the new process. For <code class="constant">PTRACE_EVENT_SECCOMP</code>, this is the
+            <a class="link" href="../htmlman2/seccomp.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">seccomp</span>(2)</span></a> filter's
+            <code class="constant">SECCOMP_RET_DATA</code>
+            associated with the triggered rule. (<em class="parameter"><code>addr</code></em> is ignored.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PTRACE_CONT</code></span></dt>
+
+          <dd>
+            <p>Restart the stopped tracee process. If <em class="parameter"><code>data</code></em> is nonzero, it is
+            interpreted as the number of a signal to be delivered
+            to the tracee; otherwise, no signal is delivered. Thus,
+            for example, the tracer can control whether a signal
+            sent to the tracee is delivered or not. (<em class="parameter"><code>addr</code></em> is ignored.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PTRACE_SYSCALL</code>, <code class="constant">PTRACE_SINGLESTEP</code></span></dt>
+
+          <dd>
+            <p>Restart the stopped tracee as for <code class="constant">PTRACE_CONT</code>, but arrange for the
+            tracee to be stopped at the next entry to or exit from
+            a system call, or after execution of a single
+            instruction, respectively. (The tracee will also, as
+            usual, be stopped upon receipt of a signal.) From the
+            tracer's perspective, the tracee will appear to have
+            been stopped by receipt of a <code class="constant">SIGTRAP</code>. So, for <code class="constant">PTRACE_SYSCALL</code>, for example, the idea
+            is to inspect the arguments to the system call at the
+            first stop, then do another <code class="constant">PTRACE_SYSCALL</code> and inspect the return
+            value of the system call at the second stop. The
+            <em class="parameter"><code>data</code></em> argument
+            is treated as for <code class="constant">PTRACE_CONT</code>. (<em class="parameter"><code>addr</code></em> is ignored.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PTRACE_SYSEMU</code>, <code class="constant">PTRACE_SYSEMU_SINGLESTEP</code> (since Linux
+          2.6.14)</span></dt>
+
+          <dd>
+            <p>For <code class="constant">PTRACE_SYSEMU</code>,
+            continue and stop on entry to the next system call,
+            which will not be executed. For <code class="constant">PTRACE_SYSEMU_SINGLESTEP</code>, do the same
+            but also singlestep if not a system call. This call is
+            used by programs like User Mode Linux that want to
+            emulate all the tracee's system calls. The <em class="parameter"><code>data</code></em> argument is treated
+            as for <code class="constant">PTRACE_CONT</code>. The
+            <em class="parameter"><code>addr</code></em> argument
+            is ignored. These requests are currently supported only
+            on x86.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PTRACE_LISTEN</code> (since Linux
+          3.4)</span></dt>
+
+          <dd>
+            <p>Restart the stopped tracee, but prevent it from
+            executing. The resulting state of the tracee is similar
+            to a process which has been stopped by a <code class="constant">SIGSTOP</code> (or other stopping signal).
+            See the "group-stop" subsection for additional
+            information. <code class="constant">PTRACE_LISTEN</code> works only on tracees
+            attached by <code class="constant">PTRACE_SEIZE</code>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PTRACE_KILL</code></span></dt>
+
+          <dd>
+            <p>Send the tracee a <code class="constant">SIGKILL</code> to terminate it. (<em class="parameter"><code>addr</code></em> and <em class="parameter"><code>data</code></em> are ignored.)</p>
+
+            <p><span class="emphasis"><em>This operation is
+            deprecated; do not use it!</em></span> Instead, send a
+            <code class="constant">SIGKILL</code> directly using
+            <a class="link" href="../htmlman2/kill.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">kill</span>(2)</span></a> or <a class="link" href="../htmlman2/tkill.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tgkill</span>(2)</span></a>. The
+            problem with <code class="constant">PTRACE_KILL</code>
+            is that it requires the tracee to be in
+            signal-delivery-stop, otherwise it may not work (i.e.,
+            may complete successfully but won't kill the tracee).
+            By contrast, sending a <code class="constant">SIGKILL</code> directly has no such
+            limitation.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PTRACE_INTERRUPT</code> (since Linux
+          3.4)</span></dt>
+
+          <dd>
+            <p>Stop a tracee. If the tracee is running or sleeping
+            in kernel space and <code class="constant">PTRACE_SYSCALL</code> is in effect, the
+            system call is interrupted and syscall-exit-stop is
+            reported. (The interrupted system call is restarted
+            when the tracee is restarted.) If the tracee was
+            already stopped by a signal and <code class="constant">PTRACE_LISTEN</code> was sent to it, the
+            tracee stops with <code class="constant">PTRACE_EVENT_STOP</code> and <em class="replaceable"><code>WSTOPSIG(status)</code></em>
+            returns the stop signal. If any other ptrace-stop is
+            generated at the same time (for example, if a signal is
+            sent to the tracee), this ptrace-stop happens. If none
+            of the above applies (for example, if the tracee is
+            running in user space), it stops with <code class="constant">PTRACE_EVENT_STOP</code> with <em class="replaceable"><code>WSTOPSIG(status)</code></em> ==
+            <code class="constant">SIGTRAP</code>. <code class="constant">PTRACE_INTERRUPT</code> only works on
+            tracees attached by <code class="constant">PTRACE_SEIZE</code>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PTRACE_ATTACH</code></span></dt>
+
+          <dd>
+            <p>Attach to the process specified in <em class="parameter"><code>pid</code></em>, making it a tracee
+            of the calling process. The tracee is sent a
+            <code class="constant">SIGSTOP</code>, but will not
+            necessarily have stopped by the completion of this
+            call; use <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a> to wait
+            for the tracee to stop. See the "Attaching and
+            detaching" subsection for additional information.
+            (<em class="parameter"><code>addr</code></em> and
+            <em class="parameter"><code>data</code></em> are
+            ignored.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PTRACE_SEIZE</code> (since Linux
+          3.4)</span></dt>
+
+          <dd>
+            <p>Attach to the process specified in <em class="parameter"><code>pid</code></em>, making it a tracee
+            of the calling process. Unlike <code class="constant">PTRACE_ATTACH</code>, <code class="constant">PTRACE_SEIZE</code> does not stop the
+            process. Group-stops are reported as <code class="constant">PTRACE_EVENT_STOP</code> and <em class="replaceable"><code>WSTOPSIG(status)</code></em>
+            returns the stop signal. Automatically attached
+            children stop with <code class="constant">PTRACE_EVENT_STOP</code> and <em class="replaceable"><code>WSTOPSIG(status)</code></em>
+            returns <code class="constant">SIGTRAP</code> instead
+            of having <code class="constant">SIGSTOP</code> signal
+            delivered to them. <span class="citerefentry"><span class="refentrytitle">evecve</span>(2)</span> does not
+            deliver an extra <code class="constant">SIGTRAP</code>.
+            Only a <code class="constant">PTRACE_SEIZE</code>d
+            process can accept <code class="constant">PTRACE_INTERRUPT</code> and <code class="constant">PTRACE_LISTEN</code> commands. The "seized"
+            behavior just described is inherited by children that
+            are automatically attached using <code class="constant">PTRACE_O_TRACEFORK</code>, <code class="constant">PTRACE_O_TRACEVFORK</code>, and <code class="constant">PTRACE_O_TRACECLONE</code>. <em class="parameter"><code>addr</code></em> must be zero.
+            <em class="parameter"><code>data</code></em> contains a
+            bit mask of ptrace options to activate immediately.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">PTRACE_DETACH</code></span></dt>
+
+          <dd>
+            <p>Restart the stopped tracee as for <code class="constant">PTRACE_CONT</code>, but first detach from
+            it. Under Linux, a tracee can be detached in this way
+            regardless of which method was used to initiate
+            tracing. (<em class="parameter"><code>addr</code></em>
+            is ignored.)</p>
+          </dd>
+        </dl>
+      </div>
+
+      <div class="refsect2">
+        <a id="ptrace-2_sect2" name="ptrace-2_sect2" shape="rect"> </a>
+
+        <h3>Death under ptrace</h3>
+
+        <p>When a (possibly multithreaded) process receives a
+        killing signal (one whose disposition is set to
+        <code class="constant">SIG_DFL</code> and whose default
+        action is to kill the process), all threads exit. Tracees
+        report their death to their tracer(s). Notification of this
+        event is delivered via <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a>.</p>
+
+        <p>Note that the killing signal will first cause
+        signal-delivery-stop (on one tracee only), and only after
+        it is injected by the tracer (or after it was dispatched to
+        a thread which isn't traced), will death from the signal
+        happen on <em class="replaceable"><code>all</code></em>
+        tracees within a multithreaded process. (The term
+        "signal-delivery-stop" is explained below.)</p>
+
+        <p><code class="constant">SIGKILL</code> does not generate
+        signal-delivery-stop and therefore the tracer can't
+        suppress it. <code class="constant">SIGKILL</code> kills
+        even within system calls (syscall-exit-stop is not
+        generated prior to death by <code class="constant">SIGKILL</code>). The net effect is that
+        <code class="constant">SIGKILL</code> always kills the
+        process (all its threads), even if some threads of the
+        process are ptraced.</p>
+
+        <p>When the tracee calls <a class="link" href="../htmlman2/_exit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">_exit</span>(2)</span></a>, it reports its
+        death to its tracer. Other threads are not affected.</p>
+
+        <p>When any thread executes <a class="link" href="../htmlman2/exit_group.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">exit_group</span>(2)</span></a>, every
+        tracee in its thread group reports its death to its
+        tracer.</p>
+
+        <p>If the <code class="constant">PTRACE_O_TRACEEXIT</code>
+        option is on, <code class="constant">PTRACE_EVENT_EXIT</code> will happen before
+        actual death. This applies to exits via <a class="link" href="../htmlman2/_exit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">exit</span>(2)</span></a>, <a class="link" href="../htmlman2/exit_group.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">exit_group</span>(2)</span></a>, and signal
+        deaths (except <code class="constant">SIGKILL</code>), and
+        when threads are torn down on <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a> in a
+        multithreaded process.</p>
+
+        <p>The tracer cannot assume that the ptrace-stopped tracee
+        exists. There are many scenarios when the tracee may die
+        while stopped (such as <code class="constant">SIGKILL</code>). Therefore, the tracer must be
+        prepared to handle an <span class="errorname">ESRCH</span>
+        error on any ptrace operation. Unfortunately, the same
+        error is returned if the tracee exists but is not
+        ptrace-stopped (for commands which require a stopped
+        tracee), or if it is not traced by the process which issued
+        the ptrace call. The tracer needs to keep track of the
+        stopped/running state of the tracee, and interpret
+        <span class="errorname">ESRCH</span> as "tracee died
+        unexpectedly" only if it knows that the tracee has been
+        observed to enter ptrace-stop. Note that there is no
+        guarantee that <em class="replaceable"><code>waitpid(WNOHANG)</code></em> will
+        reliably report the tracee's death status if a ptrace
+        operation returned <span class="errorname">ESRCH</span>.
+        <em class="replaceable"><code>waitpid(WNOHANG)</code></em>
+        may return 0 instead. In other words, the tracee may be
+        "not yet fully dead", but already refusing ptrace
+        requests.</p>
+
+        <p>The tracer can't assume that the tracee <em class="replaceable"><code>always</code></em> ends its life by
+        reporting <em class="replaceable"><code>WIFEXITED(status)</code></em> or
+        <em class="replaceable"><code>WIFSIGNALED(status)</code></em>; there
+        are cases where this does not occur. For example, if a
+        thread other than thread group leader does an <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>, it disappears;
+        its PID will never be seen again, and any subsequent ptrace
+        stops will be reported under the thread group leader's
+        PID.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="ptrace-2_sect3" name="ptrace-2_sect3" shape="rect"> </a>
+
+        <h3>Stopped states</h3>
+
+        <p>A tracee can be in two states: running or stopped. For
+        the purposes of ptrace, a tracee which is blocked in a
+        system call (such as <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>, <a class="link" href="../htmlman2/pause.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pause</span>(2)</span></a>, etc.) is
+        nevertheless considered to be running, even if the tracee
+        is blocked for a long time. The state of the tracee after
+        <code class="constant">PTRACE_LISTEN</code> is somewhat of
+        a gray area: it is not in any ptrace-stop (ptrace commands
+        won't work on it, and it will deliver <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a>
+        notifications), but it also may be considered "stopped"
+        because it is not executing instructions (is not
+        scheduled), and if it was in group-stop before <code class="constant">PTRACE_LISTEN</code>, it will not respond to
+        signals until <code class="constant">SIGCONT</code> is
+        received.</p>
+
+        <p>There are many kinds of states when the tracee is
+        stopped, and in ptrace discussions they are often
+        conflated. Therefore, it is important to use precise
+        terms.</p>
+
+        <p>In this manual page, any stopped state in which the
+        tracee is ready to accept ptrace commands from the tracer
+        is called <em class="replaceable"><code>ptrace-stop</code></em>. Ptrace-stops
+        can be further subdivided into <em class="replaceable"><code>signal-delivery-stop</code></em>,
+        <em class="replaceable"><code>group-stop</code></em>,
+        <em class="replaceable"><code>syscall-stop</code></em>, and
+        so on. These stopped states are described in detail
+        below.</p>
+
+        <p>When the running tracee enters ptrace-stop, it notifies
+        its tracer using <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a> (or one of the
+        other "wait" system calls). Most of this manual page
+        assumes that the tracer waits with:</p>
+
+        <p>pid = waitpid(pid_or_minus_1, &amp;status, __WALL);</p>
+
+        <p>Ptrace-stopped tracees are reported as returns with
+        <em class="parameter"><code>pid</code></em> greater than 0
+        and <em class="replaceable"><code>WIFSTOPPED(status)</code></em>
+        true.</p>
+
+        <p>The <code class="constant">__WALL</code> flag does not
+        include the <code class="constant">WSTOPPED</code> and
+        <code class="constant">WEXITED</code> flags, but implies
+        their functionality.</p>
+
+        <p>Setting the <code class="constant">WCONTINUED</code>
+        flag when calling <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a> is not
+        recommended: the "continued" state is per-process and
+        consuming it can confuse the real parent of the tracee.</p>
+
+        <p>Use of the <code class="constant">WNOHANG</code> flag
+        may cause <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a> to return 0
+        ("no wait results available yet") even if the tracer knows
+        there should be a notification. Example:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+    errno = 0;
+    ptrace(PTRACE_CONT, pid, 0L, 0L);
+    if (errno == ESRCH) {
+        /* tracee is dead */
+        r = waitpid(tracee, &amp;status, __WALL | WNOHANG);
+        /* r can still be 0 here! */
+    }
+</pre>
+        </div>
+
+        <p>The following kinds of ptrace-stops exist:
+        signal-delivery-stops, group-stops, <code class="constant">PTRACE_EVENT</code> stops, syscall-stops. They
+        all are reported by <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a> with
+        <em class="replaceable"><code>WIFSTOPPED(status)</code></em>
+        true. They may be differentiated by examining the value
+        <em class="replaceable"><code>status&gt;&gt;8</code></em>,
+        and if there is ambiguity in that value, by querying
+        <code class="constant">PTRACE_GETSIGINFO</code>.</p>
+
+        <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+          <table border="0" summary="Note">
+            <tr>
+              <td rowspan="2" align="center" valign="top" width="25" colspan="1"><img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+              <th align="left" rowspan="1" colspan="1">Note</th>
+            </tr>
+
+            <tr>
+              <td align="left" valign="top" rowspan="1" colspan="1">
+                <p>The <em class="replaceable"><code>WSTOPSIG(status)</code></em>
+                macro can't be used to perform this examination,
+                because it returns the value <span class="emphasis"><em>(status&gt;&gt;8) &amp;
+                0xff</em></span>.</p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="ptrace-2_sect4" name="ptrace-2_sect4" shape="rect"> </a>
+
+        <h3>Signal-delivery-stop</h3>
+
+        <p>When a (possibly multithreaded) process receives any
+        signal except <code class="constant">SIGKILL</code>, the
+        kernel selects an arbitrary thread which handles the
+        signal. (If the signal is generated with <a class="link" href="../htmlman2/tkill.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tgkill</span>(2)</span></a>, the target
+        thread can be explicitly selected by the caller.) If the
+        selected thread is traced, it enters signal-delivery-stop.
+        At this point, the signal is not yet delivered to the
+        process, and can be suppressed by the tracer. If the tracer
+        doesn't suppress the signal, it passes the signal to the
+        tracee in the next ptrace restart request. This second step
+        of signal delivery is called <span class="emphasis"><em>signal injection</em></span> in this manual
+        page. Note that if the signal is blocked,
+        signal-delivery-stop doesn't happen until the signal is
+        unblocked, with the usual exception that <code class="constant">SIGSTOP</code> can't be blocked.</p>
+
+        <p>Signal-delivery-stop is observed by the tracer as
+        <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a> returning with
+        <em class="replaceable"><code>WIFSTOPPED(status)</code></em> true,
+        with the signal returned by <em class="replaceable"><code>WSTOPSIG(status)</code></em>. If the
+        signal is <code class="constant">SIGTRAP</code>, this may
+        be a different kind of ptrace-stop; see the "Syscall-stops"
+        and "execve" sections below for details. If <em class="replaceable"><code>WSTOPSIG(status)</code></em> returns a
+        stopping signal, this may be a group-stop; see below.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="ptrace-2_sect5" name="ptrace-2_sect5" shape="rect"> </a>
+
+        <h3>Signal injection and suppression</h3>
+
+        <p>After signal-delivery-stop is observed by the tracer,
+        the tracer should restart the tracee with the call</p>
+
+        <p>ptrace(PTRACE_restart, pid, 0, sig)</p>
+
+        <p>where <em class="replaceable"><code>PTRACE_restart</code></em> is one of
+        the restarting ptrace requests. If <em class="replaceable"><code>sig</code></em> is 0, then a signal is
+        not delivered. Otherwise, the signal <em class="replaceable"><code>sig</code></em> is delivered. This
+        operation is called <span class="emphasis"><em>signal
+        injection</em></span> in this manual page, to distinguish
+        it from signal-delivery-stop.</p>
+
+        <p>The <em class="replaceable"><code>sig</code></em> value
+        may be different from the <em class="replaceable"><code>WSTOPSIG(status)</code></em> value: the
+        tracer can cause a different signal to be injected.</p>
+
+        <p>Note that a suppressed signal still causes system calls
+        to return prematurely. In this case, system calls will be
+        restarted: the tracer will observe the tracee to reexecute
+        the interrupted system call (or <a class="link" href="../htmlman2/restart_syscall.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">restart_syscall</span>(2)</span></a> system
+        call for a few system calls which use a different mechanism
+        for restarting) if the tracer uses <code class="constant">PTRACE_SYSCALL</code>. Even system calls (such
+        as <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a>) which are not
+        restartable after signal are restarted after signal is
+        suppressed; however, kernel bugs exist which cause some
+        system calls to fail with <span class="errorname">EINTR</span> even though no observable signal
+        is injected to the tracee.</p>
+
+        <p>Restarting ptrace commands issued in ptrace-stops other
+        than signal-delivery-stop are not guaranteed to inject a
+        signal, even if <em class="replaceable"><code>sig</code></em> is nonzero. No error is
+        reported; a nonzero <em class="replaceable"><code>sig</code></em> may simply be ignored.
+        Ptrace users should not try to "create a new signal" this
+        way: use <a class="link" href="../htmlman2/tkill.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tgkill</span>(2)</span></a> instead.</p>
+
+        <p>The fact that signal injection requests may be ignored
+        when restarting the tracee after ptrace stops that are not
+        signal-delivery-stops is a cause of confusion among ptrace
+        users. One typical scenario is that the tracer observes
+        group-stop, mistakes it for signal-delivery-stop, restarts
+        the tracee with</p>
+
+        <p>ptrace(PTRACE_restart, pid, 0, stopsig)</p>
+
+        <p>with the intention of injecting <em class="replaceable"><code>stopsig</code></em>, but <em class="replaceable"><code>stopsig</code></em> gets ignored and
+        the tracee continues to run.</p>
+
+        <p>The <code class="constant">SIGCONT</code> signal has a
+        side effect of waking up (all threads of) a group-stopped
+        process. This side effect happens before
+        signal-delivery-stop. The tracer can't suppress this side
+        effect (it can only suppress signal injection, which only
+        causes the <code class="constant">SIGCONT</code> handler to
+        not be executed in the tracee, if such a handler is
+        installed). In fact, waking up from group-stop may be
+        followed by signal-delivery-stop for signal(s) <span class="emphasis"><em>other than</em></span> <code class="constant">SIGCONT</code>, if they were pending when
+        <code class="constant">SIGCONT</code> was delivered. In
+        other words, <code class="constant">SIGCONT</code> may be
+        not the first signal observed by the tracee after it was
+        sent.</p>
+
+        <p>Stopping signals cause (all threads of) a process to
+        enter group-stop. This side effect happens after signal
+        injection, and therefore can be suppressed by the
+        tracer.</p>
+
+        <p>In Linux 2.4 and earlier, the <code class="constant">SIGSTOP</code> signal can't be injected.</p>
+
+        <p><code class="constant">PTRACE_GETSIGINFO</code> can be
+        used to retrieve a <span class="type">siginfo_t</span>
+        structure which corresponds to the delivered signal.
+        <code class="constant">PTRACE_SETSIGINFO</code> may be used
+        to modify it. If <code class="constant">PTRACE_SETSIGINFO</code> has been used to alter
+        <span class="type">siginfo_t</span>, the <em class="replaceable"><code>si_signo</code></em> field and the
+        <em class="replaceable"><code>sig</code></em> parameter in
+        the restarting command must match, otherwise the result is
+        undefined.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="ptrace-2_sect6" name="ptrace-2_sect6" shape="rect"> </a>
+
+        <h3>Group-stop</h3>
+
+        <p>When a (possibly multithreaded) process receives a
+        stopping signal, all threads stop. If some threads are
+        traced, they enter a group-stop. Note that the stopping
+        signal will first cause signal-delivery-stop (on one tracee
+        only), and only after it is injected by the tracer (or
+        after it was dispatched to a thread which isn't traced),
+        will group-stop be initiated on <em class="replaceable"><code>all</code></em> tracees within the
+        multithreaded process. As usual, every tracee reports its
+        group-stop separately to the corresponding tracer.</p>
+
+        <p>Group-stop is observed by the tracer as <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a> returning with
+        <em class="replaceable"><code>WIFSTOPPED(status)</code></em> true,
+        with the stopping signal available via <em class="replaceable"><code>WSTOPSIG(status)</code></em>. The same
+        result is returned by some other classes of ptrace-stops,
+        therefore the recommended practice is to perform the
+        call</p>
+
+        <p>ptrace(PTRACE_GETSIGINFO, pid, 0, &amp;siginfo)</p>
+
+        <p>The call can be avoided if the signal is not
+        <code class="constant">SIGSTOP</code>, <code class="constant">SIGTSTP</code>, <code class="constant">SIGTTIN</code>, or <code class="constant">SIGTTOU</code>; only these four signals are
+        stopping signals. If the tracer sees something else, it
+        can't be a group-stop. Otherwise, the tracer needs to call
+        <code class="constant">PTRACE_GETSIGINFO</code>. If
+        <code class="constant">PTRACE_GETSIGINFO</code> fails with
+        <span class="errorname">EINVAL</span>, then it is
+        definitely a group-stop. (Other failure codes are possible,
+        such as <span class="errorname">ESRCH</span> ("no such
+        process") if a <code class="constant">SIGKILL</code> killed
+        the tracee.)</p>
+
+        <p>If tracee was attached using <code class="constant">PTRACE_SEIZE</code>, group-stop is indicated by
+        <code class="constant">PTRACE_EVENT_STOP</code>:
+        <span class="emphasis"><em>status&gt;&gt;16 ==
+        PTRACE_EVENT_STOP</em></span>. This allows detection of
+        group-stops without requiring an extra <code class="constant">PTRACE_GETSIGINFO</code> call.</p>
+
+        <p>As of Linux 2.6.38, after the tracer sees the tracee
+        ptrace-stop and until it restarts or kills it, the tracee
+        will not run, and will not send notifications (except
+        <code class="constant">SIGKILL</code> death) to the tracer,
+        even if the tracer enters into another <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a> call.</p>
+
+        <p>The kernel behavior described in the previous paragraph
+        causes a problem with transparent handling of stopping
+        signals. If the tracer restarts the tracee after
+        group-stop, the stopping signal is effectively
+        ignored—the tracee doesn't remain stopped, it runs.
+        If the tracer doesn't restart the tracee before entering
+        into the next <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a>, future
+        <code class="constant">SIGCONT</code> signals will not be
+        reported to the tracer; this would cause the <code class="constant">SIGCONT</code> signals to have no effect on the
+        tracee.</p>
+
+        <p>Since Linux 3.4, there is a method to overcome this
+        problem: instead of <code class="constant">PTRACE_CONT</code>, a <code class="constant">PTRACE_LISTEN</code> command can be used to
+        restart a tracee in a way where it does not execute, but
+        waits for a new event which it can report via <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a> (such as when
+        it is restarted by a <code class="constant">SIGCONT</code>).</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="ptrace-2_sect7" name="ptrace-2_sect7" shape="rect"> </a>
+
+        <h3>PTRACE_EVENT stops</h3>
+
+        <p>If the tracer sets <em class="replaceable"><code>PTRACE_O_TRACE_*</code></em> options,
+        the tracee will enter ptrace-stops called <code class="constant">PTRACE_EVENT</code> stops.</p>
+
+        <p><code class="constant">PTRACE_EVENT</code> stops are
+        observed by the tracer as <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a> returning with
+        <em class="replaceable"><code>WIFSTOPPED(status)</code></em>, and
+        <em class="replaceable"><code>WSTOPSIG(status)</code></em>
+        returns <code class="constant">SIGTRAP</code>. An
+        additional bit is set in the higher byte of the status
+        word: the value <em class="replaceable"><code>status&gt;&gt;8</code></em> will be</p>
+
+        <p>(SIGTRAP | PTRACE_EVENT_foo &lt;&lt; 8).</p>
+
+        <p>The following events exist:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">PTRACE_EVENT_VFORK</code></span></dt>
+
+            <dd>
+              <p>Stop before return from <a class="link" href="../htmlman2/vfork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">vfork</span>(2)</span></a> or
+              <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> with the
+              <code class="constant">CLONE_VFORK</code> flag. When
+              the tracee is continued after this stop, it will wait
+              for child to exit/exec before continuing its
+              execution (in other words, the usual behavior on
+              <a class="link" href="../htmlman2/vfork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">vfork</span>(2)</span></a>).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">PTRACE_EVENT_FORK</code></span></dt>
+
+            <dd>
+              <p>Stop before return from <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> or
+              <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> with the
+              exit signal set to <code class="constant">SIGCHLD</code>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">PTRACE_EVENT_CLONE</code></span></dt>
+
+            <dd>
+              <p>Stop before return from <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">PTRACE_EVENT_VFORK_DONE</code></span></dt>
+
+            <dd>
+              <p>Stop before return from <a class="link" href="../htmlman2/vfork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">vfork</span>(2)</span></a> or
+              <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> with the
+              <code class="constant">CLONE_VFORK</code> flag, but
+              after the child unblocked this tracee by exiting or
+              execing.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>For all four stops described above, the stop occurs in
+        the parent (i.e., the tracee), not in the newly created
+        thread. <code class="constant">PTRACE_GETEVENTMSG</code>
+        can be used to retrieve the new thread's ID.</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">PTRACE_EVENT_EXEC</code></span></dt>
+
+            <dd>
+              <p>Stop before return from <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>. Since
+              Linux 3.0, <code class="constant">PTRACE_GETEVENTMSG</code> returns the
+              former thread ID.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">PTRACE_EVENT_EXIT</code></span></dt>
+
+            <dd>
+              <p>Stop before exit (including death from <a class="link" href="../htmlman2/exit_group.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">exit_group</span>(2)</span></a>),
+              signal death, or exit caused by <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a> in a
+              multithreaded process. <code class="constant">PTRACE_GETEVENTMSG</code> returns the exit
+              status. Registers can be examined (unlike when "real"
+              exit happens). The tracee is still alive; it needs to
+              be <code class="constant">PTRACE_CONT</code>ed or
+              <code class="constant">PTRACE_DETACH</code>ed to
+              finish exiting.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">PTRACE_EVENT_STOP</code></span></dt>
+
+            <dd>
+              <p>Stop induced by <code class="constant">PTRACE_INTERRUPT</code> command, or
+              group-stop, or initial ptrace-stop when a new child
+              is attached (only if attached using <code class="constant">PTRACE_SEIZE</code>).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">PTRACE_EVENT_SECCOMP</code></span></dt>
+
+            <dd>
+              <p>Stop triggered by a <a class="link" href="../htmlman2/seccomp.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">seccomp</span>(2)</span></a> rule on
+              tracee syscall entry when <code class="constant">PTRACE_O_TRACESECCOMP</code> has been set
+              by the tracer. The seccomp event message data (from
+              the <code class="constant">SECCOMP_RET_DATA</code>
+              portion of the seccomp filter rule) can be retrieved
+              with <code class="constant">PTRACE_GETEVENTMSG</code>.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p><code class="constant">PTRACE_GETSIGINFO</code> on
+        <code class="constant">PTRACE_EVENT</code> stops returns
+        <code class="constant">SIGTRAP</code> in <em class="replaceable"><code>si_signo</code></em>, with <em class="replaceable"><code>si_code</code></em> set to <span class="emphasis"><em>(event&lt;&lt;8) | SIGTRAP</em></span>.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="ptrace-2_sect8" name="ptrace-2_sect8" shape="rect"> </a>
+
+        <h3>Syscall-stops</h3>
+
+        <p>If the tracee was restarted by <code class="constant">PTRACE_SYSCALL</code>, the tracee enters
+        syscall-enter-stop just prior to entering any system call.
+        If the tracer restarts the tracee with <code class="constant">PTRACE_SYSCALL</code>, the tracee enters
+        syscall-exit-stop when the system call is finished, or if
+        it is interrupted by a signal. (That is,
+        signal-delivery-stop never happens between
+        syscall-enter-stop and syscall-exit-stop; it happens
+        <em class="replaceable"><code>after</code></em>
+        syscall-exit-stop.)</p>
+
+        <p>Other possibilities are that the tracee may stop in a
+        <code class="constant">PTRACE_EVENT</code> stop, exit (if
+        it entered <a class="link" href="../htmlman2/_exit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">_exit</span>(2)</span></a> or <a class="link" href="../htmlman2/exit_group.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">exit_group</span>(2)</span></a>), be killed
+        by <code class="constant">SIGKILL</code>, or die silently
+        (if it is a thread group leader, the <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a> happened in
+        another thread, and that thread is not traced by the same
+        tracer; this situation is discussed later).</p>
+
+        <p>Syscall-enter-stop and syscall-exit-stop are observed by
+        the tracer as <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a> returning with
+        <em class="replaceable"><code>WIFSTOPPED(status)</code></em> true,
+        and <em class="replaceable"><code>WSTOPSIG(status)</code></em> giving
+        <code class="constant">SIGTRAP</code>. If the <code class="constant">PTRACE_O_TRACESYSGOOD</code> option was set by
+        the tracer, then <em class="replaceable"><code>WSTOPSIG(status)</code></em> will give
+        the value <span class="emphasis"><em>(SIGTRAP |
+        0x80)</em></span>.</p>
+
+        <p>Syscall-stops can be distinguished from
+        signal-delivery-stop with <code class="constant">SIGTRAP</code> by querying <code class="constant">PTRACE_GETSIGINFO</code> for the following
+        cases:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><em class="replaceable"><code>si_code</code></em> &lt;=
+            0</span></dt>
+
+            <dd>
+              <p><code class="constant">SIGTRAP</code> was
+              delivered as a result of a user-space action, for
+              example, a system call (<a class="link" href="../htmlman2/tkill.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tgkill</span>(2)</span></a>,
+              <a class="link" href="../htmlman2/kill.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">kill</span>(2)</span></a>, <a class="link" href="../htmlman3/sigqueue.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigqueue</span>(3)</span></a>, etc.),
+              expiration of a POSIX timer, change of state on a
+              POSIX message queue, or completion of an asynchronous
+              I/O request.</p>
+            </dd>
+
+            <dt><span class="term"><code class="function">si_code
+            == SI_KERNEL</code>(<em class="parameter"><code>0x80</code></em>)</span></dt>
+
+            <dd>
+              <p><code class="constant">SIGTRAP</code> was sent by
+              the kernel.</p>
+            </dd>
+
+            <dt><span class="term"><code class="function">si_code
+            == SIGTRAP or si_code ==</code>(<em class="parameter"><code>SIGTRAP|0x80</code></em>)</span></dt>
+
+            <dd>
+              <p>This is a syscall-stop.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>However, syscall-stops happen very often (twice per
+        system call), and performing <code class="constant">PTRACE_GETSIGINFO</code> for every syscall-stop
+        may be somewhat expensive.</p>
+
+        <p>Some architectures allow the cases to be distinguished
+        by examining registers. For example, on x86, <em class="replaceable"><code>rax</code></em> == -<span class="errorname">ENOSYS</span> in syscall-enter-stop. Since
+        <code class="constant">SIGTRAP</code> (like any other
+        signal) always happens <em class="replaceable"><code>after</code></em> syscall-exit-stop,
+        and at this point <em class="replaceable"><code>rax</code></em> almost never contains
+        -<span class="errorname">ENOSYS</span>, the <code class="constant">SIGTRAP</code> looks like "syscall-stop which is
+        not syscall-enter-stop"; in other words, it looks like a
+        "stray syscall-exit-stop" and can be detected this way. But
+        such detection is fragile and is best avoided.</p>
+
+        <p>Using the <code class="constant">PTRACE_O_TRACESYSGOOD</code> option is the
+        recommended method to distinguish syscall-stops from other
+        kinds of ptrace-stops, since it is reliable and does not
+        incur a performance penalty.</p>
+
+        <p>Syscall-enter-stop and syscall-exit-stop are
+        indistinguishable from each other by the tracer. The tracer
+        needs to keep track of the sequence of ptrace-stops in
+        order to not misinterpret syscall-enter-stop as
+        syscall-exit-stop or vice versa. The rule is that
+        syscall-enter-stop is always followed by syscall-exit-stop,
+        <code class="constant">PTRACE_EVENT</code> stop or the
+        tracee's death; no other kinds of ptrace-stop can occur in
+        between.</p>
+
+        <p>If after syscall-enter-stop, the tracer uses a
+        restarting command other than <code class="constant">PTRACE_SYSCALL</code>, syscall-exit-stop is not
+        generated.</p>
+
+        <p><code class="constant">PTRACE_GETSIGINFO</code> on
+        syscall-stops returns <code class="constant">SIGTRAP</code>
+        in <em class="replaceable"><code>si_signo</code></em>, with
+        <em class="replaceable"><code>si_code</code></em> set to
+        <code class="constant">SIGTRAP</code> or <em class="replaceable"><code>(SIGTRAP|0x80)</code></em>.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="ptrace-2_sect9" name="ptrace-2_sect9" shape="rect"> </a>
+
+        <h3>PTRACE_SINGLESTEP, PTRACE_SYSEMU,
+        PTRACE_SYSEMU_SINGLESTEP stops</h3>
+
+        <p>[Details of these kinds of stops are yet to be
+        documented.]</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="ptrace-2_sect10" name="ptrace-2_sect10" shape="rect"> </a>
+
+        <h3>Informational and restarting ptrace commands</h3>
+
+        <p>Most ptrace commands (all except <code class="constant">PTRACE_ATTACH</code>, <code class="constant">PTRACE_SEIZE</code>, <code class="constant">PTRACE_TRACEME</code>, <code class="constant">PTRACE_INTERRUPT</code>, and <code class="constant">PTRACE_KILL</code>) require the tracee to be in
+        a ptrace-stop, otherwise they fail with <span class="errorname">ESRCH</span>.</p>
+
+        <p>When the tracee is in ptrace-stop, the tracer can read
+        and write data to the tracee using informational commands.
+        These commands leave the tracee in ptrace-stopped
+        state:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+    ptrace(PTRACE_PEEKTEXT/PEEKDATA/PEEKUSER, pid, addr, 0);
+    ptrace(PTRACE_POKETEXT/POKEDATA/POKEUSER, pid, addr, long_val);
+    ptrace(PTRACE_GETREGS/GETFPREGS, pid, 0, &amp;struct);
+    ptrace(PTRACE_SETREGS/SETFPREGS, pid, 0, &amp;struct);
+    ptrace(PTRACE_GETREGSET, pid, NT_foo, &amp;iov);
+    ptrace(PTRACE_SETREGSET, pid, NT_foo, &amp;iov);
+    ptrace(PTRACE_GETSIGINFO, pid, 0, &amp;siginfo);
+    ptrace(PTRACE_SETSIGINFO, pid, 0, &amp;siginfo);
+    ptrace(PTRACE_GETEVENTMSG, pid, 0, &amp;long_var);
+    ptrace(PTRACE_SETOPTIONS, pid, 0, PTRACE_O_flags);
+</pre>
+        </div>
+
+        <p>Note that some errors are not reported. For example,
+        setting signal information (<em class="replaceable"><code>siginfo</code></em>) may have no effect
+        in some ptrace-stops, yet the call may succeed (return 0
+        and not set <code class="varname">errno</code>); querying
+        <code class="constant">PTRACE_GETEVENTMSG</code> may
+        succeed and return some random value if current ptrace-stop
+        is not documented as returning a meaningful event
+        message.</p>
+
+        <p>The call</p>
+
+        <p>ptrace(PTRACE_SETOPTIONS, pid, 0, PTRACE_O_flags);</p>
+
+        <p>affects one tracee. The tracee's current flags are
+        replaced. Flags are inherited by new tracees created and
+        "auto-attached" via active <code class="constant">PTRACE_O_TRACEFORK</code>, <code class="constant">PTRACE_O_TRACEVFORK</code>, or <code class="constant">PTRACE_O_TRACECLONE</code> options.</p>
+
+        <p>Another group of commands makes the ptrace-stopped
+        tracee run. They have the form:</p>
+
+        <p>ptrace(cmd, pid, 0, sig);</p>
+
+        <p>where <em class="replaceable"><code>cmd</code></em> is
+        <code class="constant">PTRACE_CONT</code>, <code class="constant">PTRACE_LISTEN</code>, <code class="constant">PTRACE_DETACH</code>, <code class="constant">PTRACE_SYSCALL</code>, <code class="constant">PTRACE_SINGLESTEP</code>, <code class="constant">PTRACE_SYSEMU</code>, or <code class="constant">PTRACE_SYSEMU_SINGLESTEP</code>. If the tracee
+        is in signal-delivery-stop, <em class="replaceable"><code>sig</code></em> is the signal to be
+        injected (if it is nonzero). Otherwise, <em class="replaceable"><code>sig</code></em> may be ignored. (When
+        restarting a tracee from a ptrace-stop other than
+        signal-delivery-stop, recommended practice is to always
+        pass 0 in <em class="replaceable"><code>sig</code></em>.)</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="ptrace-2_sect11" name="ptrace-2_sect11" shape="rect"> </a>
+
+        <h3>Attaching and detaching</h3>
+
+        <p>A thread can be attached to the tracer using the
+        call</p>
+
+        <p>ptrace(PTRACE_ATTACH, pid, 0, 0);</p>
+
+        <p>or</p>
+
+        <p>ptrace(PTRACE_SEIZE, pid, 0, PTRACE_O_flags);</p>
+
+        <p><code class="constant">PTRACE_ATTACH</code> sends
+        <code class="constant">SIGSTOP</code> to this thread. If
+        the tracer wants this <code class="constant">SIGSTOP</code>
+        to have no effect, it needs to suppress it. Note that if
+        other signals are concurrently sent to this thread during
+        attach, the tracer may see the tracee enter
+        signal-delivery-stop with other signal(s) first! The usual
+        practice is to reinject these signals until <code class="constant">SIGSTOP</code> is seen, then suppress
+        <code class="constant">SIGSTOP</code> injection. The design
+        bug here is that a ptrace attach and a concurrently
+        delivered <code class="constant">SIGSTOP</code> may race
+        and the concurrent <code class="constant">SIGSTOP</code>
+        may be lost.</p>
+
+        <p>Since attaching sends <code class="constant">SIGSTOP</code> and the tracer usually suppresses
+        it, this may cause a stray <span class="errorname">EINTR</span> return from the currently
+        executing system call in the tracee, as described in the
+        "Signal injection and suppression" section.</p>
+
+        <p>Since Linux 3.4, <code class="constant">PTRACE_SEIZE</code> can be used instead of
+        <code class="constant">PTRACE_ATTACH</code>. <code class="constant">PTRACE_SEIZE</code> does not stop the attached
+        process. If you need to stop it after attach (or at any
+        other time) without sending it any signals, use
+        <code class="constant">PTRACE_INTERRUPT</code> command.</p>
+
+        <p>The request</p>
+
+        <p>ptrace(PTRACE_TRACEME, 0, 0, 0);</p>
+
+        <p>turns the calling thread into a tracee. The thread
+        continues to run (doesn't enter ptrace-stop). A common
+        practice is to follow the <code class="constant">PTRACE_TRACEME</code> with</p>
+
+        <p>raise(SIGSTOP);</p>
+
+        <p>and allow the parent (which is our tracer now) to
+        observe our signal-delivery-stop.</p>
+
+        <p>If the <code class="constant">PTRACE_O_TRACEFORK</code>,
+        <code class="constant">PTRACE_O_TRACEVFORK</code>, or
+        <code class="constant">PTRACE_O_TRACECLONE</code> options
+        are in effect, then children created by, respectively,
+        <a class="link" href="../htmlman2/vfork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">vfork</span>(2)</span></a> or <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> with the
+        <code class="constant">CLONE_VFORK</code> flag, <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> or <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> with the exit
+        signal set to <code class="constant">SIGCHLD</code>, and
+        other kinds of <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a>, are
+        automatically attached to the same tracer which traced
+        their parent. <code class="constant">SIGSTOP</code> is
+        delivered to the children, causing them to enter
+        signal-delivery-stop after they exit the system call which
+        created them.</p>
+
+        <p>Detaching of the tracee is performed by:</p>
+
+        <p>ptrace(PTRACE_DETACH, pid, 0, sig);</p>
+
+        <p><code class="constant">PTRACE_DETACH</code> is a
+        restarting operation; therefore it requires the tracee to
+        be in ptrace-stop. If the tracee is in
+        signal-delivery-stop, a signal can be injected. Otherwise,
+        the <em class="replaceable"><code>sig</code></em> parameter
+        may be silently ignored.</p>
+
+        <p>If the tracee is running when the tracer wants to detach
+        it, the usual solution is to send <code class="constant">SIGSTOP</code> (using <a class="link" href="../htmlman2/tkill.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tgkill</span>(2)</span></a>, to make sure
+        it goes to the correct thread), wait for the tracee to stop
+        in signal-delivery-stop for <code class="constant">SIGSTOP</code> and then detach it (suppressing
+        <code class="constant">SIGSTOP</code> injection). A design
+        bug is that this can race with concurrent <code class="constant">SIGSTOP</code>s. Another complication is that
+        the tracee may enter other ptrace-stops and needs to be
+        restarted and waited for again, until <code class="constant">SIGSTOP</code> is seen. Yet another complication
+        is to be sure that the tracee is not already
+        ptrace-stopped, because no signal delivery happens while it
+        is—not even <code class="constant">SIGSTOP</code>.</p>
+
+        <p>If the tracer dies, all tracees are automatically
+        detached and restarted, unless they were in group-stop.
+        Handling of restart from group-stop is currently buggy, but
+        the "as planned" behavior is to leave tracee stopped and
+        waiting for <code class="constant">SIGCONT</code>. If the
+        tracee is restarted from signal-delivery-stop, the pending
+        signal is injected.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="ptrace-2_sect12" name="ptrace-2_sect12" shape="rect"> </a>
+
+        <h3>execve(2) under ptrace</h3>
+
+        <p>When one thread in a multithreaded process calls
+        <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>, the kernel
+        destroys all other threads in the process, and resets the
+        thread ID of the execing thread to the thread group ID
+        (process ID). (Or, to put things another way, when a
+        multithreaded process does an <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>, at completion
+        of the call, it appears as though the <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a> occurred in the
+        thread group leader, regardless of which thread did the
+        <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>.) This
+        resetting of the thread ID looks very confusing to
+        tracers:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>All other threads stop in <code class="constant">PTRACE_EVENT_EXIT</code> stop, if the
+              <code class="constant">PTRACE_O_TRACEEXIT</code>
+              option was turned on. Then all other threads except
+              the thread group leader report death as if they
+              exited via <a class="link" href="../htmlman2/_exit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">_exit</span>(2)</span></a> with exit
+              code 0.</p>
+            </li>
+
+            <li class="listitem">
+              <p>The execing tracee changes its thread ID while it
+              is in the <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>.
+              (Remember, under ptrace, the "pid" returned from
+              <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a>, or fed
+              into ptrace calls, is the tracee's thread ID.) That
+              is, the tracee's thread ID is reset to be the same as
+              its process ID, which is the same as the thread group
+              leader's thread ID.</p>
+            </li>
+
+            <li class="listitem">
+              <p>Then a <code class="constant">PTRACE_EVENT_EXEC</code> stop happens, if
+              the <code class="constant">PTRACE_O_TRACEEXEC</code>
+              option was turned on.</p>
+            </li>
+
+            <li class="listitem">
+              <p>If the thread group leader has reported its
+              <code class="constant">PTRACE_EVENT_EXIT</code> stop
+              by this time, it appears to the tracer that the dead
+              thread leader "reappears from nowhere".</p>
+
+              <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+                <table border="0" summary="Note">
+                  <tr>
+                    <td rowspan="2" align="center" valign="top" width="25" colspan="1"><img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+                    <th align="left" rowspan="1" colspan="1">Note</th>
+                  </tr>
+
+                  <tr>
+                    <td align="left" valign="top" rowspan="1" colspan="1">
+                      <p>The thread group leader does not report
+                      death via <em class="replaceable"><code>WIFEXITED(status)</code></em>
+                      until there is at least one other live
+                      thread. This eliminates the possibility that
+                      the tracer will see it dying and then
+                      reappearing.</p>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+
+              <p>If the thread group leader was still alive, for
+              the tracer this may look as if thread group leader
+              returns from a different system call than it entered,
+              or even "returned from a system call even though it
+              was not in any system call". If the thread group
+              leader was not traced (or was traced by a different
+              tracer), then during <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a> it will
+              appear as if it has become a tracee of the tracer of
+              the execing tracee.</p>
+            </li>
+          </ul>
+        </div>
+
+        <p>All of the above effects are the artifacts of the thread
+        ID change in the tracee.</p>
+
+        <p>The <code class="constant">PTRACE_O_TRACEEXEC</code>
+        option is the recommended tool for dealing with this
+        situation. First, it enables <code class="constant">PTRACE_EVENT_EXEC</code> stop, which occurs
+        before <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a> returns. In
+        this stop, the tracer can use <code class="constant">PTRACE_GETEVENTMSG</code> to retrieve the
+        tracee's former thread ID. (This feature was introduced in
+        Linux 3.0.) Second, the <code class="constant">PTRACE_O_TRACEEXEC</code> option disables legacy
+        <code class="constant">SIGTRAP</code> generation on
+        <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>.</p>
+
+        <p>When the tracer receives <code class="constant">PTRACE_EVENT_EXEC</code> stop notification, it
+        is guaranteed that except this tracee and the thread group
+        leader, no other threads from the process are alive.</p>
+
+        <p>On receiving the <code class="constant">PTRACE_EVENT_EXEC</code> stop notification, the
+        tracer should clean up all its internal data structures
+        describing the threads of this process, and retain only one
+        data structure—one which describes the single still
+        running tracee, with</p>
+
+        <p>thread ID == thread group ID == process ID.</p>
+
+        <p>Example: two threads call <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a> at the same
+        time:</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+*** we get syscall-enter-stop in thread 1: **
+PID1 execve("/bin/foo", "foo" &lt;unfinished ...&gt;
+*** we issue PTRACE_SYSCALL for thread 1 **
+*** we get syscall-enter-stop in thread 2: **
+PID2 execve("/bin/bar", "bar" &lt;unfinished ...&gt;
+*** we issue PTRACE_SYSCALL for thread 2 **
+*** we get PTRACE_EVENT_EXEC for PID0, we issue PTRACE_SYSCALL **
+*** we get syscall-exit-stop for PID0: **
+PID0 &lt;... execve resumed&gt; )             = 0
+</pre>
+        </div>
+
+        <p>If the <code class="constant">PTRACE_O_TRACEEXEC</code>
+        option is <em class="replaceable"><code>not</code></em> in
+        effect for the execing tracee, and if the tracee was
+        <code class="constant">PTRACE_ATTACH</code>ed rather that
+        <code class="constant">PTRACE_SEIZE</code>d, the kernel
+        delivers an extra <code class="constant">SIGTRAP</code> to
+        the tracee after <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a> returns. This
+        is an ordinary signal (similar to one which can be
+        generated by <span class="emphasis"><em>kill
+        -TRAP</em></span>), not a special kind of ptrace-stop.
+        Employing <code class="constant">PTRACE_GETSIGINFO</code>
+        for this signal returns <em class="replaceable"><code>si_code</code></em> set to 0
+        (<code class="constant">SI_USER</code>). This signal may be
+        blocked by signal mask, and thus may be delivered (much)
+        later.</p>
+
+        <p>Usually, the tracer (for example, <span class="citerefentry"><span class="refentrytitle">strace</span>(1)</span>) would not want to
+        show this extra post-execve <code class="constant">SIGTRAP</code> signal to the user, and would
+        suppress its delivery to the tracee (if <code class="constant">SIGTRAP</code> is set to <code class="constant">SIG_DFL</code>, it is a killing signal).
+        However, determining <em class="replaceable"><code>which</code></em> <code class="constant">SIGTRAP</code> to suppress is not easy. Setting
+        the <code class="constant">PTRACE_O_TRACEEXEC</code> option
+        or using <code class="constant">PTRACE_SEIZE</code> and
+        thus suppressing this extra <code class="constant">SIGTRAP</code> is the recommended approach.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="ptrace-2_sect13" name="ptrace-2_sect13" shape="rect"> </a>
+
+        <h3>Real parent</h3>
+
+        <p>The ptrace API (ab)uses the standard UNIX parent/child
+        signaling over <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a>. This used to
+        cause the real parent of the process to stop receiving
+        several kinds of <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a> notifications
+        when the child process is traced by some other process.</p>
+
+        <p>Many of these bugs have been fixed, but as of Linux
+        2.6.38 several still exist; see BUGS below.</p>
+
+        <p>As of Linux 2.6.38, the following is believed to work
+        correctly:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>exit/death by signal is reported first to the
+              tracer, then, when the tracer consumes the <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a> result,
+              to the real parent (to the real parent only when the
+              whole multithreaded process exits). If the tracer and
+              the real parent are the same process, the report is
+              sent only once.</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ptrace-2_sect14" name="ptrace-2_sect14" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, the <em class="replaceable"><code>PTRACE_PEEK*</code></em> requests return
+      the requested data (but see NOTES), while other requests
+      return zero.</p>
+
+      <p>On error, all requests return −1, and <code class="varname">errno</code> is set appropriately. Since the value
+      returned by a successful <em class="replaceable"><code>PTRACE_PEEK*</code></em> request may be
+      −1, the caller must clear <code class="varname">errno</code> before the call, and then check it
+      afterward to determine whether or not an error occurred.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ptrace-2_sect15" name="ptrace-2_sect15" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EBUSY</span></span></dt>
+
+          <dd>
+            <p>(i386 only) There was an error with allocating or
+            freeing a debug register.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p>There was an attempt to read from or write to an
+            invalid area in the tracer's or the tracee's memory,
+            probably because the area wasn't mapped or accessible.
+            Unfortunately, under Linux, different variations of
+            this fault will return <span class="errorname">EIO</span> or <span class="errorname">EFAULT</span> more or less arbitrarily.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>An attempt was made to set an invalid option.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EIO</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>request</code></em> is
+            invalid, or an attempt was made to read from or write
+            to an invalid area in the tracer's or the tracee's
+            memory, or there was a word-alignment violation, or an
+            invalid signal was specified during a restart
+            request.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The specified process cannot be traced. This could
+            be because the tracer has insufficient privileges (the
+            required capability is <code class="constant">CAP_SYS_PTRACE</code>); unprivileged
+            processes cannot trace processes that they cannot send
+            signals to or those running set-user-ID/set-group-ID
+            programs, for obvious reasons. Alternatively, the
+            process may already be being traced, or (on kernels
+            before 2.6.26) be <span class="citerefentry"><span class="refentrytitle">init</span>(1)</span> (PID 1).</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ESRCH</span></span></dt>
+
+          <dd>
+            <p>The specified process does not exist, or is not
+            currently being traced by the caller, or is not stopped
+            (for requests that require a stopped tracee).</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ptrace-2_sect16" name="ptrace-2_sect16" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>SVr4, 4.3BSD.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ptrace-2_sect17" name="ptrace-2_sect17" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Although arguments to <code class="function">ptrace</code>() are interpreted according to the
+      prototype given, glibc currently declares <code class="function">ptrace</code>() as a variadic function with only
+      the <em class="parameter"><code>request</code></em> argument
+      fixed. It is recommended to always supply four arguments,
+      even if the requested operation does not use them, setting
+      unused/ignored arguments to <code class="constant">0L</code>
+      or <span class="emphasis"><em>(void *) 0</em></span>.</p>
+
+      <p>In Linux kernels before 2.6.26, <span class="citerefentry"><span class="refentrytitle">init</span>(1)</span>, the process with PID
+      1, may not be traced.</p>
+
+      <p>A tracees parent continues to be the tracer even if that
+      tracer calls <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>.</p>
+
+      <p>The layout of the contents of memory and the USER area are
+      quite operating-system- and architecture-specific. The offset
+      supplied, and the data returned, might not entirely match
+      with the definition of <span class="emphasis"><em>struct
+      user</em></span>.</p>
+
+      <p>The size of a "word" is determined by the operating-system
+      variant (e.g., for 32-bit Linux it is 32 bits).</p>
+
+      <p>This page documents the way the <code class="function">ptrace</code>() call works currently in Linux. Its
+      behavior differs significantly on other flavors of UNIX. In
+      any case, use of <code class="function">ptrace</code>() is
+      highly specific to the operating system and architecture.</p>
+
+      <div class="refsect2">
+        <a id="ptrace-2_sect18" name="ptrace-2_sect18" shape="rect"> </a>
+
+        <h3>C library/kernel ABI differences</h3>
+
+        <p>At the system call level, the <code class="constant">PTRACE_PEEKTEXT</code>, <code class="constant">PTRACE_PEEKDATA</code>, and <code class="constant">PTRACE_PEEKUSER</code> requests have a different
+        API: they store the result at the address specified by the
+        <em class="parameter"><code>data</code></em> parameter, and
+        the return value is the error flag. The glibc wrapper
+        function provides the API given in DESCRIPTION above, with
+        the result being returned via the function return
+        value.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ptrace-2_sect19" name="ptrace-2_sect19" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>On hosts with 2.6 kernel headers, <code class="constant">PTRACE_SETOPTIONS</code> is declared with a
+      different value than the one for 2.4. This leads to
+      applications compiled with 2.6 kernel headers failing when
+      run on 2.4 kernels. This can be worked around by redefining
+      <code class="constant">PTRACE_SETOPTIONS</code> to
+      <code class="constant">PTRACE_OLDSETOPTIONS</code>, if that
+      is defined.</p>
+
+      <p>Group-stop notifications are sent to the tracer, but not
+      to real parent. Last confirmed on 2.6.38.6.</p>
+
+      <p>If a thread group leader is traced and exits by calling
+      <a class="link" href="../htmlman2/_exit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">_exit</span>(2)</span></a>, a <code class="constant">PTRACE_EVENT_EXIT</code> stop will happen for it
+      (if requested), but the subsequent <code class="constant">WIFEXITED</code> notification will not be
+      delivered until all other threads exit. As explained above,
+      if one of other threads calls <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>, the death of the
+      thread group leader will <em class="replaceable"><code>never</code></em> be reported. If the
+      execed thread is not traced by this tracer, the tracer will
+      never know that <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a> happened. One
+      possible workaround is to <code class="constant">PTRACE_DETACH</code> the thread group leader
+      instead of restarting it in this case. Last confirmed on
+      2.6.38.6.</p>
+
+      <p>A <code class="constant">SIGKILL</code> signal may still
+      cause a <code class="constant">PTRACE_EVENT_EXIT</code> stop
+      before actual signal death. This may be changed in the
+      future; <code class="constant">SIGKILL</code> is meant to
+      always immediately kill tasks even under ptrace. Last
+      confirmed on 2.6.38.6.</p>
+
+      <p>Some system calls return with <span class="errorname">EINTR</span> if a signal was sent to a tracee,
+      but delivery was suppressed by the tracer. (This is very
+      typical operation: it is usually done by debuggers on every
+      attach, in order to not introduce a bogus <code class="constant">SIGSTOP</code>). As of Linux 3.2.9, the following
+      system calls are affected (this list is likely incomplete):
+      <a class="link" href="../htmlman2/epoll_wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_wait</span>(2)</span></a>, and
+      <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> from an <a class="link" href="../htmlman7/inotify.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">inotify</span>(7)</span></a> file descriptor.
+      The usual symptom of this bug is that when you attach to a
+      quiescent process with the command</p>
+
+      <p>strace −p &lt;process-ID&gt;</p>
+
+      <p>then, instead of the usual and expected one-line output
+      such as</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+    restart_syscall(&lt;... resuming interrupted call ...&gt;_
+</pre>
+      </div>
+
+      <p>or</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+    select(6, [5], NULL, [5], NULL_
+</pre>
+      </div>
+
+      <p>('_' denotes the cursor position), you observe more than
+      one line. For example:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+    clock_gettime(CLOCK_MONOTONIC, {15370, 690928118}) = 0
+    epoll_wait(4,_
+</pre>
+      </div>
+
+      <p>What is not visible here is that the process was blocked
+      in <a class="link" href="../htmlman2/epoll_wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_wait</span>(2)</span></a> before
+      <span class="citerefentry"><span class="refentrytitle">strace</span>(1)</span> has attached to it.
+      Attaching caused <a class="link" href="../htmlman2/epoll_wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_wait</span>(2)</span></a> to return to
+      user space with the error <span class="errorname">EINTR</span>. In this particular case, the
+      program reacted to <span class="errorname">EINTR</span> by
+      checking the current time, and then executing <a class="link" href="../htmlman2/epoll_wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_wait</span>(2)</span></a> again.
+      (Programs which do not expect such "stray" <span class="errorname">EINTR</span> errors may behave in an unintended
+      way upon an <span class="citerefentry"><span class="refentrytitle">strace</span>(1)</span> attach.)</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ptrace-2_sect20" name="ptrace-2_sect20" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><span class="citerefentry"><span class="refentrytitle">gdb</span>(1)</span>, <span class="citerefentry"><span class="refentrytitle">strace</span>(1)</span>, <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a>, <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>, <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a>, <a class="link" href="../htmlman2/gettid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gettid</span>(2)</span></a>, <a class="link" href="../htmlman2/seccomp.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">seccomp</span>(2)</span></a>, <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a>, <a class="link" href="../htmlman2/tkill.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tgkill</span>(2)</span></a>, <a class="link" href="../htmlman2/vfork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">vfork</span>(2)</span></a>, <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a>, <a class="link" href="../htmlman3/exec.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">exec</span>(3)</span></a>, <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>, <a class="link" href="../htmlman7/signal.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="ptrace-2_sect21" name="ptrace-2_sect21" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 1993 Michael Haardt &lt;michael<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>moria.de&gt;<br />
+
+                  Fri Apr  2 11:32:09 MET DST 1993<br />
+
+                  <br />
+                  and changes Copyright (C) 1999 Mike Coleman (mkc<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>acm.org)<br />
+
+                  -- major revision to fully document ptrace semantics per recent Linux<br />
+
+                     kernel (2.2.10) and glibc (2.1.2)<br />
+
+                  Sun Nov  7 03:18:35 CST 1999<br />
+
+                  <br />
+                  and Copyright (c) 2011, Denys Vlasenko &lt;vda.linux<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>googlemail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_DOC_FULL)<br />
+                  This is free documentation; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License as<br />
+
+                  published by the Free Software Foundation; either version 2 of<br />
+
+                  the License, or (at your option) any later version.<br />
+
+                  <br />
+                  The GNU General Public License's references to "object code"<br />
+
+                  and "executables" are to be interpreted as the output of any<br />
+
+                  document formatting or typesetting system, including<br />
+
+                  intermediate and printed output.<br />
+
+                  <br />
+                  This manual is distributed in the hope that it will be useful,<br />
+
+                  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+
+                  GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Modified Fri Jul 23 23:47:18 1993 by Rik Faith &lt;faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu&gt;<br />
+
+                  Modified Fri Jan 31 16:46:30 1997 by Eric S. Raymond &lt;esr<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>thyrsus.com&gt;<br />
+
+                  Modified Thu Oct  7 17:28:49 1999 by Andries Brouwer &lt;aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl&gt;<br />
+
+                  Modified, 27 May 2004, Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                      Added notes on capability requirements<br />
+
+                  <br />
+                  2006-03-24, Chuck Ebbert &lt;76306.1226<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>compuserve.com&gt;<br />
+
+                     Added    PTRACE_SETOPTIONS, PTRACE_GETEVENTMSG, PTRACE_GETSIGINFO,<br />
+
+                         PTRACE_SETSIGINFO, PTRACE_SYSEMU, PTRACE_SYSEMU_SINGLESTEP<br />
+
+                     (Thanks to Blaisorblade, Daniel Jacobowitz and others who helped.)<br />
+
+                  2011-09, major update by Denys Vlasenko &lt;vda.linux<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>googlemail.com&gt;<br />
+
+                  2015-01, Kees Cook &lt;keescook<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>chromium.org&gt;<br />
+
+                     Added PTRACE_O_TRACESECCOMP, PTRACE_EVENT_SECCOMP<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

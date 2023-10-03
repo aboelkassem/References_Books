@@ -1,0 +1,1999 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>fcntl(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="fcntl(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="fcntl.2" name="fcntl.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>fcntl — manipulate file descriptor</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;unistd.h&gt;
+#include &lt;fcntl.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>fcntl</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">fd</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">cmd</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1"><var class="pdparam">... /* arg
+            */</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fcntl-2_sect1" name="fcntl-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">fcntl</code>() performs one of the
+      operations described below on the open file descriptor
+      <em class="parameter"><code>fd</code></em>. The operation is
+      determined by <em class="parameter"><code>cmd</code></em>.</p>
+
+      <p><code class="function">fcntl</code>() can take an optional
+      third argument. Whether or not this argument is required is
+      determined by <em class="parameter"><code>cmd</code></em>.
+      The required argument type is indicated in parentheses after
+      each <em class="parameter"><code>cmd</code></em> name (in
+      most cases, the required type is <span class="type">int</span>, and we identify the argument using the
+      name <em class="replaceable"><code>arg</code></em>), or
+      <span class="type">void</span> is specified if the argument
+      is not required.</p>
+
+      <p>Certain of the operations below are supported only since a
+      particular Linux kernel version. The preferred method of
+      checking whether the host kernel supports a particular
+      operation is to invoke <code class="function">fcntl</code>()
+      with the desired <em class="parameter"><code>cmd</code></em>
+      value and then test whether the call failed with <span class="errorname">EINVAL</span>, indicating that the kernel does
+      not recognize this value.</p>
+
+      <div class="refsect2">
+        <a id="fcntl-2_sect2" name="fcntl-2_sect2" shape="rect"> </a>
+
+        <h3>Duplicating a file descriptor</h3>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">F_DUPFD</code> (<span class="type">int</span>)</span></dt>
+
+            <dd>
+              <p>Find the lowest numbered available file descriptor
+              greater than or equal to <em class="replaceable"><code>arg</code></em> and make it be a
+              copy of <em class="parameter"><code>fd</code></em>.
+              This is different from <a class="link" href="../htmlman2/dup.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">dup2</span>(2)</span></a>, which uses
+              exactly the descriptor specified.</p>
+
+              <p>On success, the new descriptor is returned.</p>
+
+              <p>See <a class="link" href="../htmlman2/dup.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">dup</span>(2)</span></a> for further
+              details.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">F_DUPFD_CLOEXEC</code> (<span class="type">int</span>; since Linux 2.6.24)</span></dt>
+
+            <dd>
+              <p>As for <code class="constant">F_DUPFD</code>, but
+              additionally set the close-on-exec flag for the
+              duplicate descriptor. Specifying this flag permits a
+              program to avoid an additional <code class="function">fcntl</code>() <code class="constant">F_SETFD</code> operation to set the
+              <code class="constant">FD_CLOEXEC</code> flag. For an
+              explanation of why this flag is useful, see the
+              description of <code class="constant">O_CLOEXEC</code> in <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="fcntl-2_sect3" name="fcntl-2_sect3" shape="rect"> </a>
+
+        <h3>File descriptor flags</h3>
+
+        <p>The following commands manipulate the flags associated
+        with a file descriptor. Currently, only one such flag is
+        defined: <code class="constant">FD_CLOEXEC</code>, the
+        close-on-exec flag. If the <code class="constant">FD_CLOEXEC</code> bit is 0, the file descriptor
+        will remain open across an <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>, otherwise it
+        will be closed.</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">F_GETFD</code> (<span class="type">void</span>)</span></dt>
+
+            <dd>
+              <p>Read the file descriptor flags; <em class="replaceable"><code>arg</code></em> is ignored.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">F_SETFD</code> (<span class="type">int</span>)</span></dt>
+
+            <dd>
+              <p>Set the file descriptor flags to the value
+              specified by <em class="replaceable"><code>arg</code></em>.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>In multithreaded programs, using <code class="function">fcntl</code>() <code class="constant">F_SETFD</code> to set the close-on-exec flag at
+        the same time as another thread performs a <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> plus <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a> is vulnerable
+        to a race condition that may unintentionally leak the file
+        descriptor to the program executed in the child process.
+        See the discussion of the <code class="constant">O_CLOEXEC</code> flag in <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a> for details and a
+        remedy to the problem.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="fcntl-2_sect4" name="fcntl-2_sect4" shape="rect"> </a>
+
+        <h3>File status flags</h3>
+
+        <p>Each open file description has certain associated status
+        flags, initialized by <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a> and possibly
+        modified by <code class="function">fcntl</code>().
+        Duplicated file descriptors (made with <a class="link" href="../htmlman2/dup.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">dup</span>(2)</span></a>, <code class="function">fcntl</code>(F_DUPFD), <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a>, etc.) refer to
+        the same open file description, and thus share the same
+        file status flags.</p>
+
+        <p>The file status flags and their semantics are described
+        in <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>.</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">F_GETFL</code> (<span class="type">void</span>)</span></dt>
+
+            <dd>
+              <p>Get the file access mode and the file status
+              flags; <em class="replaceable"><code>arg</code></em>
+              is ignored.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">F_SETFL</code> (<span class="type">int</span>)</span></dt>
+
+            <dd>
+              <p>Set the file status flags to the value specified
+              by <em class="replaceable"><code>arg</code></em>.
+              File access mode (<code class="constant">O_RDONLY</code>, <code class="constant">O_WRONLY</code>, <code class="constant">O_RDWR</code>) and file creation flags
+              (i.e., <code class="constant">O_CREAT</code>,
+              <code class="constant">O_EXCL</code>, <code class="constant">O_NOCTTY</code>, <code class="constant">O_TRUNC</code>) in <em class="replaceable"><code>arg</code></em> are ignored. On
+              Linux this command can change only the <code class="constant">O_APPEND</code>, <code class="constant">O_ASYNC</code>, <code class="constant">O_DIRECT</code>, <code class="constant">O_NOATIME</code>, and <code class="constant">O_NONBLOCK</code> flags. It is not
+              possible to change the <code class="constant">O_DSYNC</code> and <code class="constant">O_SYNC</code> flags; see BUGS, below.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="fcntl-2_sect5" name="fcntl-2_sect5" shape="rect"> </a>
+
+        <h3>Advisory record locking</h3>
+
+        <p>Linux implements traditional ("process-associated") UNIX
+        record locks, as standardized by POSIX. For a
+        Linux-specific alternative with better semantics, see the
+        discussion of open file description locks below.</p>
+
+        <p><code class="constant">F_SETLK</code>, <code class="constant">F_SETLKW</code>, and <code class="constant">F_GETLK</code> are used to acquire, release, and
+        test for the existence of record locks (also known as
+        byte-range, file-segment, or file-region locks). The third
+        argument, <em class="replaceable"><code>lock</code></em>,
+        is a pointer to a structure that has at least the following
+        fields (in unspecified order).</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+struct flock {
+    ...
+    short l_type;    /* Type of lock: F_RDLCK,
+                        F_WRLCK, F_UNLCK */
+    short l_whence;  /* How to interpret l_start:
+                        SEEK_SET, SEEK_CUR, SEEK_END */
+    off_t l_start;   /* Starting offset for lock */
+    off_t l_len;     /* Number of bytes to lock */
+    pid_t l_pid;     /* PID of process blocking our lock
+                        (set by F_GETLK and F_OFD_GETLK) */
+    ...
+};
+</pre>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>The <em class="replaceable"><code>l_whence</code></em>,
+        <em class="replaceable"><code>l_start</code></em>, and
+        <em class="replaceable"><code>l_len</code></em> fields of
+        this structure specify the range of bytes we wish to lock.
+        Bytes past the end of the file may be locked, but not bytes
+        before the start of the file.</p>
+
+        <p><em class="replaceable"><code>l_start</code></em> is the
+        starting offset for the lock, and is interpreted relative
+        to either: the start of the file (if <em class="replaceable"><code>l_whence</code></em> is <code class="constant">SEEK_SET</code>); the current file offset (if
+        <em class="replaceable"><code>l_whence</code></em> is
+        <code class="constant">SEEK_CUR</code>); or the end of the
+        file (if <em class="replaceable"><code>l_whence</code></em>
+        is <code class="constant">SEEK_END</code>). In the final
+        two cases, <em class="replaceable"><code>l_start</code></em> can be a negative
+        number provided the offset does not lie before the start of
+        the file.</p>
+
+        <p><em class="replaceable"><code>l_len</code></em>
+        specifies the number of bytes to be locked. If <em class="replaceable"><code>l_len</code></em> is positive, then the
+        range to be locked covers bytes <em class="replaceable"><code>l_start</code></em> up to and including
+        <em class="replaceable"><code>l_start</code></em>+<em class="replaceable"><code>l_len</code></em>−1.
+        Specifying 0 for <em class="replaceable"><code>l_len</code></em> has the special
+        meaning: lock all bytes starting at the location specified
+        by <em class="replaceable"><code>l_whence</code></em> and
+        <em class="replaceable"><code>l_start</code></em> through
+        to the end of file, no matter how large the file grows.</p>
+
+        <p>POSIX.1-2001 allows (but does not require) an
+        implementation to support a negative <em class="replaceable"><code>l_len</code></em> value; if <em class="replaceable"><code>l_len</code></em> is negative, the
+        interval described by <em class="replaceable"><code>lock</code></em> covers bytes
+        <em class="replaceable"><code>l_start</code></em>+<em class="replaceable"><code>l_len</code></em>
+        up to and including <em class="replaceable"><code>l_start</code></em>−1. This is
+        supported by Linux since kernel versions 2.4.21 and
+        2.5.49.</p>
+
+        <p>The <em class="replaceable"><code>l_type</code></em>
+        field can be used to place a read (<code class="constant">F_RDLCK</code>) or a write (<code class="constant">F_WRLCK</code>) lock on a file. Any number of
+        processes may hold a read lock (shared lock) on a file
+        region, but only one process may hold a write lock
+        (exclusive lock). An exclusive lock excludes all other
+        locks, both shared and exclusive. A single process can hold
+        only one type of lock on a file region; if a new lock is
+        applied to an already-locked region, then the existing lock
+        is converted to the new lock type. (Such conversions may
+        involve splitting, shrinking, or coalescing with an
+        existing lock if the byte range specified by the new lock
+        does not precisely coincide with the range of the existing
+        lock.)</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">F_SETLK</code> (<span class="type">struct
+            flock *</span>)</span></dt>
+
+            <dd>
+              <p>Acquire a lock (when <em class="replaceable"><code>l_type</code></em> is
+              <code class="constant">F_RDLCK</code> or <code class="constant">F_WRLCK</code>) or release a lock (when
+              <em class="replaceable"><code>l_type</code></em> is
+              <code class="constant">F_UNLCK</code>) on the bytes
+              specified by the <em class="replaceable"><code>l_whence</code></em>, <em class="replaceable"><code>l_start</code></em>, and
+              <em class="replaceable"><code>l_len</code></em>
+              fields of <em class="replaceable"><code>lock</code></em>. If a
+              conflicting lock is held by another process, this
+              call returns −1 and sets <code class="varname">errno</code> to <span class="errorname">EACCES</span> or <span class="errorname">EAGAIN</span>. (The error returned in
+              this case differs across implementations, so POSIX
+              requires a portable application to check for both
+              errors.)</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">F_SETLKW</code> (<span class="type">struct
+            flock *</span>)</span></dt>
+
+            <dd>
+              <p>As for <code class="constant">F_SETLK</code>, but
+              if a conflicting lock is held on the file, then wait
+              for that lock to be released. If a signal is caught
+              while waiting, then the call is interrupted and
+              (after the signal handler has returned) returns
+              immediately (with return value −1 and
+              <code class="varname">errno</code> set to
+              <span class="errorname">EINTR</span>; see <a class="link" href="../htmlman7/signal.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(7)</span></a>).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">F_GETLK</code> (<span class="type">struct
+            flock *</span>)</span></dt>
+
+            <dd>
+              <p>On input to this call, <em class="replaceable"><code>lock</code></em> describes a lock
+              we would like to place on the file. If the lock could
+              be placed, <code class="function">fcntl</code>() does
+              not actually place it, but returns <code class="constant">F_UNLCK</code> in the <em class="replaceable"><code>l_type</code></em> field of
+              <em class="replaceable"><code>lock</code></em> and
+              leaves the other fields of the structure
+              unchanged.</p>
+
+              <p>If one or more incompatible locks would prevent
+              this lock being placed, then <code class="function">fcntl</code>() returns details about one
+              of those locks in the <em class="replaceable"><code>l_type</code></em>, <em class="replaceable"><code>l_whence</code></em>, <em class="replaceable"><code>l_start</code></em>, and
+              <em class="replaceable"><code>l_len</code></em>
+              fields of <em class="replaceable"><code>lock</code></em>. If the
+              conflicting lock is a traditional
+              (process-associated) record lock, then the <em class="replaceable"><code>l_pid</code></em> field is set to
+              the PID of the process holding that lock. If the
+              conflicting lock is an open file description lock,
+              then <em class="replaceable"><code>l_pid</code></em>
+              is set to −1. Note that the returned
+              information may already be out of date by the time
+              the caller inspects it.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>In order to place a read lock, <em class="parameter"><code>fd</code></em> must be open for reading.
+        In order to place a write lock, <em class="parameter"><code>fd</code></em> must be open for writing.
+        To place both types of lock, open a file read-write.</p>
+
+        <p>When placing locks with <code class="constant">F_SETLKW</code>, the kernel detects <em class="replaceable"><code>deadlocks</code></em>, whereby two or
+        more processes have their lock requests mutually blocked by
+        locks held by the other processes. For example, suppose
+        process A holds a write lock on byte 100 of a file, and
+        process B holds a write lock on byte 200. If each process
+        then attempts to lock the byte already locked by the other
+        process using <code class="constant">F_SETLKW</code>, then,
+        without deadlock detection, both processes would remain
+        blocked indefinitely. When the kernel detects such
+        deadlocks, it causes one of the blocking lock requests to
+        immediately fail with the error <span class="errorname">EDEADLK</span>; an application that encounters
+        such an error should release some of its locks to allow
+        other applications to proceed before attempting regain the
+        locks that it requires. Circular deadlocks involving more
+        than two processes are also detected. Note, however, that
+        there are limitations to the kernel's deadlock-detection
+        algorithm; see BUGS.</p>
+
+        <p>As well as being removed by an explicit <code class="constant">F_UNLCK</code>, record locks are automatically
+        released when the process terminates.</p>
+
+        <p>Record locks are not inherited by a child created via
+        <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a>, but are
+        preserved across an <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>.</p>
+
+        <p>Because of the buffering performed by the <a class="link" href="../htmlman3/stdio.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">stdio</span>(3)</span></a> library, the use
+        of record locking with routines in that package should be
+        avoided; use <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> and <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a> instead.</p>
+
+        <p>The record locks described above are associated with the
+        process (unlike the open file description locks described
+        below). This has some unfortunate consequences:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>If a process closes <em class="replaceable"><code>any</code></em> file descriptor
+              referring to a file, then all of the process's locks
+              on that file are released, regardless of the file
+              descriptor(s) on which the locks were obtained. This
+              is bad: it means that a process can lose its locks on
+              a file such as <code class="filename">/etc/passwd</code> or <code class="filename">/etc/mtab</code> when for some reason a
+              library function decides to open, read, and close the
+              same file.</p>
+            </li>
+
+            <li class="listitem">
+              <p>The threads in a process share locks. In other
+              words, a multithreaded program can't use record
+              locking to ensure that threads don't simultaneously
+              access the same region of a file.</p>
+            </li>
+          </ul>
+        </div>
+
+        <p>Open file description locks solve both of these
+        problems.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="fcntl-2_sect6" name="fcntl-2_sect6" shape="rect"> </a>
+
+        <h3>Open file description locks (non-POSIX)</h3>
+
+        <p>Open file description locks are advisory byte-range
+        locks whose operation is in most respects identical to the
+        traditional record locks described above. This lock type is
+        Linux-specific, and available since Linux 3.15. For an
+        explanation of open file descriptions, see <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>.</p>
+
+        <p>The principal difference between the two lock types is
+        that whereas traditional record locks are associated with a
+        process, open file description locks are associated with
+        the open file description on which they are acquired, much
+        like locks acquired with <a class="link" href="../htmlman2/flock.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">flock</span>(2)</span></a>. Consequently
+        (and unlike traditional advisory record locks), open file
+        description locks are inherited across <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> (and <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> with
+        <code class="constant">CLONE_FILES</code>), and are only
+        automatically released on the last close of the open file
+        description, instead of being released on any close of the
+        file.</p>
+
+        <p>Conflicting lock combinations (i.e., a read lock and a
+        write lock or two write locks) where one lock is an open
+        file description lock and the other is a traditional record
+        lock conflict even when they are acquired by the same
+        process on the same file descriptor.</p>
+
+        <p>Open file description locks placed via the same open
+        file description (i.e., via the same file descriptor, or
+        via a duplicate of the file descriptor created by <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a>, <a class="link" href="../htmlman2/dup.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">dup</span>(2)</span></a>, <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a> <code class="constant">F_DUPFD</code>, and so on) are always
+        compatible: if a new lock is placed on an already locked
+        region, then the existing lock is converted to the new lock
+        type. (Such conversions may result in splitting, shrinking,
+        or coalescing with an existing lock as discussed
+        above.)</p>
+
+        <p>On the other hand, open file description locks may
+        conflict with each other when they are acquired via
+        different open file descriptions. Thus, the threads in a
+        multithreaded program can use open file description locks
+        to synchronize access to a file region by having each
+        thread perform its own <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a> on the file and
+        applying locks via the resulting file descriptor.</p>
+
+        <p>As with traditional advisory locks, the third argument
+        to <code class="function">fcntl</code>(), <em class="replaceable"><code>lock</code></em>, is a pointer to an
+        <em class="replaceable"><code>flock</code></em> structure.
+        By contrast with traditional record locks, the <em class="replaceable"><code>l_pid</code></em> field of that
+        structure must be set to zero when using the commands
+        described below.</p>
+
+        <p>The commands for working with open file description
+        locks are analogous to those used with traditional
+        locks:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">F_OFD_SETLK</code> (<span class="type">struct flock *</span>)</span></dt>
+
+            <dd>
+              <p>Acquire an open file description lock (when
+              <em class="replaceable"><code>l_type</code></em> is
+              <code class="constant">F_RDLCK</code> or <code class="constant">F_WRLCK</code>) or release an open file
+              description lock (when <em class="replaceable"><code>l_type</code></em> is
+              <code class="constant">F_UNLCK</code>) on the bytes
+              specified by the <em class="replaceable"><code>l_whence</code></em>, <em class="replaceable"><code>l_start</code></em>, and
+              <em class="replaceable"><code>l_len</code></em>
+              fields of <em class="replaceable"><code>lock</code></em>. If a
+              conflicting lock is held by another process, this
+              call returns −1 and sets <code class="varname">errno</code> to <span class="errorname">EAGAIN</span>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">F_OFD_SETLKW</code> (<span class="type">struct flock *</span>)</span></dt>
+
+            <dd>
+              <p>As for <code class="constant">F_OFD_SETLK</code>,
+              but if a conflicting lock is held on the file, then
+              wait for that lock to be released. If a signal is
+              caught while waiting, then the call is interrupted
+              and (after the signal handler has returned) returns
+              immediately (with return value −1 and
+              <code class="varname">errno</code> set to
+              <span class="errorname">EINTR</span>; see <a class="link" href="../htmlman7/signal.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(7)</span></a>).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">F_OFD_GETLK</code> (<span class="type">struct flock *</span>)</span></dt>
+
+            <dd>
+              <p>On input to this call, <em class="replaceable"><code>lock</code></em> describes an
+              open file description lock we would like to place on
+              the file. If the lock could be placed, <code class="function">fcntl</code>() does not actually place it,
+              but returns <code class="constant">F_UNLCK</code> in
+              the <em class="replaceable"><code>l_type</code></em>
+              field of <em class="replaceable"><code>lock</code></em> and leaves the
+              other fields of the structure unchanged. If one or
+              more incompatible locks would prevent this lock being
+              placed, then details about one of these locks are
+              returned via <em class="replaceable"><code>lock</code></em>, as described
+              above for <code class="constant">F_GETLK</code>.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>In the current implementation, no deadlock detection is
+        performed for open file description locks. (This contrasts
+        with process-associated record locks, for which the kernel
+        does perform deadlock detection.)</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="fcntl-2_sect7" name="fcntl-2_sect7" shape="rect"> </a>
+
+        <h3>Mandatory locking</h3>
+
+        <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+          <table border="0" summary="Warning">
+            <tr>
+              <td rowspan="2" align="center" valign="top" width="25" colspan="1"><img alt="[Warning]" src="../stylesheet/warning.png" /></td>
+
+              <th align="left" rowspan="1" colspan="1">Warning</th>
+            </tr>
+
+            <tr>
+              <td align="left" valign="top" rowspan="1" colspan="1">
+                <p>the Linux implementation of mandatory locking is
+                unreliable. See BUGS below.</p>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <p>By default, both traditional (process-associated) and
+        open file description record locks are advisory. Advisory
+        locks are not enforced and are useful only between
+        cooperating processes.</p>
+
+        <p>Both lock types can also be mandatory. Mandatory locks
+        are enforced for all processes. If a process tries to
+        perform an incompatible access (e.g., <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> or <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a>) on a file
+        region that has an incompatible mandatory lock, then the
+        result depends upon whether the <code class="constant">O_NONBLOCK</code> flag is enabled for its open
+        file description. If the <code class="constant">O_NONBLOCK</code> flag is not enabled, then the
+        system call is blocked until the lock is removed or
+        converted to a mode that is compatible with the access. If
+        the <code class="constant">O_NONBLOCK</code> flag is
+        enabled, then the system call fails with the error
+        <span class="errorname">EAGAIN</span>.</p>
+
+        <p>To make use of mandatory locks, mandatory locking must
+        be enabled both on the filesystem that contains the file to
+        be locked, and on the file itself. Mandatory locking is
+        enabled on a filesystem using the "−o mand" option to
+        <a class="link" href="../htmlman8/mount.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mount</span>(8)</span></a>, or the
+        <code class="constant">MS_MANDLOCK</code> flag for
+        <a class="link" href="../htmlman2/mount.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mount</span>(2)</span></a>. Mandatory
+        locking is enabled on a file by disabling group execute
+        permission on the file and enabling the set-group-ID
+        permission bit (see <a class="link" href="../htmlman1/chmod.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chmod</span>(1)</span></a> and <a class="link" href="../htmlman2/chmod.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chmod</span>(2)</span></a>).</p>
+
+        <p>Mandatory locking is not specified by POSIX. Some other
+        systems also support mandatory locking, although the
+        details of how to enable it vary across systems.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="fcntl-2_sect8" name="fcntl-2_sect8" shape="rect"> </a>
+
+        <h3>Managing signals</h3>
+
+        <p><code class="constant">F_GETOWN</code>, <code class="constant">F_SETOWN</code>, <code class="constant">F_GETOWN_EX</code>, <code class="constant">F_SETOWN_EX</code>, <code class="constant">F_GETSIG</code> and <code class="constant">F_SETSIG</code> are used to manage I/O
+        availability signals:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">F_GETOWN</code> (<span class="type">void</span>)</span></dt>
+
+            <dd>
+              <p>Return (as the function result) the process ID or
+              process group currently receiving <code class="constant">SIGIO</code> and <code class="constant">SIGURG</code> signals for events on file
+              descriptor <em class="parameter"><code>fd</code></em>. Process IDs are
+              returned as positive values; process group IDs are
+              returned as negative values (but see BUGS below).
+              <em class="replaceable"><code>arg</code></em> is
+              ignored.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">F_SETOWN</code> (<span class="type">int</span>)</span></dt>
+
+            <dd>
+              <p>Set the process ID or process group ID that will
+              receive <code class="constant">SIGIO</code> and
+              <code class="constant">SIGURG</code> signals for
+              events on file descriptor <em class="parameter"><code>fd</code></em> to the ID given in
+              <em class="replaceable"><code>arg</code></em>. A
+              process ID is specified as a positive value; a
+              process group ID is specified as a negative value.
+              Most commonly, the calling process specifies itself
+              as the owner (that is, <em class="replaceable"><code>arg</code></em> is specified as
+              <a class="link" href="../htmlman2/getpid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getpid</span>(2)</span></a>).</p>
+
+              <p>If you set the <code class="constant">O_ASYNC</code> status flag on a file
+              descriptor by using the <code class="constant">F_SETFL</code> command of <code class="function">fcntl</code>(), a <code class="constant">SIGIO</code> signal is sent whenever input
+              or output becomes possible on that file descriptor.
+              <code class="constant">F_SETSIG</code> can be used to
+              obtain delivery of a signal other than <code class="constant">SIGIO</code>. If this permission check
+              fails, then the signal is silently discarded.</p>
+
+              <p>Sending a signal to the owner process (group)
+              specified by <code class="constant">F_SETOWN</code>
+              is subject to the same permissions checks as are
+              described for <a class="link" href="../htmlman2/kill.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">kill</span>(2)</span></a>, where the
+              sending process is the one that employs <code class="constant">F_SETOWN</code> (but see BUGS below).</p>
+
+              <p>If the file descriptor <em class="parameter"><code>fd</code></em> refers to a socket,
+              <code class="constant">F_SETOWN</code> also selects
+              the recipient of <code class="constant">SIGURG</code>
+              signals that are delivered when out-of-band data
+              arrives on that socket. (<code class="constant">SIGURG</code> is sent in any situation
+              where <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a> would
+              report the socket as having an "exceptional
+              condition".)</p>
+
+              <p>The following was true in 2.6.x kernels up to and
+              including kernel 2.6.11:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="itemizedlist">
+                    <ul class="itemizedlist" style="list-style-type: disc;">
+                      <li class="listitem">
+                        <p>If a nonzero value is given to
+                        <code class="constant">F_SETSIG</code> in a
+                        multithreaded process running with a
+                        threading library that supports thread
+                        groups (e.g., NPTL), then a positive value
+                        given to <code class="constant">F_SETOWN</code> has a different
+                        meaning: instead of being a process ID
+                        identifying a whole process, it is a thread
+                        ID identifying a specific thread within a
+                        process. Consequently, it may be necessary
+                        to pass <code class="constant">F_SETOWN</code> the result of
+                        <a class="link" href="../htmlman2/gettid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gettid</span>(2)</span></a>
+                        instead of <a class="link" href="../htmlman2/getpid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getpid</span>(2)</span></a>
+                        to get sensible results when <code class="constant">F_SETSIG</code> is used. (In
+                        current Linux threading implementations, a
+                        main thread's thread ID is the same as its
+                        process ID. This means that a
+                        single-threaded program can equally use
+                        <a class="link" href="../htmlman2/gettid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gettid</span>(2)</span></a>
+                        or <a class="link" href="../htmlman2/getpid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getpid</span>(2)</span></a>
+                        in this scenario.) Note, however, that the
+                        statements in this paragraph do not apply
+                        to the <code class="constant">SIGURG</code>
+                        signal generated for out-of-band data on a
+                        socket: this signal is always sent to
+                        either a process or a process group,
+                        depending on the value given to
+                        <code class="constant">F_SETOWN</code>.</p>
+                      </li>
+                    </ul>
+                  </div>
+                </blockquote>
+              </div>
+
+              <p>The above behavior was accidentally dropped in
+              Linux 2.6.12, and won't be restored. From Linux
+              2.6.32 onward, use <code class="constant">F_SETOWN_EX</code> to target <code class="constant">SIGIO</code> and <code class="constant">SIGURG</code> signals at a particular
+              thread.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">F_GETOWN_EX</code> (struct f_owner_ex *)
+            (since Linux 2.6.32)</span></dt>
+
+            <dd>
+              <p>Return the current file descriptor owner settings
+              as defined by a previous <code class="constant">F_SETOWN_EX</code> operation. The
+              information is returned in the structure pointed to
+              by <em class="replaceable"><code>arg</code></em>,
+              which has the following form:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="structdef">
+                    <table style="border-collapse: collapse;">
+                      <colgroup span="1">
+                        <col class="c1" span="1" />
+                        <col class="c2" span="1" />
+                        <col class="c3" span="1" />
+                        <col class="c4" span="1" />
+                        <col class="c5" span="1" />
+                      </colgroup>
+
+                      <tbody>
+                        <tr>
+                          <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                          <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">f_owner_ex</span> {</td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>type</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">pid_t</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>pid</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </blockquote>
+              </div>
+
+              <p>The <em class="parameter"><code>type</code></em>
+              field will have one of the values <code class="constant">F_OWNER_TID</code>, <code class="constant">F_OWNER_PID</code>, or <code class="constant">F_OWNER_PGRP</code>. The <em class="parameter"><code>pid</code></em> field is a positive
+              integer representing a thread ID, process ID, or
+              process group ID. See <code class="constant">F_SETOWN_EX</code> for more details.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">F_SETOWN_EX</code> (struct f_owner_ex *)
+            (since Linux 2.6.32)</span></dt>
+
+            <dd>
+              <p>This operation performs a similar task to
+              <code class="constant">F_SETOWN</code>. It allows the
+              caller to direct I/O availability signals to a
+              specific thread, process, or process group. The
+              caller specifies the target of signals via <em class="replaceable"><code>arg</code></em>, which is a
+              pointer to a <em class="replaceable"><code>f_owner_ex</code></em> structure.
+              The <em class="parameter"><code>type</code></em>
+              field has one of the following values, which define
+              how <em class="parameter"><code>pid</code></em> is
+              interpreted:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="variablelist">
+                    <dl class="variablelist">
+                      <dt><span class="term"><code class="constant">F_OWNER_TID</code></span></dt>
+
+                      <dd>
+                        <p>Send the signal to the thread whose
+                        thread ID (the value returned by a call to
+                        <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a>
+                        or <a class="link" href="../htmlman2/gettid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gettid</span>(2)</span></a>)
+                        is specified in <em class="parameter"><code>pid</code></em>.</p>
+                      </dd>
+
+                      <dt><span class="term"><code class="constant">F_OWNER_PID</code></span></dt>
+
+                      <dd>
+                        <p>Send the signal to the process whose ID
+                        is specified in <em class="parameter"><code>pid</code></em>.</p>
+                      </dd>
+
+                      <dt><span class="term"><code class="constant">F_OWNER_PGRP</code></span></dt>
+
+                      <dd>
+                        <p>Send the signal to the process group
+                        whose ID is specified in <em class="parameter"><code>pid</code></em>. (Note
+                        that, unlike with <code class="constant">F_SETOWN</code>, a process group
+                        ID is specified as a positive value
+                        here.)</p>
+                      </dd>
+                    </dl>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="constant">F_GETSIG</code> (<span class="type">void</span>)</span></dt>
+
+            <dd>
+              <p>Return (as the function result) the signal sent
+              when input or output becomes possible. A value of
+              zero means <code class="constant">SIGIO</code> is
+              sent. Any other value (including <code class="constant">SIGIO</code>) is the signal sent instead,
+              and in this case additional info is available to the
+              signal handler if installed with <code class="constant">SA_SIGINFO</code>. <em class="replaceable"><code>arg</code></em> is ignored.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">F_SETSIG</code> (<span class="type">int</span>)</span></dt>
+
+            <dd>
+              <p>Set the signal sent when input or output becomes
+              possible to the value given in <em class="replaceable"><code>arg</code></em>. A value of zero
+              means to send the default <code class="constant">SIGIO</code> signal. Any other value
+              (including <code class="constant">SIGIO</code>) is
+              the signal to send instead, and in this case
+              additional info is available to the signal handler if
+              installed with <code class="constant">SA_SIGINFO</code>.</p>
+
+              <p>By using <code class="constant">F_SETSIG</code>
+              with a nonzero value, and setting <code class="constant">SA_SIGINFO</code> for the signal handler
+              (see <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a>),
+              extra information about I/O events is passed to the
+              handler in a <span class="type">siginfo_t</span>
+              structure. If the <em class="replaceable"><code>si_code</code></em> field
+              indicates the source is <code class="constant">SI_SIGIO</code>, the <em class="replaceable"><code>si_fd</code></em> field gives the
+              file descriptor associated with the event. Otherwise,
+              there is no indication which file descriptors are
+              pending, and you should use the usual mechanisms
+              (<a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a>,
+              <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a>, <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> with
+              <code class="constant">O_NONBLOCK</code> set etc.) to
+              determine which file descriptors are available for
+              I/O.</p>
+
+              <p>Note that the file descriptor provided in
+              <em class="replaceable"><code>si_fd</code></em> is
+              the one that that was specified during the
+              <code class="constant">F_SETSIG</code> operation.
+              This can lead to an unusual corner case. If the file
+              descriptor is duplicated (<a class="link" href="../htmlman2/dup.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">dup</span>(2)</span></a> or similar),
+              and the original file descriptor is closed, then I/O
+              events will continue to be generated, but the
+              <em class="replaceable"><code>si_fd</code></em> field
+              will contain the number of the now closed file
+              descriptor.</p>
+
+              <p>By selecting a real time signal (value &gt;=
+              <code class="constant">SIGRTMIN</code>), multiple I/O
+              events may be queued using the same signal numbers.
+              (Queuing is dependent on available memory.) Extra
+              information is available if <code class="constant">SA_SIGINFO</code> is set for the signal
+              handler, as above.</p>
+
+              <p>Note that Linux imposes a limit on the number of
+              real-time signals that may be queued to a process
+              (see <a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getrlimit</span>(2)</span></a> and
+              <a class="link" href="../htmlman7/signal.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(7)</span></a>) and if
+              this limit is reached, then the kernel reverts to
+              delivering <code class="constant">SIGIO</code>, and
+              this signal is delivered to the entire process rather
+              than to a specific thread.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>Using these mechanisms, a program can implement fully
+        asynchronous I/O without using <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a> or <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a> most of the
+        time.</p>
+
+        <p>The use of <code class="constant">O_ASYNC</code> is
+        specific to BSD and Linux. The only use of <code class="constant">F_GETOWN</code> and <code class="constant">F_SETOWN</code> specified in POSIX.1 is in
+        conjunction with the use of the <code class="constant">SIGURG</code> signal on sockets. (POSIX does not
+        specify the <code class="constant">SIGIO</code> signal.)
+        <code class="constant">F_GETOWN_EX</code>, <code class="constant">F_SETOWN_EX</code>, <code class="constant">F_GETSIG</code>, and <code class="constant">F_SETSIG</code> are Linux-specific. POSIX has
+        asynchronous I/O and the <em class="replaceable"><code>aio_sigevent</code></em> structure to
+        achieve similar things; these are also available in Linux
+        as part of the GNU C Library (Glibc).</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="fcntl-2_sect9" name="fcntl-2_sect9" shape="rect"> </a>
+
+        <h3>Leases</h3>
+
+        <p><code class="constant">F_SETLEASE</code> and
+        <code class="constant">F_GETLEASE</code> (Linux 2.4 onward)
+        are used (respectively) to establish a new lease, and
+        retrieve the current lease, on the open file description
+        referred to by the file descriptor <em class="parameter"><code>fd</code></em>. A file lease provides a
+        mechanism whereby the process holding the lease (the "lease
+        holder") is notified (via delivery of a signal) when a
+        process (the "lease breaker") tries to <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a> or <a class="link" href="../htmlman2/truncate.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">truncate</span>(2)</span></a> the file
+        referred to by that file descriptor.</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">F_SETLEASE</code> (<span class="type">int</span>)</span></dt>
+
+            <dd>
+              <p>Set or remove a file lease according to which of
+              the following values is specified in the integer
+              <em class="replaceable"><code>arg</code></em>:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="variablelist">
+                    <dl class="variablelist">
+                      <dt><span class="term"><code class="constant">F_RDLCK</code></span></dt>
+
+                      <dd>
+                        <p>Take out a read lease. This will cause
+                        the calling process to be notified when the
+                        file is opened for writing or is truncated.
+                        A read lease can be placed only on a file
+                        descriptor that is opened read-only.</p>
+                      </dd>
+
+                      <dt><span class="term"><code class="constant">F_WRLCK</code></span></dt>
+
+                      <dd>
+                        <p>Take out a write lease. This will cause
+                        the caller to be notified when the file is
+                        opened for reading or writing or is
+                        truncated. A write lease may be placed on a
+                        file only if there are no other open file
+                        descriptors for the file.</p>
+                      </dd>
+
+                      <dt><span class="term"><code class="constant">F_UNLCK</code></span></dt>
+
+                      <dd>
+                        <p>Remove our lease from the file.</p>
+                      </dd>
+                    </dl>
+                  </div>
+                </blockquote>
+              </div>
+
+              <p>Leases are associated with an open file
+              description (see <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>). This
+              means that duplicate file descriptors (created by,
+              for example, <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> or
+              <a class="link" href="../htmlman2/dup.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">dup</span>(2)</span></a>) refer to
+              the same lease, and this lease may be modified or
+              released using any of these descriptors. Furthermore,
+              the lease is released by either an explicit
+              <code class="constant">F_UNLCK</code> operation on
+              any of these duplicate descriptors, or when all such
+              descriptors have been closed.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>Leases may be taken out only on regular files. An
+        unprivileged process may take out a lease only on a file
+        whose UID (owner) matches the filesystem UID of the
+        process. A process with the <code class="constant">CAP_LEASE</code> capability may take out leases
+        on arbitrary files.</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">F_GETLEASE</code> (<span class="type">void</span>)</span></dt>
+
+            <dd>
+              <p>Indicates what type of lease is associated with
+              the file descriptor <em class="parameter"><code>fd</code></em> by returning either
+              <code class="constant">F_RDLCK</code>, <code class="constant">F_WRLCK</code>, or <code class="constant">F_UNLCK</code>, indicating, respectively,
+              a read lease , a write lease, or no lease. <em class="replaceable"><code>arg</code></em> is ignored.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>When a process (the "lease breaker") performs an
+        <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a> or <a class="link" href="../htmlman2/truncate.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">truncate</span>(2)</span></a> that
+        conflicts with a lease established via <code class="constant">F_SETLEASE</code>, the system call is blocked by
+        the kernel and the kernel notifies the lease holder by
+        sending it a signal (<code class="constant">SIGIO</code> by
+        default). The lease holder should respond to receipt of
+        this signal by doing whatever cleanup is required in
+        preparation for the file to be accessed by another process
+        (e.g., flushing cached buffers) and then either remove or
+        downgrade its lease. A lease is removed by performing an
+        <code class="constant">F_SETLEASE</code> command specifying
+        <em class="replaceable"><code>arg</code></em> as
+        <code class="constant">F_UNLCK</code>. If the lease holder
+        currently holds a write lease on the file, and the lease
+        breaker is opening the file for reading, then it is
+        sufficient for the lease holder to downgrade the lease to a
+        read lease. This is done by performing an <code class="constant">F_SETLEASE</code> command specifying <em class="replaceable"><code>arg</code></em> as <code class="constant">F_RDLCK</code>.</p>
+
+        <p>If the lease holder fails to downgrade or remove the
+        lease within the number of seconds specified in
+        <code class="filename">/proc/sys/fs/lease-break-time</code>,
+        then the kernel forcibly removes or downgrades the lease
+        holder's lease.</p>
+
+        <p>Once a lease break has been initiated, <code class="constant">F_GETLEASE</code> returns the target lease type
+        (either <code class="constant">F_RDLCK</code> or
+        <code class="constant">F_UNLCK</code>, depending on what
+        would be compatible with the lease breaker) until the lease
+        holder voluntarily downgrades or removes the lease or the
+        kernel forcibly does so after the lease break timer
+        expires.</p>
+
+        <p>Once the lease has been voluntarily or forcibly removed
+        or downgraded, and assuming the lease breaker has not
+        unblocked its system call, the kernel permits the lease
+        breaker's system call to proceed.</p>
+
+        <p>If the lease breaker's blocked <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a> or <a class="link" href="../htmlman2/truncate.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">truncate</span>(2)</span></a> is
+        interrupted by a signal handler, then the system call fails
+        with the error <span class="errorname">EINTR</span>, but
+        the other steps still occur as described above. If the
+        lease breaker is killed by a signal while blocked in
+        <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a> or <a class="link" href="../htmlman2/truncate.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">truncate</span>(2)</span></a>, then the
+        other steps still occur as described above. If the lease
+        breaker specifies the <code class="constant">O_NONBLOCK</code> flag when calling <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>, then the call
+        immediately fails with the error <span class="errorname">EWOULDBLOCK</span>, but the other steps still
+        occur as described above.</p>
+
+        <p>The default signal used to notify the lease holder is
+        <code class="constant">SIGIO</code>, but this can be
+        changed using the <code class="constant">F_SETSIG</code>
+        command to <code class="function">fcntl</code>(). If a
+        <code class="constant">F_SETSIG</code> command is performed
+        (even one specifying <code class="constant">SIGIO</code>),
+        and the signal handler is established using <code class="constant">SA_SIGINFO</code>, then the handler will receive
+        a <span class="type">siginfo_t</span> structure as its
+        second argument, and the <em class="replaceable"><code>si_fd</code></em> field of this
+        argument will hold the descriptor of the leased file that
+        has been accessed by another process. (This is useful if
+        the caller holds leases against multiple files.)</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="fcntl-2_sect10" name="fcntl-2_sect10" shape="rect"> </a>
+
+        <h3>File and directory change notification (dnotify)</h3>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">F_NOTIFY</code> (<span class="type">int</span>)</span></dt>
+
+            <dd>
+              <p>(Linux 2.4 onward) Provide notification when the
+              directory referred to by <em class="parameter"><code>fd</code></em> or any of the files
+              that it contains is changed. The events to be
+              notified are specified in <em class="replaceable"><code>arg</code></em>, which is a bit
+              mask specified by ORing together zero or more of the
+              following bits:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="variablelist">
+                    <dl class="variablelist">
+                      <dt><span class="term"><code class="constant">DN_ACCESS</code></span></dt>
+
+                      <dd>
+                        <p>A file was accessed (<a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>,
+                        <a class="link" href="../htmlman2/pread.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pread</span>(2)</span></a>,
+                        <a class="link" href="../htmlman2/readv.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">readv</span>(2)</span></a>,
+                        and similar)</p>
+                      </dd>
+
+                      <dt><span class="term"><code class="constant">DN_MODIFY</code></span></dt>
+
+                      <dd>
+                        <p>A file was modified (<a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a>,
+                        <a class="link" href="../htmlman2/pread.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pwrite</span>(2)</span></a>,
+                        <a class="link" href="../htmlman2/readv.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">writev</span>(2)</span></a>,
+                        <a class="link" href="../htmlman2/truncate.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">truncate</span>(2)</span></a>,
+                        <a class="link" href="../htmlman2/truncate.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ftruncate</span>(2)</span></a>,
+                        and similar).</p>
+                      </dd>
+
+                      <dt><span class="term"><code class="constant">DN_CREATE</code></span></dt>
+
+                      <dd>
+                        <p>A file was created (<a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>,
+                        <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">creat</span>(2)</span></a>,
+                        <a class="link" href="../htmlman2/mknod.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mknod</span>(2)</span></a>,
+                        <a class="link" href="../htmlman2/mkdir.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mkdir</span>(2)</span></a>,
+                        <a class="link" href="../htmlman2/link.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">link</span>(2)</span></a>,
+                        <a class="link" href="../htmlman2/symlink.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">symlink</span>(2)</span></a>,
+                        <a class="link" href="../htmlman2/rename.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rename</span>(2)</span></a>
+                        into this directory).</p>
+                      </dd>
+
+                      <dt><span class="term"><code class="constant">DN_DELETE</code></span></dt>
+
+                      <dd>
+                        <p>A file was unlinked (<a class="link" href="../htmlman2/unlink.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unlink</span>(2)</span></a>,
+                        <a class="link" href="../htmlman2/rename.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rename</span>(2)</span></a>
+                        to another directory, <a class="link" href="../htmlman2/rmdir.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rmdir</span>(2)</span></a>).</p>
+                      </dd>
+
+                      <dt><span class="term"><code class="constant">DN_RENAME</code></span></dt>
+
+                      <dd>
+                        <p>A file was renamed within this directory
+                        (<a class="link" href="../htmlman2/rename.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rename</span>(2)</span></a>).</p>
+                      </dd>
+
+                      <dt><span class="term"><code class="constant">DN_ATTRIB</code></span></dt>
+
+                      <dd>
+                        <p>The attributes of a file were changed
+                        (<a class="link" href="../htmlman2/chown.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chown</span>(2)</span></a>,
+                        <a class="link" href="../htmlman2/chmod.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chmod</span>(2)</span></a>,
+                        <a class="link" href="../htmlman2/utime.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">utime</span>(2)</span></a>,
+                        <a class="link" href="../htmlman2/utimensat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">utimensat</span>(2)</span></a>,
+                        and similar).</p>
+                      </dd>
+                    </dl>
+                  </div>
+                </blockquote>
+              </div>
+
+              <p>(In order to obtain these definitions, the
+              <code class="constant">_GNU_SOURCE</code> feature
+              test macro must be defined before including
+              <em class="replaceable"><code>any</code></em> header
+              files.)</p>
+
+              <p>Directory notifications are normally "one-shot",
+              and the application must reregister to receive
+              further notifications. Alternatively, if <code class="constant">DN_MULTISHOT</code> is included in
+              <em class="replaceable"><code>arg</code></em>, then
+              notification will remain in effect until explicitly
+              removed.</p>
+
+              <p>A series of <code class="constant">F_NOTIFY</code>
+              requests is cumulative, with the events in <em class="replaceable"><code>arg</code></em> being added to
+              the set already monitored. To disable notification of
+              all events, make an <code class="constant">F_NOTIFY</code> call specifying <em class="replaceable"><code>arg</code></em> as 0.</p>
+
+              <p>Notification occurs via delivery of a signal. The
+              default signal is <code class="constant">SIGIO</code>, but this can be changed
+              using the <code class="constant">F_SETSIG</code>
+              command to <code class="function">fcntl</code>().
+              (Note that <code class="constant">SIGIO</code> is one
+              of the nonqueuing standard signals; switching to the
+              use of a real-time signal means that multiple
+              notifications can be queued to the process.) In the
+              latter case, the signal handler receives a
+              <span class="type">siginfo_t</span> structure as its
+              second argument (if the handler was established using
+              <code class="constant">SA_SIGINFO</code>) and the
+              <em class="replaceable"><code>si_fd</code></em> field
+              of this structure contains the file descriptor which
+              generated the notification (useful when establishing
+              notification on multiple directories).</p>
+
+              <p>Especially when using <code class="constant">DN_MULTISHOT</code>, a real time signal
+              should be used for notification, so that multiple
+              notifications can be queued.</p>
+
+              <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+                <table border="0" summary="Note">
+                  <tr>
+                    <td rowspan="2" align="center" valign="top" width="25" colspan="1"><img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+                    <th align="left" rowspan="1" colspan="1">Note</th>
+                  </tr>
+
+                  <tr>
+                    <td align="left" valign="top" rowspan="1" colspan="1">
+                      <p>New applications should use the <em class="replaceable"><code>inotify</code></em>
+                      interface (available since kernel 2.6.13),
+                      which provides a much superior interface for
+                      obtaining notifications of filesystem events.
+                      See <a class="link" href="../htmlman7/inotify.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">inotify</span>(7)</span></a>.</p>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="fcntl-2_sect11" name="fcntl-2_sect11" shape="rect"> </a>
+
+        <h3>Changing the capacity of a pipe</h3>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">F_SETPIPE_SZ</code> (<span class="type">int</span>; since Linux 2.6.35)</span></dt>
+
+            <dd>
+              <p>Change the capacity of the pipe referred to by
+              <em class="parameter"><code>fd</code></em> to be at
+              least <em class="replaceable"><code>arg</code></em>
+              bytes. An unprivileged process can adjust the pipe
+              capacity to any value between the system page size
+              and the limit defined in <code class="filename">/proc/sys/fs/pipe-max-size</code> (see
+              <a class="link" href="../htmlman5/proc.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">proc</span>(5)</span></a>). Attempts
+              to set the pipe capacity below the page size are
+              silently rounded up to the page size. Attempts by an
+              unprivileged process to set the pipe capacity above
+              the limit in <code class="filename">/proc/sys/fs/pipe-max-size</code> yield
+              the error <span class="errorname">EPERM</span>; a
+              privileged process (<code class="constant">CAP_SYS_RESOURCE</code>) can override the
+              limit. When allocating the buffer for the pipe, the
+              kernel may use a capacity larger than <em class="replaceable"><code>arg</code></em>, if that is
+              convenient for the implementation. The actual
+              capacity that is set is returned as the function
+              result. Attempting to set the pipe capacity smaller
+              than the amount of buffer space currently used to
+              store data produces the error <span class="errorname">EBUSY</span>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">F_GETPIPE_SZ</code> (<span class="type">void</span>; since Linux 2.6.35)</span></dt>
+
+            <dd>
+              <p>Return (as the function result) the capacity of
+              the pipe referred to by <em class="parameter"><code>fd</code></em>.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="fcntl-2_sect12" name="fcntl-2_sect12" shape="rect"> </a>
+
+        <h3>File Sealing</h3>
+
+        <p>File seals limit the set of allowed operations on a
+        given file. For each seal that is set on a file, a specific
+        set of operations will fail with <span class="errorname">EPERM</span> on this file from now on. The file
+        is said to be sealed. The default set of seals depends on
+        the type of the underlying file and filesystem. For an
+        overview of file sealing, a discussion of its purpose, and
+        some code examples, see <a class="link" href="../htmlman2/memfd_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">memfd_create</span>(2)</span></a>.</p>
+
+        <p>Currently, only the <em class="replaceable"><code>tmpfs</code></em> filesystem supports
+        sealing. On other filesystems, all <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a> operations that
+        operate on seals will return <span class="errorname">EINVAL</span>.</p>
+
+        <p>Seals are a property of an inode. Thus, all open file
+        descriptors referring to the same inode share the same set
+        of seals. Furthermore, seals can never be removed, only
+        added.</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">F_ADD_SEALS</code> (<span class="type">int</span>; since Linux 3.17)</span></dt>
+
+            <dd>
+              <p>Add the seals given in the bit-mask argument
+              <em class="replaceable"><code>arg</code></em> to the
+              set of seals of the inode referred to by the file
+              descriptor <em class="parameter"><code>fd</code></em>. Seals cannot be
+              removed again. Once this call succeeds, the seals are
+              enforced by the kernel immediately. If the current
+              set of seals includes <code class="constant">F_SEAL_SEAL</code> (see below), then this
+              call will be rejected with <span class="errorname">EPERM</span>. Adding a seal that is
+              already set is a no-op, in case <code class="constant">F_SEAL_SEAL</code> is not set already. In
+              order to place a seal, the file descriptor <em class="parameter"><code>fd</code></em> must be
+              writable.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">F_GET_SEALS</code> (<span class="type">void</span>; since Linux 3.17)</span></dt>
+
+            <dd>
+              <p>Return (as the function result) the current set of
+              seals of the inode referred to by <em class="parameter"><code>fd</code></em>. If no seals are
+              set, 0 is returned. If the file does not support
+              sealing, −1 is returned and <code class="varname">errno</code> is set to <span class="errorname">EINVAL</span>.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>The following seals are available:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">F_SEAL_SEAL</code></span></dt>
+
+            <dd>
+              <p>If this seal is set, any further call to <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a> with
+              <code class="constant">F_ADD_SEALS</code> will fail
+              with <span class="errorname">EPERM</span>. Therefore,
+              this seal prevents any modifications to the set of
+              seals itself. If the initial set of seals of a file
+              includes <code class="constant">F_SEAL_SEAL</code>,
+              then this effectively causes the set of seals to be
+              constant and locked.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">F_SEAL_SHRINK</code></span></dt>
+
+            <dd>
+              <p>If this seal is set, the file in question cannot
+              be reduced in size. This affects <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a> with the
+              <code class="constant">O_TRUNC</code> flag as well as
+              <a class="link" href="../htmlman2/truncate.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">truncate</span>(2)</span></a> and
+              <a class="link" href="../htmlman2/truncate.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ftruncate</span>(2)</span></a>. Those
+              calls will fail with <span class="errorname">EPERM</span> if you try to shrink the
+              file in question. Increasing the file size is still
+              possible.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">F_SEAL_GROW</code></span></dt>
+
+            <dd>
+              <p>If this seal is set, the size of the file in
+              question cannot be increased. This affects <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a> beyond the
+              end of the file, <a class="link" href="../htmlman2/truncate.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">truncate</span>(2)</span></a>,
+              <a class="link" href="../htmlman2/truncate.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ftruncate</span>(2)</span></a>, and
+              <a class="link" href="../htmlman2/fallocate.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fallocate</span>(2)</span></a>. These
+              calls will fail with <span class="errorname">EPERM</span> if you use them to increase
+              the file size. If you keep the size or shrink it,
+              those calls still work as expected.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">F_SEAL_WRITE</code></span></dt>
+
+            <dd>
+              <p>If this seal is set, you cannot modify the
+              contents of the file. Note that shrinking or growing
+              the size of the file is still possible and allowed.
+              Thus, this seal is normally used in combination with
+              one of the other seals. This seal affects <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a> and
+              <a class="link" href="../htmlman2/fallocate.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fallocate</span>(2)</span></a> (only
+              in combination with the <code class="constant">FALLOC_FL_PUNCH_HOLE</code> flag). Those
+              calls will fail with <span class="errorname">EPERM</span> if this seal is set.
+              Furthermore, trying to create new shared, writable
+              memory-mappings via <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a> will also
+              fail with <span class="errorname">EPERM</span>.</p>
+
+              <p>Setting <code class="constant">F_SEAL_WRITE</code>
+              via <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a> with
+              <code class="constant">F_ADD_SEALS</code> will fail
+              with <span class="errorname">EBUSY</span> if any
+              writable, shared mapping exists. Such mappings must
+              be unmapped before you can add this seal.
+              Furthermore, if there are any asynchronous I/O
+              operations (<a class="link" href="../htmlman2/io_submit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">io_submit</span>(2)</span></a>)
+              pending on the file, all outstanding writes will be
+              discarded.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fcntl-2_sect13" name="fcntl-2_sect13" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>For a successful call, the return value depends on the
+      operation:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">F_DUPFD</code></span></dt>
+
+          <dd>
+            <p>The new descriptor.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">F_GETFD</code></span></dt>
+
+          <dd>
+            <p>Value of file descriptor flags.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">F_GETFL</code></span></dt>
+
+          <dd>
+            <p>Value of file status flags.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">F_GETLEASE</code></span></dt>
+
+          <dd>
+            <p>Type of lease held on file descriptor.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">F_GETOWN</code></span></dt>
+
+          <dd>
+            <p>Value of descriptor owner.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">F_GETSIG</code></span></dt>
+
+          <dd>
+            <p>Value of signal sent when read or write becomes
+            possible, or zero for traditional <code class="constant">SIGIO</code> behavior.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">F_GETPIPE_SZ</code>, <code class="constant">F_SETPIPE_SZ</code></span></dt>
+
+          <dd>
+            <p>The pipe capacity.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">F_GET_SEALS</code></span></dt>
+
+          <dd>
+            <p>A bit mask identifying the seals that have been set
+            for the inode referred to by <em class="parameter"><code>fd</code></em>.</p>
+          </dd>
+
+          <dt><span class="term">All other commands</span></dt>
+
+          <dd>
+            <p>Zero.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>On error, −1 is returned, and <code class="varname">errno</code> is set appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="fcntl-2_sect14" name="fcntl-2_sect14" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EACCES</span> or <span class="errorname">EAGAIN</span></span></dt>
+
+          <dd>
+            <p>Operation is prohibited by locks held by other
+            processes.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EAGAIN</span></span></dt>
+
+          <dd>
+            <p>The operation is prohibited because the file has
+            been memory-mapped by another process.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EBADF</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>fd</code></em> is not an
+            open file descriptor</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EBADF</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>cmd</code></em> is
+            <code class="constant">F_SETLK</code> or <code class="constant">F_SETLKW</code> and the file descriptor open
+            mode doesn't match with the type of lock requested.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EBUSY</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>cmd</code></em> is
+            <code class="constant">F_SETPIPE_SZ</code> and the new
+            pipe capacity specified in <em class="replaceable"><code>arg</code></em> is smaller than the
+            amount of buffer space currently used to store data in
+            the pipe.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EBUSY</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>cmd</code></em> is
+            <code class="constant">F_ADD_SEALS</code>, <em class="replaceable"><code>arg</code></em> includes
+            <code class="constant">F_SEAL_WRITE</code>, and there
+            exists a writable, shared mapping on the file referred
+            to by <em class="parameter"><code>fd</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EDEADLK</span></span></dt>
+
+          <dd>
+            <p>It was detected that the specified <code class="constant">F_SETLKW</code> command would cause a
+            deadlock.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p><em class="replaceable"><code>lock</code></em> is
+            outside your accessible address space.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINTR</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>cmd</code></em> is
+            <code class="constant">F_SETLKW</code> or <code class="constant">F_OFD_SETLKW</code> and the operation was
+            interrupted by a signal; see <a class="link" href="../htmlman7/signal.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(7)</span></a>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINTR</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>cmd</code></em> is
+            <code class="constant">F_GETLK</code>, <code class="constant">F_SETLK</code>, <code class="constant">F_OFD_GETLK</code>, or <code class="constant">F_OFD_SETLK</code>, and the operation was
+            interrupted by a signal before the lock was checked or
+            acquired. Most likely when locking a remote file (e.g.,
+            locking over NFS), but can sometimes happen
+            locally.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>The value specified in <em class="parameter"><code>cmd</code></em> is not recognized by
+            this kernel.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>cmd</code></em> is
+            <code class="constant">F_ADD_SEALS</code> and
+            <em class="replaceable"><code>arg</code></em> includes
+            an unrecognized sealing bit.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>cmd</code></em> is
+            <code class="constant">F_ADD_SEALS</code> or
+            <code class="constant">F_GET_SEALS</code> and the
+            filesystem containing the inode referred to by
+            <em class="parameter"><code>fd</code></em> does not
+            support sealing.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>cmd</code></em> is
+            <code class="constant">F_DUPFD</code> and <em class="replaceable"><code>arg</code></em> is negative or is
+            greater than the maximum allowable value (see the
+            discussion of <code class="constant">RLIMIT_NOFILE</code> in <a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getrlimit</span>(2)</span></a>).</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>cmd</code></em> is
+            <code class="constant">F_SETSIG</code> and <em class="replaceable"><code>arg</code></em> is not an allowable
+            signal number.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>cmd</code></em> is
+            <code class="constant">F_OFD_SETLK</code>, <code class="constant">F_OFD_SETLKW</code>, or <code class="constant">F_OFD_GETLK</code>, and <em class="replaceable"><code>l_pid</code></em> was not specified
+            as zero.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EMFILE</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>cmd</code></em> is
+            <code class="constant">F_DUPFD</code> and the process
+            already has the maximum number of file descriptors
+            open.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOLCK</span></span></dt>
+
+          <dd>
+            <p>Too many segment locks open, lock table is full, or
+            a remote locking protocol failed (e.g., locking over
+            NFS).</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOTDIR</span></span></dt>
+
+          <dd>
+            <p><code class="constant">F_NOTIFY</code> was specified
+            in <em class="parameter"><code>cmd</code></em>, but
+            <em class="parameter"><code>fd</code></em> does not
+            refer to a directory.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>Attempted to clear the <code class="constant">O_APPEND</code> flag on a file that has the
+            append-only attribute set.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>cmd</code></em> was
+            <code class="constant">F_ADD_SEALS</code>, but
+            <em class="parameter"><code>fd</code></em> was not open
+            for writing or the current set of seals on the file
+            already includes <code class="constant">F_SEAL_SEAL</code>.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fcntl-2_sect15" name="fcntl-2_sect15" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>SVr4, 4.3BSD, POSIX.1-2001. Only the operations
+      <code class="constant">F_DUPFD</code>, <code class="constant">F_GETFD</code>, <code class="constant">F_SETFD</code>, <code class="constant">F_GETFL</code>, <code class="constant">F_SETFL</code>, <code class="constant">F_GETLK</code>, <code class="constant">F_SETLK</code>, and <code class="constant">F_SETLKW</code> are specified in POSIX.1-2001.</p>
+
+      <p><code class="constant">F_GETOWN</code> and <code class="constant">F_SETOWN</code> are specified in POSIX.1-2001. (To
+      get their definitions, define either <code class="constant">_BSD_SOURCE</code>, or <code class="constant">_XOPEN_SOURCE</code> with the value 500 or
+      greater, or <code class="constant">_POSIX_C_SOURCE</code>
+      with the value 200809L or greater.)</p>
+
+      <p><code class="constant">F_DUPFD_CLOEXEC</code> is specified
+      in POSIX.1-2008. (To get this definition, define <code class="constant">_POSIX_C_SOURCE</code> with the value 200809L or
+      greater, or <code class="constant">_XOPEN_SOURCE</code> with
+      the value 700 or greater.)</p>
+
+      <p><code class="constant">F_GETOWN_EX</code>, <code class="constant">F_SETOWN_EX</code>, <code class="constant">F_SETPIPE_SZ</code>, <code class="constant">F_GETPIPE_SZ</code>, <code class="constant">F_GETSIG</code>, <code class="constant">F_SETSIG</code>, <code class="constant">F_NOTIFY</code>, <code class="constant">F_GETLEASE</code>, and <code class="constant">F_SETLEASE</code> are Linux-specific. (Define the
+      <code class="constant">_GNU_SOURCE</code> macro to obtain
+      these definitions.)</p>
+
+      <p><code class="constant">F_OFD_SETLK</code>, <code class="constant">F_OFD_SETLKW</code>, and <code class="constant">F_OFD_GETLK</code> are Linux-specific (and one
+      must define <code class="constant">_GNU_SOURCE</code> to
+      obtain their definitions), but work is being done to have
+      them included in the next version of POSIX.1.</p>
+
+      <p><code class="constant">F_ADD_SEALS</code> and <code class="constant">F_GET_SEALS</code> are Linux-specific.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="fcntl-2_sect16" name="fcntl-2_sect16" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>The errors returned by <a class="link" href="../htmlman2/dup.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">dup2</span>(2)</span></a> are different from
+      those returned by <code class="constant">F_DUPFD</code>.</p>
+
+      <div class="refsect2">
+        <a id="fcntl-2_sect17" name="fcntl-2_sect17" shape="rect"> </a>
+
+        <h3>File locking</h3>
+
+        <p>The original Linux <code class="function">fcntl</code>()
+        system call was not designed to handle large file offsets
+        (in the <em class="replaceable"><code>flock</code></em>
+        structure). Consequently, an <code class="function">fcntl64</code>() system call was added in Linux
+        2.4. The newer system call employs a different structure
+        for file locking, <em class="replaceable"><code>flock64</code></em>, and corresponding
+        commands, <code class="constant">F_GETLK64</code>,
+        <code class="constant">F_SETLK64</code>, and <code class="constant">F_SETLKW64</code>. However, these details can be
+        ignored by applications using glibc, whose <code class="function">fcntl</code>() wrapper function transparently
+        employs the more recent system call where it is
+        available.</p>
+
+        <p>The errors returned by <a class="link" href="../htmlman2/dup.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">dup2</span>(2)</span></a> are different
+        from those returned by <code class="constant">F_DUPFD</code>.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="fcntl-2_sect18" name="fcntl-2_sect18" shape="rect"> </a>
+
+        <h3>Record locks</h3>
+
+        <p>Since kernel 2.0, there is no interaction between the
+        types of lock placed by <a class="link" href="../htmlman2/flock.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">flock</span>(2)</span></a> and <code class="function">fcntl</code>().</p>
+
+        <p>Several systems have more fields in <span class="emphasis"><em>struct flock</em></span> such as, for
+        example, <em class="replaceable"><code>l_sysid</code></em>.
+        Clearly, <em class="replaceable"><code>l_pid</code></em>
+        alone is not going to be very useful if the process holding
+        the lock may live on a different machine.</p>
+
+        <p>The original Linux <code class="function">fcntl</code>()
+        system call was not designed to handle large file offsets
+        (in the <em class="replaceable"><code>flock</code></em>
+        structure). Consequently, an <code class="function">fcntl64</code>() system call was added in Linux
+        2.4. The newer system call employs a different structure
+        for file locking, <em class="replaceable"><code>flock64</code></em>, and corresponding
+        commands, <code class="constant">F_GETLK64</code>,
+        <code class="constant">F_SETLK64</code>, and <code class="constant">F_SETLKW64</code>. However, these details can be
+        ignored by applications using glibc, whose <code class="function">fcntl</code>() wrapper function transparently
+        employs the more recent system call where it is
+        available.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="fcntl-2_sect19" name="fcntl-2_sect19" shape="rect"> </a>
+
+        <h3>Record locking and NFS</h3>
+
+        <p>Before Linux 3.12, if an NFSv4 client loses contact with
+        the server for a period of time (defined as more than 90
+        seconds with no communication), it might lose and regain a
+        lock without ever being aware of the fact. (The period of
+        time after which contact is assumed lost is known as the
+        NFSv4 leasetime. On a Linux NFS server, this can be
+        determined by looking at <code class="filename">/proc/fs/nfsd/nfsv4leasetime</code>, which
+        expresses the period in seconds. The default value for this
+        file is 90.) This scenario potentially risks data
+        corruption, since another process might acquire a lock in
+        the intervening period and perform file I/O.</p>
+
+        <p>Since Linux 3.12, if an NFSv4 client loses contact with
+        the server, any I/O to the file by a process which "thinks"
+        it holds a lock will fail until that process closes and
+        reopens the file. A kernel parameter, <em class="replaceable"><code>nfs.recover_lost_locks</code></em>, can
+        be set to 1 to obtain the pre-3.12 behavior, whereby the
+        client will attempt to recover lost locks when contact is
+        reestablished with the server. Because of the attendant
+        risk of data corruption, this parameter defaults to 0
+        (disabled).</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fcntl-2_sect20" name="fcntl-2_sect20" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <div class="refsect2">
+        <a id="fcntl-2_sect21" name="fcntl-2_sect21" shape="rect"> </a>
+
+        <h3>F_SETFL</h3>
+
+        <p>It is not possible to use <code class="constant">F_SETFL</code> to change the state of the
+        <code class="constant">O_DSYNC</code> and <code class="constant">O_SYNC</code> flags. Attempts to change the
+        state of these flags are silently ignored.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="fcntl-2_sect22" name="fcntl-2_sect22" shape="rect"> </a>
+
+        <h3>F_GETOWN</h3>
+
+        <p>A limitation of the Linux system call conventions on
+        some architectures (notably i386) means that if a
+        (negative) process group ID to be returned by <code class="constant">F_GETOWN</code> falls in the range −1 to
+        −4095, then the return value is wrongly interpreted
+        by glibc as an error in the system call; that is, the
+        return value of <code class="function">fcntl</code>() will
+        be −1, and <code class="varname">errno</code> will
+        contain the (positive) process group ID. The Linux-specific
+        <code class="constant">F_GETOWN_EX</code> operation avoids
+        this problem. Since glibc version 2.11, glibc makes the
+        kernel <code class="constant">F_GETOWN</code> problem
+        invisible by implementing <code class="constant">F_GETOWN</code> using <code class="constant">F_GETOWN_EX</code>.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="fcntl-2_sect23" name="fcntl-2_sect23" shape="rect"> </a>
+
+        <h3>F_SETOWN</h3>
+
+        <p>In Linux 2.4 and earlier, there is bug that can occur
+        when an unprivileged process uses <code class="constant">F_SETOWN</code> to specify the owner of a socket
+        file descriptor as a process (group) other than the caller.
+        In this case, <code class="function">fcntl</code>() can
+        return −1 with <code class="varname">errno</code> set
+        to <span class="errorname">EPERM</span>, even when the
+        owner process (group) is one that the caller has permission
+        to send signals to. Despite this error return, the file
+        descriptor owner is set, and signals will be sent to the
+        owner.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="fcntl-2_sect24" name="fcntl-2_sect24" shape="rect"> </a>
+
+        <h3>Deadlock detection</h3>
+
+        <p>The deadlock-detection algorithm employed by the kernel
+        when dealing with <code class="constant">F_SETLKW</code>
+        requests can yield both false negatives (failures to detect
+        deadlocks, leaving a set of deadlocked processes blocked
+        indefinitely) and false positives (<span class="errorname">EDEADLK</span> errors when there is no
+        deadlock). For example, the kernel limits the lock depth of
+        its dependency search to 10 steps, meaning that circular
+        deadlock chains that exceed that size will not be detected.
+        In addition, the kernel may falsely indicate a deadlock
+        when two or more processes created using the <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> <code class="constant">CLONE_FILES</code> flag place locks that appear
+        (to the kernel) to conflict.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="fcntl-2_sect25" name="fcntl-2_sect25" shape="rect"> </a>
+
+        <h3>Mandatory locking</h3>
+
+        <p>The Linux implementation of mandatory locking is subject
+        to race conditions which render it unreliable: a <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a> call that
+        overlaps with a lock may modify data after the mandatory
+        lock is acquired; a <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> call that
+        overlaps with a lock may detect changes to data that were
+        made only after a write lock was acquired. Similar races
+        exist between mandatory locks and <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>. It is therefore
+        inadvisable to rely on mandatory locking.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fcntl-2_sect26" name="fcntl-2_sect26" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/dup.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">dup2</span>(2)</span></a>, <a class="link" href="../htmlman2/flock.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">flock</span>(2)</span></a>, <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>, <a class="link" href="../htmlman2/socket.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">socket</span>(2)</span></a>, <a class="link" href="../htmlman3/lockf.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">lockf</span>(3)</span></a>, <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>, <a class="link" href="../htmlman7/feature_test_macros.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">feature_test_macros</span>(7)</span></a></p>
+
+      <p><em class="replaceable"><code>locks.txt</code></em>,
+      <em class="replaceable"><code>mandatory-locking.txt</code></em>, and
+      <em class="replaceable"><code>dnotify.txt</code></em> in the
+      Linux kernel source directory <code class="filename">Documentation/filesystems/</code> (on older
+      kernels, these files are directly under the <code class="filename">Documentation/</code> directory, and <em class="replaceable"><code>mandatory-locking.txt</code></em> is
+      called <em class="replaceable"><code>mandatory.txt</code></em>)</p>
+    </div>
+
+    <div class="colophon">
+      <a id="fcntl-2_sect27" name="fcntl-2_sect27" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    t<br />
+                  This manpage is Copyright (C) 1992 Drew Eckhardt;<br />
+
+                  and Copyright (C) 1993 Michael Haardt, Ian Jackson;<br />
+
+                  and Copyright (C) 1998 Jamie Lokier;<br />
+
+                  and Copyright (C) 2002-2010, 2014 Michael Kerrisk;<br />
+
+                  and Copyright (C) 2014 Jeff Layton<br />
+
+                  and Copyright (C) 2014 David Herrmann<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Modified 1993-07-24 by Rik Faith &lt;faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu&gt;<br />
+
+                  Modified 1995-09-26 by Andries Brouwer &lt;aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl&gt;<br />
+
+                  and again on 960413 and 980804 and 981223.<br />
+
+                  Modified 1998-12-11 by Jamie Lokier &lt;jamie<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>imbolc.ucc.ie&gt;<br />
+
+                  Applied correction by Christian Ehrhardt - aeb, 990712<br />
+
+                  Modified 2002-04-23 by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  Added note on F_SETFL and O_DIRECT<br />
+
+                  Complete rewrite + expansion of material on file locking<br />
+
+                  Incorporated description of F_NOTIFY, drawing on<br />
+
+                  Stephen Rothwell's notes in Documentation/dnotify.txt.<br />
+
+                  Added description of F_SETLEASE and F_GETLEASE<br />
+
+                  Corrected and polished, aeb, 020527.<br />
+
+                  Modified 2004-03-03 by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                      Modified description of file leases: fixed some errors of detail<br />
+
+                      Replaced the term "lease contestant" by "lease breaker"<br />
+
+                  Modified, 27 May 2004, Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                      Added notes on capability requirements<br />
+
+                  Modified 2004-12-08, added O_NOATIME after note from Martin Pool<br />
+
+                  2004-12-10, mtk, noted F_GETOWN bug after suggestion from aeb.<br />
+
+                  2005-04-08 Jamie Lokier &lt;jamie<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>shareable.org&gt;, mtk<br />
+
+                  Described behavior of F_SETOWN/F_SETSIG in<br />
+
+                  multithreaded processes, and generally cleaned<br />
+
+                  up the discussion of F_SETOWN.<br />
+
+                  2005-05-20, Johannes Nicolai &lt;johannes.nicolai<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>hpi.uni-potsdam.de&gt;,<br />
+
+                  mtk: Noted F_SETOWN bug for socket file descriptor in Linux 2.4<br />
+
+                  and earlier.  Added text on permissions required to send signal.<br />
+
+                  2009-09-30, Michael Kerrisk<br />
+                      Note obsolete F_SETOWN behavior with threads.<br />
+
+                      Document F_SETOWN_EX and F_GETOWN_EX<br />
+
+                  2010-06-17, Michael Kerrisk<br />
+                  Document F_SETPIPE_SZ and F_GETPIPE_SZ.<br />
+
+                  2014-07-08, David Herrmann &lt;dh.herrmann<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                      Document F_ADD_SEALS and F_GET_SEALS<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

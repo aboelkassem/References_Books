@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>pipe(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="pipe(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="pipe.2" name="pipe.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>pipe, pipe2 — create pipe</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;unistd.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>pipe</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">pipefd[2]</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+
+#define _GNU_SOURCE              /* See feature_test_macros(7) */
+#include &lt;fcntl.h&gt;               /* Obtain O_* constant definitions */
+#include &lt;unistd.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>pipe2</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">pipefd[2]</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">flags</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pipe-2_sect1" name="pipe-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">pipe</code>() creates a pipe, a
+      unidirectional data channel that can be used for interprocess
+      communication. The array <em class="parameter"><code>pipefd</code></em> is used to return two
+      file descriptors referring to the ends of the pipe.
+      <em class="replaceable"><code>pipefd[0]</code></em> refers to
+      the read end of the pipe. <em class="replaceable"><code>pipefd[1]</code></em> refers to the write
+      end of the pipe. Data written to the write end of the pipe is
+      buffered by the kernel until it is read from the read end of
+      the pipe. For further details, see <a class="link" href="../htmlman7/pipe.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pipe</span>(7)</span></a>.</p>
+
+      <p>If <em class="parameter"><code>flags</code></em> is 0,
+      then <code class="function">pipe2</code>() is the same as
+      <code class="function">pipe</code>(). The following values
+      can be bitwise ORed in <em class="parameter"><code>flags</code></em> to obtain different
+      behavior:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">O_CLOEXEC</code></span></dt>
+
+          <dd>
+            <p>Set the close-on-exec (<code class="constant">FD_CLOEXEC</code>) flag on the two new file
+            descriptors. See the description of the same flag in
+            <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a> for reasons
+            why this may be useful.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">O_DIRECT</code> (since Linux 3.4)</span></dt>
+
+          <dd>
+            <p>Create a pipe that performs I/O in "packet" mode.
+            Each <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a> to the pipe
+            is dealt with as a separate packet, and <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>s from the
+            pipe will read one packet at a time. Note the following
+            points:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="itemizedlist">
+                  <ul class="itemizedlist" style="list-style-type: disc;">
+                    <li class="listitem">
+                      <p>Writes of greater than <code class="constant">PIPE_BUF</code> bytes (see
+                      <a class="link" href="../htmlman7/pipe.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pipe</span>(7)</span></a>)
+                      will be split into multiple packets. The
+                      constant <code class="constant">PIPE_BUF</code> is defined in
+                      <code class="literal">&lt;</code><code class="filename">limits.h</code><code class="literal">&gt;</code></p>
+                    </li>
+
+                    <li class="listitem">
+                      <p>If a <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>
+                      specifies a buffer size that is smaller than
+                      the next packet, then the requested number of
+                      bytes are read, and the excess bytes in the
+                      packet are discarded. Specifying a buffer
+                      size of <code class="constant">PIPE_BUF</code> will be sufficient
+                      to read the largest possible packets (see the
+                      previous point).</p>
+                    </li>
+
+                    <li class="listitem">
+                      <p>Zero-length packets are not supported. (A
+                      <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>
+                      that specifies a buffer size of zero is a
+                      no-op, and returns 0.)</p>
+                    </li>
+                  </ul>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>Older kernels that do not support this flag will
+            indicate this via an <span class="errorname">EINVAL</span> error.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">O_NONBLOCK</code></span></dt>
+
+          <dd>
+            <p>Set the <code class="constant">O_NONBLOCK</code>
+            file status flag on the two new open file descriptions.
+            Using this flag saves extra calls to <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a> to achieve
+            the same result.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pipe-2_sect2" name="pipe-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, zero is returned. On error, −1 is
+      returned, and <code class="varname">errno</code> is set
+      appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pipe-2_sect3" name="pipe-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>pipefd</code></em> is
+            not valid.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>(<code class="function">pipe2</code>()) Invalid
+            value in <em class="parameter"><code>flags</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EMFILE</span></span></dt>
+
+          <dd>
+            <p>Too many file descriptors are in use by the
+            process.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENFILE</span></span></dt>
+
+          <dd>
+            <p>The system limit on the total number of open files
+            has been reached.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pipe-2_sect4" name="pipe-2_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p><code class="function">pipe2</code>() was added to Linux
+      in version 2.6.27; glibc support is available starting with
+      version 2.9.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pipe-2_sect5" name="pipe-2_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p><code class="function">pipe</code>(): POSIX.1-2001.</p>
+
+      <p><code class="function">pipe2</code>() is
+      Linux-specific.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pipe-2_sect6" name="pipe-2_sect6" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>The following program creates a pipe, and then <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a>s to create a child
+      process; the child inherits a duplicate set of file
+      descriptors that refer to the same pipe. After the <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a>, each process
+      closes the descriptors that it doesn't need for the pipe (see
+      <a class="link" href="../htmlman7/pipe.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pipe</span>(7)</span></a>). The parent then
+      writes the string contained in the program's command-line
+      argument to the pipe, and the child reads this string a byte
+      at a time from the pipe and echoes it on standard output.</p>
+
+      <div class="refsect2">
+        <a id="pipe-2_sect7" name="pipe-2_sect7" shape="rect"> </a>
+
+        <h3>Program source</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+#include &lt;sys/types.h&gt;
+#include &lt;sys/wait.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;string.h&gt;
+
+int
+main(int argc, char *argv[])
+{
+    int pipefd[2];
+    pid_t cpid;
+    char buf;
+
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s &lt;string&gt;\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    if (pipe(pipefd) == −1) {
+        perror("pipe");
+        exit(EXIT_FAILURE);
+    }
+
+    cpid = fork();
+    if (cpid == −1) {
+        perror("fork");
+        exit(EXIT_FAILURE);
+    }
+
+    if (cpid == 0) {    /* Child reads from pipe */
+        close(pipefd[1]);          /* Close unused write end */
+
+        while (read(pipefd[0], &amp;buf, 1) &gt; 0)
+            write(STDOUT_FILENO, &amp;buf, 1);
+
+        write(STDOUT_FILENO, "\n", 1);
+        close(pipefd[0]);
+        _exit(EXIT_SUCCESS);
+
+    } else {            /* Parent writes argv[1] to pipe */
+        close(pipefd[0]);          /* Close unused read end */
+        write(pipefd[1], argv[1], strlen(argv[1]));
+        close(pipefd[1]);          /* Reader will see EOF */
+        wait(NULL);                /* Wait for child */
+        exit(EXIT_SUCCESS);
+    }
+}
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pipe-2_sect8" name="pipe-2_sect8" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a>, <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>, <a class="link" href="../htmlman2/socketpair.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">socketpair</span>(2)</span></a>, <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a>, <a class="link" href="../htmlman3/popen.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">popen</span>(3)</span></a>, <a class="link" href="../htmlman7/pipe.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pipe</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="pipe-2_sect9" name="pipe-2_sect9" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2005, 2008, Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  (A few fragments remain from an earlier (1992) version by<br />
+
+                  Drew Eckhardt &lt;drew<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.colorado.edu&gt;.)<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Modified by Michael Haardt &lt;michael<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>moria.de&gt;<br />
+
+                  Modified 1993-07-23 by Rik Faith &lt;faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu&gt;<br />
+
+                  Modified 1996-10-22 by Eric S. Raymond &lt;esr<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>thyrsus.com&gt;<br />
+
+                  Modified 2004-06-17 by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  Modified 2005, mtk: added an example program<br />
+
+                  Modified 2008-01-09, mtk: rewrote DESCRIPTION; minor additions<br />
+
+                      to EXAMPLE text.<br />
+
+                  2008-10-10, mtk: add description of pipe2()<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

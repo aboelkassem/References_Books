@@ -1,0 +1,857 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>dbopen(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="dbopen(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="dbopen.3" name="dbopen.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>dbopen — database access methods</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;sys/types.h&gt;
+#include &lt;limits.h&gt;
+#include &lt;db.h&gt;
+#include &lt;fcntl.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">DB
+            *<strong>dbopen</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">file</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">flags</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">mode</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">DBTYPE <var class="pdparam">type</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const void *<var class="pdparam">openinfo</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="dbopen-3_sect1" name="dbopen-3_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><span class="emphasis"><em>Note well</em></span>: This
+      page documents interfaces provided in glibc up until version
+      2.1. Since version 2.2, glibc no longer provides these
+      interfaces. Probably, you are looking for the APIs provided
+      by the <code class="function">libdb</code> library
+      instead.</p>
+
+      <p><code class="function">dbopen</code>() is the library
+      interface to database files. The supported file formats are
+      btree, hashed and UNIX file oriented. The btree format is a
+      representation of a sorted, balanced tree structure. The
+      hashed format is an extensible, dynamic hashing scheme. The
+      flat-file format is a byte stream file with fixed or variable
+      length records. The formats and file-format-specific
+      information are described in detail in their respective
+      manual pages <a class="link" href="../htmlman3/btree.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">btree</span>(3)</span></a>, <a class="link" href="../htmlman3/hash.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">hash</span>(3)</span></a>, and <a class="link" href="../htmlman3/recno.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">recno</span>(3)</span></a>.</p>
+
+      <p><code class="function">dbopen</code>() opens <em class="parameter"><code>file</code></em> for reading and/or
+      writing. Files never intended to be preserved on disk may be
+      created by setting the <em class="parameter"><code>file</code></em> argument to NULL.</p>
+
+      <p>The <em class="parameter"><code>flags</code></em> and
+      <em class="parameter"><code>mode</code></em> arguments are as
+      specified to the <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a> routine, however,
+      only the <code class="constant">O_CREAT</code>, <code class="constant">O_EXCL</code>, <code class="constant">O_EXLOCK</code>, <code class="constant">O_NONBLOCK</code>, <code class="constant">O_RDONLY</code>, <code class="constant">O_RDWR</code>, <code class="constant">O_SHLOCK</code>, and <code class="constant">O_TRUNC</code> flags are meaningful. (Note,
+      opening a database file <code class="constant">O_WRONLY</code> is not possible.)</p>
+
+      <p>The <em class="parameter"><code>type</code></em> argument
+      is of type <code class="constant">DBTYPE</code> (as defined
+      in the <code class="literal">&lt;</code><code class="filename">db.h</code><code class="literal">&gt;</code>
+      include file) and may be set to <code class="constant">DB_BTREE</code>, <code class="constant">DB_HASH</code>, or <code class="constant">DB_RECNO</code>.</p>
+
+      <p>The <em class="parameter"><code>openinfo</code></em>
+      argument is a pointer to an access-method-specific structure
+      described in the access method's manual page. If <em class="parameter"><code>openinfo</code></em> is NULL, each access
+      method will use defaults appropriate for the system and the
+      access method.</p>
+
+      <p><code class="function">dbopen</code>() returns a pointer
+      to a <code class="constant">DB</code> structure on success
+      and NULL on error. The <code class="constant">DB</code>
+      structure is defined in the <code class="literal">&lt;</code><code class="filename">db.h</code><code class="literal">&gt;</code>
+      include file, and contains at least the following fields:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="structdef">
+            <table style="border-collapse: collapse;">
+              <colgroup span="1">
+                <col class="c1" span="1" />
+                <col class="c2" span="1" />
+                <col class="c3" span="1" />
+                <col class="c4" span="1" />
+                <col class="c5" span="1" />
+              </colgroup>
+
+              <tbody>
+                <tr>
+                  <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                  typedef</td>
+
+                  <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1">struct {</td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">DBTYPE</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>type</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                  (*</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>close</code></em>)(const DB *db);</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                  (*</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>del</code></em>)(const DB *db, const DBT *key, unsigned int flags);</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                  (*</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>fd</code></em>)(const DB *db);</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                  (*</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>get</code></em>)(const DB *db, DBT *key, DBT *data, unsigned int flags);</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                  (*</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>put</code></em>)(const DB *db, DBT *key, const DBT *data, unsigned int flags);</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                  (*</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sync</code></em>)(const DB *db, unsigned int flags);</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                  (*</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>seq</code></em>)(const DB *db, DBT *key, DBT *data, unsigned int flags);</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">} DB;</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>These elements describe a database type and a set of
+      functions performing various actions. These functions take a
+      pointer to a structure as returned by <code class="function">dbopen</code>(), and sometimes one or more
+      pointers to key/data structures and a flag value.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><em class="parameter"><code>type</code></em></span></dt>
+
+          <dd>
+            <p>The type of the underlying access method (and file
+            format).</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>close</code></em></span></dt>
+
+          <dd>
+            <p>A pointer to a routine to flush any cached
+            information to disk, free any allocated resources, and
+            close the underlying file(s). Since key/data pairs may
+            be cached in memory, failing to sync the file with a
+            <em class="parameter"><code>close</code></em> or
+            <em class="parameter"><code>sync</code></em> function
+            may result in inconsistent or lost information.
+            <em class="parameter"><code>close</code></em> routines
+            return −1 on error (setting <code class="varname">errno</code>) and 0 on success.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>del</code></em></span></dt>
+
+          <dd>
+            <p>A pointer to a routine to remove key/data pairs from
+            the database.</p>
+
+            <p>The argument <em class="parameter"><code>flag</code></em> may be set to the
+            following value:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><code class="constant">R_CURSOR</code></span></dt>
+
+                    <dd>
+                      <p>Delete the record referenced by the
+                      cursor. The cursor must have previously been
+                      initialized.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+
+            <p><code class="function">delete</code> routines return
+            −1 on error (setting <code class="varname">errno</code>), 0 on success, and 1 if the
+            specified <em class="parameter"><code>key</code></em>
+            was not in the file.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>fd</code></em></span></dt>
+
+          <dd>
+            <p>A pointer to a routine which returns a file
+            descriptor representative of the underlying database. A
+            file descriptor referencing the same file will be
+            returned to all processes which call <code class="function">dbopen</code>() with the same <em class="parameter"><code>file</code></em> name. This file
+            descriptor may be safely used as an argument to the
+            <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a> and
+            <a class="link" href="../htmlman2/flock.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">flock</span>(2)</span></a> locking
+            functions. The file descriptor is not necessarily
+            associated with any of the underlying files used by the
+            access method. No file descriptor is available for in
+            memory databases. <em class="parameter"><code>fd</code></em> routines return
+            −1 on error (setting <code class="varname">errno</code>), and the file descriptor on
+            success.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>get</code></em></span></dt>
+
+          <dd>
+            <p>A pointer to a routine which is the interface for
+            keyed retrieval from the database. The address and
+            length of the data associated with the specified
+            <em class="parameter"><code>key</code></em> are
+            returned in the structure referenced by <em class="parameter"><code>data</code></em>. <em class="parameter"><code>get</code></em> routines return
+            −1 on error (setting <code class="varname">errno</code>), 0 on success, and 1 if the
+            <em class="parameter"><code>key</code></em> was not in
+            the file.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>put</code></em></span></dt>
+
+          <dd>
+            <p>A pointer to a routine to store key/data pairs in
+            the database.</p>
+
+            <p>The argument <em class="parameter"><code>flag</code></em> may be set to one of
+            the following values:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><code class="constant">R_CURSOR</code></span></dt>
+
+                    <dd>
+                      <p>Replace the key/data pair referenced by
+                      the cursor. The cursor must have previously
+                      been initialized.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">R_IAFTER</code></span></dt>
+
+                    <dd>
+                      <p>Append the data immediately after the data
+                      referenced by <em class="parameter"><code>key</code></em>, creating a
+                      new key/data pair. The record number of the
+                      appended key/data pair is returned in the
+                      <em class="parameter"><code>key</code></em>
+                      structure. (Applicable only to the
+                      <code class="constant">DB_RECNO</code> access
+                      method.)</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">R_IBEFORE</code></span></dt>
+
+                    <dd>
+                      <p>Insert the data immediately before the
+                      data referenced by <em class="parameter"><code>key</code></em>, creating a
+                      new key/data pair. The record number of the
+                      inserted key/data pair is returned in the
+                      <em class="parameter"><code>key</code></em>
+                      structure. (Applicable only to the
+                      <code class="constant">DB_RECNO</code> access
+                      method.)</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">R_NOOVERWRITE</code></span></dt>
+
+                    <dd>
+                      <p>Enter the new key/data pair only if the
+                      key does not previously exist.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">R_SETCURSOR</code></span></dt>
+
+                    <dd>
+                      <p>Store the key/data pair, setting or
+                      initializing the position of the cursor to
+                      reference it. (Applicable only to the
+                      <code class="constant">DB_BTREE</code> and
+                      <code class="constant">DB_RECNO</code> access
+                      methods.)</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+
+            <p><code class="constant">R_SETCURSOR</code> is
+            available only for the <code class="constant">DB_BTREE</code> and <code class="constant">DB_RECNO</code> access methods because it
+            implies that the keys have an inherent order which does
+            not change.</p>
+
+            <p><code class="constant">R_IAFTER</code> and
+            <code class="constant">R_IBEFORE</code> are available
+            only for the <code class="constant">DB_RECNO</code>
+            access method because they each imply that the access
+            method is able to create new keys. This is true only if
+            the keys are ordered and independent, record numbers
+            for example.</p>
+
+            <p>The default behavior of the <em class="parameter"><code>put</code></em> routines is to enter
+            the new key/data pair, replacing any previously
+            existing key.</p>
+
+            <p><em class="parameter"><code>put</code></em> routines
+            return −1 on error (setting <code class="varname">errno</code>), 0 on success, and 1 if the
+            <code class="constant">R_NOOVERWRITE</code> <em class="parameter"><code>flag</code></em> was set and the key
+            already exists in the file.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>seq</code></em></span></dt>
+
+          <dd>
+            <p>A pointer to a routine which is the interface for
+            sequential retrieval from the database. The address and
+            length of the key are returned in the structure
+            referenced by <em class="parameter"><code>key</code></em>, and the address and
+            length of the data are returned in the structure
+            referenced by <em class="parameter"><code>data</code></em>.</p>
+
+            <p>Sequential key/data pair retrieval may begin at any
+            time, and the position of the "cursor" is not affected
+            by calls to the <em class="parameter"><code>del</code></em>, <em class="parameter"><code>get</code></em>, <em class="parameter"><code>put</code></em>, or <em class="parameter"><code>sync</code></em> routines.
+            Modifications to the database during a sequential scan
+            will be reflected in the scan, that is, records
+            inserted behind the cursor will not be returned while
+            records inserted in front of the cursor will be
+            returned.</p>
+
+            <p>The flag value <span class="emphasis"><em>must</em></span> be set to one of the
+            following values:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><code class="constant">R_CURSOR</code></span></dt>
+
+                    <dd>
+                      <p>The data associated with the specified key
+                      is returned. This differs from the <em class="parameter"><code>get</code></em> routines in
+                      that it sets or initializes the cursor to the
+                      location of the key as well. (Note, for the
+                      <code class="constant">DB_BTREE</code> access
+                      method, the returned key is not necessarily
+                      an exact match for the specified key. The
+                      returned key is the smallest key greater than
+                      or equal to the specified key, permitting
+                      partial key matches and range searches.)</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">R_FIRST</code></span></dt>
+
+                    <dd>
+                      <p>The first key/data pair of the database is
+                      returned, and the cursor is set or
+                      initialized to reference it.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">R_LAST</code></span></dt>
+
+                    <dd>
+                      <p>The last key/data pair of the database is
+                      returned, and the cursor is set or
+                      initialized to reference it. (Applicable only
+                      to the <code class="constant">DB_BTREE</code>
+                      and <code class="constant">DB_RECNO</code>
+                      access methods.)</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">R_NEXT</code></span></dt>
+
+                    <dd>
+                      <p>Retrieve the key/data pair immediately
+                      after the cursor. If the cursor is not yet
+                      set, this is the same as the <code class="constant">R_FIRST</code> flag.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">R_PREV</code></span></dt>
+
+                    <dd>
+                      <p>Retrieve the key/data pair immediately
+                      before the cursor. If the cursor is not yet
+                      set, this is the same as the <code class="constant">R_LAST</code> flag. (Applicable
+                      only to the <code class="constant">DB_BTREE</code> and <code class="constant">DB_RECNO</code> access
+                      methods.)</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+
+            <p><code class="constant">R_LAST</code> and
+            <code class="constant">R_PREV</code> are available only
+            for the <code class="constant">DB_BTREE</code> and
+            <code class="constant">DB_RECNO</code> access methods
+            because they each imply that the keys have an inherent
+            order which does not change.</p>
+
+            <p><em class="parameter"><code>seq</code></em> routines
+            return −1 on error (setting <code class="varname">errno</code>), 0 on success and 1 if there
+            are no key/data pairs less than or greater than the
+            specified or current key. If the <code class="constant">DB_RECNO</code> access method is being used,
+            and if the database file is a character special file
+            and no complete key/data pairs are currently available,
+            the <em class="parameter"><code>seq</code></em>
+            routines return 2.</p>
+          </dd>
+
+          <dt><span class="term"><em class="parameter"><code>sync</code></em></span></dt>
+
+          <dd>
+            <p>A pointer to a routine to flush any cached
+            information to disk. If the database is in memory only,
+            the <em class="parameter"><code>sync</code></em>
+            routine has no effect and will always succeed.</p>
+
+            <p>The flag value may be set to the following
+            value:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><code class="constant">R_RECNOSYNC</code></span></dt>
+
+                    <dd>
+                      <p>If the <code class="constant">DB_RECNO</code> access method is
+                      being used, this flag causes the sync routine
+                      to apply to the btree file which underlies
+                      the recno file, not the recno file itself.
+                      (See the <em class="parameter"><code>bfname</code></em> field of
+                      the <a class="link" href="../htmlman3/recno.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">recno</span>(3)</span></a>
+                      manual page for more information.)</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+
+            <p><em class="parameter"><code>sync</code></em>
+            routines return −1 on error (setting <code class="varname">errno</code>) and 0 on success.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <div class="refsect2">
+        <a id="dbopen-3_sect2" name="dbopen-3_sect2" shape="rect"> </a>
+
+        <h3>Key/data pairs</h3>
+
+        <p>Access to all file types is based on key/data pairs.
+        Both keys and data are represented by the following data
+        structure:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="structdef">
+              <table style="border-collapse: collapse;">
+                <colgroup span="1">
+                  <col class="c1" span="1" />
+                  <col class="c2" span="1" />
+                  <col class="c3" span="1" />
+                  <col class="c4" span="1" />
+                  <col class="c5" span="1" />
+                </colgroup>
+
+                <tbody>
+                  <tr>
+                    <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                    typedef</td>
+
+                    <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1">struct {</td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">void</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                    *</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>data</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"> </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">size_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>size</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"> </td>
+                  </tr>
+
+                  <tr>
+                    <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">} DBT;</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>The elements of the <code class="constant">DBT</code>
+        structure are defined as follows:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><em class="parameter"><code>data</code></em></span></dt>
+
+            <dd>
+              <p>A pointer to a byte string.</p>
+            </dd>
+
+            <dt><span class="term"><em class="parameter"><code>size</code></em></span></dt>
+
+            <dd>
+              <p>The length of the byte string.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>Key and data byte strings may reference strings of
+        essentially unlimited length although any two of them must
+        fit into available memory at the same time. It should be
+        noted that the access methods provide no guarantees about
+        byte string alignment.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="dbopen-3_sect3" name="dbopen-3_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <p>The <code class="function">dbopen</code>() routine may
+      fail and set <code class="varname">errno</code> for any of
+      the errors specified for the library routines <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a> and <a class="link" href="../htmlman3/malloc.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">malloc</span>(3)</span></a> or the
+      following:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">EFTYPE</code></span></dt>
+
+          <dd>
+            <p>A file is incorrectly formatted.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>A parameter has been specified (hash function, pad
+            byte, etc.) that is incompatible with the current file
+            specification or which is not meaningful for the
+            function (for example, use of the cursor without prior
+            initialization) or there is a mismatch between the
+            version number of file and the software.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>The <em class="parameter"><code>close</code></em> routines
+      may fail and set <code class="varname">errno</code> for any
+      of the errors specified for the library routines <a class="link" href="../htmlman2/close.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">close</span>(2)</span></a>, <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>, <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a>, <a class="link" href="../htmlman3/malloc.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">free</span>(3)</span></a>, or <a class="link" href="../htmlman2/fsync.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fsync</span>(2)</span></a>.</p>
+
+      <p>The <em class="parameter"><code>del</code></em>,
+      <em class="parameter"><code>get</code></em>, <em class="parameter"><code>put</code></em>, and <em class="parameter"><code>seq</code></em> routines may fail and set
+      <code class="varname">errno</code> for any of the errors
+      specified for the library routines <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>, <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a>, <a class="link" href="../htmlman3/malloc.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">free</span>(3)</span></a> or <a class="link" href="../htmlman3/malloc.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">malloc</span>(3)</span></a>.</p>
+
+      <p>The <em class="parameter"><code>fd</code></em> routines
+      will fail and set <code class="varname">errno</code> to
+      <span class="errorname">ENOENT</span> for in memory
+      databases.</p>
+
+      <p>The <em class="parameter"><code>sync</code></em> routines
+      may fail and set <code class="varname">errno</code> for any
+      of the errors specified for the library routine <a class="link" href="../htmlman2/fsync.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fsync</span>(2)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="dbopen-3_sect4" name="dbopen-3_sect4" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>The typedef <code class="constant">DBT</code> is a
+      mnemonic for "data base thang", and was used because no-one
+      could think of a reasonable name that wasn't already
+      used.</p>
+
+      <p>The file descriptor interface is a kludge and will be
+      deleted in a future version of the interface.</p>
+
+      <p>None of the access methods provide any form of concurrent
+      access, locking, or transactions.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="dbopen-3_sect5" name="dbopen-3_sect5" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/btree.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">btree</span>(3)</span></a>, <a class="link" href="../htmlman3/hash.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">hash</span>(3)</span></a>, <a class="link" href="../htmlman3/mpool.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mpool</span>(3)</span></a>, <a class="link" href="../htmlman3/recno.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">recno</span>(3)</span></a></p>
+
+      <p><span class="emphasis"><em>LIBTP: Portable, Modular
+      Transactions for UNIX</em></span>, Margo Seltzer, Michael
+      Olson, USENIX proceedings, Winter 1992.</p>
+    </div>
+
+    <div class="colophon">
+      <a id="dbopen-3_sect6" name="dbopen-3_sect6" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 1990, 1993<br />
+
+                  The Regents of the University of California.  All rights reserved.<br />
+
+                  <br />
+                  %%%LICENSE_START(BSD_4_CLAUSE_UCB)<br />
+                  Redistribution and use in source and binary forms, with or without<br />
+
+                  modification, are permitted provided that the following conditions<br />
+
+                  are met:<br />
+                  1. Redistributions of source code must retain the above copyright<br />
+
+                     notice, this list of conditions and the following disclaimer.<br />
+
+                  2. Redistributions in binary form must reproduce the above copyright<br />
+
+                     notice, this list of conditions and the following disclaimer in the<br />
+
+                     documentation and/or other materials provided with the distribution.<br />
+
+                  3. All advertising materials mentioning features or use of this software<br />
+
+                     must display the following acknowledgement:<br />
+
+                  This product includes software developed by the University of<br />
+
+                  California, Berkeley and its contributors.<br />
+
+                  4. Neither the name of the University nor the names of its contributors<br />
+
+                     may be used to endorse or promote products derived from this software<br />
+
+                     without specific prior written permission.<br />
+
+                  <br />
+                  THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND<br />
+
+                  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE<br />
+
+                  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE<br />
+
+                  ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE<br />
+
+                  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL<br />
+
+                  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS<br />
+
+                  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)<br />
+
+                  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT<br />
+
+                  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY<br />
+
+                  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF<br />
+
+                  SUCH DAMAGE.<br />
+                  %%%LICENSE_END<br />
+                  <br />
+                  <script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>(#)dbopen.3
+                  8.5 (Berkeley) 1/2/94<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

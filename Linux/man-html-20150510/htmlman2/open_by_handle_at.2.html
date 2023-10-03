@@ -1,0 +1,961 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>open_by_handle_at(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="open_by_handle_at(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="open-by-handle-at.2" name="open-by-handle-at.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>name_to_handle_at, open_by_handle_at — obtain handle
+      for a pathname and open file via a handle</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#define _GNU_SOURCE          /* See feature_test_macros(7) */
+#include &lt;sys/types.h&gt;
+#include &lt;sys/stat.h&gt;
+#include &lt;fcntl.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>name_to_handle_at</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">dirfd</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">pathname</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">struct file_handle *<var class="pdparam">handle</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int *<var class="pdparam">mount_id</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">flags</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>open_by_handle_at</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">mount_fd</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">struct file_handle *<var class="pdparam">handle</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">flags</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="open-by-handle-at-2_sect1" name="open-by-handle-at-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">name_to_handle_at</code>() and
+      <code class="function">open_by_handle_at</code>() system
+      calls split the functionality of <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">openat</span>(2)</span></a> into two parts:
+      <code class="function">name_to_handle_at</code>() returns an
+      opaque handle that corresponds to a specified file;
+      <code class="function">open_by_handle_at</code>() opens the
+      file corresponding to a handle returned by a previous call to
+      <code class="function">name_to_handle_at</code>() and returns
+      an open file descriptor.</p>
+
+      <div class="refsect2">
+        <a id="open-by-handle-at-2_sect2" name="open-by-handle-at-2_sect2" shape="rect"> </a>
+
+        <h3>name_to_handle_at()</h3>
+
+        <p>The <code class="function">name_to_handle_at</code>()
+        system call returns a file handle and a mount ID
+        corresponding to the file specified by the <em class="parameter"><code>dirfd</code></em> and <em class="parameter"><code>pathname</code></em> arguments. The file
+        handle is returned via the argument <em class="parameter"><code>handle</code></em>, which is a pointer to
+        a structure of the following form:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="structdef">
+              <table style="border-collapse: collapse;">
+                <colgroup span="1">
+                  <col class="c1" span="1" />
+                  <col class="c2" span="1" />
+                  <col class="c3" span="1" />
+                  <col class="c4" span="1" />
+                  <col class="c5" span="1" />
+                </colgroup>
+
+                <tbody>
+                  <tr>
+                    <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                    struct</td>
+
+                    <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">file_handle</span> {</td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned int</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>handle_bytes</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Size of f_handle [in, out] */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>handle_type</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Handle type [out] */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>f_handle</code></em>[0];</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* File identifier (sized by<br />
+
+                        caller) [out] */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>It is the caller's responsibility to allocate the
+        structure with a size large enough to hold the handle
+        returned in <em class="parameter"><code>f_handle</code></em>. Before the call,
+        the <em class="parameter"><code>handle_bytes</code></em>
+        field should be initialized to contain the allocated size
+        for <em class="parameter"><code>f_handle</code></em>. (The
+        constant <code class="constant">MAX_HANDLE_SZ</code>,
+        defined in <code class="literal">&lt;</code><code class="filename">fcntl.h</code><code class="literal">&gt;</code>
+        specifies the maximum possible size for a file handle.)
+        Upon successful return, the <em class="parameter"><code>handle_bytes</code></em> field is updated
+        to contain the number of bytes actually written to
+        <em class="parameter"><code>f_handle</code></em>.</p>
+
+        <p>The caller can discover the required size for the
+        <span class="structname">file_handle</span> structure by
+        making a call in which <em class="replaceable"><code>handle-&gt;handle_bytes</code></em> is
+        zero; in this case, the call fails with the error
+        <span class="errorname">EOVERFLOW</span> and <em class="replaceable"><code>handle-&gt;handle_bytes</code></em> is
+        set to indicate the required size; the caller can then use
+        this information to allocate a structure of the correct
+        size (see EXAMPLE below).</p>
+
+        <p>Other than the use of the <em class="parameter"><code>handle_bytes</code></em> field, the
+        caller should treat the <span class="structname">file_handle</span> structure as an opaque data
+        type: the <em class="parameter"><code>handle_type</code></em> and <em class="parameter"><code>f_handle</code></em> fields are needed
+        only by a subsequent call to <code class="function">open_by_handle_at</code>().</p>
+
+        <p>The <em class="parameter"><code>flags</code></em>
+        argument is a bit mask constructed by ORing together zero
+        or more of <code class="constant">AT_EMPTY_PATH</code> and
+        <code class="constant">AT_SYMLINK_FOLLOW</code>, described
+        below.</p>
+
+        <p>Together, the <em class="parameter"><code>pathname</code></em> and <em class="parameter"><code>dirfd</code></em> arguments identify the
+        file for which a handle is to be obtained. There are four
+        distinct cases:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>If <em class="parameter"><code>pathname</code></em> is a nonempty
+              string containing an absolute pathname, then a handle
+              is returned for the file referred to by that
+              pathname. In this case, <em class="parameter"><code>dirfd</code></em> is ignored.</p>
+            </li>
+
+            <li class="listitem">
+              <p>If <em class="parameter"><code>pathname</code></em> is a nonempty
+              string containing a relative pathname and <em class="parameter"><code>dirfd</code></em> has the special
+              value <code class="constant">AT_FDCWD</code>, then
+              <em class="parameter"><code>pathname</code></em> is
+              interpreted relative to the current working directory
+              of the caller, and a handle is returned for the file
+              to which it refers.</p>
+            </li>
+
+            <li class="listitem">
+              <p>If <em class="parameter"><code>pathname</code></em> is a nonempty
+              string containing a relative pathname and <em class="parameter"><code>dirfd</code></em> is a file
+              descriptor referring to a directory, then <em class="parameter"><code>pathname</code></em> is interpreted
+              relative to the directory referred to by <em class="parameter"><code>dirfd</code></em>, and a handle is
+              returned for the file to which it refers. (See
+              <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">openat</span>(2)</span></a> for an
+              explanation of why "directory file descriptors" are
+              useful.)</p>
+            </li>
+
+            <li class="listitem">
+              <p>If <em class="parameter"><code>pathname</code></em> is an empty
+              string and <em class="parameter"><code>flags</code></em> specifies the
+              value <code class="constant">AT_EMPTY_PATH</code>,
+              then <em class="parameter"><code>dirfd</code></em>
+              can be an open file descriptor referring to any type
+              of file, or <code class="constant">AT_FDCWD</code>,
+              meaning the current working directory, and a handle
+              is returned for the file to which it refers.</p>
+            </li>
+          </ul>
+        </div>
+
+        <p>The <em class="parameter"><code>mount_id</code></em>
+        argument returns an identifier for the filesystem mount
+        that corresponds to <em class="parameter"><code>pathname</code></em>. This corresponds to
+        the first field in one of the records in <code class="filename">/proc/self/mountinfo</code>. Opening the
+        pathname in the fifth field of that record yields a file
+        descriptor for the mount point; that file descriptor can be
+        used in a subsequent call to <code class="function">open_by_handle_at</code>().</p>
+
+        <p>By default, <code class="function">name_to_handle_at</code>() does not dereference
+        <em class="parameter"><code>pathname</code></em> if it is a
+        symbolic link, and thus returns a handle for the link
+        itself. If <code class="constant">AT_SYMLINK_FOLLOW</code>
+        is specified in <em class="parameter"><code>flags</code></em>, <em class="parameter"><code>pathname</code></em> is dereferenced if
+        it is a symbolic link (so that the call returns a handle
+        for the file referred to by the link).</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="open-by-handle-at-2_sect3" name="open-by-handle-at-2_sect3" shape="rect"> </a>
+
+        <h3>open_by_handle_at()</h3>
+
+        <p>The <code class="function">open_by_handle_at</code>()
+        system call opens the file referred to by <em class="parameter"><code>handle</code></em>, a file handle
+        returned by a previous call to <code class="function">name_to_handle_at</code>().</p>
+
+        <p>The <em class="parameter"><code>mount_fd</code></em>
+        argument is a file descriptor for any object (file,
+        directory, etc.) in the mounted filesystem with respect to
+        which <em class="parameter"><code>handle</code></em> should
+        be interpreted. The special value <code class="constant">AT_FDCWD</code> can be specified, meaning the
+        current working directory of the caller.</p>
+
+        <p>The <em class="parameter"><code>flags</code></em>
+        argument is as for <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>. If <em class="parameter"><code>handle</code></em> refers to a symbolic
+        link, the caller must specify the <code class="constant">O_PATH</code> flag, and the symbolic link is not
+        dereferenced; the <code class="constant">O_NOFOLLOW</code>
+        flag, if specified, is ignored.</p>
+
+        <p>The caller must have the <code class="constant">CAP_DAC_READ_SEARCH</code> capability to invoke
+        <code class="function">open_by_handle_at</code>().</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="open-by-handle-at-2_sect4" name="open-by-handle-at-2_sect4" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">name_to_handle_at</code>() returns 0, and
+      <code class="function">open_by_handle_at</code>() returns a
+      nonnegative file descriptor.</p>
+
+      <p>In the event of an error, both system calls return
+      −1 and set <code class="varname">errno</code> to
+      indicate the cause of the error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="open-by-handle-at-2_sect5" name="open-by-handle-at-2_sect5" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <p><code class="function">name_to_handle_at</code>() and
+      <code class="function">open_by_handle_at</code>() can fail
+      for the same errors as <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">openat</span>(2)</span></a>. In addition,
+      they can fail with the errors noted below.</p>
+
+      <p><code class="function">name_to_handle_at</code>() can fail
+      with the following errors:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>pathname</code></em>,
+            <em class="parameter"><code>mount_id</code></em>, or
+            <em class="parameter"><code>handle</code></em> points
+            outside your accessible address space.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>flags</code></em>
+            includes an invalid bit value.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="replaceable"><code>handle−&gt;handle_bytes</code></em>
+            is greater than <code class="constant">MAX_HANDLE_SZ</code>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOENT</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>pathname</code></em> is
+            an empty string, but <code class="constant">AT_EMPTY_PATH</code> was not specified in
+            <em class="parameter"><code>flags</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOTDIR</span></span></dt>
+
+          <dd>
+            <p>The file descriptor supplied in <em class="parameter"><code>dirfd</code></em> does not refer to a
+            directory, and it is not the case that both <em class="parameter"><code>flags</code></em> includes
+            <code class="constant">AT_EMPTY_PATH</code> and
+            <em class="parameter"><code>pathname</code></em> is an
+            empty string.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EOPNOTSUPP</span></span></dt>
+
+          <dd>
+            <p>The filesystem does not support decoding of a
+            pathname to a file handle.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EOVERFLOW</span></span></dt>
+
+          <dd>
+            <p>The <em class="replaceable"><code>handle-&gt;handle_bytes</code></em>
+            value passed into the call was too small. When this
+            error occurs, <em class="replaceable"><code>handle-&gt;handle_bytes</code></em>
+            is updated to indicate the required size for the
+            handle.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p><code class="function">open_by_handle_at</code>() can fail
+      with the following errors:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EBADF</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>mount_fd</code></em> is
+            not an open file descriptor.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>handle</code></em>
+            points outside your accessible address space.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="replaceable"><code>handle-&gt;handle_bytes</code></em>
+            is greater than <code class="constant">MAX_HANDLE_SZ</code> or is equal to
+            zero.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ELOOP</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>handle</code></em>
+            refers to a symbolic link, but <code class="constant">O_PATH</code> was not specified in
+            <em class="parameter"><code>flags</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The caller does not have the <code class="constant">CAP_DAC_READ_SEARCH</code> capability.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ESTALE</span></span></dt>
+
+          <dd>
+            <p>The specified <em class="parameter"><code>handle</code></em> is not valid. This
+            error will occur if, for example, the file has been
+            deleted.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="open-by-handle-at-2_sect6" name="open-by-handle-at-2_sect6" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p>These system calls first appeared in Linux 2.6.39. Library
+      support is provided in glibc since version 2.14.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="open-by-handle-at-2_sect7" name="open-by-handle-at-2_sect7" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>These system calls are nonstandard Linux extensions.</p>
+
+      <p>FreeBSD has a broadly similar pair of system calls in the
+      form of <code class="function">getfh</code>() and
+      <code class="function">openfh</code>().</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="open-by-handle-at-2_sect8" name="open-by-handle-at-2_sect8" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>A file handle can be generated in one process using
+      <code class="function">name_to_handle_at</code>() and later
+      used in a different process that calls <code class="function">open_by_handle_at</code>().</p>
+
+      <p>Some filesystem don't support the translation of pathnames
+      to file handles, for example, <code class="filename">/proc</code>, <code class="filename">/sys</code>,
+      and various network filesystems.</p>
+
+      <p>A file handle may become invalid ("stale") if a file is
+      deleted, or for other filesystem-specific reasons. Invalid
+      handles are notified by an <span class="errorname">ESTALE</span> error from <code class="function">open_by_handle_at</code>().</p>
+
+      <p>These system calls are designed for use by user-space file
+      servers. For example, a user-space NFS server might generate
+      a file handle and pass it to an NFS client. Later, when the
+      client wants to open the file, it could pass the handle back
+      to the server. This sort of functionality allows a user-space
+      file server to operate in a stateless fashion with respect to
+      the files it serves.</p>
+
+      <p>If <em class="parameter"><code>pathname</code></em> refers
+      to a symbolic link and <em class="parameter"><code>flags</code></em> does not specify
+      <code class="constant">AT_SYMLINK_FOLLOW</code>, then
+      <code class="function">name_to_handle_at</code>() returns a
+      handle for the link (rather than the file to which it
+      refers). The process receiving the handle can later perform
+      operations on the symbolic link by converting the handle to a
+      file descriptor using <code class="function">open_by_handle_at</code>() with the <code class="constant">O_PATH</code> flag, and then passing the file
+      descriptor as the <em class="parameter"><code>dirfd</code></em> argument in system calls
+      such as <a class="link" href="../htmlman2/readlink.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">readlinkat</span>(2)</span></a> and <a class="link" href="../htmlman2/chown.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fchownat</span>(2)</span></a>.</p>
+
+      <div class="refsect2">
+        <a id="open-by-handle-at-2_sect9" name="open-by-handle-at-2_sect9" shape="rect"> </a>
+
+        <h3>Obtaining a persistent filesystem ID</h3>
+
+        <p>The mount IDs in <code class="filename">/proc/self/mountinfo</code> can be reused as
+        filesystems are unmounted and mounted. Therefore, the mount
+        ID returned by <code class="function">name_to_handle_at</code>() (in *<em class="parameter"><code>mount_id</code></em>) should not be
+        treated as a persistent identifier for the corresponding
+        mounted filesystem. However, an application can use the
+        information in the <em class="replaceable"><code>mountinfo</code></em> record that
+        corresponds to the mount ID to derive a persistent
+        identifier.</p>
+
+        <p>For example, one can use the device name in the fifth
+        field of the <em class="replaceable"><code>mountinfo</code></em> record to search
+        for the corresponding device UUID via the symbolic links in
+        <code class="filename">/dev/disks/by-uuid</code>. (A more
+        comfortable way of obtaining the UUID is to use the
+        <a class="link" href="../htmlman3/libblkid.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">libblkid</span>(3)</span></a> library.)
+        That process can then be reversed, using the UUID to look
+        up the device name, and then obtaining the corresponding
+        mount point, in order to produce the <em class="parameter"><code>mount_fd</code></em> argument used by
+        <code class="function">open_by_handle_at</code>().</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="open-by-handle-at-2_sect10" name="open-by-handle-at-2_sect10" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>The two programs below demonstrate the use of <code class="function">name_to_handle_at</code>() and <code class="function">open_by_handle_at</code>(). The first program
+      (<code class="filename">t_name_to_handle_at.c</code>) uses
+      <code class="function">name_to_handle_at</code>() to obtain
+      the file handle and mount ID for the file specified in its
+      command-line argument; the handle and mount ID are written to
+      standard output.</p>
+
+      <p>The second program (<code class="filename">t_open_by_handle_at.c</code>) reads a mount ID and
+      file handle from standard input. The program then employs
+      <code class="function">open_by_handle_at</code>() to open the
+      file using that handle. If an optional command-line argument
+      is supplied, then the <em class="parameter"><code>mount_fd</code></em> argument for
+      <code class="function">open_by_handle_at</code>() is obtained
+      by opening the directory named in that argument. Otherwise,
+      <em class="parameter"><code>mount_fd</code></em> is obtained
+      by scanning <code class="filename">/proc/self/mountinfo</code> to find a record whose
+      mount ID matches the mount ID read from standard input, and
+      the mount directory specified in that record is opened.
+      (These programs do not deal with the fact that mount IDs are
+      not persistent.)</p>
+
+      <p>The following shell session demonstrates the use of these
+      two programs:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$ <span class="emphasis"><em>echo 'Can you please think about it?' &gt; cecilia.txt</em></span>
+$ <span class="emphasis"><em>./t_name_to_handle_at cecilia.txt &gt; fh</em></span>
+$ <span class="emphasis"><em>./t_open_by_handle_at &lt; fh</em></span>
+open_by_handle_at: Operation not permitted
+$ <span class="emphasis"><em>sudo ./t_open_by_handle_at &lt; fh</em></span>      # Need CAP_SYS_ADMIN
+Read 31 bytes
+$ <span class="emphasis"><em>rm cecilia.txt</em></span>
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>Now we delete and (quickly) re-create the file so that it
+      has the same content and (by chance) the same inode.
+      Nevertheless, <code class="function">open_by_handle_at</code>() recognizes that the
+      original file referred to by the file handle no longer
+      exists.</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$ <span class="emphasis"><em>stat −−printf="%i\n" cecilia.txt</em></span>     # Display inode number
+4072121
+$ <span class="emphasis"><em>rm cecilia.txt</em></span>
+$ <span class="emphasis"><em>echo 'Can you please think about it?' &gt; cecilia.txt</em></span>
+$ <span class="emphasis"><em>stat −−printf="%i\n" cecilia.txt</em></span>     # Check inode number
+4072121
+$ <span class="emphasis"><em>sudo ./t_open_by_handle_at &lt; fh</em></span>
+open_by_handle_at: Stale NFS file handle
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="refsect2">
+        <a id="open-by-handle-at-2_sect11" name="open-by-handle-at-2_sect11" shape="rect"> </a>
+
+        <h3>Program source: t_name_to_handle_at.c</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+#define _GNU_SOURCE
+#include &lt;sys/types.h&gt;
+#include &lt;sys/stat.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;string.h&gt;
+
+#define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); \
+                        } while (0)
+
+int
+main(int argc, char *argv[])
+{
+    struct file_handle *fhp;
+    int mount_id, fhsize, flags, dirfd, j;
+    char *pathname;
+
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s pathname\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    pathname = argv[1];
+
+    /* Allocate file_handle structure */
+
+    fhsize = sizeof(*fhp);
+    fhp = malloc(fhsize);
+    if (fhp == NULL)
+        errExit("malloc");
+
+    /* Make an initial call to name_to_handle_at() to discover
+       the size required for file handle */
+
+    dirfd = AT_FDCWD;           /* For name_to_handle_at() calls */
+    flags = 0;                  /* For name_to_handle_at() calls */
+    fhp−&gt;handle_bytes = 0;
+    if (name_to_handle_at(dirfd, pathname, fhp,
+                &amp;mount_id, flags) != −1 || errno != EOVERFLOW) {
+        fprintf(stderr, "Unexpected result from name_to_handle_at()\n");
+        exit(EXIT_FAILURE);
+    }
+
+    /* Reallocate file_handle structure with correct size */
+
+    fhsize = sizeof(struct file_handle) + fhp−&gt;handle_bytes;
+    fhp = realloc(fhp, fhsize);         /* Copies fhp−&gt;handle_bytes */
+    if (fhp == NULL)
+        errExit("realloc");
+
+    /* Get file handle from pathname supplied on command line */
+
+    if (name_to_handle_at(dirfd, pathname, fhp, &amp;mount_id, flags) == −1)
+        errExit("name_to_handle_at");
+
+    /* Write mount ID, file handle size, and file handle to stdout,
+       for later reuse by t_open_by_handle_at.c */
+
+    printf("%d\n", mount_id);
+    printf("%d %d   ", fhp−&gt;handle_bytes, fhp−&gt;handle_type);
+    for (j = 0; j &lt; fhp−&gt;handle_bytes; j++)
+        printf(" %02x", fhp−&gt;f_handle[j]);
+    printf("\n");
+
+    exit(EXIT_SUCCESS);
+}
+</pre>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="open-by-handle-at-2_sect12" name="open-by-handle-at-2_sect12" shape="rect"> </a>
+
+        <h3>Program source: t_open_by_handle_at.c</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+#define _GNU_SOURCE
+#include &lt;sys/types.h&gt;
+#include &lt;sys/stat.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;limits.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;string.h&gt;
+
+#define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); \
+                        } while (0)
+
+/* Scan /proc/self/mountinfo to find the line whose mount ID matches
+   'mount_id'. (An easier way to do this is to install and use the
+   'libmount' library provided by the 'util−linux' project.)
+   Open the corresponding mount path and return the resulting file
+   descriptor. */
+
+static int
+open_mount_path_by_id(int mount_id)
+{
+    char *linep;
+    size_t lsize;
+    char mount_path[PATH_MAX];
+    int mi_mount_id, found;
+    ssize_t nread;
+    FILE *fp;
+
+    fp = fopen("/proc/self/mountinfo", "r");
+    if (fp == NULL)
+        errExit("fopen");
+
+    found = 0;
+    linep = NULL;
+    while (!found) {
+        nread = getline(&amp;linep, &amp;lsize, fp);
+        if (nread == −1)
+            break;
+
+        nread = sscanf(linep, "%d %*d %*s %*s %s",
+                       &amp;mi_mount_id, mount_path);
+        if (nread != 2) {
+            fprintf(stderr, "Bad sscanf()\n");
+            exit(EXIT_FAILURE);
+        }
+
+        if (mi_mount_id == mount_id)
+            found = 1;
+    }
+    free(linep);
+
+    fclose(fp);
+
+    if (!found) {
+        fprintf(stderr, "Could not find mount point\n");
+        exit(EXIT_FAILURE);
+    }
+
+    return open(mount_path, O_RDONLY);
+}
+
+int
+main(int argc, char *argv[])
+{
+    struct file_handle *fhp;
+    int mount_id, fd, mount_fd, handle_bytes, j;
+    ssize_t nread;
+    char buf[1000];
+#define LINE_SIZE 100
+    char line1[LINE_SIZE], line2[LINE_SIZE];
+    char *nextp;
+
+    if ((argc &gt; 1 &amp;&amp; strcmp(argv[1], "−−help") == 0) || argc &gt; 2) {
+        fprintf(stderr, "Usage: %s [mount−path]\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    /* Standard input contains mount ID and file handle information:
+
+         Line 1: &lt;mount_id&gt;
+         Line 2: &lt;handle_bytes&gt; &lt;handle_type&gt;   &lt;bytes of handle in hex&gt;
+    */
+
+    if ((fgets(line1, sizeof(line1), stdin) == NULL) ||
+           (fgets(line2, sizeof(line2), stdin) == NULL)) {
+        fprintf(stderr, "Missing mount_id / file handle\n");
+        exit(EXIT_FAILURE);
+    }
+
+    mount_id = atoi(line1);
+
+    handle_bytes = strtoul(line2, &amp;nextp, 0);
+
+    /* Given handle_bytes, we can now allocate file_handle structure */
+
+    fhp = malloc(sizeof(struct file_handle) + handle_bytes);
+    if (fhp == NULL)
+        errExit("malloc");
+
+    fhp−&gt;handle_bytes = handle_bytes;
+
+    fhp−&gt;handle_type = strtoul(nextp, &amp;nextp, 0);
+
+    for (j = 0; j &lt; fhp−&gt;handle_bytes; j++)
+        fhp−&gt;f_handle[j] = strtoul(nextp, &amp;nextp, 16);
+
+    /* Obtain file descriptor for mount point, either by opening
+       the pathname specified on the command line, or by scanning
+       /proc/self/mounts to find a mount that matches the 'mount_id'
+       that we received from stdin. */
+
+    if (argc &gt; 1)
+        mount_fd = open(argv[1], O_RDONLY);
+    else
+        mount_fd = open_mount_path_by_id(mount_id);
+
+    if (mount_fd == −1)
+        errExit("opening mount fd");
+
+    /* Open file using handle and mount point */
+
+    fd = open_by_handle_at(mount_fd, fhp, O_RDONLY);
+    if (fd == −1)
+        errExit("open_by_handle_at");
+
+    /* Try reading a few bytes from the file */
+
+    nread = read(fd, buf, sizeof(buf));
+    if (nread == −1)
+        errExit("read");
+
+    printf("Read %zd bytes\n", nread);
+
+    exit(EXIT_SUCCESS);
+}
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="open-by-handle-at-2_sect13" name="open-by-handle-at-2_sect13" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>, <a class="link" href="../htmlman3/libblkid.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">libblkid</span>(3)</span></a>, <a class="link" href="../htmlman8/blkid.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">blkid</span>(8)</span></a>, <a class="link" href="../htmlman8/findfs.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">findfs</span>(8)</span></a>, <a class="link" href="../htmlman8/mount.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mount</span>(8)</span></a></p>
+
+      <p>The <em class="replaceable"><code>libblkid</code></em> and
+      <em class="replaceable"><code>libmount</code></em>
+      documentation in the latest <em class="replaceable"><code>util-linux</code></em> release at
+      <a class="literalurl" href="https://www.kernel.org/pub/linux/utils/util-linux/" target="_top" shape="rect">https://www.kernel.org/pub/linux/utils/util-linux/</a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="open-by-handle-at-2_sect14" name="open-by-handle-at-2_sect14" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 2014 by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

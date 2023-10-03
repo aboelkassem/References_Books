@@ -1,0 +1,533 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>symlink(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="symlink(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="symlink.7" name="symlink.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>symlink — symbolic link handling</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="symlink-7_sect1" name="symlink-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>Symbolic links are files that act as pointers to other
+      files. To understand their behavior, you must first
+      understand how hard links work.</p>
+
+      <p>A hard link to a file is indistinguishable from the
+      original file because it is a reference to the object
+      underlying the original filename. (To be precise: each of the
+      hard links to a file is a reference to the same <span class="emphasis"><em>inode number</em></span>, where an inode
+      number is an index into the inode table, which contains
+      metadata about all files on a filesystem. See <a class="link" href="../htmlman2/stat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">stat</span>(2)</span></a>.) Changes to a file
+      are independent of the name used to reference the file. Hard
+      links may not refer to directories (to prevent the
+      possibility of loops within the filesystem tree, which would
+      confuse many programs) and may not refer to files on
+      different filesystems (because inode numbers are not unique
+      across filesystems).</p>
+
+      <p>A symbolic link is a special type of file whose contents
+      are a string that is the pathname of another file, the file
+      to which the link refers. (The contents of a symbolic link
+      can be read using <a class="link" href="../htmlman2/readlink.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">readlink</span>(2)</span></a>.) In other
+      words, a symbolic link is a pointer to another name, and not
+      to an underlying object. For this reason, symbolic links may
+      refer to directories and may cross filesystem boundaries.</p>
+
+      <p>There is no requirement that the pathname referred to by a
+      symbolic link should exist. A symbolic link that refers to a
+      pathname that does not exist is said to be a <span class="emphasis"><em>dangling link</em></span>.</p>
+
+      <p>Because a symbolic link and its referenced object coexist
+      in the filesystem name space, confusion can arise in
+      distinguishing between the link itself and the referenced
+      object. On historical systems, commands and system calls
+      adopted their own link-following conventions in a somewhat
+      ad-hoc fashion. Rules for a more uniform approach, as they
+      are implemented on Linux and other systems, are outlined
+      here. It is important that site-local applications also
+      conform to these rules, so that the user interface can be as
+      consistent as possible.</p>
+
+      <div class="refsect2">
+        <a id="symlink-7_sect2" name="symlink-7_sect2" shape="rect"> </a>
+
+        <h3>Symbolic link ownership, permissions, and
+        timestamps</h3>
+
+        <p>The owner and group of an existing symbolic link can be
+        changed using <a class="link" href="../htmlman2/chown.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">lchown</span>(2)</span></a>. The only time
+        that the ownership of a symbolic link matters is when the
+        link is being removed or renamed in a directory that has
+        the sticky bit set (see <a class="link" href="../htmlman2/stat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">stat</span>(2)</span></a>).</p>
+
+        <p>The last access and last modification timestamps of a
+        symbolic link can be changed using <a class="link" href="../htmlman2/utimensat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">utimensat</span>(2)</span></a> or <a class="link" href="../htmlman3/futimes.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">lutimes</span>(3)</span></a>.</p>
+
+        <p>On Linux, the permissions of a symbolic link are not
+        used in any operations; the permissions are always 0777
+        (read, write, and execute for all user categories), and
+        can't be changed.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="symlink-7_sect3" name="symlink-7_sect3" shape="rect"> </a>
+
+        <h3>Obtaining a file descriptor that refers to a symbolic
+        link</h3>
+
+        <p>Using the combination of the <code class="constant">O_PATH</code> and <code class="constant">O_NOFOLLOW</code> flags to <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a> yields a file
+        descriptor that can be passed as the <em class="replaceable"><code>dirfd</code></em> argument in system
+        calls such as <a class="link" href="../htmlman2/stat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fstatat</span>(2)</span></a>, <a class="link" href="../htmlman2/chown.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fchownat</span>(2)</span></a>, <a class="link" href="../htmlman2/chmod.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fchmodat</span>(2)</span></a>, <a class="link" href="../htmlman2/link.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">linkat</span>(2)</span></a>, and <a class="link" href="../htmlman2/readlink.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">readlinkat</span>(2)</span></a>, in order
+        to operate on the symbolic link itself (rather than the
+        file to which it refers).</p>
+
+        <p>By default (i.e., if the <code class="constant">AT_SYMLINK_FOLLOW</code> flag is not specified),
+        if <a class="link" href="../htmlman2/open_by_handle_at.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">name_to_handle_at</span>(2)</span></a> is
+        applied to a symbolic link, it yields a handle for the
+        symbolic link (rather than the file to which it refers).
+        One can then obtain a file descriptor for the symbolic link
+        (rather than the file to which it refers) by specifying the
+        <code class="constant">O_PATH</code> flag in a subsequent
+        call to <a class="link" href="../htmlman2/open_by_handle_at.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open_by_handle_at</span>(2)</span></a>.
+        Again, that file descriptor can be used in the
+        aforementioned system calls to operate on the symbolic link
+        itself.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="symlink-7_sect4" name="symlink-7_sect4" shape="rect"> </a>
+
+        <h3>Handling of symbolic links by system calls and
+        commands</h3>
+
+        <p>Symbolic links are handled either by operating on the
+        link itself, or by operating on the object referred to by
+        the link. In the latter case, an application or system call
+        is said to <em class="replaceable"><code>follow</code></em>
+        the link. Symbolic links may refer to other symbolic links,
+        in which case the links are dereferenced until an object
+        that is not a symbolic link is found, a symbolic link that
+        refers to a file which does not exist is found, or a loop
+        is detected. (Loop detection is done by placing an upper
+        limit on the number of links that may be followed, and an
+        error results if this limit is exceeded.)</p>
+
+        <p>There are three separate areas that need to be
+        discussed. They are as follows:</p>
+
+        <div class="orderedlist">
+          <ol class="orderedlist" type="1">
+            <li class="listitem">
+              <p>Symbolic links used as filename arguments for
+              system calls.</p>
+            </li>
+
+            <li class="listitem">
+              <p>Symbolic links specified as command-line arguments
+              to utilities that are not traversing a file tree.</p>
+            </li>
+
+            <li class="listitem">
+              <p>Symbolic links encountered by utilities that are
+              traversing a file tree (either specified on the
+              command line or encountered as part of the file
+              hierarchy walk).</p>
+            </li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="symlink-7_sect5" name="symlink-7_sect5" shape="rect"> </a>
+
+        <h3>System calls</h3>
+
+        <p>The first area is symbolic links used as filename
+        arguments for system calls.</p>
+
+        <p>Except as noted below, all system calls follow symbolic
+        links. For example, if there were a symbolic link
+        <em class="replaceable"><code>slink</code></em> which
+        pointed to a file named <em class="replaceable"><code>afile</code></em>, the system call
+        <span class="emphasis"><em>open("slink" ...)</em></span>
+        would return a file descriptor referring to the file
+        <em class="replaceable"><code>afile</code></em>.</p>
+
+        <p>Various system calls do not follow links, and operate on
+        the symbolic link itself. They are: <a class="link" href="../htmlman2/chown.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">lchown</span>(2)</span></a>, <a class="link" href="../htmlman2/getxattr.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">lgetxattr</span>(2)</span></a>, <a class="link" href="../htmlman2/listxattr.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">llistxattr</span>(2)</span></a>, <a class="link" href="../htmlman2/removexattr.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">lremovexattr</span>(2)</span></a>,
+        <a class="link" href="../htmlman2/setxattr.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">lsetxattr</span>(2)</span></a>, <a class="link" href="../htmlman2/stat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">lstat</span>(2)</span></a>, <a class="link" href="../htmlman2/readlink.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">readlink</span>(2)</span></a>, <a class="link" href="../htmlman2/rename.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rename</span>(2)</span></a>, <a class="link" href="../htmlman2/rmdir.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rmdir</span>(2)</span></a>, and <a class="link" href="../htmlman2/unlink.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unlink</span>(2)</span></a>.</p>
+
+        <p>Certain other system calls optionally follow symbolic
+        links. They are: <a class="link" href="../htmlman2/access.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">faccessat</span>(2)</span></a>, <a class="link" href="../htmlman2/chown.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fchownat</span>(2)</span></a>, <a class="link" href="../htmlman2/stat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fstatat</span>(2)</span></a>, <a class="link" href="../htmlman2/link.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">linkat</span>(2)</span></a>, <a class="link" href="../htmlman2/open_by_handle_at.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">name_to_handle_at</span>(2)</span></a>,
+        <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>, <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">openat</span>(2)</span></a>, <a class="link" href="../htmlman2/open_by_handle_at.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open_by_handle_at</span>(2)</span></a>, and
+        <a class="link" href="../htmlman2/utimensat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">utimensat</span>(2)</span></a>; see their
+        manual pages for details. Because <a class="link" href="../htmlman3/remove.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">remove</span>(3)</span></a> is an alias for
+        <a class="link" href="../htmlman2/unlink.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unlink</span>(2)</span></a>, that library
+        function also does not follow symbolic links. When
+        <a class="link" href="../htmlman2/rmdir.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rmdir</span>(2)</span></a> is applied to a
+        symbolic link, it fails with the error <span class="errorname">ENOTDIR</span>.</p>
+
+        <p>The <a class="link" href="../htmlman2/link.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">link</span>(2)</span></a> warrants special
+        discussion. POSIX.1-2001 specifies that <a class="link" href="../htmlman2/link.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">link</span>(2)</span></a> should
+        dereference <em class="replaceable"><code>oldpath</code></em> if it is a symbolic
+        link. However, Linux does not do this. (By default, Solaris
+        is the same, but the POSIX.1-2001 specified behavior can be
+        obtained with suitable compiler options.) The upcoming
+        POSIX.1 revision changes the specification to allow either
+        behavior in an implementation.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="symlink-7_sect6" name="symlink-7_sect6" shape="rect"> </a>
+
+        <h3>Commands not traversing a file tree</h3>
+
+        <p>The second area is symbolic links, specified as
+        command-line filename arguments, to commands which are not
+        traversing a file tree.</p>
+
+        <p>Except as noted below, commands follow symbolic links
+        named as command-line arguments. For example, if there were
+        a symbolic link <em class="replaceable"><code>slink</code></em> which pointed to a
+        file named <em class="replaceable"><code>afile</code></em>,
+        the command <span class="emphasis"><em>cat
+        slink</em></span> would display the contents of the file
+        <em class="replaceable"><code>afile</code></em>.</p>
+
+        <p>It is important to realize that this rule includes
+        commands which may optionally traverse file trees; for
+        example, the command <span class="emphasis"><em>chown
+        file</em></span> is included in this rule, while the
+        command <span class="emphasis"><em>chown −R
+        file</em></span>, which performs a tree traversal, is not.
+        (The latter is described in the third area, below.)</p>
+
+        <p>If it is explicitly intended that the command operate on
+        the symbolic link instead of following the symbolic
+        link—for example, it is desired that <span class="emphasis"><em>chown slink</em></span> change the ownership
+        of the file that <em class="replaceable"><code>slink</code></em> is, whether it is a
+        symbolic link or not—the <code class="option">−h</code> option should be used. In the
+        above example, <span class="emphasis"><em>chown root
+        slink</em></span> would change the ownership of the file
+        referred to by <em class="replaceable"><code>slink</code></em>, while <span class="emphasis"><em>chown −h root slink</em></span> would
+        change the ownership of <em class="replaceable"><code>slink</code></em> itself.</p>
+
+        <p>There are some exceptions to this rule:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>The <a class="link" href="../htmlman1/mv.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mv</span>(1)</span></a> and <a class="link" href="../htmlman1/rm.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rm</span>(1)</span></a> commands do
+              not follow symbolic links named as arguments, but
+              respectively attempt to rename and delete them.
+              (Note, if the symbolic link references a file via a
+              relative path, moving it to another directory may
+              very well cause it to stop working, since the path
+              may no longer be correct.)</p>
+            </li>
+
+            <li class="listitem">
+              <p>The <a class="link" href="../htmlman1/ls.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ls</span>(1)</span></a> command is
+              also an exception to this rule. For compatibility
+              with historic systems (when <a class="link" href="../htmlman1/ls.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ls</span>(1)</span></a> is not doing
+              a tree walk—that is, <code class="option">−R</code> option is not specified),
+              the <a class="link" href="../htmlman1/ls.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ls</span>(1)</span></a> command
+              follows symbolic links named as arguments if the
+              <code class="option">−H</code> or <code class="option">−L</code> option is specified, or if
+              the <code class="option">−F</code>,
+              <code class="option">−d</code>, or <code class="option">−l</code> options are not specified.
+              (The <a class="link" href="../htmlman1/ls.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ls</span>(1)</span></a> command is
+              the only command where the <code class="option">−H</code> and <code class="option">−L</code> options affect its behavior
+              even though it is not doing a walk of a file
+              tree.)</p>
+            </li>
+
+            <li class="listitem">
+              <p>The <span class="citerefentry"><span class="refentrytitle">file</span>(1)</span> command is also
+              an exception to this rule. The <span class="citerefentry"><span class="refentrytitle">file</span>(1)</span> command does
+              not follow symbolic links named as argument by
+              default. The <span class="citerefentry"><span class="refentrytitle">file</span>(1)</span> command does
+              follow symbolic links named as argument if the
+              <code class="option">−L</code> option is
+              specified.</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="symlink-7_sect7" name="symlink-7_sect7" shape="rect"> </a>
+
+        <h3>Commands traversing a file tree</h3>
+
+        <p>The following commands either optionally or always
+        traverse file trees: <a class="link" href="../htmlman1/chgrp.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chgrp</span>(1)</span></a>, <a class="link" href="../htmlman1/chmod.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chmod</span>(1)</span></a>, <a class="link" href="../htmlman1/chown.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chown</span>(1)</span></a>, <a class="link" href="../htmlman1/cp.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">cp</span>(1)</span></a>, <a class="link" href="../htmlman1/du.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">du</span>(1)</span></a>, <span class="citerefentry"><span class="refentrytitle">find</span>(1)</span>, <a class="link" href="../htmlman1/ls.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ls</span>(1)</span></a>, <span class="citerefentry"><span class="refentrytitle">pax</span>(1)</span>, <a class="link" href="../htmlman1/rm.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rm</span>(1)</span></a>, and <span class="citerefentry"><span class="refentrytitle">tar</span>(1)</span>.</p>
+
+        <p>It is important to realize that the following rules
+        apply equally to symbolic links encountered during the file
+        tree traversal and symbolic links listed as command-line
+        arguments.</p>
+
+        <p>The <span class="emphasis"><em>first rule</em></span>
+        applies to symbolic links that reference files other than
+        directories. Operations that apply to symbolic links are
+        performed on the links themselves, but otherwise the links
+        are ignored.</p>
+
+        <p>The command <span class="emphasis"><em>rm −r slink
+        directory</em></span> will remove <em class="replaceable"><code>slink</code></em>, as well as any
+        symbolic links encountered in the tree traversal of
+        <em class="replaceable"><code>directory</code></em>,
+        because symbolic links may be removed. In no case will
+        <a class="link" href="../htmlman1/rm.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rm</span>(1)</span></a> affect the file
+        referred to by <em class="replaceable"><code>slink</code></em>.</p>
+
+        <p>The <span class="emphasis"><em>second rule</em></span>
+        applies to symbolic links that refer to directories.
+        Symbolic links that refer to directories are never followed
+        by default. This is often referred to as a "physical" walk,
+        as opposed to a "logical" walk (where symbolic links the
+        refer to directories are followed).</p>
+
+        <p>Certain conventions are (should be) followed as
+        consistently as possible by commands that perform file tree
+        walks:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>A command can be made to follow any symbolic links
+              named on the command line, regardless of the type of
+              file they reference, by specifying the <code class="option">−H</code> (for "half-logical") flag.
+              This flag is intended to make the command-line name
+              space look like the logical name space. (Note, for
+              commands that do not always do file tree traversals,
+              the <code class="option">−H</code> flag will be
+              ignored if the <code class="option">−R</code>
+              flag is not also specified.)</p>
+
+              <p>For example, the command <span class="emphasis"><em>chown −HR user slink</em></span>
+              will traverse the file hierarchy rooted in the file
+              pointed to by <em class="replaceable"><code>slink</code></em>. Note, the
+              <code class="option">−H</code> is not the same
+              as the previously discussed <code class="option">−h</code> flag. The <code class="option">−H</code> flag causes symbolic links
+              specified on the command line to be dereferenced for
+              the purposes of both the action to be performed and
+              the tree walk, and it is as if the user had specified
+              the name of the file to which the symbolic link
+              pointed.</p>
+            </li>
+
+            <li class="listitem">
+              <p>A command can be made to follow any symbolic links
+              named on the command line, as well as any symbolic
+              links encountered during the traversal, regardless of
+              the type of file they reference, by specifying the
+              <code class="option">−L</code> (for "logical")
+              flag. This flag is intended to make the entire name
+              space look like the logical name space. (Note, for
+              commands that do not always do file tree traversals,
+              the <code class="option">−L</code> flag will be
+              ignored if the <code class="option">−R</code>
+              flag is not also specified.)</p>
+
+              <p>For example, the command <span class="emphasis"><em>chown −LR user slink</em></span>
+              will change the owner of the file referred to by
+              <em class="replaceable"><code>slink</code></em>. If
+              <em class="replaceable"><code>slink</code></em>
+              refers to a directory, <em class="replaceable"><code>chown</code></em> will traverse
+              the file hierarchy rooted in the directory that it
+              references. In addition, if any symbolic links are
+              encountered in any file tree that <em class="replaceable"><code>chown</code></em> traverses, they
+              will be treated in the same fashion as <em class="replaceable"><code>slink</code></em>.</p>
+            </li>
+
+            <li class="listitem">
+              <p>A command can be made to provide the default
+              behavior by specifying the <code class="option">−P</code> (for "physical") flag. This
+              flag is intended to make the entire name space look
+              like the physical name space.</p>
+            </li>
+          </ul>
+        </div>
+
+        <p>For commands that do not by default do file tree
+        traversals, the <code class="option">−H</code>,
+        <code class="option">−L</code>, and <code class="option">−P</code> flags are ignored if the
+        <code class="option">−R</code> flag is not also
+        specified. In addition, you may specify the <code class="option">−H</code>, <code class="option">−L</code>, and <code class="option">−P</code> options more than once; the last
+        one specified determines the command's behavior. This is
+        intended to permit you to alias commands to behave one way
+        or the other, and then override that behavior on the
+        command line.</p>
+
+        <p>The <a class="link" href="../htmlman1/ls.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ls</span>(1)</span></a> and <a class="link" href="../htmlman1/rm.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rm</span>(1)</span></a> commands have
+        exceptions to these rules:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>The <a class="link" href="../htmlman1/rm.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rm</span>(1)</span></a> command
+              operates on the symbolic link, and not the file it
+              references, and therefore never follows a symbolic
+              link. The <a class="link" href="../htmlman1/rm.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rm</span>(1)</span></a> command does
+              not support the <code class="option">−H</code>,
+              <code class="option">−L</code>, or <code class="option">−P</code> options.</p>
+            </li>
+
+            <li class="listitem">
+              <p>To maintain compatibility with historic systems,
+              the <a class="link" href="../htmlman1/ls.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ls</span>(1)</span></a> command acts
+              a little differently. If you do not specify the
+              <code class="option">−F</code>, <code class="option">−d</code> or <code class="option">−l</code> options, <a class="link" href="../htmlman1/ls.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ls</span>(1)</span></a> will follow
+              symbolic links specified on the command line. If the
+              <code class="option">−L</code> flag is
+              specified, <a class="link" href="../htmlman1/ls.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ls</span>(1)</span></a> follows all
+              symbolic links, regardless of their type, whether
+              specified on the command line or encountered in the
+              tree walk.</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="symlink-7_sect8" name="symlink-7_sect8" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman1/chgrp.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chgrp</span>(1)</span></a>, <a class="link" href="../htmlman1/chmod.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chmod</span>(1)</span></a>, <span class="citerefentry"><span class="refentrytitle">find</span>(1)</span>, <a class="link" href="../htmlman1/ln.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ln</span>(1)</span></a>, <a class="link" href="../htmlman1/ls.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ls</span>(1)</span></a>, <a class="link" href="../htmlman1/mv.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mv</span>(1)</span></a>, <a class="link" href="../htmlman1/rm.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rm</span>(1)</span></a>, <a class="link" href="../htmlman2/chown.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">lchown</span>(2)</span></a>, <a class="link" href="../htmlman2/link.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">link</span>(2)</span></a>, <a class="link" href="../htmlman2/stat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">lstat</span>(2)</span></a>, <a class="link" href="../htmlman2/readlink.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">readlink</span>(2)</span></a>, <a class="link" href="../htmlman2/rename.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rename</span>(2)</span></a>, <a class="link" href="../htmlman2/symlink.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">symlink</span>(2)</span></a>, <a class="link" href="../htmlman2/unlink.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unlink</span>(2)</span></a>, <a class="link" href="../htmlman2/utimensat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">utimensat</span>(2)</span></a>, <a class="link" href="../htmlman3/futimes.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">lutimes</span>(3)</span></a>, <a class="link" href="../htmlman7/path_resolution.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">path_resolution</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="symlink-7_sect9" name="symlink-7_sect9" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 1992, 1993, 1994<br />
+
+                  The Regents of the University of California.  All rights reserved.<br />
+
+                  and Copyright (C) 2008, 2014 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(BSD_3_CLAUSE_UCB)<br />
+                  Redistribution and use in source and binary forms, with or without<br />
+
+                  modification, are permitted provided that the following conditions<br />
+
+                  are met:<br />
+                  1. Redistributions of source code must retain the above copyright<br />
+
+                     notice, this list of conditions and the following disclaimer.<br />
+
+                  2. Redistributions in binary form must reproduce the above copyright<br />
+
+                     notice, this list of conditions and the following disclaimer in the<br />
+
+                     documentation and/or other materials provided with the distribution.<br />
+
+                  4. Neither the name of the University nor the names of its contributors<br />
+
+                     may be used to endorse or promote products derived from this software<br />
+
+                     without specific prior written permission.<br />
+
+                  <br />
+                  THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND<br />
+
+                  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE<br />
+
+                  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE<br />
+
+                  ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE<br />
+
+                  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL<br />
+
+                  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS<br />
+
+                  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)<br />
+
+                  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT<br />
+
+                  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY<br />
+
+                  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF<br />
+
+                  SUCH DAMAGE.<br />
+                  %%%LICENSE_END<br />
+                  <br />
+                  <script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>(#)symlink.7
+                  8.3 (Berkeley) 3/31/94<br />
+                  $FreeBSD: src/bin/ln/symlink.7,v 1.30 2005/02/13 22:25:09 ru Exp $<br />
+
+                  <br />
+                  2008-06-11, mtk, Taken from FreeBSD 6.2 and heavily edited for<br />
+
+                      specific Linux details, improved readability, and man-pages style.<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

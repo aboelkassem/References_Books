@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>set_thread_area(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="set_thread_area(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="set-thread-area.2" name="set-thread-area.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>set_thread_area — set a GDT entry for thread-local
+      storage</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;linux/unistd.h&gt;
+#include &lt;asm/ldt.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>get_thread_area</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">struct user_desc *<var class="pdparam">u_info</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>set_thread_area</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">struct user_desc *<var class="pdparam">u_info</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">There are no glibc
+            wrappers for these system calls; see NOTES.</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="set-thread-area-2_sect1" name="set-thread-area-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>Linux dedicates three global descriptor table (GDT)
+      entries for thread-local storage. For more information about
+      the GDT, see the Intel Software Developer's Manual or the AMD
+      Architecture Programming Manual.</p>
+
+      <p>Both of these system calls take an argument that is a
+      pointer to a structure of the following type:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>struct user_desc { unsigned int entry_number; unsigned
+          long base_addr; unsigned int limit; unsigned int
+          seg_32bit:1; unsigned int contents:2; unsigned int
+          read_exec_only:1; unsigned int limit_in_pages:1; unsigned
+          int seg_not_present:1; unsigned int useable:1; };</p>
+        </blockquote>
+      </div>
+
+      <p><code class="function">get_thread_area</code>() reads the
+      GDT entry indicated by <em class="replaceable"><code>u_info−&gt;entry_number</code></em>
+      and fills in the rest of the fields in <em class="parameter"><code>u_info</code></em>.</p>
+
+      <p><code class="function">set_thread_area</code>() sets a TLS
+      entry in the GDT.</p>
+
+      <p>The TLS array entry set by <code class="function">set_thread_area</code>() corresponds to the value
+      of <em class="replaceable"><code>u_info−&gt;entry_number</code></em>
+      passed in by the user. If this value is in bounds,
+      <code class="function">set_thread_area</code>() writes the
+      TLS descriptor pointed to by <em class="parameter"><code>u_info</code></em> into the thread's TLS
+      array.</p>
+
+      <p>When <code class="function">set_thread_area</code>() is
+      passed an <em class="replaceable"><code>entry_number</code></em> of −1, it
+      searches for a free TLS entry. If <code class="function">set_thread_area</code>() finds a free TLS entry,
+      the value of <em class="replaceable"><code>u_info−&gt;entry_number</code></em>
+      is set upon return to show which entry was changed.</p>
+
+      <p>A <span class="structname">user_desc</span> is considered
+      "empty" if <em class="replaceable"><code>read_exec_only</code></em> and <em class="replaceable"><code>seg_not_present</code></em> are set to 1
+      and all of the other fields are 0. If an "empty" descriptor
+      is passed to <em class="replaceable"><code>set_thread_area,</code></em> the
+      corresponding TLS entry will be cleared. See BUGS for
+      additional details.</p>
+
+      <p>Since Linux 3.19, <code class="function">set_thread_area</code>() cannot be used to write
+      non-present segments, 16-bit segments, or code segments,
+      although clearing a segment is still acceptable.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="set-thread-area-2_sect2" name="set-thread-area-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>These system calls return 0 on success, and −1 on
+      failure, with <code class="varname">errno</code> set
+      appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="set-thread-area-2_sect3" name="set-thread-area-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>u_info</code></em> is an
+            invalid pointer.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="replaceable"><code>u_info−&gt;entry_number</code></em>
+            is out of bounds.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOSYS</span></span></dt>
+
+          <dd>
+            <p><a class="link" href="../htmlman2/set_thread_area.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">get_thread_area</span>(2)</span></a> or
+            <a class="link" href="../htmlman2/set_thread_area.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">set_thread_area</span>(2)</span></a>
+            was invoked as a 64-bit system call.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ESRCH</span></span></dt>
+
+          <dd>
+            <p>(<code class="function">set_thread_area</code>()) A
+            free TLS entry could not be located.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="set-thread-area-2_sect4" name="set-thread-area-2_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p><code class="function">set_thread_area</code>() first
+      appeared in Linux 2.5.29. <code class="function">get_thread_area</code>() first appeared in Linux
+      2.5.32.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="set-thread-area-2_sect5" name="set-thread-area-2_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p><code class="function">set_thread_area</code>() is
+      Linux-specific and should not be used in programs that are
+      intended to be portable.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="set-thread-area-2_sect6" name="set-thread-area-2_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Glibc does not provide wrappers for these system calls,
+      since they are generally intended for use only by threading
+      libraries. In the unlikely event that you want to call them
+      directly, use <a class="link" href="../htmlman2/syscall.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">syscall</span>(2)</span></a>.</p>
+
+      <p><a class="link" href="../htmlman2/arch_prctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">arch_prctl</span>(2)</span></a> can interfere
+      with <a class="link" href="../htmlman2/set_thread_area.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">set_thread_area</span>(2)</span></a>. See
+      <a class="link" href="../htmlman2/arch_prctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">arch_prctl</span>(2)</span></a> for more
+      details. This is not normally a problem, as <a class="link" href="../htmlman2/arch_prctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">arch_prctl</span>(2)</span></a> is normally
+      used only by 64-bit programs.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="set-thread-area-2_sect7" name="set-thread-area-2_sect7" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>On 64-bit kernels before Linux 3.19, one of the padding
+      bits in <span class="structname">user_desc</span>, if set,
+      would prevent the descriptor from being considered empty (see
+      <a class="link" href="../htmlman2/modify_ldt.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">modify_ldt</span>(2)</span></a>). As a
+      result, the only reliable way to clear a TLS entry is to use
+      <a class="link" href="../htmlman3/memset.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">memset</span>(3)</span></a> to zero the
+      entire <span class="structname">user_desc</span> structure,
+      including padding bits, and then to set the <em class="replaceable"><code>read_exec_only</code></em> and <em class="replaceable"><code>seg_not_present</code></em> bits. On
+      Linux 3.19, a <span class="structname">user_desc</span>
+      consisting entirely of zeros except for <em class="replaceable"><code>entry_number</code></em> will also be
+      interpreted as a request to clear a TLS entry, but this
+      behaved differently on older kernels.</p>
+
+      <p>Prior to Linux 3.19, the DS and ES segment registers must
+      not reference TLS entries.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="set-thread-area-2_sect8" name="set-thread-area-2_sect8" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/arch_prctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">arch_prctl</span>(2)</span></a>, <a class="link" href="../htmlman2/modify_ldt.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">modify_ldt</span>(2)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="set-thread-area-2_sect9" name="set-thread-area-2_sect9" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2003 Free Software Foundation, Inc.<br />
+
+                  Copyright (C) 2015 Andrew Lutomirski<br />
+
+                  Author: Kent Yoder<br />
+                  <br />
+                  %%%LICENSE_START(GPL_NOVERSION_ONELINE)<br />
+                  This file is distributed according to the GNU General Public License.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

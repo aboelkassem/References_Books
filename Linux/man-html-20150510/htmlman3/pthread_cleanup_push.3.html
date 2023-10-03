@@ -1,0 +1,475 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>pthread_cleanup_push(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="pthread_cleanup_push(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="pthread-cleanup-push.3" name="pthread-cleanup-push.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>pthread_cleanup_push, pthread_cleanup_pop — push and
+      pop thread cancellation clean-up handlers</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;pthread.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">void
+            <strong>pthread_cleanup_push</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">void <var class="pdparam">(*routine)</var><code>(</code>void
+            *<code>)</code>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">void *<var class="pdparam">arg</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">void
+            <strong>pthread_cleanup_pop</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">execute</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <p>Compile and link with <code class="option">−pthread</code>.</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pthread-cleanup-push-3_sect1" name="pthread-cleanup-push-3_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>These functions manipulate the calling thread's stack of
+      thread-cancellation clean-up handlers. A clean-up handler is
+      a function that is automatically executed when a thread is
+      canceled (or in various other circumstances described below);
+      it might, for example, unlock a mutex so that it becomes
+      available to other threads in the process.</p>
+
+      <p>The <code class="function">pthread_cleanup_push</code>()
+      function pushes <em class="parameter"><code>routine</code></em> onto the top of the
+      stack of clean-up handlers. When <em class="parameter"><code>routine</code></em> is later invoked, it
+      will be given <em class="parameter"><code>arg</code></em> as
+      its argument.</p>
+
+      <p>The <code class="function">pthread_cleanup_pop</code>()
+      function removes the routine at the top of the stack of
+      clean-up handlers, and optionally executes it if <em class="parameter"><code>execute</code></em> is nonzero.</p>
+
+      <p>A cancellation clean-up handler is popped from the stack
+      and executed in the following circumstances:</p>
+
+      <div class="orderedlist">
+        <ol class="orderedlist" type="1">
+          <li class="listitem">
+            <p>When a thread is canceled, all of the stacked
+            clean-up handlers are popped and executed in the
+            reverse of the order in which they were pushed onto the
+            stack.</p>
+          </li>
+
+          <li class="listitem">
+            <p>When a thread terminates by calling <a class="link" href="../htmlman3/pthread_exit.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_exit</span>(3)</span></a>, all
+            clean-up handlers are executed as described in the
+            preceding point. (Clean-up handlers are <span class="emphasis"><em>not</em></span> called if the thread
+            terminates by performing a <code class="function">return</code> from the thread start
+            function.)</p>
+          </li>
+
+          <li class="listitem">
+            <p>When a thread calls <code class="function">pthread_cleanup_pop</code>() with a nonzero
+            <em class="parameter"><code>execute</code></em>
+            argument, the top-most clean-up handler is popped and
+            executed.</p>
+          </li>
+        </ol>
+      </div>
+
+      <p>POSIX.1 permits <code class="function">pthread_cleanup_push</code>() and <code class="function">pthread_cleanup_pop</code>() to be implemented as
+      macros that expand to text containing '<code class="literal">{</code>' and '<code class="literal">}</code>',
+      respectively. For this reason, the caller must ensure that
+      calls to these functions are paired within the same function,
+      and at the same lexical nesting level. (In other words, a
+      clean-up handler is established only during the execution of
+      a specified section of code.)</p>
+
+      <p>Calling <a class="link" href="../htmlman3/longjmp.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">longjmp</span>(3)</span></a> (<a class="link" href="../htmlman3/longjmp.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">siglongjmp</span>(3)</span></a>) produces
+      undefined results if any call has been made to <code class="function">pthread_cleanup_push</code>() or <code class="function">pthread_cleanup_pop</code>() without the matching
+      call of the pair since the jump buffer was filled by
+      <a class="link" href="../htmlman3/setjmp.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setjmp</span>(3)</span></a> (<a class="link" href="../htmlman3/setjmp.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigsetjmp</span>(3)</span></a>). Likewise,
+      calling <a class="link" href="../htmlman3/longjmp.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">longjmp</span>(3)</span></a> (<a class="link" href="../htmlman3/longjmp.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">siglongjmp</span>(3)</span></a>) from inside
+      a clean-up handler produces undefined results unless the jump
+      buffer was also filled by <a class="link" href="../htmlman3/setjmp.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setjmp</span>(3)</span></a> (<a class="link" href="../htmlman3/setjmp.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigsetjmp</span>(3)</span></a>) inside the
+      handler.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pthread-cleanup-push-3_sect2" name="pthread-cleanup-push-3_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>These functions do not return a value.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pthread-cleanup-push-3_sect3" name="pthread-cleanup-push-3_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <p>There are no errors.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pthread-cleanup-push-3_sect4" name="pthread-cleanup-push-3_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>POSIX.1-2001.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pthread-cleanup-push-3_sect5" name="pthread-cleanup-push-3_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>On Linux, the <code class="function">pthread_cleanup_push</code>() and <code class="function">pthread_cleanup_pop</code>() functions
+      <code class="function">are</code> implemented as macros that
+      expand to text containing '<code class="literal">{</code>'
+      and '<code class="literal">}</code>', respectively. This
+      means that variables declared within the scope of paired
+      calls to these functions will be visible within only that
+      scope.</p>
+
+      <p>POSIX.1 says that the effect of using <code class="function">return</code>, <code class="function">break</code>, <code class="function">continue</code>, or <code class="function">goto</code> to prematurely leave a block bracketed
+      <code class="function">pthread_cleanup_push</code>() and
+      <code class="function">pthread_cleanup_pop</code>() is
+      undefined. Portable applications should avoid doing this.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pthread-cleanup-push-3_sect6" name="pthread-cleanup-push-3_sect6" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>The program below provides a simple example of the use of
+      the functions described in this page. The program creates a
+      thread that executes a loop bracketed by <code class="function">pthread_cleanup_push</code>() and <code class="function">pthread_cleanup_pop</code>(). This loop increments
+      a global variable, <code class="function">cnt</code>, once
+      each second. Depending on what command-line arguments are
+      supplied, the main thread sends the other thread a
+      cancellation request, or sets a global variable that causes
+      the other thread to exit its loop and terminate normally (by
+      doing a <code class="function">return</code>).</p>
+
+      <p>In the following shell session, the main thread sends a
+      cancellation request to the other thread:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$ <em class="replaceable"><code>./a.out</code></em>
+New thread started
+cnt = 0
+cnt = 1
+Canceling thread
+Called clean-up handler
+Thread was canceled; cnt = 0
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>From the above, we see that the thread was canceled, and
+      that the cancellation clean-up handler was called and it
+      reset the value of the global variable <code class="function">cnt</code> to 0.</p>
+
+      <p>In the next run, the main program sets a global variable
+      that causes other thread to terminate normally:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$ <span class="emphasis"><em>./a.out x</em></span>
+New thread started
+cnt = 0
+cnt = 1
+Thread terminated normally; cnt = 2
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>From the above, we see that the clean-up handler was not
+      executed (because <code class="function">cleanup_pop_arg</code> was 0), and therefore the
+      value of <code class="function">cnt</code> was not reset.</p>
+
+      <p>In the next run, the main program sets a global variable
+      that causes the other thread to terminate normally, and
+      supplies a nonzero value for <code class="function">cleanup_pop_arg</code>:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$ <span class="emphasis"><em>./a.out x 1</em></span>
+New thread started
+cnt = 0
+cnt = 1
+Called clean-up handler
+Thread terminated normally; cnt = 0
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>In the above, we see that although the thread was not
+      canceled, the clean-up handler was executed, because the
+      argument given to <code class="function">pthread_cleanup_pop</code>() was nonzero.</p>
+
+      <div class="refsect2">
+        <a id="pthread-cleanup-push-3_sect7" name="pthread-cleanup-push-3_sect7" shape="rect"> </a>
+
+        <h3>Program source</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+#include &lt;pthread.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;errno.h&gt;
+
+#define handle_error_en(en, msg) \
+        do { errno = en; perror(msg); exit(EXIT_FAILURE); } while (0)
+
+static int done = 0;
+static int cleanup_pop_arg = 0;
+static int cnt = 0;
+
+static void
+cleanup_handler(void *arg)
+{
+    printf("Called clean−up handler\n");
+    cnt = 0;
+}
+
+static void *
+thread_start(void *arg)
+{
+    time_t start, curr;
+
+    printf("New thread started\n");
+
+    pthread_cleanup_push(cleanup_handler, NULL);
+
+    curr = start = time(NULL);
+
+    while (!done) {
+        pthread_testcancel();           /* A cancellation point */
+        if (curr &lt; time(NULL)) {
+            curr = time(NULL);
+            printf("cnt = %d\n", cnt);  /* A cancellation point */
+            cnt++;
+        }
+    }
+
+    pthread_cleanup_pop(cleanup_pop_arg);
+    return NULL;
+}
+
+int
+main(int argc, char *argv[])
+{
+    pthread_t thr;
+    int s;
+    void *res;
+
+    s = pthread_create(&amp;thr, NULL, thread_start, NULL);
+    if (s != 0)
+        handle_error_en(s, "pthread_create");
+
+    sleep(2);           /* Allow new thread to run a while */
+
+    if (argc &gt; 1) {
+        if (argc &gt; 2)
+            cleanup_pop_arg = atoi(argv[2]);
+        done = 1;
+
+    } else {
+        printf("Canceling thread\n");
+        s = pthread_cancel(thr);
+        if (s != 0)
+            handle_error_en(s, "pthread_cancel");
+    }
+
+    s = pthread_join(thr, &amp;res);
+    if (s != 0)
+        handle_error_en(s, "pthread_join");
+
+    if (res == PTHREAD_CANCELED)
+        printf("Thread was canceled; cnt = %d\n", cnt);
+    else
+        printf("Thread terminated normally; cnt = %d\n", cnt);
+    exit(EXIT_SUCCESS);
+}
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pthread-cleanup-push-3_sect8" name="pthread-cleanup-push-3_sect8" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/pthread_cancel.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_cancel</span>(3)</span></a>,
+      <a class="link" href="../htmlman3/pthread_cleanup_push_defer_np.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_cleanup_push_defer_np</span>(3)</span></a>,
+      <a class="link" href="../htmlman3/pthread_setcancelstate.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_setcancelstate</span>(3)</span></a>,
+      <a class="link" href="../htmlman3/pthread_testcancel.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_testcancel</span>(3)</span></a>,
+      <a class="link" href="../htmlman7/pthreads.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthreads</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="pthread-cleanup-push-3_sect9" name="pthread-cleanup-push-3_sect9" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 2008 Linux Foundation, written by Michael Kerrisk<br />
+
+                      &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

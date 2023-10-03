@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>login(1) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="login(1) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index1.html" shape="rect">Section 1</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="login.1" name="login.1" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>login — begin session on the system</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">login</code> [<code class="option">−p</code>] [ <code class="option">−h</code> host ] [<code class="option">−H</code>] [ <code class="option">−f</code> username | username ]</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="login-1_sect1" name="login-1_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><span class="command"><strong>login</strong></span> is
+      used when signing onto a system. If no argument is given,
+      <span class="command"><strong>login</strong></span> prompts
+      for the username.</p>
+
+      <p>The user is then prompted for a password, where
+      approprate. Echoing is disabled to prevent revealing the
+      password. Only a small number of password failures are
+      permitted before <span class="command"><strong>login</strong></span> exits and the
+      communications link is severed.</p>
+
+      <p>If password aging has been enabled for the account, the
+      user may be prompted for a new password before proceeding. He
+      will be forced to provide his old password and the new
+      password before continuing. Please refer to <span class="citerefentry"><span class="refentrytitle">passwd</span>(1)</span> for more
+      information.</p>
+
+      <p>The user and group ID will be set according to their
+      values in the <code class="filename">/etc/passwd</code> file.
+      There is one exception if the user ID is zero: in this case,
+      only the primary group ID of the account is set. This should
+      allow the system administrator to login even in case of
+      network problems. The value for <em class="replaceable"><code>$HOME</code></em>, <em class="replaceable"><code>$USER</code></em>, <em class="replaceable"><code>$SHELL</code></em>, <em class="replaceable"><code>$PATH</code></em>, <em class="replaceable"><code>$LOGNAME</code></em>, and <em class="replaceable"><code>$MAIL</code></em> are set according to
+      the appropriate fields in the password entry. <em class="replaceable"><code>$PATH</code></em> defaults to
+      <code class="filename">/usr/local/bin:/bin:/usr/bin</code>
+      for normal users, and to <code class="filename">/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin</code>
+      for root, if not otherwise configured.</p>
+
+      <p>The environment variable <em class="replaceable"><code>$TERM</code></em> will be preserved, if
+      it exists (other environment variables are preserved if the
+      <code class="option">−p</code> option is given), else
+      it will be initialized to the terminal type on your tty.</p>
+
+      <p>Then the user's shell is started. If no shell is specified
+      for the user in <code class="filename">/etc/passwd</code>,
+      then <code class="filename">/bin/sh</code> is used. If there
+      is no directory specified in <code class="filename">/etc/passwd</code>, then <code class="filename">/</code> is used (the home directory is checked
+      for the <em class="replaceable"><code>.hushlogin</code></em>
+      file described below).</p>
+
+      <p>If the file <em class="replaceable"><code>.hushlogin</code></em> exists, then a
+      "quiet" login is performed (this disables the checking of
+      mail and the printing of the last login time and message of
+      the day). Otherwise, if <code class="filename">/var/log/lastlog</code> exists, the last login
+      time is printed (and the current login is recorded).</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="login-1_sect2" name="login-1_sect2" shape="rect"> </a>
+
+      <h2>OPTIONS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="option">−p</code></span></dt>
+
+          <dd>
+            <p>Used by <span class="citerefentry"><span class="refentrytitle">getty</span>(8)</span> to tell
+            <span class="command"><strong>login</strong></span> not
+            to destroy the environment.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−f</code></span></dt>
+
+          <dd>
+            <p>Used to skip a second login authentication. This
+            specifically does not work for root, and does not
+            appear to work well under Linux.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−h</code></span></dt>
+
+          <dd>
+            <p>Used by other servers (i.e., <span class="citerefentry"><span class="refentrytitle">telnetd</span>(8)</span>) to pass the
+            name of the remote host to <span class="command"><strong>login</strong></span> so that it may
+            be placed in utmp and wtmp. Only the superuser may use
+            this option.</p>
+
+            <p>Note that the <code class="option">−h</code>
+            option has impact on the <span class="emphasis"><em>PAM
+            service</em></span> <span class="command"><strong>name</strong></span>. The standard
+            service name is <span class="command"><strong>login</strong></span>, with the
+            <code class="option">−h</code> option the name is
+            <span class="command"><strong>remote</strong></span>.
+            It is necessary to create proper PAM config files (e.g.
+            <code class="filename">/etc/pam.d/login</code> and
+            <code class="filename">/etc/pam.d/remote</code>).</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−H</code></span></dt>
+
+          <dd>
+            <p>Used by other servers (i.e., <span class="citerefentry"><span class="refentrytitle">telnetd</span>(8)</span>) to tell
+            <span class="command"><strong>login</strong></span>
+            that printing the hostname should be suppressed in the
+            login: prompt.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−V</code></span></dt>
+
+          <dd>
+            <p>Display version information and exit.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="login-1_sect3" name="login-1_sect3" shape="rect"> </a>
+
+      <h2>CONFIG FILE ITEMS</h2>
+
+      <p><span class="command"><strong>login</strong></span> reads
+      the <code class="filename">/etc/login.defs<em class="replaceable"><code>(5</code></em></code>) configuration
+      file. Note that the configuration file could be distributed
+      with another package (e.g. shadow-utils). The following
+      configuration items are relevant for <a class="link" href="../htmlman1/login.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">login</span>(1)</span></a>:</p>
+
+      <p><code class="constant">MOTD_FILE</code> (string)</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>If defined, a ":" delimited list of "message of the
+          day" files to be displayed upon login. The default value
+          is <code class="filename">/etc/motd</code>. If the
+          <code class="constant">MOTD_FILE</code> item is empty or
+          a quiet login is enabled, then the message of the day is
+          not displayed. Note that the same functionality is also
+          provided by <span class="citerefentry"><span class="refentrytitle">pam_motd</span>(8)</span> PAM module.</p>
+        </blockquote>
+      </div>
+
+      <p><code class="constant">LOGIN_TIMEOUT</code> (number)</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>Max time in seconds for login. The default value is
+          <code class="constant">60</code>.</p>
+        </blockquote>
+      </div>
+
+      <p><code class="constant">LOGIN_RETRIES</code> (number)</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>Maximum number of login retries in case of a bad
+          password. The default value is <code class="constant">3</code>.</p>
+        </blockquote>
+      </div>
+
+      <p><code class="constant">FAIL_DELAY</code> (number)</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>Delay in seconds before being allowed another three
+          tries after a login failure. The default value is
+          <code class="constant">5</code>.</p>
+        </blockquote>
+      </div>
+
+      <p><code class="constant">TTYPERM</code> (string)</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>The terminal permissions. The default value is
+          <code class="constant">0600</code> or <code class="constant">0620</code> if tty group is used.</p>
+        </blockquote>
+      </div>
+
+      <p><code class="constant">TTYGROUP</code> (string)</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>The login tty will be owned by the <code class="constant">TTYGROUP</code>. The default value is
+          <span class="command"><strong>tty</strong></span>. If the
+          <code class="constant">TTYGROUP</code> does not exist,
+          then the ownership of the terminal is set to the user's
+          primary group.</p>
+
+          <p>The <code class="constant">TTYGROUP</code> can be
+          either the name of a group or a numeric group
+          identifier.</p>
+        </blockquote>
+      </div>
+
+      <p><code class="constant">HUSHLOGIN_FILE</code> (string)</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>If defined, this file can inhibit all the usual
+          chatter during the login sequence. If a full pathname
+          (e.g. <code class="filename">/etc/hushlogins</code>) is
+          specified, then hushed mode will be enabled if the user's
+          name or shell are found in the file. If this global hush
+          login file is empty then the hushed mode will be enabled
+          for all users.</p>
+
+          <p>If a full pathname is not specified, then hushed mode
+          will be enabled if the file exists in the user's home
+          directory.</p>
+
+          <p>The default is to check <code class="filename">/etc/hushlogins</code> and if it does not
+          exist then <em class="replaceable"><code>~/.hushlogin</code></em></p>
+
+          <p>If the <code class="constant">HUSHLOGIN_FILE</code>
+          item is empty, then all the checks are disabled.</p>
+        </blockquote>
+      </div>
+
+      <p><code class="constant">DEFAULT_HOME</code> (boolean)</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>Indicate if login is allowed if we can not change
+          directory to the home directory. If set to <span class="command"><strong>yes</strong></span>, the user will
+          login in the root (/) directory if it is not possible to
+          change directory to her home. The default value is
+          <span class="command"><strong>yes</strong></span>.</p>
+        </blockquote>
+      </div>
+
+      <p><code class="constant">LOG_UNKFAIL_ENAB</code>
+      (boolean)</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>Enable display of unknown usernames when login
+          failures are recorded. The default value is <span class="command"><strong>no</strong></span>.</p>
+
+          <p>Note that logging unknown usernames may be a security
+          issue if a user enters her password instead of her login
+          name.</p>
+        </blockquote>
+      </div>
+
+      <p><code class="constant">ENV_PATH</code> (string)</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>If set, it will be used to define the PATH environment
+          variable when a regular user logs in. The default value
+          is <code class="filename">/usr/local/bin:/bin:/usr/bin</code></p>
+        </blockquote>
+      </div>
+
+      <p><code class="constant">ENV_ROOTPATH</code> (string)</p>
+
+      <p><code class="constant">ENV_SUPATH</code> (string)</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>If set, it will be used to define the PATH environment
+          variable when the superuser logs in. The default value is
+          <code class="filename">/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin</code></p>
+        </blockquote>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="login-1_sect4" name="login-1_sect4" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+<code class="filename">/var/run/utmp</code>
+<code class="filename">/var/log/wtmp</code>
+<code class="filename">/var/log/lastlog</code>
+<code class="filename">/var/spool/mail/*</code>
+<code class="filename">/etc/motd</code>
+<code class="filename">/etc/passwd</code>
+<code class="filename">/etc/nologin</code>
+<code class="filename">/etc/pam.d/login</code>
+<code class="filename">/etc/pam.d/remote</code>
+<code class="filename">/etc/hushlogins</code>
+<em class="replaceable"><code>.hushlogin</code></em>
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="login-1_sect5" name="login-1_sect5" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><span class="citerefentry"><span class="refentrytitle">init</span>(8)</span>, <span class="citerefentry"><span class="refentrytitle">getty</span>(8)</span>, <span class="citerefentry"><span class="refentrytitle">mail</span>(1)</span>, <span class="citerefentry"><span class="refentrytitle">passwd</span>(1)</span>, <a class="link" href="../htmlman5/passwd.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">passwd</span>(5)</span></a>, <a class="link" href="../htmlman7/environ.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">environ</span>(7)</span></a>, <span class="citerefentry"><span class="refentrytitle">shutdown</span>(8)</span></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="login-1_sect6" name="login-1_sect6" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>The undocumented BSD <code class="option">−r</code>
+      option is not supported. This may be required by some
+      <span class="citerefentry"><span class="refentrytitle">rlogind</span>(8)</span> programs.</p>
+
+      <p>A recursive login, as used to be possible in the good old
+      days, no longer works; for most purposes <a class="link" href="../htmlman1/su.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">su</span>(1)</span></a> is a satisfactory
+      substitute. Indeed, for security reasons, login does a
+      vhangup() system call to remove any possible listening
+      processes on the tty. This is to avoid password sniffing. If
+      one uses the command <span class="command"><strong>login</strong></span>, then the surrounding
+      shell gets killed by vhangup() because it's no longer the
+      true owner of the tty. This can be avoided by using
+      <span class="emphasis"><em>exec login</em></span> in a
+      top-level shell or xterm.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="login-1_sect7" name="login-1_sect7" shape="rect"> </a>
+
+      <h2>AUTHOR</h2>
+
+      <p>Derived from BSD login 5.40 (5/9/89) by <a class="literalurl" href="mailto:glad%20REMOVE%20@%20THIS%20daimi.dk" target="_top" shape="rect">Michael Glad</a> for HP-UX</p>
+
+      <p>Ported to Linux 0.12: <a class="literalurl" href="mailto:poe%20REMOVE%20@%20THIS%20daimi.aau.dk" target="_top" shape="rect">Peter Orbaek</a></p>
+
+      <p>Rewritten to a PAM-only version by <a class="literalurl" href="mailto:kzak%20REMOVE%20@%20THIS%20redhat.com" target="_top" shape="rect">Karel Zak</a></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="login-1_sect8" name="login-1_sect8" shape="rect"> </a>
+
+      <h2>AVAILABILITY</h2>
+
+      <p>The login command is part of the util-linux package and is
+      available from <a class="literalurl" href="ftp://ftp.kernel.org/pub/linux/utils/util-linux/" target="_top" shape="rect">Linux Kernel Archive</a></p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright 1993 Rickard E. Faith (faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu)<br />
+
+                  May be distributed under the GNU General Public License<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

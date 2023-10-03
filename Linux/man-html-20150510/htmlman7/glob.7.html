@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>glob(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="glob(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="glob.7" name="glob.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>glob — globbing pathnames</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="glob-7_sect1" name="glob-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>Long ago, in UNIX V6, there was a program <code class="filename">/etc/glob</code> that would expand wildcard
+      patterns. Soon afterward this became a shell built-in.</p>
+
+      <p>These days there is also a library routine <a class="link" href="../htmlman3/glob.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">glob</span>(3)</span></a> that will perform
+      this function for a user program.</p>
+
+      <p>The rules are as follows (POSIX.2, 3.13).</p>
+
+      <div class="refsect2">
+        <a id="glob-7_sect2" name="glob-7_sect2" shape="rect"> </a>
+
+        <h3>Wildcard matching</h3>
+
+        <p>A string is a wildcard pattern if it contains one of the
+        characters '?', '*' or '['. Globbing is the operation that
+        expands a wildcard pattern into the list of pathnames
+        matching the pattern. Matching is defined by:</p>
+
+        <p>A '?' (not between brackets) matches any single
+        character.</p>
+
+        <p>A '*' (not between brackets) matches any string,
+        including the empty string.</p>
+
+        <p><span class="emphasis"><em>Character
+        classes</em></span></p>
+
+        <p>An expression "<em class="replaceable"><code>[...]</code></em>" where the first
+        character after the leading '[' is not an '!' matches a
+        single character, namely any of the characters enclosed by
+        the brackets. The string enclosed by the brackets cannot be
+        empty; therefore ']' can be allowed between the brackets,
+        provided that it is the first character. (Thus, "<em class="replaceable"><code>[][!]</code></em>" matches the three
+        characters '[', ']' and '!'.)</p>
+
+        <p><em class="replaceable"><code>Ranges</code></em></p>
+
+        <p>There is one special convention: two characters
+        separated by '−' denote a range. (Thus, "<em class="replaceable"><code>[A−Fa−f0−9]</code></em>"
+        is equivalent to "<em class="replaceable"><code>[ABCDEFabcdef0123456789]</code></em>".)
+        One may include '−' in its literal meaning by making
+        it the first or last character between the brackets. (Thus,
+        "<em class="replaceable"><code>[]−]</code></em>"
+        matches just the two characters ']' and '−', and
+        "<em class="replaceable"><code>[−−0]</code></em>" matches
+        the three characters '−', '.', '0', since '/' cannot
+        be matched.)</p>
+
+        <p><em class="replaceable"><code>Complementation</code></em></p>
+
+        <p>An expression "<em class="replaceable"><code>[!...]</code></em>" matches a single
+        character, namely any character that is not matched by the
+        expression obtained by removing the first '!' from it.
+        (Thus, "<em class="replaceable"><code>[!]a−]</code></em>" matches any
+        single character except ']', 'a' and '−'.)</p>
+
+        <p>One can remove the special meaning of '?', '*' and '['
+        by preceding them by a backslash, or, in case this is part
+        of a shell command line, enclosing them in quotes. Between
+        brackets these characters stand for themselves. Thus,
+        "<em class="replaceable"><code>[[?*\]</code></em>" matches
+        the four characters '[', '?', '*' and '\'.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="glob-7_sect3" name="glob-7_sect3" shape="rect"> </a>
+
+        <h3>Pathnames</h3>
+
+        <p>Globbing is applied on each of the components of a
+        pathname separately. A '/' in a pathname cannot be matched
+        by a '?' or '*' wildcard, or by a range like "<em class="replaceable"><code>[.−0]</code></em>". A range
+        cannot contain an explicit '/' character; this would lead
+        to a syntax error.</p>
+
+        <p>If a filename starts with a '.', this character must be
+        matched explicitly. (Thus, <span class="emphasis"><em>rm
+        *</em></span> will not remove .profile, and <span class="emphasis"><em>tar c *</em></span> will not archive all
+        your files; <span class="emphasis"><em>tar c .</em></span>
+        is better.)</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="glob-7_sect4" name="glob-7_sect4" shape="rect"> </a>
+
+        <h3>Empty lists</h3>
+
+        <p>The nice and simple rule given above: "expand a wildcard
+        pattern into the list of matching pathnames" was the
+        original UNIX definition. It allowed one to have patterns
+        that expand into an empty list, as in</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+    xv −wait 0 *.gif *.jpg
+</pre>
+        </div>
+
+        <p>where perhaps no *.gif files are present (and this is
+        not an error). However, POSIX requires that a wildcard
+        pattern is left unchanged when it is syntactically
+        incorrect, or the list of matching pathnames is empty. With
+        <em class="replaceable"><code>bash</code></em> one can
+        force the classical behavior using this command:</p>
+
+        <p>shopt −s nullglob</p>
+
+        <p>(Similar problems occur elsewhere. For example, where
+        old scripts have</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+    rm `find . −name "*~"`
+</pre>
+        </div>
+
+        <p>new scripts require</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+    rm −f nosuchfile `find . −name "*~"`
+</pre>
+        </div>
+
+        <p>to avoid error messages from <span class="command"><strong>rm</strong></span> called with an empty
+        argument list.)</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="glob-7_sect5" name="glob-7_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <div class="refsect2">
+        <a id="glob-7_sect6" name="glob-7_sect6" shape="rect"> </a>
+
+        <h3>Regular expressions</h3>
+
+        <p>Note that wildcard patterns are not regular expressions,
+        although they are a bit similar. First of all, they match
+        filenames, rather than text, and secondly, the conventions
+        are not the same: for example, in a regular expression '*'
+        means zero or more copies of the preceding thing.</p>
+
+        <p>Now that regular expressions have bracket expressions
+        where the negation is indicated by a '^', POSIX has
+        declared the effect of a wildcard pattern "<em class="replaceable"><code>[^...]</code></em>" to be
+        undefined.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="glob-7_sect7" name="glob-7_sect7" shape="rect"> </a>
+
+        <h3>Character classes and internationalization</h3>
+
+        <p>Of course ranges were originally meant to be ASCII
+        ranges, so that "<span class="emphasis"><em>[
+        −%]</em></span>" stands for "<span class="emphasis"><em>[ !"#$%]</em></span>" and "<em class="replaceable"><code>[a−z]</code></em>" stands for
+        "any lowercase letter". Some UNIX implementations
+        generalized this so that a range X−Y stands for the
+        set of characters with code between the codes for X and for
+        Y. However, this requires the user to know the character
+        coding in use on the local system, and moreover, is not
+        convenient if the collating sequence for the local alphabet
+        differs from the ordering of the character codes.
+        Therefore, POSIX extended the bracket notation greatly,
+        both for wildcard patterns and for regular expressions. In
+        the above we saw three types of items that can occur in a
+        bracket expression: namely (i) the negation, (ii) explicit
+        single characters, and (iii) ranges. POSIX specifies ranges
+        in an internationally more useful way and adds three more
+        types:</p>
+
+        <p>(iii) Ranges X−Y comprise all characters that fall
+        between X and Y (inclusive) in the current collating
+        sequence as defined by the <code class="constant">LC_COLLATE</code> category in the current
+        locale.</p>
+
+        <p>(iv) Named character classes, like</p>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+[:alnum:]  [:alpha:]  [:blank:]  [:cntrl:]
+[:digit:]  [:graph:]  [:lower:]  [:print:]
+[:punct:]  [:space:]  [:upper:]  [:xdigit:]
+</pre>
+        </div>
+
+        <p>so that one can say "<em class="replaceable"><code>[[:lower:]]</code></em>" instead of
+        "<em class="replaceable"><code>[a−z]</code></em>",
+        and have things work in Denmark, too, where there are three
+        letters past 'z' in the alphabet. These character classes
+        are defined by the <code class="constant">LC_CTYPE</code>
+        category in the current locale.</p>
+
+        <p>(v) Collating symbols, like "<em class="replaceable"><code>[.ch.]</code></em>" or "<em class="replaceable"><code>[.a-acute.]</code></em>", where the
+        string between "<em class="replaceable"><code>[.</code></em>" and "<em class="replaceable"><code>.]</code></em>" is a collating element
+        defined for the current locale. Note that this may be a
+        multicharacter element.</p>
+
+        <p>(vi) Equivalence class expressions, like "<em class="replaceable"><code>[=a=]</code></em>", where the string
+        between "<em class="replaceable"><code>[=</code></em>" and
+        "<em class="replaceable"><code>=]</code></em>" is any
+        collating element from its equivalence class, as defined
+        for the current locale. For example, "<em class="replaceable"><code>[[=a=]]</code></em>" might be
+        equivalent to "<em class="replaceable"><code>[aáàäâ]</code></em>",
+        that is, to "<em class="replaceable"><code>[a[.a-acute.][.a-grave.][.a-umlaut.][.a-circumflex.]]</code></em>".</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="glob-7_sect8" name="glob-7_sect8" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><span class="citerefentry"><span class="refentrytitle">sh</span>(1)</span>, <a class="link" href="../htmlman3/fnmatch.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fnmatch</span>(3)</span></a>, <a class="link" href="../htmlman3/glob.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">glob</span>(3)</span></a>, <a class="link" href="../htmlman7/locale.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">locale</span>(7)</span></a>, <a class="link" href="../htmlman7/regex.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">regex</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="glob-7_sect9" name="glob-7_sect9" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 1998 Andries Brouwer<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_DOC_FULL)<br />
+                  This is free documentation; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License as<br />
+
+                  published by the Free Software Foundation; either version 2 of<br />
+
+                  the License, or (at your option) any later version.<br />
+
+                  <br />
+                  The GNU General Public License's references to "object code"<br />
+
+                  and "executables" are to be interpreted as the output of any<br />
+
+                  document formatting or typesetting system, including<br />
+
+                  intermediate and printed output.<br />
+
+                  <br />
+                  This manual is distributed in the hope that it will be useful,<br />
+
+                  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+
+                  GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  2003-08-24 fix for / by John Kristoff + joey<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,676 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>mount(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="mount(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="mount.2" name="mount.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>mount — mount filesystem</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;sys/mount.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>mount</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">source</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">target</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">filesystemtype</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">unsigned long <var class="pdparam">mountflags</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const void *<var class="pdparam">data</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mount-2_sect1" name="mount-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">mount</code>() attaches the
+      filesystem specified by <em class="parameter"><code>source</code></em> (which is often a device
+      name, but can also be a directory name or a dummy) to the
+      directory specified by <em class="parameter"><code>target</code></em>.</p>
+
+      <p>Appropriate privilege (Linux: the <code class="constant">CAP_SYS_ADMIN</code> capability) is required to
+      mount filesystems.</p>
+
+      <p>Since Linux 2.4 a single filesystem can be visible at
+      multiple mount points, and multiple mounts can be stacked on
+      the same mount point.</p>
+
+      <p>Values for the <em class="parameter"><code>filesystemtype</code></em> argument
+      supported by the kernel are listed in <code class="filename">/proc/filesystems</code> (e.g., "minix", "ext2",
+      "ext3", "jfs", "xfs", "reiserfs", "msdos", "proc", "nfs",
+      "iso9660"). Further types may become available when the
+      appropriate modules are loaded.</p>
+
+      <p>The <em class="parameter"><code>mountflags</code></em>
+      argument may have the magic number 0xC0ED (<code class="constant">MS_MGC_VAL</code>) in the top 16 bits (this was
+      required in kernel versions prior to 2.4, but is no longer
+      required and ignored if specified), and various mount flags
+      in the low order 16 bits:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">MS_BIND</code> (Linux 2.4 onward)</span></dt>
+
+          <dd>
+            <p>Perform a bind mount, making a file or a directory
+            subtree visible at another point within a filesystem.
+            Bind mounts may cross filesystem boundaries and span
+            <a class="link" href="../htmlman2/chroot.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chroot</span>(2)</span></a> jails. The
+            <em class="parameter"><code>filesystemtype</code></em>
+            and <em class="parameter"><code>data</code></em>
+            arguments are ignored. Up until Linux 2.6.26,
+            <em class="parameter"><code>mountflags</code></em> was
+            also ignored (the bind mount has the same mount options
+            as the underlying mount point).</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MS_DIRSYNC</code> (since Linux
+          2.5.19)</span></dt>
+
+          <dd>
+            <p>Make directory changes on this filesystem
+            synchronous. (This property can be obtained for
+            individual directories or subtrees using <span class="citerefentry"><span class="refentrytitle">chattr</span>(1)</span>.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MS_LAZYTIME</code> (since Linux
+          4.0)</span></dt>
+
+          <dd>
+            <p>Reduce on-disk updates of inode timestamps (atime,
+            mtime, ctime) by maintaining these changes only in
+            memory. The on-disk timestamps are updated only
+            when:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><em class="replaceable"><code>(a)</code></em></span></dt>
+
+                    <dd>
+                      <p>the inode needs to be updated for some
+                      change unrelated to file timestamps;</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>(b)</code></em></span></dt>
+
+                    <dd>
+                      <p>the application employs <a class="link" href="../htmlman2/fsync.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fsync</span>(2)</span></a>,
+                      <a class="link" href="../htmlman2/sync.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">syncfs</span>(2)</span></a>,
+                      or <a class="link" href="../htmlman2/sync.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sync</span>(2)</span></a>;</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>(c)</code></em></span></dt>
+
+                    <dd>
+                      <p>an undeleted inode is evicted from memory;
+                      or</p>
+                    </dd>
+
+                    <dt><span class="term"><em class="replaceable"><code>(d)</code></em></span></dt>
+
+                    <dd>
+                      <p>more than 24 hours have passed since the
+                      inode was written to disk.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>This mount option significantly reduces writes
+            needed to update the inode's timestamps, especially
+            mtime and atime. However, in the event of a system
+            crash, the atime and mtime fields on disk might be out
+            of date by up to 24 hours.</p>
+
+            <p>Examples of workloads where this option could be of
+            significant benefit include frequent random writes to
+            preallocated files, as well as cases where the
+            <code class="constant">MS_STRICTATIME</code> mount
+            option is also enabled. (The advantage of combining
+            <code class="constant">MS_STRICTATIME</code> and
+            <code class="constant">MS_LAZYTIME</code> is that
+            <a class="link" href="../htmlman2/stat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">stat</span>(2)</span></a> will return
+            the correctly updated atime, but the atime updates will
+            be flushed to disk only in the cases listed above.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MS_MANDLOCK</code></span></dt>
+
+          <dd>
+            <p>Permit mandatory locking on files in this
+            filesystem. (Mandatory locking must still be enabled on
+            a per-file basis, as described in <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a>.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MS_MOVE</code></span></dt>
+
+          <dd>
+            <p>Move a subtree. <em class="parameter"><code>source</code></em> specifies an
+            existing mount point and <em class="parameter"><code>target</code></em> specifies the new
+            location. The move is atomic: at no point is the
+            subtree unmounted. The <em class="parameter"><code>filesystemtype</code></em>,
+            <em class="parameter"><code>mountflags</code></em>, and
+            <em class="parameter"><code>data</code></em> arguments
+            are ignored.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MS_NOATIME</code></span></dt>
+
+          <dd>
+            <p>Do not update access times for (all types of) files
+            on this filesystem.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MS_NODEV</code></span></dt>
+
+          <dd>
+            <p>Do not allow access to devices (special files) on
+            this filesystem.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MS_NODIRATIME</code></span></dt>
+
+          <dd>
+            <p>Do not update access times for directories on this
+            filesystem. This flag provides a subset of the
+            functionality provided by <code class="constant">MS_NOATIME</code>; that is, <code class="constant">MS_NOATIME</code> implies <code class="constant">MS_NODIRATIME</code>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MS_NOEXEC</code></span></dt>
+
+          <dd>
+            <p>Do not allow programs to be executed from this
+            filesystem.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MS_NOSUID</code></span></dt>
+
+          <dd>
+            <p>Do not honor set-user-ID and set-group-ID bits when
+            executing programs from this filesystem.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MS_RDONLY</code></span></dt>
+
+          <dd>
+            <p>Mount filesystem read-only.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MS_RELATIME</code> (since Linux
+          2.6.20)</span></dt>
+
+          <dd>
+            <p>When a file on this filesystem is accessed, update
+            the file's last access time (atime) only if the current
+            value of atime is less than or equal to the file's last
+            modification time (mtime) or last status change time
+            (ctime). This option is useful for programs, such as
+            <span class="citerefentry"><span class="refentrytitle">mutt</span>(1)</span>, that need to
+            know when a file has been read since it was last
+            modified. Since Linux 2.6.30, the kernel defaults to
+            the behavior provided by this flag (unless <code class="constant">MS_NOATIME</code> was specified), and the
+            <code class="constant">MS_STRICTATIME</code> flag is
+            required to obtain traditional semantics. In addition,
+            since Linux 2.6.30, the file's last access time is
+            always updated if it is more than 1 day old.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MS_REMOUNT</code></span></dt>
+
+          <dd>
+            <p>Remount an existing mount. This allows you to change
+            the <em class="parameter"><code>mountflags</code></em>
+            and <em class="parameter"><code>data</code></em> of an
+            existing mount without having to unmount and remount
+            the filesystem. <em class="parameter"><code>target</code></em> should be the same
+            value specified in the initial <code class="function">mount</code>() call; <em class="parameter"><code>source</code></em> and <em class="parameter"><code>filesystemtype</code></em> are
+            ignored. The <em class="parameter"><code>mountflags</code></em> and <em class="parameter"><code>data</code></em> arguments should
+            match the values used in the original <code class="function">mount</code>() call, except for those
+            parameters that are being deliberately changed.</p>
+
+            <p>The following <em class="parameter"><code>mountflags</code></em> can be
+            changed: <code class="constant">MS_RDONLY</code>,
+            <code class="constant">MS_SYNCHRONOUS</code>,
+            <code class="constant">MS_MANDLOCK</code>; before
+            kernel 2.6.16, the following could also be changed:
+            <code class="constant">MS_NOATIME</code> and
+            <code class="constant">MS_NODIRATIME</code>; and,
+            additionally, before kernel 2.4.10, the following could
+            also be changed: <code class="constant">MS_NOSUID</code>, <code class="constant">MS_NODEV</code>, <code class="constant">MS_NOEXEC</code>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MS_SILENT</code> (since Linux
+          2.6.17)</span></dt>
+
+          <dd>
+            <p>Suppress the display of certain (<code class="function">printk</code>()) warning messages in the
+            kernel log. This flag supersedes the misnamed and
+            obsolete <code class="constant">MS_VERBOSE</code> flag
+            (available since Linux 2.4.12), which has the same
+            meaning.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MS_STRICTATIME</code> (since Linux
+          2.6.30)</span></dt>
+
+          <dd>
+            <p>Always update the last access time (atime) when
+            files on this filesystem are accessed. (This was the
+            default behavior before Linux 2.6.30.) Specifying this
+            flag overrides the effect of setting the <code class="constant">MS_NOATIME</code> and <code class="constant">MS_RELATIME</code> flags.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MS_SYNCHRONOUS</code></span></dt>
+
+          <dd>
+            <p>Make writes on this filesystem synchronous (as
+            though the <code class="constant">O_SYNC</code> flag to
+            <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a> was specified
+            for all file opens to this filesystem).</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>From Linux 2.4 onward, the <code class="constant">MS_NODEV</code>, <code class="constant">MS_NOEXEC</code>, and <code class="constant">MS_NOSUID</code> flags are settable on a
+      per-mount-point basis. From kernel 2.6.16 onward,
+      <code class="constant">MS_NOATIME</code> and <code class="constant">MS_NODIRATIME</code> are also settable on a
+      per-mount-point basis. The <code class="constant">MS_RELATIME</code> flag is also settable on a
+      per-mount-point basis.</p>
+
+      <p>The <em class="parameter"><code>data</code></em> argument
+      is interpreted by the different filesystems. Typically it is
+      a string of comma-separated options understood by this
+      filesystem. See <a class="link" href="../htmlman8/mount.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mount</span>(8)</span></a> for details of the
+      options available for each filesystem type.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mount-2_sect2" name="mount-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, zero is returned. On error, −1 is
+      returned, and <code class="varname">errno</code> is set
+      appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mount-2_sect3" name="mount-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <p>The error values given below result from filesystem type
+      independent errors. Each filesystem type may have its own
+      special errors and its own special behavior. See the Linux
+      kernel source code for details.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EACCES</span></span></dt>
+
+          <dd>
+            <p>A component of a path was not searchable. (See also
+            <a class="link" href="../htmlman7/path_resolution.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">path_resolution</span>(7)</span></a>.)
+            Or, mounting a read-only filesystem was attempted
+            without giving the <code class="constant">MS_RDONLY</code> flag. Or, the block device
+            <em class="parameter"><code>source</code></em> is
+            located on a filesystem mounted with the <code class="constant">MS_NODEV</code> option.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EBUSY</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>source</code></em> is
+            already mounted. Or, it cannot be remounted read-only,
+            because it still holds files open for writing. Or, it
+            cannot be mounted on <em class="parameter"><code>target</code></em> because <em class="parameter"><code>target</code></em> is still busy (it
+            is the working directory of some thread, the mount
+            point of another device, has open files, etc.).</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p>One of the pointer arguments points outside the user
+            address space.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>source</code></em> had
+            an invalid superblock. Or, a remount (<code class="constant">MS_REMOUNT</code>) was attempted, but
+            <em class="parameter"><code>source</code></em> was not
+            already mounted on <em class="parameter"><code>target</code></em>. Or, a move
+            (<code class="constant">MS_MOVE</code>) was attempted,
+            but <em class="parameter"><code>source</code></em> was
+            not a mount point, or was '/'.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ELOOP</span></span></dt>
+
+          <dd>
+            <p>Too many links encountered during pathname
+            resolution. Or, a move was attempted, while <em class="parameter"><code>target</code></em> is a descendant of
+            <em class="parameter"><code>source</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EMFILE</span></span></dt>
+
+          <dd>
+            <p>(In case no block device is required:) Table of
+            dummy devices is full.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENAMETOOLONG</span></span></dt>
+
+          <dd>
+            <p>A pathname was longer than <code class="constant">MAXPATHLEN</code>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENODEV</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>filesystemtype</code></em> not
+            configured in the kernel.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOENT</span></span></dt>
+
+          <dd>
+            <p>A pathname was empty or had a nonexistent
+            component.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>The kernel could not allocate a free page to copy
+            filenames or data into.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOTBLK</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>source</code></em> is
+            not a block device (and a device was required).</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOTDIR</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>target</code></em>, or a
+            prefix of <em class="parameter"><code>source</code></em>, is not a
+            directory.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENXIO</span></span></dt>
+
+          <dd>
+            <p>The major number of the block device <em class="parameter"><code>source</code></em> is out of
+            range.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The caller does not have the required
+            privileges.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mount-2_sect4" name="mount-2_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p>The definitions of <code class="constant">MS_DIRSYNC</code>, <code class="constant">MS_MOVE</code>, <code class="constant">MS_REC</code>, <code class="constant">MS_RELATIME</code>, and <code class="constant">MS_STRICTATIME</code> were added to glibc headers
+      in version 2.12.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mount-2_sect5" name="mount-2_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>This function is Linux-specific and should not be used in
+      programs intended to be portable.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mount-2_sect6" name="mount-2_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>The original <code class="constant">MS_SYNC</code> flag
+      was renamed <code class="constant">MS_SYNCHRONOUS</code> in
+      1.1.69 when a different <code class="constant">MS_SYNC</code>
+      was added to <code class="literal">&lt;</code><code class="filename">mman.h</code><code class="literal">&gt;</code></p>
+
+      <p>Before Linux 2.4 an attempt to execute a set-user-ID or
+      set-group-ID program on a filesystem mounted with
+      <code class="constant">MS_NOSUID</code> would fail with
+      <span class="errorname">EPERM</span>. Since Linux 2.4 the
+      set-user-ID and set-group-ID bits are just silently ignored
+      in this case.</p>
+
+      <div class="refsect2">
+        <a id="mount-2_sect7" name="mount-2_sect7" shape="rect"> </a>
+
+        <h3>Per-process namespaces</h3>
+
+        <p>Starting with kernel 2.4.19, Linux provides per-process
+        mount namespaces. A mount namespace is the set of
+        filesystem mounts that are visible to a process.
+        Mount-point namespaces can be (and usually are) shared
+        between multiple processes, and changes to the namespace
+        (i.e., mounts and unmounts) by one process are visible to
+        all other processes sharing the same namespace. (The
+        pre-2.4.19 Linux situation can be considered as one in
+        which a single namespace was shared by every process on the
+        system.)</p>
+
+        <p>A child process created by <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> shares its
+        parent's mount namespace; the mount namespace is preserved
+        across an <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>.</p>
+
+        <p>A process can obtain a private mount namespace if: it
+        was created using the <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> <code class="constant">CLONE_NEWNS</code> flag, in which case its new
+        namespace is initialized to be a <em class="replaceable"><code>copy</code></em> of the namespace of
+        the process that called <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a>; or it calls
+        <a class="link" href="../htmlman2/unshare.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unshare</span>(2)</span></a> with the
+        <code class="constant">CLONE_NEWNS</code> flag, which
+        causes the caller's mount namespace to obtain a private
+        copy of the namespace that it was previously sharing with
+        other processes, so that future mounts and unmounts by the
+        caller are invisible to other processes (except child
+        processes that the caller subsequently creates) and vice
+        versa.</p>
+
+        <p>The Linux-specific <code class="filename">/proc/PID/mounts</code> file exposes the list of
+        mount points in the mount namespace of the process with the
+        specified ID; see <a class="link" href="../htmlman5/proc.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">proc</span>(5)</span></a> for details.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mount-2_sect8" name="mount-2_sect8" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/umount.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">umount</span>(2)</span></a>, <a class="link" href="../htmlman7/namespaces.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">namespaces</span>(7)</span></a>, <a class="link" href="../htmlman7/path_resolution.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">path_resolution</span>(7)</span></a>,
+      <a class="link" href="../htmlman8/lsblk.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">lsblk</span>(8)</span></a>, <a class="link" href="../htmlman8/mount.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mount</span>(8)</span></a>, <a class="link" href="../htmlman8/umount.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">umount</span>(8)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="mount-2_sect9" name="mount-2_sect9" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 1993 Rickard E. Faith &lt;faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu&gt;<br />
+
+                  and Copyright (C) 1994 Andries E. Brouwer &lt;aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl&gt;<br />
+
+                  and Copyright (C) 2002, 2005 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Modified 1996-11-04 by Eric S. Raymond &lt;esr<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>thyrsus.com&gt;<br />
+
+                  Modified 2001-10-13 by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  Added note on historical behavior of MS_NOSUID<br />
+
+                  Modified 2002-05-16 by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  Extensive changes and additions<br />
+
+                  Modified 2002-05-27 by aeb<br />
+                  Modified 2002-06-11 by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  Enhanced descriptions of MS_MOVE, MS_BIND, and MS_REMOUNT<br />
+
+                  Modified 2004-06-17 by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  2005-05-18, mtk, Added MNT_EXPIRE, plus a few other tidy-ups.<br />
+
+                  2008-10-06, mtk: move umount*() material into separate umount.2 page.<br />
+
+                  2008-10-06, mtk: Add discussion of namespaces.<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

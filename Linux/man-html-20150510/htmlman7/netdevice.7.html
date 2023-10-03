@@ -1,0 +1,769 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>netdevice(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="netdevice(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="netdevice.7" name="netdevice.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>netdevice — low-level access to Linux network
+      devices</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;sys/ioctl.h&gt;
+
+#include &lt;net/if.h&gt;
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="netdevice-7_sect1" name="netdevice-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>This man page describes the sockets interface which is
+      used to configure network devices.</p>
+
+      <p>Linux supports some standard ioctls to configure network
+      devices. They can be used on any socket's file descriptor
+      regardless of the family or type. Most of them pass an
+      <em class="replaceable"><code>ifreq</code></em>
+      structure:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+struct ifreq {
+    char ifr_name[IFNAMSIZ]; /* Interface name */
+    union {
+        struct sockaddr ifr_addr;
+        struct sockaddr ifr_dstaddr;
+        struct sockaddr ifr_broadaddr;
+        struct sockaddr ifr_netmask;
+        struct sockaddr ifr_hwaddr;
+        short           ifr_flags;
+        int             ifr_ifindex;
+        int             ifr_metric;
+        int             ifr_mtu;
+        struct ifmap    ifr_map;
+        char            ifr_slave[IFNAMSIZ];
+        char            ifr_newname[IFNAMSIZ];
+        char           *ifr_data;
+    };
+};
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>Normally, the user specifies which device to affect by
+      setting <em class="replaceable"><code>ifr_name</code></em> to
+      the name of the interface. All other members of the structure
+      may share memory.</p>
+
+      <div class="refsect2">
+        <a id="netdevice-7_sect2" name="netdevice-7_sect2" shape="rect"> </a>
+
+        <h3>Ioctls</h3>
+
+        <p>If an ioctl is marked as privileged, then using it
+        requires an effective user ID of 0 or the <code class="constant">CAP_NET_ADMIN</code> capability. If this is not
+        the case, <span class="errorname">EPERM</span> will be
+        returned.</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">SIOCGIFNAME</code></span></dt>
+
+            <dd>
+              <p>Given the <em class="replaceable"><code>ifr_ifindex</code></em>, return
+              the name of the interface in <em class="replaceable"><code>ifr_name</code></em>. This is the
+              only ioctl which returns its result in <em class="replaceable"><code>ifr_name</code></em>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SIOCGIFINDEX</code></span></dt>
+
+            <dd>
+              <p>Retrieve the interface index of the interface into
+              <em class="replaceable"><code>ifr_ifindex</code></em>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SIOCGIFFLAGS</code>, <code class="constant">SIOCSIFFLAGS</code></span></dt>
+
+            <dd>
+              <p>Get or set the active flag word of the device.
+              <em class="replaceable"><code>ifr_flags</code></em>
+              contains a bit mask of the following values:</p>
+            </dd>
+          </dl>
+        </div>
+
+        <div class="informaltable">
+          <table style="border-collapse: collapse;">
+            <colgroup span="1">
+              <col class="c0" span="1" />
+              <col class="c1" span="1" />
+            </colgroup>
+
+            <tbody>
+              <tr>
+                <td style="" colspan="2" align="center" rowspan="1">Device
+                flags</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFF_UP</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Interface is
+                running.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFF_BROADCAST</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Valid broadcast address
+                set.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFF_DEBUG</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Internal debugging
+                flag.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFF_LOOPBACK</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Interface is a loopback
+                interface.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFF_POINTOPOINT</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Interface is a
+                point-to-point link.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFF_RUNNING</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Resources allocated.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFF_NOARP</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">No arp protocol, L2
+                destination address not set.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFF_PROMISC</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Interface is in
+                promiscuous mode.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFF_NOTRAILERS</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Avoid use of
+                trailers.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFF_ALLMULTI</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Receive all multicast
+                packets.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFF_MASTER</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Master of a load
+                balancing bundle.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFF_SLAVE</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Slave of a load balancing
+                bundle.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFF_MULTICAST</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Supports multicast</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFF_PORTSEL</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Is able to select media
+                type via ifmap.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFF_AUTOMEDIA</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Auto media selection
+                active.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFF_DYNAMIC</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">The addresses are lost
+                when the interface goes down.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFF_LOWER_UP</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Driver signals L1 up
+                (since Linux 2.6.17)</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFF_DORMANT</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Driver signals dormant
+                (since Linux 2.6.17)</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFF_ECHO</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Echo sent packets (since
+                Linux 2.6.25)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>Setting the active flag word is a privileged operation,
+        but any process may read it.</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">SIOCGIFPFLAGS</code>, <code class="constant">SIOCSIFPFLAGS</code></span></dt>
+
+            <dd>
+              <p>Get or set extended (private) flags for the
+              device. <em class="replaceable"><code>ifr_flags</code></em> contains a
+              bit mask of the following values:</p>
+            </dd>
+          </dl>
+        </div>
+
+        <div class="informaltable">
+          <table style="border-collapse: collapse;">
+            <colgroup span="1">
+              <col class="c0" span="1" />
+              <col class="c1" span="1" />
+            </colgroup>
+
+            <tbody>
+              <tr>
+                <td style="" colspan="2" align="center" rowspan="1">Private
+                flags</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFF_802_1Q_VLAN</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Interface is 802.1Q VLAN
+                device.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFF_EBRIDGE</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Interface is Ethernet
+                bridging device.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFF_SLAVE_INACTIVE</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Interface is inactive
+                bonding slave.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFF_MASTER_8023AD</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Interface is 802.3ad
+                bonding master.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFF_MASTER_ALB</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Interface is balanced-alb
+                bonding master.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFF_BONDING</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Interface is a bonding
+                master or slave.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFF_SLAVE_NEEDARP</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Interface needs ARPs for
+                validation.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFF_ISATAP</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Interface is RFC4214
+                ISATAP interface.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>Setting the extended (private) interface flags is a
+        privileged operation.</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">SIOCGIFADDR</code>, <code class="constant">SIOCSIFADDR</code></span></dt>
+
+            <dd>
+              <p>Get or set the address of the device using
+              <em class="replaceable"><code>ifr_addr</code></em>.
+              Setting the interface address is a privileged
+              operation. For compatibility, only <code class="constant">AF_INET</code> addresses are accepted or
+              returned.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SIOCGIFDSTADDR</code>, <code class="constant">SIOCSIFDSTADDR</code></span></dt>
+
+            <dd>
+              <p>Get or set the destination address of a
+              point-to-point device using <em class="replaceable"><code>ifr_dstaddr</code></em>. For
+              compatibility, only <code class="constant">AF_INET</code> addresses are accepted or
+              returned. Setting the destination address is a
+              privileged operation.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SIOCGIFBRDADDR</code>, <code class="constant">SIOCSIFBRDADDR</code></span></dt>
+
+            <dd>
+              <p>Get or set the broadcast address for a device
+              using <em class="replaceable"><code>ifr_brdaddr</code></em>. For
+              compatibility, only <code class="constant">AF_INET</code> addresses are accepted or
+              returned. Setting the broadcast address is a
+              privileged operation.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SIOCGIFNETMASK</code>, <code class="constant">SIOCSIFNETMASK</code></span></dt>
+
+            <dd>
+              <p>Get or set the network mask for a device using
+              <em class="replaceable"><code>ifr_netmask</code></em>. For
+              compatibility, only <code class="constant">AF_INET</code> addresses are accepted or
+              returned. Setting the network mask is a privileged
+              operation.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SIOCGIFMETRIC</code>, <code class="constant">SIOCSIFMETRIC</code></span></dt>
+
+            <dd>
+              <p>Get or set the metric of the device using
+              <em class="replaceable"><code>ifr_metric</code></em>.
+              This is currently not implemented; it sets <em class="replaceable"><code>ifr_metric</code></em> to 0 if
+              you attempt to read it and returns <span class="errorname">EOPNOTSUPP</span> if you attempt to set
+              it.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SIOCGIFMTU</code>, <code class="constant">SIOCSIFMTU</code></span></dt>
+
+            <dd>
+              <p>Get or set the MTU (Maximum Transfer Unit) of a
+              device using <em class="replaceable"><code>ifr_mtu</code></em>. Setting the
+              MTU is a privileged operation. Setting the MTU to too
+              small values may cause kernel crashes.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SIOCGIFHWADDR</code>, <code class="constant">SIOCSIFHWADDR</code></span></dt>
+
+            <dd>
+              <p>Get or set the hardware address of a device using
+              <em class="replaceable"><code>ifr_hwaddr</code></em>.
+              The hardware address is specified in a struct
+              <em class="replaceable"><code>sockaddr</code></em>.
+              <em class="replaceable"><code>sa_family</code></em>
+              contains the ARPHRD_* device type, <em class="replaceable"><code>sa_data</code></em> the L2
+              hardware address starting from byte 0. Setting the
+              hardware address is a privileged operation.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SIOCSIFHWBROADCAST</code></span></dt>
+
+            <dd>
+              <p>Set the hardware broadcast address of a device
+              from <em class="replaceable"><code>ifr_hwaddr</code></em>. This is a
+              privileged operation.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SIOCGIFMAP</code>, <code class="constant">SIOCSIFMAP</code></span></dt>
+
+            <dd>
+              <p>Get or set the interface's hardware parameters
+              using <em class="replaceable"><code>ifr_map</code></em>. Setting the
+              parameters is a privileged operation.</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="structdef">
+                    <table style="border-collapse: collapse;">
+                      <colgroup span="1">
+                        <col class="c1" span="1" />
+                        <col class="c2" span="1" />
+                        <col class="c3" span="1" />
+                        <col class="c4" span="1" />
+                        <col class="c5" span="1" />
+                      </colgroup>
+
+                      <tbody>
+                        <tr>
+                          <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                          <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">ifmap</span> {</td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned long</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>mem_start</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned long</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>mem_end</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>base_addr</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>irq</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>dma</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>port</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </blockquote>
+              </div>
+
+              <p>The interpretation of the ifmap structure depends
+              on the device driver and the architecture.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SIOCADDMULTI</code>, <code class="constant">SIOCDELMULTI</code></span></dt>
+
+            <dd>
+              <p>Add an address to or delete an address from the
+              device's link layer multicast filters using
+              <em class="replaceable"><code>ifr_hwaddr</code></em>.
+              These are privileged operations. See also <a class="link" href="../htmlman7/packet.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">packet</span>(7)</span></a> for an
+              alternative.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SIOCGIFTXQLEN</code>, <code class="constant">SIOCSIFTXQLEN</code></span></dt>
+
+            <dd>
+              <p>Get or set the transmit queue length of a device
+              using <em class="replaceable"><code>ifr_qlen</code></em>. Setting the
+              transmit queue length is a privileged operation.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SIOCSIFNAME</code></span></dt>
+
+            <dd>
+              <p>Changes the name of the interface specified in
+              <em class="replaceable"><code>ifr_name</code></em> to
+              <em class="replaceable"><code>ifr_newname</code></em>. This is
+              a privileged operation. It is allowed only when the
+              interface is not up.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SIOCGIFCONF</code></span></dt>
+
+            <dd>
+              <p>Return a list of interface (transport layer)
+              addresses. This currently means only addresses of the
+              <code class="constant">AF_INET</code></p>
+
+              <p>Unlike the others, this ioctl passes an <em class="replaceable"><code>ifconf</code></em> structure:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="informalexample">
+                    <pre class="programlisting" xml:space="preserve">
+struct ifconf {
+    int                 ifc_len; /* size of buffer */
+    union {
+        char           *ifc_buf; /* buffer address */
+        struct ifreq   *ifc_req; /* array of structures */
+    };
+};
+</pre>
+                  </div>
+                </blockquote>
+              </div>
+
+              <p>If <em class="replaceable"><code>ifc_req</code></em> is NULL,
+              <code class="constant">SIOCGIFCONF</code> returns the
+              necessary buffer size in bytes for receiving all
+              available addresses in <em class="replaceable"><code>ifc_len</code></em>. Otherwise,
+              <em class="replaceable"><code>ifc_req</code></em>
+              contains a pointer to an array of <em class="replaceable"><code>ifreq</code></em> structures to
+              be filled with all currently active L3 interface
+              addresses. <em class="replaceable"><code>ifc_len</code></em> contains the
+              size of the array in bytes. Within each <em class="replaceable"><code>ifreq</code></em> structure,
+              <em class="replaceable"><code>ifr_name</code></em>
+              will receive the interface name, and <em class="replaceable"><code>ifr_addr</code></em> the address.
+              The actual number of bytes transferred is returned in
+              <em class="replaceable"><code>ifc_len</code></em>.</p>
+
+              <p>If the size specified by <em class="replaceable"><code>ifc_len</code></em> is
+              insufficient to store all the addresses, the kernel
+              will skip the exceeding ones and return success.
+              There is no reliable way of detecting this condition
+              once it has occurred. It is therefore recommended to
+              either determine the necessary buffer size beforehand
+              by calling <code class="constant">SIOCGIFCONF</code>
+              with <em class="replaceable"><code>ifc_req</code></em> set to NULL,
+              or to retry the call with a bigger buffer whenever
+              <em class="replaceable"><code>ifc_len</code></em>
+              upon return differs by less than <span class="emphasis"><em>sizeof(struct ifreq)</em></span> from
+              its original value.</p>
+
+              <p>If an error occurs accessing the <em class="replaceable"><code>ifconf</code></em> or <em class="replaceable"><code>ifreq</code></em> structures,
+              <span class="errorname">EFAULT</span> will be
+              returned.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>Most protocols support their own ioctls to configure
+        protocol-specific interface options. See the protocol man
+        pages for a description. For configuring IP addresses, see
+        <a class="link" href="../htmlman7/ip.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ip</span>(7)</span></a>.</p>
+
+        <p>In addition, some devices support private ioctls. These
+        are not described here.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="netdevice-7_sect3" name="netdevice-7_sect3" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Strictly speaking, <code class="constant">SIOCGIFCONF</code> and the other ioctls that
+      accept or return only <code class="constant">AF_INET</code>
+      socket addresses, are IP-specific and belong in <a class="link" href="../htmlman7/ip.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ip</span>(7)</span></a>.</p>
+
+      <p>The names of interfaces with no addresses or that don't
+      have the <code class="constant">IFF_RUNNING</code> flag set
+      can be found via <code class="filename">/proc/net/dev</code>.</p>
+
+      <p>Local IPv6 IP addresses can be found via <code class="filename">/proc/net</code> or via <a class="link" href="../htmlman7/rtnetlink.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rtnetlink</span>(7)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="netdevice-7_sect4" name="netdevice-7_sect4" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>glibc 2.1 is missing the <em class="replaceable"><code>ifr_newname</code></em> macro in
+      <code class="literal">&lt;</code><code class="filename">net/if.h</code><code class="literal">&gt;</code>
+      Add the following to your program as a workaround:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+#ifndef ifr_newname
+#define ifr_newname     ifr_ifru.ifru_slave
+#endif
+</pre>
+          </div>
+        </blockquote>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="netdevice-7_sect5" name="netdevice-7_sect5" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman5/proc.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">proc</span>(5)</span></a>, <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>, <a class="link" href="../htmlman7/ip.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ip</span>(7)</span></a>, <a class="link" href="../htmlman7/rtnetlink.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rtnetlink</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="netdevice-7_sect6" name="netdevice-7_sect6" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    t<br />
+                  This man page is Copyright (C) 1999 Andi Kleen &lt;ak<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>muc.de&gt;.<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM_ONE_PARA)<br />
+                  Permission is granted to distribute possibly modified copies<br />
+
+                  of this page provided the header is included verbatim,<br />
+
+                  and in case of nontrivial modification author and date<br />
+
+                  of the modification is added to the header.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  $Id: netdevice.7,v 1.10 2000/08/17 10:09:54 ak Exp $<br />
+
+                  <br />
+                  Modified, 2004-11-25, mtk, formatting and a few wording fixes<br />
+
+                  <br />
+                  Modified, 2011-11-02, &lt;bidulock<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>openss7.org&gt;, added many basic<br />
+
+                   but missing ioctls, such as SIOCGIFADDR.<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

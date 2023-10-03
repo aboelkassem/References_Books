@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>slapd-perl(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="slapd-perl(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry" title="slapd-perl(5) — Linux manual pages">
+    <a id="slapd-perl.5" name="slapd-perl.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>slapd−perl — Perl backend to slapd</p>
+    </div>
+
+    <div class="refsynopsisdiv" title="Synopsis">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ETCDIR/slapd.conf
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1" title="DESCRIPTION">
+      <a id="slapd-perl-5_sect1" name="slapd-perl-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The Perl backend to <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a> works by embedding
+      a <span class="citerefentry"><span class="refentrytitle">perl</span>(1)</span> interpreter into
+      <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a>. Any perl database
+      section of the configuration file <a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a> must then
+      specify what Perl module to use. <em class="replaceable"><code>Slapd</code></em> then creates a new Perl
+      object that handles all the requests for that particular
+      instance of the backend.</p>
+
+      <p>You will need to create a method for each one of the
+      following actions:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+  * new        # creates a new object,
+  * search     # performs the ldap search,
+  * compare    # does a compare,
+  * modify     # modifies an entry,
+  * add        # adds an entry to backend,
+  * modrdn     # modifies an entry's rdn,
+  * delete     # deletes an ldap entry,
+  * config     # module-specific config directives,
+  * init       # called after backend is initialized.
+</pre>
+      </div>
+
+      <p>Unless otherwise specified, the methods return the result
+      code which will be returned to the client. Unimplemented
+      actions can just return unwillingToPerform (53).</p>
+
+      <div class="variablelist">
+        <dl>
+          <dt><span class="term"><em class="replaceable"><code>new</code></em></span></dt>
+
+          <dd>
+            <p>This method is called when the configuration file
+            encounters a <em class="replaceable"><code>perlmod</code></em> line. The
+            module in that line is then effectively `use'd into the
+            perl interpreter, then the <em class="replaceable"><code>new</code></em> method is called to
+            create a new object. Note that multiple instances of
+            that object may be instantiated, as with any perl
+            object.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>The <em class="replaceable"><code>new</code></em> method
+      receives the class name as argument.</p>
+
+      <div class="variablelist">
+        <dl>
+          <dt><span class="term"><em class="replaceable"><code>search</code></em></span></dt>
+
+          <dd>
+            <p>This method is called when a search request comes
+            from a client. It arguments are as follows:</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+  * object reference
+  * base DN
+  * scope
+  * alias dereferencing policy
+  * size limit
+  * time limit
+  * filter string
+  * attributes only flag (1 for yes)
+  * list of attributes to return (may be empty)
+</pre>
+            </div>
+
+            <p>Return value: (resultcode, ldif-entry, ldif-entry,
+            ...)</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>compare</code></em></span></dt>
+
+          <dd>
+            <p>This method is called when a compare request comes
+            from a client. Its arguments are as follows.</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+  * object reference
+  * dn
+  * attribute assertion string
+</pre>
+            </div>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>modify</code></em></span></dt>
+
+          <dd>
+            <p>This method is called when a modify request comes
+            from a client. Its arguments are as follows.</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+  * object reference
+  * dn
+  * a list formatted as follows
+    ({ "ADD" | "DELETE" | "REPLACE" },
+     attributetype, value...)...
+</pre>
+            </div>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>add</code></em></span></dt>
+
+          <dd>
+            <p>This method is called when a add request comes from
+            a client. Its arguments are as follows.</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+  * object reference
+  * entry in string format
+</pre>
+            </div>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>modrdn</code></em></span></dt>
+
+          <dd>
+            <p>This method is called when a modrdn request comes
+            from a client. Its arguments are as follows.</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+  * object reference
+  * dn
+  * new rdn
+  * delete old dn flag (1 means yes)
+</pre>
+            </div>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>delete</code></em></span></dt>
+
+          <dd>
+            <p>This method is called when a delete request comes
+            from a client. Its arguments are as follows.</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+  * object reference
+  * dn
+</pre>
+            </div>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>config</code></em></span></dt>
+
+          <dd>
+            <p>This method is called once for each perlModuleConfig
+            line in the <a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a>
+            configuration file. Its arguments are as follows.</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+  * object reference
+  * array of arguments on line
+</pre>
+            </div>
+
+            <p>Return value: nonzero if this is not a valid
+            option.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>init</code></em></span></dt>
+
+          <dd>
+            <p>This method is called after backend is initialized.
+            Its argument is as follows.</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+  * object reference
+</pre>
+            </div>
+
+            <p>Return value: nonzero if initialization failed.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1" title="CONFIGURATION">
+      <a id="slapd-perl-5_sect2" name="slapd-perl-5_sect2" shape="rect"> </a>
+
+      <h2>CONFIGURATION</h2>
+
+      <p>These <em class="replaceable"><code>slapd.conf</code></em>
+      options apply to the PERL backend database. That is, they
+      must follow a "database perl" line and come before any
+      subsequent "backend" or "database" lines. Other database
+      options are described in the <a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a> manual
+      page.</p>
+
+      <div class="variablelist">
+        <dl>
+          <dt><span class="term"><em class="replaceable"><code>perlModulePath/path/to/libs</code></em></span></dt>
+
+          <dd>
+            <p>Add the path to the @INC variable.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>perlModuleModName</code></em></span></dt>
+
+          <dd>
+            <p>`Use' the module name ModName from ModName.pm</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>filterSearchResults</code></em></span></dt>
+
+          <dd>
+            <p>Search results are candidates that need to be
+            filtered (with the filter in the search request),
+            rather than search results to be returned directly to
+            the client.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>perlModuleConfig
+          &lt;arguments&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Invoke the module's config method with the given
+            arguments.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1" title="EXAMPLE">
+      <a id="slapd-perl-5_sect3" name="slapd-perl-5_sect3" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>There is an example Perl module `SampleLDAP' in the
+      slapd/back−perl/ directory in the OpenLDAP source
+      tree.</p>
+    </div>
+
+    <div class="refsect1" title="ACCESS CONTROL">
+      <a id="slapd-perl-5_sect4" name="slapd-perl-5_sect4" shape="rect"> </a>
+
+      <h2>ACCESS CONTROL</h2>
+
+      <p>The <em class="replaceable"><code>perl</code></em> backend
+      does not honor any of the access control semantics described
+      in <a class="link" href="../htmlman5/slapd.access.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.access</span>(5)</span></a>; all access
+      control is delegated to the underlying PERL scripting. Only
+      <span class="emphasis"><em>read (=r)</em></span> access to
+      the <em class="replaceable"><code>entry</code></em>
+      pseudo-attribute and to the other attribute values of the
+      entries returned by the <em class="replaceable"><code>search</code></em> operation is honored,
+      which is performed by the frontend.</p>
+    </div>
+
+    <div class="refsect1" title="WARNING">
+      <a id="slapd-perl-5_sect5" name="slapd-perl-5_sect5" shape="rect"> </a>
+
+      <h2>WARNING</h2>
+
+      <p>The interface of this backend to the perl module MAY
+      change. Any suggestions would greatly be appreciated.</p>
+
+      <div class="note" title="Note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <p>In previous versions, any unrecognized lines in
+              the slapd.conf file were passed to the perl module's
+              config method. This behavior is deprecated (but still
+              allowed for backward compatibility), and the
+              perlModuleConfig directive should instead be used to
+              invoke the module's config method. This compatibility
+              feature will be removed at some future date.</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1" title="FILES">
+      <a id="slapd-perl-5_sect6" name="slapd-perl-5_sect6" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <div class="variablelist">
+        <dl>
+          <dt><span class="term">ETCDIR/slapd.conf</span></dt>
+
+          <dd>
+            <p>default slapd configuration file</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1" title="SEE ALSO">
+      <a id="slapd-perl-5_sect7" name="slapd-perl-5_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a>, <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a>, <span class="citerefentry"><span class="refentrytitle">perl</span>(1)</span>.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                  See the following documents: <a class="ulink" href="../openldap-COPYRIGHT.html" target="_top" shape="rect">COPYRIGHT</a>, <a class="ulink" href="../openldap-LICENSE.html" target="_top" shape="rect">LICENSE</a><br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

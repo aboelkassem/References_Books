@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>slapd-sock(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="slapd-sock(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="slapd-sock.5" name="slapd-sock.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>slapd−sock — Socket backend/overlay to
+      slapd</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ETCDIR/slapd.conf
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-sock-5_sect1" name="slapd-sock-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The Socket backend to <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a> uses an external
+      program to handle queries, similarly to <a class="link" href="../htmlman5/slapd-shell.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-shell</span>(5)</span></a>. However, in
+      this case the external program listens on a Unix domain
+      socket. This makes it possible to have a pool of processes,
+      which persist between requests. This allows multithreaded
+      operation and a higher level of efficiency. The external
+      program must have been started independently; <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a> itself will not
+      start it.</p>
+
+      <p>This module may also be used as an overlay on top of some
+      other database. Use as an overlay allows external actions to
+      be triggered in response to operations on the main
+      database.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-sock-5_sect2" name="slapd-sock-5_sect2" shape="rect"> </a>
+
+      <h2>CONFIGURATION</h2>
+
+      <p>These <em class="replaceable"><code>slapd.conf</code></em>
+      options apply to the SOCK backend database. That is, they
+      must follow a "database sock" line and come before any
+      subsequent "backend" or "database" lines. Other database
+      options are described in the <a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a> manual
+      page.</p>
+
+      <p>Alternatively, to use this module as an overlay, these
+      directives must follow an "overlay sock" line within an
+      existing database definition.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>extensions [ binddn | peername | ssf |
+          connid ]*</em></span></span></dt>
+
+          <dd>
+            <p>Enables the sending of additional meta-attributes
+            with each request.</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+binddn: &lt;bound DN&gt;
+peername: IP=&lt;address&gt;:&lt;port&gt;
+ssf: &lt;SSF value&gt;
+connid: &lt;connection ID&gt;
+</pre>
+            </div>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>socketpath
+          &lt;pathname&gt;</em></span></span></dt>
+
+          <dd>
+            <p>Gives the path to a Unix domain socket to which the
+            commands will be sent and from which replies are
+            received.</p>
+
+            <p>When used as an overlay, these additional directives
+            are defined:</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>sockops
+          [ bind | unbind | search | compare | modify | modrdn |
+          add | delete ]*</em></span></span></dt>
+
+          <dd>
+            <p>Specify which request types to send to the external
+            program. The default is empty (no requests are
+            sent).</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>sockresps [ result | search
+          ]*</em></span></span></dt>
+
+          <dd>
+            <p>Specify which response types to send to the external
+            program. "result" sends just the results of an
+            operation. "search" sends all entries that the database
+            returned for a search request. The default is empty (no
+            responses are sent).</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-sock-5_sect3" name="slapd-sock-5_sect3" shape="rect"> </a>
+
+      <h2>PROTOCOL</h2>
+
+      <p>The protocol is essentially the same as <a class="link" href="../htmlman5/slapd-shell.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-shell</span>(5)</span></a> with the
+      addition of a newline to terminate the command parameters.
+      The following commands are sent:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+ADD
+msgid: &lt;message id&gt;
+&lt;repeat { "suffix:" &lt;database suffix DN&gt; }&gt;
+&lt;entry in LDIF format&gt;
+&lt;blank line&gt;
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+BIND
+msgid: &lt;message id&gt;
+&lt;repeat { "suffix:" &lt;database suffix DN&gt; }&gt;
+dn: &lt;DN&gt;
+method: &lt;method number&gt;
+credlen: &lt;length of &lt;credentials&gt;&gt;
+cred: &lt;credentials&gt;
+&lt;blank line&gt;
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+COMPARE
+msgid: &lt;message id&gt;
+&lt;repeat { "suffix:" &lt;database suffix DN&gt; }&gt;
+dn: &lt;DN&gt;
+&lt;attribute&gt;: &lt;value&gt;
+&lt;blank line&gt;
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+DELETE
+msgid: &lt;message id&gt;
+&lt;repeat { "suffix:" &lt;database suffix DN&gt; }&gt;
+dn: &lt;DN&gt;
+&lt;blank line&gt;
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+MODIFY
+msgid: &lt;message id&gt;
+&lt;repeat { "suffix:" &lt;database suffix DN&gt; }&gt;
+dn: &lt;DN&gt;
+&lt;repeat {
+    &lt;"add"/"delete"/"replace"&gt;: &lt;attribute&gt;
+    &lt;repeat { &lt;attribute&gt;: &lt;value&gt; }&gt;
+    −
+}&gt;
+&lt;blank line&gt;
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+MODRDN
+msgid: &lt;message id&gt;
+&lt;repeat { "suffix:" &lt;database suffix DN&gt; }&gt;
+dn: &lt;DN&gt;
+newrdn: &lt;new RDN&gt;
+deleteoldrdn: &lt;0 or 1&gt;
+&lt;if new superior is specified: "newSuperior: &lt;DN&gt;"&gt;
+&lt;blank line&gt;
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+SEARCH
+msgid: &lt;message id&gt;
+&lt;repeat { "suffix:" &lt;database suffix DN&gt; }&gt;
+base: &lt;base DN&gt;
+scope: &lt;0-2, see ldap.h&gt;
+deref: &lt;0-3, see ldap.h&gt;
+sizelimit: &lt;size limit&gt;
+timelimit: &lt;time limit&gt;
+filter: &lt;filter&gt;
+attrsonly: &lt;0 or 1&gt;
+attrs: &lt;"all" or space-separated attribute list&gt;
+&lt;blank line&gt;
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+UNBIND
+msgid: &lt;message id&gt;
+&lt;repeat { "suffix:" &lt;database suffix DN&gt; }&gt;
+&lt;blank line&gt;
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>The commands - except <em class="replaceable"><code>unbind</code></em> - should output:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+RESULT
+code: &lt;integer&gt;
+matched: &lt;matched DN&gt;
+info: &lt;text&gt;
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>where only RESULT is mandatory, and then close the socket.
+      The <em class="replaceable"><code>search</code></em> RESULT
+      should be preceded by the entries in LDIF format, each entry
+      followed by a blank line. Lines starting with `#' or `DEBUG:'
+      are ignored.</p>
+
+      <p>When used as an overlay, the external program should
+      return a CONTINUE response if request processing should
+      continue normally, or a regular RESULT response if the
+      external program wishes to bypass the underlying
+      database.</p>
+
+      <p>If the overlay is configured to send response messages to
+      the external program, they will appear as an extended RESULT
+      message or as an ENTRY message, defined below. The RESULT
+      message is similar to the one above, but also includes the
+      msgid and any configured extensions:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+RESULT
+msgid: &lt;message id&gt;
+code: &lt;integer&gt;
+matched: &lt;matched DN&gt;
+info: &lt;text&gt;
+&lt;blank line&gt;
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>Typically both the msgid and the connid will be needed to
+      match a result message to a request. The ENTRY message has
+      the form</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+ENTRY
+msgid: &lt;message id&gt;
+&lt;entry in LDIF format&gt;
+&lt;blank line&gt;
+</pre>
+          </div>
+        </blockquote>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-sock-5_sect4" name="slapd-sock-5_sect4" shape="rect"> </a>
+
+      <h2>ACCESS CONTROL</h2>
+
+      <p>The <em class="replaceable"><code>sock</code></em> backend
+      does not honor all ACL semantics as described in <a class="link" href="../htmlman5/slapd.access.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.access</span>(5)</span></a>. In
+      general, access to objects is checked by using a dummy object
+      that contains only the DN, so access rules that rely on the
+      contents of the object are not honored. In detail:</p>
+
+      <p>The <em class="replaceable"><code>add</code></em>
+      operation does not require <span class="emphasis"><em>write
+      (=w)</em></span> access to the <em class="replaceable"><code>children</code></em> pseudo-attribute of
+      the parent entry.</p>
+
+      <p>The <em class="replaceable"><code>bind</code></em>
+      operation requires <span class="emphasis"><em>auth
+      (=x)</em></span> access to the <em class="replaceable"><code>entry</code></em> pseudo-attribute of the
+      entry whose identity is being assessed; <span class="emphasis"><em>auth (=x)</em></span> access to the
+      credentials is not checked, but rather delegated to the
+      underlying program.</p>
+
+      <p>The <em class="replaceable"><code>compare</code></em>
+      operation requires <span class="emphasis"><em>compare
+      (=c)</em></span> access to the <em class="replaceable"><code>entry</code></em> pseudo-attribute of the
+      object whose value is being asserted; <span class="emphasis"><em>compare (=c)</em></span> access to the
+      attribute whose value is being asserted is not checked.</p>
+
+      <p>The <em class="replaceable"><code>delete</code></em>
+      operation does not require <span class="emphasis"><em>write
+      (=w)</em></span> access to the <em class="replaceable"><code>children</code></em> pseudo-attribute of
+      the parent entry.</p>
+
+      <p>The <em class="replaceable"><code>modify</code></em>
+      operation requires <span class="emphasis"><em>write
+      (=w)</em></span> access to the <em class="replaceable"><code>entry</code></em> pseudo-attribute;
+      <span class="emphasis"><em>write (=w)</em></span> access to
+      the specific attributes that are modified is not checked.</p>
+
+      <p>The <em class="replaceable"><code>modrdn</code></em>
+      operation does not require <span class="emphasis"><em>write
+      (=w)</em></span> access to the <em class="replaceable"><code>children</code></em> pseudo-attribute of
+      the parent entry, nor to that of the new parent, if
+      different; <span class="emphasis"><em>write (=w)</em></span>
+      access to the distinguished values of the naming attributes
+      is not checked.</p>
+
+      <p>The <em class="replaceable"><code>search</code></em>
+      operation does not require <span class="emphasis"><em>search
+      (=s)</em></span> access to the <em class="replaceable"><code>entry</code></em> pseudo_attribute of the
+      searchBase; <span class="emphasis"><em>search
+      (=s)</em></span> access to the attributes and values used in
+      the filter is not checked.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-sock-5_sect5" name="slapd-sock-5_sect5" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>There is an example script in the slapd/back−sock/
+      directory in the OpenLDAP source tree.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-sock-5_sect6" name="slapd-sock-5_sect6" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">ETCDIR/slapd.conf</span></dt>
+
+          <dd>
+            <p>default slapd configuration file</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-sock-5_sect7" name="slapd-sock-5_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a>, <a class="link" href="../htmlman5/slapd-config.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-config</span>(5)</span></a>, <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-sock-5_sect8" name="slapd-sock-5_sect8" shape="rect"> </a>
+
+      <h2>AUTHOR</h2>
+
+      <p>Brian Candler, with enhancements by Howard Chu</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                  See the following documents: <a class="ulink" href="../openldap-COPYRIGHT.html" target="_top" shape="rect">COPYRIGHT</a>, <a class="ulink" href="../openldap-LICENSE.html" target="_top" shape="rect">LICENSE</a><br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

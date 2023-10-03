@@ -1,0 +1,655 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>stdio(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="stdio(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="stdio.3" name="stdio.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>stdio — standard input/output library functions</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;stdio.h&gt;
+
+FILE *stdin;
+FILE *stdout;
+FILE *stderr;
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="stdio-3_sect1" name="stdio-3_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The standard I/O library provides a simple and efficient
+      buffered stream I/O interface. Input and output is mapped
+      into logical data streams and the physical I/O
+      characteristics are concealed. The functions and macros are
+      listed below; more information is available from the
+      individual man pages.</p>
+
+      <p>A stream is associated with an external file (which may be
+      a physical device) by <span class="quote">“<span class="quote">opening</span>”</span> a file, which may
+      involve creating a new file. Creating an existing file causes
+      its former contents to be discarded. If a file can support
+      positioning requests (such as a disk file, as opposed to a
+      terminal), then a <span class="emphasis"><em>file position
+      indicator</em></span> associated with the stream is
+      positioned at the start of the file (byte zero), unless the
+      file is opened with append mode. If append mode is used, it
+      is unspecified whether the position indicator will be placed
+      at the start or the end of the file. The position indicator
+      is maintained by subsequent reads, writes and positioning
+      requests. All input occurs as if the characters were read by
+      successive calls to the <a class="link" href="../htmlman3/fgetc.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fgetc</span>(3)</span></a> function; all
+      output takes place as if all characters were written by
+      successive calls to the <a class="link" href="../htmlman3/puts.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fputc</span>(3)</span></a> function.</p>
+
+      <p>A file is disassociated from a stream by <span class="quote">“<span class="quote">closing</span>”</span> the file. Output streams
+      are flushed (any unwritten buffer contents are transferred to
+      the host environment) before the stream is disassociated from
+      the file. The value of a pointer to a <span class="type">FILE</span> object is indeterminate after a file is
+      closed (garbage).</p>
+
+      <p>A file may be subsequently reopened, by the same or
+      another program execution, and its contents reclaimed or
+      modified (if it can be repositioned at the start). If the
+      main function returns to its original caller, or the
+      <a class="link" href="../htmlman3/exit.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">exit</span>(3)</span></a> function is called,
+      all open files are closed (hence all output streams are
+      flushed) before program termination. Other methods of program
+      termination, such as <a class="link" href="../htmlman3/abort.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">abort</span>(3)</span></a> do not bother
+      about closing files properly.</p>
+
+      <p>At program startup, three text streams are predefined and
+      need not be opened explicitly: <span class="emphasis"><em>standard input</em></span> (for reading
+      conventional input), <span class="emphasis"><em>standard
+      output</em></span> (for writing conventional output), and
+      <span class="emphasis"><em>standard error</em></span> (for
+      writing diagnostic output). These streams are abbreviated
+      <code class="varname">stdin</code>,<code class="varname">stdout</code> and <code class="varname">stderr</code>. When opened, the standard error
+      stream is not fully buffered; the standard input and output
+      streams are fully buffered if and only if the streams do not
+      refer to an interactive device.</p>
+
+      <p>Output streams that refer to terminal devices are always
+      line buffered by default; pending output to such streams is
+      written automatically whenever an input stream that refers to
+      a terminal device is read. In cases where a large amount of
+      computation is done after printing part of a line on an
+      output terminal, it is necessary to <a class="link" href="../htmlman3/fflush.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fflush</span>(3)</span></a> the standard
+      output before going off and computing so that the output will
+      appear.</p>
+
+      <p>The <code class="systemitem">stdio</code> library is a
+      part of the library <code class="filename">libc</code> and
+      routines are automatically loaded as needed by the compilers
+      <span class="citerefentry"><span class="refentrytitle">cc</span>(1)</span> and <span class="citerefentry"><span class="refentrytitle">pc</span>(1)</span>. The SYNOPSIS sections of
+      the following manual pages indicate which include files are
+      to be used, what the compiler declaration for the function
+      looks like and which external variables are of interest.</p>
+
+      <p>The following are defined as macros; these names may not
+      be reused without first removing their current definitions
+      with <code class="literal">#undef</code>: <code class="constant">BUFSIZ</code>, <code class="constant">EOF</code>,
+      <code class="constant">FILENAME_MAX</code>, <code class="constant">FOPEN_MAX</code>, <code class="constant">L_cuserid</code>, <code class="constant">L_ctermid</code>, <code class="constant">L_tmpnam</code>, <code class="constant">NULL</code>, <code class="constant">SEEK_END</code>, <code class="constant">SEEK_SET</code>, <code class="constant">SEEK_CUR</code>, <code class="constant">TMP_MAX</code>, <code class="function">clearerr</code>, <code class="function">feof</code>, <code class="function">ferror</code>,
+      <code class="function">fileno</code>, <code class="function">getc</code>, <code class="function">getchar</code>, <code class="function">putc</code>, <code class="function">putchar</code>, <code class="varname">stderr</code>, <code class="varname">stdin</code>,
+      <code class="varname">stdout</code>. Function versions of the
+      macro functions <code class="function">feof</code>,
+      <code class="function">ferror</code>, <code class="function">clearerr</code>, <code class="function">fileno</code>, <code class="function">getc</code>,
+      <code class="function">getchar</code>, <code class="function">putc</code>, and <code class="function">putchar</code> exist and will be used if the
+      macros definitions are explicitly removed.</p>
+
+      <div class="refsect2">
+        <a id="stdio-3_sect2" name="stdio-3_sect2" shape="rect"> </a>
+
+        <h3>List of functions</h3>
+
+        <div class="informaltable">
+          <table style="border-collapse: collapse;">
+            <colgroup span="1">
+              <col class="c0" span="1" />
+              <col class="c1" span="1" />
+            </colgroup>
+
+            <tbody>
+              <tr style="">
+                <td style="" align="left" rowspan="1" colspan="1">Function</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Description</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">clearerr</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">check and reset stream
+                status</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">fclose</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">close a stream</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">fdopen</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">stream open
+                functions</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">feof</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">check and reset stream
+                status</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">ferror</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">check and reset stream
+                status</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">fflush</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">flush a stream</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">fgetc</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">get next character or
+                word from input stream</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">fgetpos</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">reposition a stream</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">fgets</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">get a line from a
+                stream</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">fileno</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">return the integer
+                descriptor of the argument stream</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">fopen</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">stream open
+                functions</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">fprintf</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">formatted output
+                conversion</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">fpurge</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">flush a stream</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">fputc</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">output a character or
+                word to a stream</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">fputs</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">output a line to a
+                stream</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">fread</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">binary stream
+                input/output</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">freopen</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">stream open
+                functions</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">fscanf</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">input format
+                conversion</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">fseek</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">reposition a stream</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">fsetpos</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">reposition a stream</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">ftell</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">reposition a stream</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">fwrite</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">binary stream
+                input/output</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">getc</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">get next character or
+                word from input stream</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">getchar</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">get next character or
+                word from input stream</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">gets</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">get a line from a
+                stream</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">getw</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">get next character or
+                word from input stream</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">mktemp</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">make temporary filename
+                (unique)</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">perror</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">system error
+                messages</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">printf</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">formatted output
+                conversion</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">putc</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">output a character or
+                word to a stream</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">putchar</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">output a character or
+                word to a stream</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">puts</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">output a line to a
+                stream</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">putw</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">output a character or
+                word to a stream</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">remove</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">remove directory
+                entry</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">rewind</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">reposition a stream</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">scanf</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">input format
+                conversion</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">setbuf</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">stream buffering
+                operations</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">setbuffer</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">stream buffering
+                operations</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">setlinebuf</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">stream buffering
+                operations</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">setvbuf</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">stream buffering
+                operations</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">sprintf</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">formatted output
+                conversion</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">sscanf</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">input format
+                conversion</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">strerror</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">system error
+                messages</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">sys_errlist</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">system error
+                messages</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">sys_nerr</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">system error
+                messages</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">tempnam</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">temporary file
+                routines</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">tmpfile</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">temporary file
+                routines</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">tmpnam</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">temporary file
+                routines</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">ungetc</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">un-get character from
+                input stream</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">vfprintf</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">formatted output
+                conversion</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">vfscanf</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">input format
+                conversion</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">vprintf</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">formatted output
+                conversion</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">vscanf</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">input format
+                conversion</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">vsprintf</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">formatted output
+                conversion</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">vsscanf</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">input format
+                conversion</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="stdio-3_sect3" name="stdio-3_sect3" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>The <code class="systemitem">stdio</code> library conforms
+      to C89.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="stdio-3_sect4" name="stdio-3_sect4" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/close.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">close</span>(2)</span></a>, <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>, <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>, <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a>, <a class="link" href="../htmlman3/stdin.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">stdout</span>(3)</span></a>, <a class="link" href="../htmlman3/unlocked_stdio.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unlocked_stdio</span>(3)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="stdio-3_sect5" name="stdio-3_sect5" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 1990, 1991 Regents of the University of California.<br />
+
+                  All rights reserved.<br />
+                  <br />
+                  %%%LICENSE_START(BSD_4_CLAUSE_UCB)<br />
+                  Redistribution and use in source and binary forms, with or without<br />
+
+                  modification, are permitted provided that the following conditions<br />
+
+                  are met:<br />
+                  1. Redistributions of source code must retain the above copyright<br />
+
+                     notice, this list of conditions and the following disclaimer.<br />
+
+                  2. Redistributions in binary form must reproduce the above copyright<br />
+
+                     notice, this list of conditions and the following disclaimer in the<br />
+
+                     documentation and/or other materials provided with the distribution.<br />
+
+                  3. All advertising materials mentioning features or use of this software<br />
+
+                     must display the following acknowledgement:<br />
+
+                  This product includes software developed by the University of<br />
+
+                  California, Berkeley and its contributors.<br />
+
+                  4. Neither the name of the University nor the names of its contributors<br />
+
+                     may be used to endorse or promote products derived from this software<br />
+
+                     without specific prior written permission.<br />
+
+                  <br />
+                  THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND<br />
+
+                  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE<br />
+
+                  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE<br />
+
+                  ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE<br />
+
+                  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL<br />
+
+                  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS<br />
+
+                  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)<br />
+
+                  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT<br />
+
+                  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY<br />
+
+                  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF<br />
+
+                  SUCH DAMAGE.<br />
+                  %%%LICENSE_END<br />
+                  <br />
+                      <script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>(#)stdio.3
+                  6.5 (Berkeley) 5/6/91<br />
+                  <br />
+                  Converted for Linux, Mon Nov 29 16:07:22 1993, faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu<br />
+
+                  Modified, 2001-12-26, aeb<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

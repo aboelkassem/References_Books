@@ -1,0 +1,921 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>shmctl(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="shmctl(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="shmctl.2" name="shmctl.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>shmctl — System V shared memory control</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;sys/ipc.h&gt;
+#include &lt;sys/shm.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>shmctl</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">shmid</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">cmd</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">struct shmid_ds *<var class="pdparam">buf</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="shmctl-2_sect1" name="shmctl-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">shmctl</code>() performs the
+      control operation specified by <em class="parameter"><code>cmd</code></em> on the System V shared
+      memory segment whose identifier is given in <em class="parameter"><code>shmid</code></em>.</p>
+
+      <p>The <em class="parameter"><code>buf</code></em> argument
+      is a pointer to a <span class="structname">shmid_ds</span>
+      structure, defined in <code class="literal">&lt;</code><code class="filename">sys/shm.h</code><code class="literal">&gt;</code>
+      as follows:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+struct shmid_ds {
+    struct ipc_perm shm_perm;    /* Ownership and permissions */
+    size_t          shm_segsz;   /* Size of segment (bytes) */
+    time_t          shm_atime;   /* Last attach time */
+    time_t          shm_dtime;   /* Last detach time */
+    time_t          shm_ctime;   /* Last change time */
+    pid_t           shm_cpid;    /* PID of creator */
+    pid_t           shm_lpid;    /* PID of last shmat(2)/shmdt(2) */
+    shmatt_t        shm_nattch;  /* No. of current attaches */
+    ...
+};
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>The <em class="replaceable"><code>ipc_perm</code></em>
+      structure is defined as follows (the highlighted fields are
+      settable using <code class="constant">IPC_SET</code>):</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="structdef">
+            <table style="border-collapse: collapse;">
+              <colgroup span="1">
+                <col class="c1" span="1" />
+                <col class="c2" span="1" />
+                <col class="c3" span="1" />
+                <col class="c4" span="1" />
+                <col class="c5" span="1" />
+              </colgroup>
+
+              <tbody>
+                <tr>
+                  <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                  struct</td>
+
+                  <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">ipc_perm</span> {</td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">key_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>__key</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      
+                      /* Key supplied to shmget(2) */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uid_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>uid</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      
+                      /* Effective UID of owner */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">gid_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>gid</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      
+                      /* Effective GID of owner */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uid_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>cuid</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      
+                      /* Effective UID of creator */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">gid_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>cgid</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      
+                      /* Effective GID of creator */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>mode</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      
+                      /* Permissions + SHM_DEST and<br />
+
+                      SHM_LOCKED flags */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>__seq</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      /* Sequence number */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>Valid values for <em class="parameter"><code>cmd</code></em> are:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">IPC_STAT</code></span></dt>
+
+          <dd>
+            <p>Copy information from the kernel data structure
+            associated with <em class="parameter"><code>shmid</code></em> into the
+            <span class="structname">shmid_ds</span> structure
+            pointed to by <em class="parameter"><code>buf</code></em>. The caller must have
+            read permission on the shared memory segment.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">IPC_SET</code></span></dt>
+
+          <dd>
+            <p>Write the values of some members of the <span class="structname">shmid_ds</span> structure pointed to by
+            <em class="parameter"><code>buf</code></em> to the
+            kernel data structure associated with this shared
+            memory segment, updating also its <em class="replaceable"><code>shm_ctime</code></em> member. The
+            following fields can be changed: <em class="replaceable"><code>shm_perm.uid</code></em>,
+            <em class="replaceable"><code>shm_perm.gid</code></em>,
+            and (the least significant 9 bits of) <em class="replaceable"><code>shm_perm.mode</code></em>. The
+            effective UID of the calling process must match the
+            owner (<em class="replaceable"><code>shm_perm.uid</code></em>) or
+            creator (<em class="replaceable"><code>shm_perm.cuid</code></em>) of the
+            shared memory segment, or the caller must be
+            privileged.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">IPC_RMID</code></span></dt>
+
+          <dd>
+            <p>Mark the segment to be destroyed. The segment will
+            actually be destroyed only after the last process
+            detaches it (i.e., when the <em class="replaceable"><code>shm_nattch</code></em> member of
+            the associated structure <span class="structname">shmid_ds</span> is zero). The caller must
+            be the owner or creator of the segment, or be
+            privileged. The <em class="parameter"><code>buf</code></em> argument is
+            ignored.</p>
+
+            <p>If a segment has been marked for destruction, then
+            the (nonstandard) <code class="constant">SHM_DEST</code> flag of the <em class="replaceable"><code>shm_perm.mode</code></em> field in
+            the associated data structure retrieved by <code class="constant">IPC_STAT</code> will be set.</p>
+
+            <p>The caller <em class="replaceable"><code>must</code></em> ensure that a
+            segment is eventually destroyed; otherwise its pages
+            that were faulted in will remain in memory or swap.</p>
+
+            <p>See also the description of <code class="filename">/proc/sys/kernel/shm_rmid_forced</code> in
+            <a class="link" href="../htmlman5/proc.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">proc</span>(5)</span></a>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">IPC_INFO</code> (Linux-specific)</span></dt>
+
+          <dd>
+            <p>Return information about system-wide shared memory
+            limits and parameters in the structure pointed to by
+            <em class="parameter"><code>buf</code></em>. This
+            structure is of type <em class="replaceable"><code>shminfo</code></em> (thus, a cast
+            is required), defined in <code class="literal">&lt;</code><code class="filename">sys/shm.h</code><code class="literal">&gt;</code> if the <code class="constant">_GNU_SOURCE</code> feature test macro is
+            defined:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="structdef">
+                  <table style="border-collapse: collapse;">
+                    <colgroup span="1">
+                      <col class="c1" span="1" />
+                      <col class="c2" span="1" />
+                      <col class="c3" span="1" />
+                      <col class="c4" span="1" />
+                      <col class="c5" span="1" />
+                    </colgroup>
+
+                    <tbody>
+                      <tr>
+                        <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                        <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">shminfo</span> {</td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned long</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>shmmax</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* Maximum segment size */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned long</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>shmmin</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* Minimum segment size;<br />
+
+                            always 1 */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned long</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>shmmni</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* Maximum number of segments */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned long</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>shmseg</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* Maximum number of segments<br />
+
+                            that a process can attach;<br />
+
+                            unused within kernel */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned long</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>shmall</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* Maximum number of pages of<br />
+
+                            shared memory, system-wide */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>The <em class="parameter"><code>shmmni</code></em>,
+            <em class="parameter"><code>shmmax</code></em>, and
+            <em class="parameter"><code>shmall</code></em> settings
+            can be changed via <code class="filename">/proc</code>
+            files of the same name; see <a class="link" href="../htmlman5/proc.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">proc</span>(5)</span></a> for
+            details.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">SHM_INFO</code> (Linux-specific)</span></dt>
+
+          <dd>
+            <p>Return a <em class="replaceable"><code>shm_info</code></em> structure
+            whose fields contain information about system resources
+            consumed by shared memory. This structure is defined in
+            <code class="literal">&lt;</code><code class="filename">sys/shm.h</code><code class="literal">&gt;</code> if the <code class="constant">_GNU_SOURCE</code> feature test macro is
+            defined:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="structdef">
+                  <table style="border-collapse: collapse;">
+                    <colgroup span="1">
+                      <col class="c1" span="1" />
+                      <col class="c2" span="1" />
+                      <col class="c3" span="1" />
+                      <col class="c4" span="1" />
+                      <col class="c5" span="1" />
+                    </colgroup>
+
+                    <tbody>
+                      <tr>
+                        <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                        <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">shm_info</span> {</td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>used_ids</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* # of currently existing<br />
+
+                            segments */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned long</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>shm_tot</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* Total number of shared<br />
+
+                            memory pages */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned long</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>shm_rss</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* # of resident shared<br />
+
+                            memory pages */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned long</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>shm_swp</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* # of swapped shared<br />
+
+                            memory pages */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned long</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>swap_attempts</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* Unused since Linux 2.4 */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned long</span></td>
+
+                        <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                        <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>swap_successes</code></em>;</td>
+
+                        <td style="" align="left" rowspan="1" colspan="1">
+                          <div class="literallayout">
+                            
+                            /* Unused since Linux 2.4 */
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+
+          <dt><span class="term"><code class="constant">SHM_STAT</code> (Linux-specific)</span></dt>
+
+          <dd>
+            <p>Return a <span class="structname">shmid_ds</span>
+            structure as for <code class="constant">IPC_STAT</code>. However, the <em class="parameter"><code>shmid</code></em> argument is not a
+            segment identifier, but instead an index into the
+            kernel's internal array that maintains information
+            about all shared memory segments on the system.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>The caller can prevent or allow swapping of a shared
+      memory segment with the following <em class="parameter"><code>cmd</code></em> values:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">SHM_LOCK</code> (Linux-specific)</span></dt>
+
+          <dd>
+            <p>Prevent swapping of the shared memory segment. The
+            caller must fault in any pages that are required to be
+            present after locking is enabled. If a segment has been
+            locked, then the (nonstandard) <code class="constant">SHM_LOCKED</code> flag of the <em class="replaceable"><code>shm_perm.mode</code></em> field in
+            the associated data structure retrieved by <code class="constant">IPC_STAT</code> will be set.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">SHM_UNLOCK</code> (Linux-specific)</span></dt>
+
+          <dd>
+            <p>Unlock the segment, allowing it to be swapped
+            out.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>In kernels before 2.6.10, only a privileged process could
+      employ <code class="constant">SHM_LOCK</code> and
+      <code class="constant">SHM_UNLOCK</code>. Since kernel
+      2.6.10, an unprivileged process can employ these operations
+      if its effective UID matches the owner or creator UID of the
+      segment, and (for <code class="constant">SHM_LOCK</code>) the
+      amount of memory to be locked falls within the <code class="constant">RLIMIT_MEMLOCK</code> resource limit (see
+      <a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setrlimit</span>(2)</span></a>).</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="shmctl-2_sect2" name="shmctl-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>A successful <code class="constant">IPC_INFO</code> or
+      <code class="constant">SHM_INFO</code> operation returns the
+      index of the highest used entry in the kernel's internal
+      array recording information about all shared memory segments.
+      (This information can be used with repeated <code class="constant">SHM_STAT</code> operations to obtain information
+      about all shared memory segments on the system.) A successful
+      <code class="constant">SHM_STAT</code> operation returns the
+      identifier of the shared memory segment whose index was given
+      in <em class="parameter"><code>shmid</code></em>. Other
+      operations return 0 on success.</p>
+
+      <p>On error, −1 is returned, and <code class="varname">errno</code> is set appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="shmctl-2_sect3" name="shmctl-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EACCES</span></span></dt>
+
+          <dd>
+            <p><code class="constant">IPC_STAT</code> or
+            <code class="constant">SHM_STAT</code> is requested and
+            <em class="replaceable"><code>shm_perm.mode</code></em>
+            does not allow read access for <em class="parameter"><code>shmid</code></em>, and the calling
+            process does not have the <code class="constant">CAP_IPC_OWNER</code> capability.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p>The argument <em class="parameter"><code>cmd</code></em> has value
+            <code class="constant">IPC_SET</code> or <code class="constant">IPC_STAT</code> but the address pointed to
+            by <em class="parameter"><code>buf</code></em> isn't
+            accessible.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EIDRM</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>shmid</code></em> points
+            to a removed identifier.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>shmid</code></em> is not
+            a valid identifier, or <em class="parameter"><code>cmd</code></em> is not a valid
+            command. Or: for a <code class="constant">SHM_STAT</code> operation, the index value
+            specified in <em class="parameter"><code>shmid</code></em> referred to an
+            array slot that is currently unused.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>(In kernels since 2.6.9), <code class="constant">SHM_LOCK</code> was specified and the size
+            of the to-be-locked segment would mean that the total
+            bytes in locked shared memory segments would exceed the
+            limit for the real user ID of the calling process. This
+            limit is defined by the <code class="constant">RLIMIT_MEMLOCK</code> soft resource limit
+            (see <a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setrlimit</span>(2)</span></a>).</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EOVERFLOW</span></span></dt>
+
+          <dd>
+            <p><code class="constant">IPC_STAT</code> is attempted,
+            and the GID or UID value is too large to be stored in
+            the structure pointed to by <em class="parameter"><code>buf</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p><code class="constant">IPC_SET</code> or
+            <code class="constant">IPC_RMID</code> is attempted,
+            and the effective user ID of the calling process is not
+            that of the creator (found in <em class="replaceable"><code>shm_perm.cuid</code></em>), or the
+            owner (found in <em class="replaceable"><code>shm_perm.uid</code></em>), and the
+            process was not privileged (Linux: did not have the
+            <code class="constant">CAP_SYS_ADMIN</code>
+            capability).</p>
+
+            <p>Or (in kernels before 2.6.9), <code class="constant">SHM_LOCK</code> or <code class="constant">SHM_UNLOCK</code> was specified, but the
+            process was not privileged (Linux: did not have the
+            <code class="constant">CAP_IPC_LOCK</code> capability).
+            (Since Linux 2.6.9, this error can also occur if the
+            <code class="constant">RLIMIT_MEMLOCK</code> is 0 and
+            the caller is not privileged.)</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="shmctl-2_sect4" name="shmctl-2_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>SVr4, POSIX.1-2001.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="shmctl-2_sect5" name="shmctl-2_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>The inclusion of <code class="literal">&lt;</code><code class="filename">sys/types.h</code><code class="literal">&gt;</code> and <code class="literal">&lt;</code><code class="filename">sys/ipc.h</code><code class="literal">&gt;</code>
+      isn't required on Linux or by any version of POSIX. However,
+      some old implementations required the inclusion of these
+      header files, and the SVID also documented their inclusion.
+      Applications intended to be portable to such old systems may
+      need to include these header files.</p>
+
+      <p>The <code class="constant">IPC_INFO</code>, <code class="constant">SHM_STAT</code> and <code class="constant">SHM_INFO</code> operations are used by the
+      <a class="link" href="../htmlman1/ipcs.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ipcs</span>(1)</span></a> program to provide
+      information on allocated resources. In the future, these may
+      modified or moved to a <code class="filename">/proc</code>
+      filesystem interface.</p>
+
+      <p>Linux permits a process to attach (<a class="link" href="../htmlman2/shmop.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">shmat</span>(2)</span></a>) a shared memory
+      segment that has already been marked for deletion using
+      <em class="replaceable"><code>shmctl(IPC_RMID)</code></em>.
+      This feature is not available on other UNIX implementations;
+      portable applications should avoid relying on it.</p>
+
+      <p>Various fields in a <span class="emphasis"><em>struct
+      shmid_ds</em></span> were typed as <span class="type">short</span> under Linux 2.2 and have become
+      <span class="type">long</span> under Linux 2.4. To take
+      advantage of this, a recompilation under glibc-2.1.91 or
+      later should suffice. (The kernel distinguishes old and new
+      calls by an <code class="constant">IPC_64</code> flag in
+      <em class="parameter"><code>cmd</code></em>.)</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="shmctl-2_sect6" name="shmctl-2_sect6" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/mlock.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mlock</span>(2)</span></a>, <a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setrlimit</span>(2)</span></a>, <a class="link" href="../htmlman2/shmget.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">shmget</span>(2)</span></a>, <a class="link" href="../htmlman2/shmop.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">shmop</span>(2)</span></a>, <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>, <a class="link" href="../htmlman7/svipc.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">svipc</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="shmctl-2_sect7" name="shmctl-2_sect7" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 1993 Luigi P. Bai (lpb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>softint.com) July 28, 1993<br />
+
+                  and Copyright 1993 Giorgio Ciucci &lt;giorgio<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>crcc.it&gt;<br />
+
+                  and Copyright 2004, 2005 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Modified 1993-07-28, Rik Faith &lt;faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu&gt;<br />
+
+                  Modified 1993-11-28, Giorgio Ciucci &lt;giorgio<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>crcc.it&gt;<br />
+
+                  Modified 1997-01-31, Eric S. Raymond &lt;esr<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>thyrsus.com&gt;<br />
+
+                  Modified 2001-02-18, Andries Brouwer &lt;aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl&gt;<br />
+
+                  Modified 2002-01-05, 2004-05-27, 2004-06-17,<br />
+
+                     Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  Modified 2004-10-11, aeb<br />
+                  Modified, Nov 2004, Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  Language and formatting clean-ups<br />
+
+                  Updated shmid_ds structure definitions<br />
+
+                  Added information on SHM_DEST and SHM_LOCKED flags<br />
+
+                  Noted that CAP_IPC_LOCK is not required for SHM_UNLOCK<br />
+
+                  since kernel 2.6.9<br />
+                  Modified, 2004-11-25, mtk, notes on 2.6.9 RLIMIT_MEMLOCK changes<br />
+
+                  2005-04-25, mtk -- noted aberrant Linux behavior w.r.t. new<br />
+
+                  attaches to a segment that has already been marked for deletion.<br />
+
+                  2005-08-02, mtk: Added IPC_INFO, SHM_INFO, SHM_STAT descriptions.<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

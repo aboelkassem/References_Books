@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>fanotify_init(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="fanotify_init(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="fanotify-init.2" name="fanotify-init.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>fanotify_init — create and initialize fanotify
+      group</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;fcntl.h&gt;
+#include &lt;sys/fanotify.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>fanotify_init</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">unsigned int <var class="pdparam">flags</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">unsigned int <var class="pdparam">event_f_flags</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fanotify-init-2_sect1" name="fanotify-init-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>For an overview of the fanotify API, see <a class="link" href="../htmlman7/fanotify.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fanotify</span>(7)</span></a>.</p>
+
+      <p><code class="function">fanotify_init</code>() initializes
+      a new fanotify group and returns a file descriptor for the
+      event queue associated with the group.</p>
+
+      <p>The file descriptor is used in calls to <a class="link" href="../htmlman2/fanotify_mark.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fanotify_mark</span>(2)</span></a> to specify
+      the files, directories, and mounts for which fanotify events
+      shall be created. These events are received by reading from
+      the file descriptor. Some events are only informative,
+      indicating that a file has been accessed. Other events can be
+      used to determine whether another application is permitted to
+      access a file or directory. Permission to access filesystem
+      objects is granted by writing to the file descriptor.</p>
+
+      <p>Multiple programs may be using the fanotify interface at
+      the same time to monitor the same files.</p>
+
+      <p>In the current implementation, the number of fanotify
+      groups per user is limited to 128. This limit cannot be
+      overridden.</p>
+
+      <p>Calling <code class="function">fanotify_init</code>()
+      requires the <code class="constant">CAP_SYS_ADMIN</code>
+      capability. This constraint might be relaxed in future
+      versions of the API. Therefore, certain additional capability
+      checks have been implemented as indicated below.</p>
+
+      <p>The <em class="parameter"><code>flags</code></em> argument
+      contains a multi-bit field defining the notification class of
+      the listening application and further single bit fields
+      specifying the behavior of the file descriptor.</p>
+
+      <p>If multiple listeners for permission events exist, the
+      notification class is used to establish the sequence in which
+      the listeners receive the events.</p>
+
+      <p>Only one of the following notification classes may be
+      specified in <em class="parameter"><code>flags</code></em>:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">FAN_CLASS_PRE_CONTENT</code></span></dt>
+
+          <dd>
+            <p>This value allows the receipt of events notifying
+            that a file has been accessed and events for permission
+            decisions if a file may be accessed. It is intended for
+            event listeners that need to access files before they
+            contain their final data. This notification class might
+            be used by hierarchical storage managers, for
+            example.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FAN_CLASS_CONTENT</code></span></dt>
+
+          <dd>
+            <p>This value allows the receipt of events notifying
+            that a file has been accessed and events for permission
+            decisions if a file may be accessed. It is intended for
+            event listeners that need to access files when they
+            already contain their final content. This notification
+            class might be used by malware detection programs, for
+            example.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FAN_CLASS_NOTIF</code></span></dt>
+
+          <dd>
+            <p>This is the default value. It does not need to be
+            specified. This value only allows the receipt of events
+            notifying that a file has been accessed. Permission
+            decisions before the file is accessed are not
+            possible.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>Listeners with different notification classes will receive
+      events in the order <code class="constant">FAN_CLASS_PRE_CONTENT</code>, <code class="constant">FAN_CLASS_CONTENT</code>, <code class="constant">FAN_CLASS_NOTIF</code>. The order of notification
+      for listeners in the same notification class is
+      undefined.</p>
+
+      <p>The following bits can additionally be set in <em class="parameter"><code>flags</code></em>:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">FAN_CLOEXEC</code></span></dt>
+
+          <dd>
+            <p>Set the close-on-exec flag (<code class="constant">FD_CLOEXEC</code>) on the new file
+            descriptor. See the description of the <code class="constant">O_CLOEXEC</code> flag in <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FAN_NONBLOCK</code></span></dt>
+
+          <dd>
+            <p>Enable the nonblocking flag (<code class="constant">O_NONBLOCK</code>) for the file descriptor.
+            Reading from the file descriptor will not block.
+            Instead, if no data is available, <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> will fail
+            with the error <span class="errorname">EAGAIN</span>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FAN_UNLIMITED_QUEUE</code></span></dt>
+
+          <dd>
+            <p>Remove the limit of 16384 events for the event
+            queue. Use of this flag requires the <code class="constant">CAP_SYS_ADMIN</code> capability.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FAN_UNLIMITED_MARKS</code></span></dt>
+
+          <dd>
+            <p>Remove the limit of 8192 marks. Use of this flag
+            requires the <code class="constant">CAP_SYS_ADMIN</code> capability.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>The <em class="parameter"><code>event_f_flags</code></em>
+      argument defines the file status flags that will be set on
+      the open file descriptions that are created for fanotify
+      events. For details of these flags, see the description of
+      the <em class="parameter"><code>flags</code></em> values in
+      <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>. <em class="parameter"><code>event_f_flags</code></em> includes a
+      multi-bit field for the access mode. This field can take the
+      following values:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">O_RDONLY</code></span></dt>
+
+          <dd>
+            <p>This value allows only read access.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">O_WRONLY</code></span></dt>
+
+          <dd>
+            <p>This value allows only write access.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">O_RDWR</code></span></dt>
+
+          <dd>
+            <p>This value allows read and write access.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>Additional bits can be set in <em class="parameter"><code>event_f_flags</code></em>. The most useful
+      values are:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">O_LARGEFILE</code></span></dt>
+
+          <dd>
+            <p>Enable support for files exceeding 2 GB. Failing to
+            set this flag will result in an <span class="errorname">EOVERFLOW</span> error when trying to open
+            a large file which is monitored by an fanotify group on
+            a 32-bit system.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">O_CLOEXEC</code></span></dt>
+
+          <dd>
+            <p>Enable the close-on-exec flag for the file
+            descriptor. See the description of the <code class="constant">O_CLOEXEC</code> flag in <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a> for reasons
+            why this may be useful.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>The following are also allowable: <code class="constant">O_APPEND</code>, <code class="constant">O_DSYNC</code>, <code class="constant">O_NOATIME</code>, <code class="constant">O_NONBLOCK</code>, and <code class="constant">O_SYNC</code>. Specifying any other flag in
+      <em class="parameter"><code>event_f_flags</code></em> yields
+      the error <span class="errorname">EINVAL</span> (but see
+      BUGS).</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="fanotify-init-2_sect2" name="fanotify-init-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">fanotify_init</code>()
+      returns a new file descriptor. On error, −1 is
+      returned, and <code class="varname">errno</code> is set to
+      indicate the error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="fanotify-init-2_sect3" name="fanotify-init-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>An invalid value was passed in <em class="parameter"><code>flags</code></em> or <em class="parameter"><code>event_f_flags</code></em>.
+            <code class="constant">FAN_ALL_INIT_FLAGS</code>
+            defines all allowable bits for <em class="parameter"><code>flags</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EMFILE</span></span></dt>
+
+          <dd>
+            <p>The number of fanotify groups for this user exceeds
+            128.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>The allocation of memory for the notification group
+            failed.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOSYS</span></span></dt>
+
+          <dd>
+            <p>This kernel does not implement <code class="function">fanotify_init</code>(). The fanotify API is
+            available only if the kernel was configured with
+            <code class="constant">CONFIG_FANOTIFY</code>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The operation is not permitted because the caller
+            lacks the <code class="constant">CAP_SYS_ADMIN</code>
+            capability.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fanotify-init-2_sect4" name="fanotify-init-2_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p><code class="function">fanotify_init</code>() was
+      introduced in version 2.6.36 of the Linux kernel and enabled
+      in version 2.6.37.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="fanotify-init-2_sect5" name="fanotify-init-2_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>This system call is Linux-specific.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="fanotify-init-2_sect6" name="fanotify-init-2_sect6" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>As of Linux 3.17, the following bug exists:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p>The <code class="constant">O_CLOEXEC</code> is
+            ignored when passed in <em class="parameter"><code>event_f_flags</code></em>.</p>
+          </li>
+        </ul>
+      </div>
+
+      <p>The following bug was present in Linux kernels before
+      version 3.14:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p>The <em class="parameter"><code>event_f_flags</code></em> argument is
+            not checked for invalid flags. Flags that are intended
+            only for internal use, such as <code class="constant">FMODE_EXEC</code>, can be set, and will
+            consequently be set for the file descriptors returned
+            when reading from the fanotify file descriptor.</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fanotify-init-2_sect7" name="fanotify-init-2_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/fanotify_mark.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fanotify_mark</span>(2)</span></a>, <a class="link" href="../htmlman7/fanotify.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fanotify</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="fanotify-init-2_sect8" name="fanotify-init-2_sect8" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2013, Heinrich Schuchardt &lt;xypron.glpk<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmx.de&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of<br />
+
+                  this manual under the conditions for verbatim copying, provided that<br />
+
+                  the entire resulting derived work is distributed under the terms of<br />
+
+                  a permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume.<br />
+
+                  no responsibility for errors or omissions, or for damages resulting.<br />
+
+                  from the use of the information contained herein.  The author(s) may.<br />
+
+                  not have taken the same level of care in the production of this.<br />
+
+                  manual, which is licensed free of charge, as they might when working.<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

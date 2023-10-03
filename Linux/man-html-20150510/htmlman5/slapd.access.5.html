@@ -1,0 +1,1013 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>slapd.access(5) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="slapd.access(5) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index5.html" shape="rect">Section 5</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="slapd.access.5" name="slapd.access.5" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>slapd.access — access configuration for slapd, the
+      stand-alone LDAP daemon</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ETCDIR/slapd.conf
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-access-5_sect1" name="slapd-access-5_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a> file contains
+      configuration information for the <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a> daemon. This
+      configuration file is also used by the SLAPD tools <a class="link" href="../htmlman8/slapacl.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapacl</span>(8)</span></a>, <a class="link" href="../htmlman8/slapadd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapadd</span>(8)</span></a>, <a class="link" href="../htmlman8/slapauth.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapauth</span>(8)</span></a>, <a class="link" href="../htmlman8/slapcat.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapcat</span>(8)</span></a>, <a class="link" href="../htmlman8/slapdn.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapdn</span>(8)</span></a>, <a class="link" href="../htmlman8/slapindex.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapindex</span>(8)</span></a>, and <a class="link" href="../htmlman8/slaptest.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slaptest</span>(8)</span></a>.</p>
+
+      <p>The <em class="replaceable"><code>slapd.conf</code></em>
+      file consists of a series of global configuration options
+      that apply to <em class="replaceable"><code>slapd</code></em>
+      as a whole (including all backends), followed by zero or more
+      database backend definitions that contain information
+      specific to a backend instance.</p>
+
+      <p>The general format of <em class="replaceable"><code>slapd.conf</code></em> is as follows:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+    # comment - these options apply to every database
+    &lt;global configuration options&gt;
+    # first database definition &amp; configuration options
+    database    &lt;backend 1 type&gt;
+    &lt;configuration options specific to backend 1&gt;
+    # subsequent database definitions &amp; configuration options
+    ...
+</pre>
+      </div>
+
+      <p>Both the global configuration and each backend-specific
+      section can contain access information. Backend-specific
+      access control directives are used for those entries that
+      belong to the backend, according to their naming context. In
+      case no access control directives are defined for a backend
+      or those which are defined are not applicable, the directives
+      from the global configuration section are then used.</p>
+
+      <p>If no access controls are present, the default policy
+      allows anyone and everyone to read anything but restricts
+      updates to rootdn. (e.g., "access to * by * read").</p>
+
+      <p>When dealing with an access list, because the global
+      access list is effectively appended to each per-database
+      list, if the resulting list is non-empty then the access list
+      will end with an implicit <span class="emphasis"><em>access
+      to * by * none</em></span> directive. If there are no access
+      directives applicable to a backend, then a default read is
+      used.</p>
+
+      <p><span class="emphasis"><em>Be warned: the rootdn can
+      always read and write EVERYTHING!</em></span></p>
+
+      <p>For entries not held in any backend (such as a root DSE),
+      the global directives are used.</p>
+
+      <p>Arguments that should be replaced by actual text are shown
+      in brackets &lt;&gt;.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-access-5_sect2" name="slapd-access-5_sect2" shape="rect"> </a>
+
+      <h2>THE ACCESS DIRECTIVE</h2>
+
+      <p>The structure of the access control directives is</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>access
+          to &lt;what&gt; [ by &lt;who&gt; [ &lt;access&gt; ] [
+          &lt;control&gt; ] ]+</em></span></span></dt>
+
+          <dd>
+            <p>Grant access (specified by <em class="replaceable"><code>&lt;access&gt;</code></em>) to a
+            set of entries and/or attributes (specified by
+            <em class="replaceable"><code>&lt;what&gt;</code></em>)
+            by one or more requestors (specified by <em class="replaceable"><code>&lt;who&gt;</code></em>).</p>
+
+            <p>Lists of access directives are evaluated in the
+            order they appear in <em class="replaceable"><code>slapd.conf</code></em>. When a
+            <em class="replaceable"><code>&lt;what&gt;</code></em>
+            clause matches the datum whose access is being
+            evaluated, its <em class="replaceable"><code>&lt;who&gt;</code></em> clause list
+            is checked. When a <em class="replaceable"><code>&lt;who&gt;</code></em> clause
+            matches the accessor's properties, its <em class="replaceable"><code>&lt;access&gt;</code></em> and
+            <em class="replaceable"><code>&lt;control&gt;</code></em> clauses
+            are evaluated. Access control checking stops at the
+            first match of the <em class="replaceable"><code>&lt;what&gt;</code></em> and
+            <em class="replaceable"><code>&lt;who&gt;</code></em>
+            clause, unless otherwise dictated by the <em class="replaceable"><code>&lt;control&gt;</code></em> clause.
+            Each <em class="replaceable"><code>&lt;who&gt;</code></em> clause list
+            is implicitly terminated by a</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+        by * none stop
+</pre>
+            </div>
+
+            <p>clause that results in stopping the access control
+            with no access privileges granted. Each <em class="replaceable"><code>&lt;what&gt;</code></em> clause
+            list is implicitly terminated by a</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+        access to *
+                by * none
+</pre>
+            </div>
+
+            <p>clause that results in granting no access privileges
+            to an otherwise unspecified datum.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-access-5_sect3" name="slapd-access-5_sect3" shape="rect"> </a>
+
+      <h2>THE &lt;WHAT&gt; FIELD</h2>
+
+      <p>The field <em class="replaceable"><code>&lt;what&gt;</code></em> specifies the
+      entity the access control directive applies to. It can have
+      the forms</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        dn[.&lt;dnstyle&gt;]=&lt;dnpattern&gt;
+        filter=&lt;ldapfilter&gt;
+        attrs=&lt;attrlist&gt;[ val[/matchingRule][.&lt;attrstyle&gt;]=&lt;attrval&gt;]
+</pre>
+      </div>
+
+      <p>with</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        &lt;dnstyle&gt;={{exact|base(object)}|regex
+                |one(level)|sub(tree)|children}
+        &lt;attrlist&gt;={&lt;attr&gt;|[{!|@}]&lt;objectClass&gt;}[,&lt;attrlist&gt;]
+        &lt;attrstyle&gt;={{exact|base(object)}|regex
+                |one(level)|sub(tree)|children}
+</pre>
+      </div>
+
+      <p>The statement <em class="replaceable"><code>dn=&lt;dnpattern&gt;</code></em> selects
+      the entries based on their naming context. The <em class="replaceable"><code>&lt;dnpattern&gt;</code></em> is a string
+      representation of the entry's DN. The wildcard <code class="literal">*</code> stands for all the entries, and it is
+      implied if no <em class="replaceable"><code>dn</code></em>
+      form is given.</p>
+
+      <p>The <em class="replaceable"><code>&lt;dnstyle&gt;</code></em> is optional;
+      however, it is recommended to specify it to avoid
+      ambiguities. <em class="replaceable"><code>Base</code></em>
+      (synonym of <em class="replaceable"><code>baseObject</code></em>), the default, or
+      <em class="replaceable"><code>exact</code></em> (an alias of
+      <em class="replaceable"><code>base</code></em>) indicates the
+      entry whose DN is equal to the <em class="replaceable"><code>&lt;dnpattern&gt;</code></em>; <em class="replaceable"><code>one</code></em> (synonym of <em class="replaceable"><code>onelevel</code></em>) indicates all the
+      entries immediately below the <em class="replaceable"><code>&lt;dnpattern&gt;</code></em>, <em class="replaceable"><code>sub</code></em> (synonym of <em class="replaceable"><code>subtree</code></em>) indicates all
+      entries in the subtree at the <em class="replaceable"><code>&lt;dnpattern&gt;</code></em>, <em class="replaceable"><code>children</code></em> indicates all the
+      entries below (subordinate to) the <em class="replaceable"><code>&lt;dnpattern&gt;</code></em>.</p>
+
+      <p>If the <em class="replaceable"><code>&lt;dnstyle&gt;</code></em> qualifier is
+      <span class="emphasis"><em>regex</em></span>, then <em class="replaceable"><code>&lt;dnpattern&gt;</code></em> is a POSIX
+      (''extended'') regular expression pattern, as detailed in
+      <a class="link" href="../htmlman7/regex.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">regex</span>(7)</span></a> and/or
+      <span class="citerefentry"><span class="refentrytitle">re_format</span>(7)</span>, matching a
+      normalized string representation of the entry's DN. The regex
+      form of the pattern does not (yet) support UTF-8.</p>
+
+      <p>The statement <em class="replaceable"><code>filter=&lt;ldapfilter&gt;</code></em>
+      selects the entries based on a valid LDAP filter as described
+      in RFC 4515. A filter of <em class="replaceable"><code>(objectClass=*)</code></em> is implied if
+      no <em class="replaceable"><code>filter</code></em> form is
+      given.</p>
+
+      <p>The statement <em class="replaceable"><code>attrs=&lt;attrlist&gt;</code></em>
+      selects the attributes the access control rule applies to. It
+      is a comma-separated list of attribute types, plus the
+      special names <em class="replaceable"><code>entry</code></em>, indicating access to
+      the entry itself, and <em class="replaceable"><code>children</code></em>, indicating access
+      to the entry's children. ObjectClass names may also be
+      specified in this list, which will affect all the attributes
+      that are required and/or allowed by that objectClass.
+      Actually, names in <em class="replaceable"><code>&lt;attrlist&gt;</code></em> that are
+      prefixed by <code class="literal">@</code> are directly
+      treated as objectClass names. A name prefixed by <code class="literal">!</code> is also treated as an objectClass, but in
+      this case the access rule affects the attributes that are not
+      required nor allowed by that objectClass. If no <em class="replaceable"><code>attrs</code></em> form is given,
+      <em class="replaceable"><code>attrs=@extensibleObject</code></em> is
+      implied, i.e. all attributes are addressed.</p>
+
+      <p>Using the form <span class="emphasis"><em>attrs=&lt;attr&gt;
+      val[/matchingRule][.&lt;attrstyle&gt;]=&lt;attrval&gt;</em></span>
+      specifies access to a particular value of a single attribute.
+      In this case, only a single attribute type may be given. The
+      <em class="replaceable"><code>&lt;attrstyle&gt;</code></em>
+      <em class="replaceable"><code>exact</code></em> (the default)
+      uses the attribute's equality matching rule to compare the
+      value, unless a different (and compatible) matching rule is
+      specified. If the <em class="replaceable"><code>&lt;attrstyle&gt;</code></em> is
+      <span class="emphasis"><em>regex</em></span>, the provided
+      value is used as a POSIX (''extended'') regular expression
+      pattern. If the attribute has DN syntax, the <em class="replaceable"><code>&lt;attrstyle&gt;</code></em> can be any
+      of <em class="replaceable"><code>base</code></em>, <em class="replaceable"><code>onelevel</code></em>, <em class="replaceable"><code>subtree</code></em> or <em class="replaceable"><code>children</code></em>, resulting in base,
+      onelevel, subtree or children match, respectively.</p>
+
+      <p>The dn, filter, and attrs statements are additive; they
+      can be used in sequence to select entities the access rule
+      applies to based on naming context, value and attribute type
+      simultaneously. Submatches resulting from <span class="emphasis"><em>regex</em></span> matching can be dereferenced
+      in the <em class="replaceable"><code>&lt;who&gt;</code></em>
+      field using the syntax <em class="replaceable"><code>${v&lt;n&gt;}</code></em>, where
+      <em class="replaceable"><code>&lt;n&gt;</code></em> is the
+      submatch number. The default syntax, <em class="replaceable"><code>$&lt;n&gt;</code></em>, is actually an
+      alias for <em class="replaceable"><code>${d&lt;n&gt;}</code></em>, that
+      corresponds to dereferencing submatches from the <em class="replaceable"><code>dnpattern</code></em> portion of the
+      <em class="replaceable"><code>&lt;what&gt;</code></em>
+      field.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-access-5_sect4" name="slapd-access-5_sect4" shape="rect"> </a>
+
+      <h2>THE &lt;WHO&gt; FIELD</h2>
+
+      <p>The field <em class="replaceable"><code>&lt;who&gt;</code></em> indicates whom
+      the access rules apply to. Multiple <em class="replaceable"><code>&lt;who&gt;</code></em> statements can
+      appear in an access control statement, indicating the
+      different access privileges to the same resource that apply
+      to different accessee. It can have the forms</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        *
+        anonymous
+        users
+        self[.&lt;selfstyle&gt;]
+
+        dn[.&lt;dnstyle&gt;[,&lt;modifier&gt;]]=&lt;DN&gt;
+        dnattr=&lt;attrname&gt;
+
+        realanonymous
+        realusers
+        realself[.&lt;selfstyle&gt;]
+
+        realdn[.&lt;dnstyle&gt;[,&lt;modifier&gt;]]=&lt;DN&gt;
+        realdnattr=&lt;attrname&gt;
+
+        group[/&lt;objectclass&gt;[/&lt;attrname&gt;]]
+                [.&lt;groupstyle&gt;]=&lt;group&gt;
+        peername[.&lt;peernamestyle&gt;]=&lt;peername&gt;
+        sockname[.&lt;style&gt;]=&lt;sockname&gt;
+        domain[.&lt;domainstyle&gt;[,&lt;modifier&gt;]]=&lt;domain&gt;
+        sockurl[.&lt;style&gt;]=&lt;sockurl&gt;
+        set[.&lt;setstyle&gt;]=&lt;pattern&gt;
+
+        ssf=&lt;n&gt;
+        transport_ssf=&lt;n&gt;
+        tls_ssf=&lt;n&gt;
+        sasl_ssf=&lt;n&gt;
+
+        dynacl/&lt;name&gt;[/&lt;options&gt;][.&lt;dynstyle&gt;][=&lt;pattern&gt;]
+</pre>
+      </div>
+
+      <p>with</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        &lt;style&gt;={exact|regex|expand}
+        &lt;selfstyle&gt;={level{&lt;n&gt;}}
+        &lt;dnstyle&gt;={{exact|base(object)}|regex
+                |one(level)|sub(tree)|children|level{&lt;n&gt;}}
+        &lt;groupstyle&gt;={exact|expand}
+        &lt;peernamestyle&gt;={&lt;style&gt;|ip|ipv6|path}
+        &lt;domainstyle&gt;={exact|regex|sub(tree)}
+        &lt;setstyle&gt;={exact|expand}
+        &lt;modifier&gt;={expand}
+        &lt;name&gt;=aci                &lt;pattern&gt;=&lt;attrname&gt;]
+</pre>
+      </div>
+
+      <p>They may be specified in combination.</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+</pre>
+      </div>
+
+      <p>The wildcard <code class="literal">*</code> refers to
+      everybody.</p>
+
+      <p>The keywords prefixed by <em class="replaceable"><code>real</code></em> act as their
+      counterparts without prefix; the checking respectively occurs
+      with the <em class="replaceable"><code>authentication</code></em> DN and the
+      <em class="replaceable"><code>authorization</code></em>
+      DN.</p>
+
+      <p>The keyword <em class="replaceable"><code>anonymous</code></em> means access is
+      granted to unauthenticated clients; it is mostly used to
+      limit access to authentication resources (e.g. the <em class="replaceable"><code>userPassword</code></em> attribute) to
+      unauthenticated clients for authentication purposes.</p>
+
+      <p>The keyword <em class="replaceable"><code>users</code></em> means access is granted
+      to authenticated clients.</p>
+
+      <p>The keyword <em class="replaceable"><code>self</code></em>
+      means access to an entry is allowed to the entry itself (e.g.
+      the entry being accessed and the requesting entry must be the
+      same). It allows the <em class="replaceable"><code>level{&lt;n&gt;}</code></em> style, where
+      <em class="replaceable"><code>&lt;n&gt;</code></em> indicates
+      what ancestor of the DN is to be used in matches. A positive
+      value indicates that the &lt;n&gt;-th ancestor of the user's
+      DN is to be considered; a negative value indicates that the
+      &lt;n&gt;-th ancestor of the target is to be considered. For
+      example, a "<span class="emphasis"><em>by self.level{1}
+      ...</em></span>" clause would match when the object
+      "<em class="replaceable"><code>dc=example,dc=com</code></em>"
+      is accessed by "<em class="replaceable"><code>cn=User,dc=example,dc=com</code></em>". A
+      "<span class="emphasis"><em>by self.level{-1}
+      ...</em></span>" clause would match when the same user
+      accesses the object "<span class="emphasis"><em>ou=Address
+      Book,cn=User,dc=example,dc=com</em></span>".</p>
+
+      <p>The statement <em class="replaceable"><code>dn=&lt;DN&gt;</code></em> means that
+      access is granted to the matching DN. The optional style
+      qualifier <em class="replaceable"><code>dnstyle</code></em>
+      allows the same choices of the dn form of the <em class="replaceable"><code>&lt;what&gt;</code></em> field. In
+      addition, the <span class="emphasis"><em>regex</em></span>
+      style can exploit substring substitution of submatches in the
+      <em class="replaceable"><code>&lt;what&gt;</code></em>
+      dn.regex clause by using the form <em class="replaceable"><code>$&lt;digit&gt;</code></em>, with
+      <em class="replaceable"><code>digit</code></em> ranging from
+      0 to 9 (where 0 matches the entire string), or the form
+      <em class="replaceable"><code>${&lt;digit&gt;+}</code></em>,
+      for submatches higher than 9. Substring substitution from
+      attribute value can be done in using the form <em class="replaceable"><code>${v&lt;digit&gt;+}</code></em>. Since the
+      dollar character is used to indicate a substring replacement,
+      the dollar character that is used to indicate match up to the
+      end of the string must be escaped by a second dollar
+      character, e.g.</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+    access to dn.regex="^(.+,)?uid=([^,]+),dc=[^,]+,dc=com$"
+        by dn.regex="^uid=$2,dc=[^,]+,dc=com$$" write
+</pre>
+      </div>
+
+      <p>The style qualifier allows an optional <em class="replaceable"><code>modifier</code></em>. At present, the
+      only type allowed is <em class="replaceable"><code>expand</code></em>, which causes
+      substring substitution of submatches to take place even if
+      <em class="replaceable"><code>dnstyle</code></em> is not
+      <span class="emphasis"><em>regex</em></span>. Note that the
+      <span class="emphasis"><em>regex</em></span> dnstyle in the
+      above example may be of use only if the <em class="replaceable"><code>&lt;by&gt;</code></em> clause needs to be
+      a regex; otherwise, if the value of the second (from the
+      right) <em class="replaceable"><code>dc=</code></em> portion
+      of the DN in the above example were fixed, the form</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+    access to dn.regex="^(.+,)?uid=([^,]+),dc=example,dc=com$"
+        by dn.exact,expand="uid=$2,dc=example,dc=com" write
+</pre>
+      </div>
+
+      <p>could be used; if it had to match the value in the
+      <em class="replaceable"><code>&lt;what&gt;</code></em>
+      clause, the form</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+    access to dn.regex="^(.+,)?uid=([^,]+),dc=([^,]+),dc=com$"
+        by dn.exact,expand="uid=$2,dc=$3,dc=com" write
+</pre>
+      </div>
+
+      <p>could be used.</p>
+
+      <p>Forms of the <em class="replaceable"><code>&lt;what&gt;</code></em> clause other
+      than regex may provide submatches as well. The <code class="function">base</code><code class="literal">(</code><em class="parameter"><code>object</code></em><code class="literal">)</code>,
+      the <code class="function">sub</code><code class="literal">(</code><em class="parameter"><code>tree</code></em><code class="literal">)</code>, the <code class="function">one</code><code class="literal">(</code><em class="parameter"><code>level</code></em><code class="literal">)</code>, and the <em class="replaceable"><code>children</code></em> forms provide
+      <em class="replaceable"><code>$0</code></em> as the match of
+      the entire string. The <code class="function">sub</code><code class="literal">(</code><em class="parameter"><code>tree</code></em><code class="literal">)</code>, the <code class="function">one</code><code class="literal">(</code><em class="parameter"><code>level</code></em><code class="literal">)</code>, and the <em class="replaceable"><code>children</code></em> forms also provide
+      <em class="replaceable"><code>$1</code></em> as the match of
+      the rightmost part of the DN as defined in the <em class="replaceable"><code>&lt;what&gt;</code></em> clause. This may
+      be useful, for instance, to provide access to all the
+      ancestors of a user by defining</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+    access to dn.subtree="dc=com"
+        by dn.subtree,expand="$1" read
+</pre>
+      </div>
+
+      <p>which means that only access to entries that appear in the
+      DN of the <em class="replaceable"><code>&lt;by&gt;</code></em> clause is
+      allowed.</p>
+
+      <p>The <em class="replaceable"><code>level{&lt;n&gt;}</code></em> form is an
+      extension and a generalization of the <em class="replaceable"><code>onelevel</code></em> form, which matches
+      all DNs whose &lt;n&gt;-th ancestor is the pattern. So,
+      <em class="replaceable"><code>level{1}</code></em> is
+      equivalent to <em class="replaceable"><code>onelevel</code></em>, and <em class="replaceable"><code>level{0}</code></em> is equivalent to
+      <em class="replaceable"><code>base</code></em>.</p>
+
+      <p>It is perfectly useless to give any access privileges to a
+      DN that exactly matches the <em class="replaceable"><code>rootdn</code></em> of the database the
+      ACLs apply to, because it implicitly possesses write
+      privileges for the entire tree of that database. Actually,
+      access control is bypassed for the <em class="replaceable"><code>rootdn</code></em>, to solve the
+      intrinsic chicken-and-egg problem.</p>
+
+      <p>The statement <em class="replaceable"><code>dnattr=&lt;attrname&gt;</code></em> means
+      that access is granted to requests whose DN is listed in the
+      entry being accessed under the <em class="replaceable"><code>&lt;attrname&gt;</code></em>
+      attribute.</p>
+
+      <p>The statement <em class="replaceable"><code>group=&lt;group&gt;</code></em> means
+      that access is granted to requests whose DN is listed in the
+      group entry whose DN is given by <em class="replaceable"><code>&lt;group&gt;</code></em>. The optional
+      parameters <em class="replaceable"><code>&lt;objectclass&gt;</code></em> and
+      <em class="replaceable"><code>&lt;attrname&gt;</code></em>
+      define the objectClass and the member attributeType of the
+      group entry. The defaults are <em class="replaceable"><code>groupOfNames</code></em> and <em class="replaceable"><code>member</code></em>, respectively. The
+      optional style qualifier <em class="replaceable"><code>&lt;style&gt;</code></em> can be
+      <em class="replaceable"><code>expand</code></em>, which means
+      that <em class="replaceable"><code>&lt;group&gt;</code></em>
+      will be expanded as a replacement string (but not as a
+      regular expression) according to <a class="link" href="../htmlman7/regex.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">regex</span>(7)</span></a> and/or
+      <span class="citerefentry"><span class="refentrytitle">re_format</span>(7)</span>, and <em class="replaceable"><code>exact</code></em>, which means that exact
+      match will be used. If the style of the DN portion of the
+      <em class="replaceable"><code>&lt;what&gt;</code></em> clause
+      is regex, the submatches are made available according to
+      <a class="link" href="../htmlman7/regex.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">regex</span>(7)</span></a> and/or
+      <span class="citerefentry"><span class="refentrytitle">re_format</span>(7)</span>; other styles
+      provide limited submatches as discussed above about the DN
+      form of the <em class="replaceable"><code>&lt;by&gt;</code></em> clause.</p>
+
+      <p>For static groups, the specified attributeType must have
+      <em class="replaceable"><code>DistinguishedName</code></em>
+      or <em class="replaceable"><code>NameAndOptionalUID</code></em> syntax.
+      For dynamic groups the attributeType must be a subtype of the
+      <em class="replaceable"><code>labeledURI</code></em>
+      attributeType. Only LDAP URIs of the form <em class="replaceable"><code>ldap:///&lt;base&gt;??&lt;scope&gt;?&lt;filter&gt;</code></em>
+      will be evaluated in a dynamic group, by searching the local
+      server only.</p>
+
+      <p>The statements <em class="replaceable"><code>peername=&lt;peername&gt;</code></em>,
+      <em class="replaceable"><code>sockname=&lt;sockname&gt;</code></em>,
+      <em class="replaceable"><code>domain=&lt;domain&gt;</code></em>, and
+      <em class="replaceable"><code>sockurl=&lt;sockurl&gt;</code></em> mean
+      that the contacting host IP (in the form <em class="replaceable"><code>IP=&lt;ip&gt;:&lt;port&gt;</code></em>
+      for IPv4, or <em class="replaceable"><code>IP=[&lt;ipv6&gt;]:&lt;port&gt;</code></em>
+      for IPv6) or the contacting host named pipe file name (in the
+      form <em class="replaceable"><code>PATH=&lt;path&gt;</code></em> if
+      connecting through a named pipe) for <em class="replaceable"><code>peername</code></em>, the named pipe file
+      name for <em class="replaceable"><code>sockname</code></em>,
+      the contacting host name for <em class="replaceable"><code>domain</code></em>, and the contacting
+      URL for <em class="replaceable"><code>sockurl</code></em> are
+      compared against <em class="replaceable"><code>pattern</code></em> to determine access.
+      The same <em class="replaceable"><code>style</code></em>
+      rules for pattern match described for the <em class="replaceable"><code>group</code></em> case apply, plus the
+      <span class="emphasis"><em>regex</em></span> style, which
+      implies submatch <em class="replaceable"><code>expand</code></em> and regex match of the
+      corresponding connection parameters. The <em class="replaceable"><code>exact</code></em> style of the <em class="replaceable"><code>&lt;peername&gt;</code></em> clause (the
+      default) implies a case-exact match on the client's
+      <code class="constant">IP</code>, including the <em class="replaceable"><code>IP=</code></em> prefix and the trailing
+      <em class="replaceable"><code>:&lt;port&gt;</code></em>, or
+      the client's <em class="replaceable"><code>path</code></em>,
+      including the <em class="replaceable"><code>PATH=</code></em>
+      prefix if connecting through a named pipe. The special
+      <em class="replaceable"><code>ip</code></em> style interprets
+      the pattern as <em class="replaceable"><code>&lt;peername&gt;=&lt;ip&gt;[%&lt;mask&gt;][{&lt;n&gt;}]</code></em>,
+      where <em class="replaceable"><code>&lt;ip&gt;</code></em>
+      and <em class="replaceable"><code>&lt;mask&gt;</code></em>
+      are dotted digit representations of the IP and the mask,
+      while <em class="replaceable"><code>&lt;n&gt;</code></em>,
+      delimited by curly brackets, is an optional port. The same
+      applies to IPv6 addresses when the special <em class="replaceable"><code>ipv6</code></em> style is used. When
+      checking access privileges, the IP portion of the <em class="replaceable"><code>peername</code></em> is extracted,
+      eliminating the <em class="replaceable"><code>IP=</code></em>
+      prefix and the <em class="replaceable"><code>:&lt;port&gt;</code></em> part, and it is
+      compared against the <em class="replaceable"><code>&lt;ip&gt;</code></em> portion of the
+      pattern after masking with <em class="replaceable"><code>&lt;mask&gt;</code></em>: <span class="emphasis"><em>((peername &amp; &lt;mask&gt;) ==
+      &lt;ip&gt;)</em></span>. As an example, <em class="replaceable"><code>peername.ip=127.0.0.1</code></em> and
+      <em class="replaceable"><code>peername.ipv6=::1</code></em>
+      allow connections only from localhost, <em class="replaceable"><code>peername.ip=192.168.1.0%255.255.255.0</code></em>
+      allows connections from any IP in the 192.168.1 class C
+      domain, and <em class="replaceable"><code>peername.ip=192.168.1.16%255.255.255.240{9009}</code></em>
+      allows connections from any IP in the 192.168.1.[16-31] range
+      of the same domain, only if port 9009 is used. The special
+      <em class="replaceable"><code>path</code></em> style
+      eliminates the <em class="replaceable"><code>PATH=</code></em> prefix from the
+      <em class="replaceable"><code>peername</code></em> when
+      connecting through a named pipe, and performs an exact match
+      on the given pattern. The <em class="replaceable"><code>&lt;domain&gt;</code></em> clause also
+      allows the <em class="replaceable"><code>subtree</code></em>
+      style, which succeeds when a fully qualified name exactly
+      matches the <em class="replaceable"><code>domain</code></em>
+      pattern, or its trailing part, after a <em class="replaceable"><code>dot</code></em>, exactly matches the
+      <em class="replaceable"><code>domain</code></em> pattern. The
+      <em class="replaceable"><code>expand</code></em> style is
+      allowed, implying an <em class="replaceable"><code>exact</code></em> match with submatch
+      expansion; the use of <em class="replaceable"><code>expand</code></em> as a style modifier is
+      considered more appropriate. As an example, <em class="replaceable"><code>domain.subtree=example.com</code></em>
+      will match www.example.com, but will not match
+      www.anotherexample.com. The <em class="replaceable"><code>domain</code></em> of the contacting host
+      is determined by performing a DNS reverse lookup. As this
+      lookup can easily be spoofed, use of the <em class="replaceable"><code>domain</code></em> statement is strongly
+      discouraged. By default, reverse lookups are disabled. The
+      optional <em class="replaceable"><code>domainstyle</code></em> qualifier of the
+      <em class="replaceable"><code>&lt;domain&gt;</code></em>
+      clause allows a <em class="replaceable"><code>modifier</code></em> option; the only
+      value currently supported is <em class="replaceable"><code>expand</code></em>, which causes
+      substring substitution of submatches to take place even if
+      the <em class="replaceable"><code>domainstyle</code></em> is
+      not <span class="emphasis"><em>regex</em></span>, much like
+      the analogous usage in <em class="replaceable"><code>&lt;dn&gt;</code></em> clause.</p>
+
+      <p>The statement <em class="replaceable"><code>set=&lt;pattern&gt;</code></em> is
+      undocumented yet.</p>
+
+      <p>The statement <em class="replaceable"><code>dynacl/&lt;name&gt;[/&lt;options&gt;][.&lt;dynstyle&gt;][=&lt;pattern&gt;]</code></em>
+      means that access checking is delegated to the admin-defined
+      method indicated by <em class="replaceable"><code>&lt;name&gt;</code></em>, which can be
+      registered at run-time by means of the <em class="replaceable"><code>moduleload</code></em> statement. The
+      fields <em class="replaceable"><code>&lt;options&gt;</code></em>, <em class="replaceable"><code>&lt;dynstyle&gt;</code></em> and
+      <em class="replaceable"><code>&lt;pattern&gt;</code></em> are
+      optional, and are directly passed to the registered parsing
+      routine. Dynacl is experimental; it must be enabled at
+      compile time.</p>
+
+      <p>The statement <em class="replaceable"><code>dynacl/aci[=&lt;attrname&gt;]</code></em>
+      means that the access control is determined by the values in
+      the <em class="replaceable"><code>attrname</code></em> of the
+      entry itself. The optional <em class="replaceable"><code>&lt;attrname&gt;</code></em> indicates
+      what attributeType holds the ACI information in the entry. By
+      default, the <em class="replaceable"><code>OpenLDAPaci</code></em> operational
+      attribute is used. ACIs are experimental; they must be
+      enabled at compile time.</p>
+
+      <p>The statements <em class="replaceable"><code>ssf=&lt;n&gt;</code></em>, <em class="replaceable"><code>transport_ssf=&lt;n&gt;</code></em>,
+      <em class="replaceable"><code>tls_ssf=&lt;n&gt;</code></em>,
+      and <em class="replaceable"><code>sasl_ssf=&lt;n&gt;</code></em> set the
+      minimum required Security Strength Factor (ssf) needed to
+      grant access. The value should be positive integer.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-access-5_sect5" name="slapd-access-5_sect5" shape="rect"> </a>
+
+      <h2>THE &lt;ACCESS&gt; FIELD</h2>
+
+      <p>The optional field <span class="emphasis"><em>&lt;access&gt; ::=
+      [[real]self]{&lt;level&gt;|&lt;priv&gt;}</em></span>
+      determines the access level or the specific access privileges
+      the <em class="replaceable"><code>who</code></em> field will
+      have. Its component are defined as</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        &lt;level&gt; ::= none|disclose|auth|compare|search|read|{write|add|delete}|manage
+        &lt;priv&gt; ::= {=|+|−}{0|d|x|c|s|r|{w|a|z}|m}+
+</pre>
+      </div>
+
+      <p>The modifier <em class="replaceable"><code>self</code></em> allows special
+      operations like having a certain access level or privilege
+      only in case the operation involves the name of the user
+      that's requesting the access. It implies the user that
+      requests access is authorized. The modifier <em class="replaceable"><code>realself</code></em> refers to the
+      authenticated DN as opposed to the authorized DN of the
+      <em class="replaceable"><code>self</code></em> modifier. An
+      example is the <em class="replaceable"><code>selfwrite</code></em> access to the
+      member attribute of a group, which allows one to add/delete
+      its own DN from the member list of a group, while being not
+      allowed to affect other members.</p>
+
+      <p>The <em class="replaceable"><code>level</code></em> access
+      model relies on an incremental interpretation of the access
+      privileges. The possible levels are <em class="replaceable"><code>none</code></em>, <em class="replaceable"><code>disclose</code></em>, <em class="replaceable"><code>auth</code></em>, <em class="replaceable"><code>compare</code></em>, <em class="replaceable"><code>search</code></em>, <em class="replaceable"><code>read</code></em>, <em class="replaceable"><code>write</code></em>, and <em class="replaceable"><code>manage</code></em>. Each access level
+      implies all the preceding ones, thus <em class="replaceable"><code>manage</code></em> grants all access
+      including administrative access. The <em class="replaceable"><code>write</code></em> access is actually the
+      combination of <em class="replaceable"><code>add</code></em>
+      and <em class="replaceable"><code>delete</code></em>, which
+      respectively restrict the write privilege to add or delete
+      the specified <em class="replaceable"><code>&lt;what&gt;</code></em>.</p>
+
+      <p>The <em class="replaceable"><code>none</code></em> access
+      level disallows all access including disclosure on error.</p>
+
+      <p>The <em class="replaceable"><code>disclose</code></em>
+      access level allows disclosure of information on error.</p>
+
+      <p>The <em class="replaceable"><code>auth</code></em> access
+      level means that one is allowed access to an attribute to
+      perform authentication/authorization operations (e.g.
+      <em class="replaceable"><code>bind</code></em>) with no other
+      access. This is useful to grant unauthenticated clients the
+      least possible access level to critical resources, like
+      passwords.</p>
+
+      <p>The <em class="replaceable"><code>priv</code></em> access
+      model relies on the explicit setting of access privileges for
+      each clause. The <code class="literal">=</code> sign resets
+      previously defined accesses; as a consequence, the final
+      access privileges will be only those defined by the clause.
+      The <code class="literal">+</code> and <span class="emphasis"><em>−</em></span> signs add/remove access
+      privileges to the existing ones. The privileges are
+      <code class="literal">m</code> for manage, <code class="literal">w</code> for write, <code class="literal">a</code>
+      for add, <code class="literal">z</code> for delete,
+      <code class="literal">r</code> for read, <code class="literal">s</code> for search, <code class="literal">c</code>
+      for compare, <code class="literal">x</code> for
+      authentication, and <code class="literal">d</code> for
+      disclose. More than one of the above privileges can be added
+      in one statement. <code class="constant">0</code> indicates
+      no privileges and is used only by itself (e.g., +0). Note
+      that <em class="replaceable"><code>+az</code></em> is
+      equivalent to <em class="replaceable"><code>+w</code></em>.</p>
+
+      <p>If no access is given, it defaults to <em class="replaceable"><code>+0</code></em>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-access-5_sect6" name="slapd-access-5_sect6" shape="rect"> </a>
+
+      <h2>THE &lt;CONTROL&gt; FIELD</h2>
+
+      <p>The optional field <em class="replaceable"><code>&lt;control&gt;</code></em> controls the
+      flow of access rule application. It can have the forms</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        stop
+        continue
+        break
+</pre>
+      </div>
+
+      <p>where <em class="replaceable"><code>stop</code></em>, the
+      default, means access checking stops in case of match. The
+      other two forms are used to keep on processing access
+      clauses. In detail, the <em class="replaceable"><code>continue</code></em> form allows for
+      other <em class="replaceable"><code>&lt;who&gt;</code></em>
+      clauses in the same <em class="replaceable"><code>&lt;access&gt;</code></em> clause to be
+      considered, so that they may result in incrementally altering
+      the privileges, while the <em class="replaceable"><code>break</code></em> form allows for other
+      <em class="replaceable"><code>&lt;access&gt;</code></em>
+      clauses that match the same target to be processed. Consider
+      the (silly) example</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        access to dn.subtree="dc=example,dc=com" attrs=cn
+                by * =cs break
+
+        access to dn.subtree="ou=People,dc=example,dc=com"
+                by * +r
+</pre>
+      </div>
+
+      <p>which allows search and compare privileges to everybody
+      under the "dc=example,dc=com" tree, with the second rule
+      allowing also read in the "ou=People" subtree, or the (even
+      more silly) example</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        access to dn.subtree="dc=example,dc=com" attrs=cn
+                by * =cs continue
+                by users +r
+</pre>
+      </div>
+
+      <p>which grants everybody search and compare privileges, and
+      adds read privileges to authenticated clients.</p>
+
+      <p>One useful application is to easily grant write privileges
+      to an <em class="replaceable"><code>updatedn</code></em> that
+      is different from the <em class="replaceable"><code>rootdn</code></em>. In this case, since
+      the <em class="replaceable"><code>updatedn</code></em> needs
+      write access to (almost) all data, one can use</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        access to *
+                by dn.exact="cn=The Update DN,dc=example,dc=com" write
+                by * break
+</pre>
+      </div>
+
+      <p>as the first access rule. As a consequence, unless the
+      operation is performed with the <em class="replaceable"><code>updatedn</code></em> identity, control is
+      passed straight to the subsequent rules.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-access-5_sect7" name="slapd-access-5_sect7" shape="rect"> </a>
+
+      <h2>OPERATION REQUIREMENTS</h2>
+
+      <p>Operations require different privileges on different
+      portions of entries. The following summary applies to primary
+      database backends such as the BDB and HDB backends.
+      Requirements for other backends may (and often do)
+      differ.</p>
+
+      <p>The <em class="replaceable"><code>add</code></em>
+      operation requires <span class="emphasis"><em>add
+      (=a)</em></span> privileges on the pseudo-attribute
+      <em class="replaceable"><code>entry</code></em> of the entry
+      being added, and <span class="emphasis"><em>add
+      (=a)</em></span> privileges on the pseudo-attribute
+      <em class="replaceable"><code>children</code></em> of the
+      entry's parent. When adding the suffix entry of a database,
+      <em class="replaceable"><code>add</code></em> access to
+      <em class="replaceable"><code>children</code></em> of the
+      empty DN ("") is required. Also if Add content ACL checking
+      has been configured on the database (see the <a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a> or <a class="link" href="../htmlman5/slapd-config.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-config</span>(5)</span></a> manual
+      page), <span class="emphasis"><em>add (=a)</em></span> will
+      be required on all of the attributes being added.</p>
+
+      <p>The <em class="replaceable"><code>bind</code></em>
+      operation, when credentials are stored in the directory,
+      requires <span class="emphasis"><em>auth (=x)</em></span>
+      privileges on the attribute the credentials are stored in
+      (usually <em class="replaceable"><code>userPassword</code></em>).</p>
+
+      <p>The <em class="replaceable"><code>compare</code></em>
+      operation requires <span class="emphasis"><em>compare
+      (=c)</em></span> privileges on the attribute that is being
+      compared.</p>
+
+      <p>The <em class="replaceable"><code>delete</code></em>
+      operation requires <span class="emphasis"><em>delete
+      (=z)</em></span> privileges on the pseudo-attribute
+      <em class="replaceable"><code>entry</code></em> of the entry
+      being deleted, and <span class="emphasis"><em>delete
+      (=d)</em></span> privileges on the <em class="replaceable"><code>children</code></em> pseudo-attribute of
+      the entry's parent.</p>
+
+      <p>The <em class="replaceable"><code>modify</code></em>
+      operation requires <span class="emphasis"><em>write
+      (=w)</em></span> privileges on the attributes being modified.
+      In detail, <span class="emphasis"><em>add (=a)</em></span> is
+      required to add new values, <span class="emphasis"><em>delete
+      (=z)</em></span> is required to delete existing values, and
+      both <em class="replaceable"><code>delete</code></em> and
+      <span class="emphasis"><em>add (=az)</em></span>, or
+      <span class="emphasis"><em>write (=w)</em></span>, are
+      required to replace existing values.</p>
+
+      <p>The <em class="replaceable"><code>modrdn</code></em>
+      operation requires <span class="emphasis"><em>write
+      (=w)</em></span> privileges on the pseudo-attribute
+      <em class="replaceable"><code>entry</code></em> of the entry
+      whose relative DN is being modified, <span class="emphasis"><em>delete (=z)</em></span> privileges on the
+      pseudo-attribute <em class="replaceable"><code>children</code></em> of the old entry's
+      parents, <span class="emphasis"><em>add (=a)</em></span>
+      privileges on the pseudo-attribute <em class="replaceable"><code>children</code></em> of the new entry's
+      parents, and <span class="emphasis"><em>add (=a)</em></span>
+      privileges on the attributes that are present in the new
+      relative DN. <span class="emphasis"><em>Delete
+      (=z)</em></span> privileges are also required on the
+      attributes that are present in the old relative DN if
+      <em class="replaceable"><code>deleteoldrdn</code></em> is set
+      to 1.</p>
+
+      <p>The <em class="replaceable"><code>search</code></em>
+      operation, requires <span class="emphasis"><em>search
+      (=s)</em></span> privileges on the <em class="replaceable"><code>entry</code></em> pseudo-attribute of the
+      searchBase (NOTE: this was introduced with OpenLDAP 2.4).
+      Then, for each entry, it requires <span class="emphasis"><em>search (=s)</em></span> privileges on the
+      attributes that are defined in the filter. The resulting
+      entries are finally tested for <span class="emphasis"><em>read (=r)</em></span> privileges on the
+      pseudo-attribute <em class="replaceable"><code>entry</code></em> (for read access to the
+      entry itself) and for <span class="emphasis"><em>read
+      (=r)</em></span> access on each value of each attribute that
+      is requested. Also, for each <em class="replaceable"><code>referral</code></em> object used in
+      generating continuation references, the operation requires
+      <span class="emphasis"><em>read (=r)</em></span> access on
+      the pseudo-attribute <em class="replaceable"><code>entry</code></em> (for read access to the
+      referral object itself), as well as <span class="emphasis"><em>read (=r)</em></span> access to the attribute
+      holding the referral information (generally the <em class="replaceable"><code>ref</code></em> attribute).</p>
+
+      <p>Some internal operations and some <em class="replaceable"><code>controls</code></em> require specific
+      access privileges. The <em class="replaceable"><code>authzID</code></em> mapping and the
+      <em class="replaceable"><code>proxyAuthz</code></em> control
+      require <span class="emphasis"><em>auth (=x)</em></span>
+      privileges on all the attributes that are present in the
+      search filter of the URI regexp maps (the right-hand side of
+      the <em class="replaceable"><code>authz-regexp</code></em>
+      directives). <span class="emphasis"><em>Auth (=x)</em></span>
+      privileges are also required on the <em class="replaceable"><code>authzTo</code></em> attribute of the
+      authorizing identity and/or on the <em class="replaceable"><code>authzFrom</code></em> attribute of the
+      authorized identity. In general, when an internal lookup is
+      performed for authentication or authorization purposes,
+      search-specific privileges (see the access requirements for
+      the search operation illustrated above) are relaxed to
+      <em class="replaceable"><code>auth</code></em>.</p>
+
+      <p>Access control to search entries is checked by the
+      frontend, so it is fully honored by all backends; for all
+      other operations and for the discovery phase of the search
+      operation, full ACL semantics is only supported by the
+      primary backends, i.e. <span class="citerefentry"><span class="refentrytitle">back-bdb</span>(5)</span>,
+      and <span class="citerefentry"><span class="refentrytitle">back-hdb</span>(5)</span>.</p>
+
+      <p>Some other backend, like <span class="citerefentry"><span class="refentrytitle">back-sql</span>(5)</span>, may fully support
+      them; others may only support a portion of the described
+      semantics, or even differ in some aspects. The relevant
+      details are described in the backend-specific man pages.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-access-5_sect8" name="slapd-access-5_sect8" shape="rect"> </a>
+
+      <h2>CAVEATS</h2>
+
+      <p>It is strongly recommended to explicitly use the most
+      appropriate <em class="replaceable"><code>&lt;dnstyle&gt;</code></em> in <em class="replaceable"><code>&lt;what&gt;</code></em> and <em class="replaceable"><code>&lt;who&gt;</code></em> clauses, to avoid
+      possible incorrect specifications of the access rules as well
+      as for performance (avoid unnecessary regex matching when an
+      exact match suffices) reasons.</p>
+
+      <p>An administrator might create a rule of the form:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        access to dn.regex="dc=example,dc=com"
+                by ...
+</pre>
+      </div>
+
+      <p>expecting it to match all entries in the subtree
+      "dc=example,dc=com". However, this rule actually matches any
+      DN which contains anywhere the substring "dc=example,dc=com".
+      That is, the rule matches both "uid=joe,dc=example,dc=com"
+      and "dc=example,dc=com,uid=joe".</p>
+
+      <p>To match the desired subtree, the rule would be more
+      precisely written:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        access to dn.regex="^(.+,)?dc=example,dc=com$"
+                by ...
+</pre>
+      </div>
+
+      <p>For performance reasons, it would be better to use the
+      subtree style.</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        access to dn.subtree="dc=example,dc=com"
+                by ...
+</pre>
+      </div>
+
+      <p>When writing submatch rules, it may be convenient to avoid
+      unnecessary <span class="emphasis"><em>regex</em></span>
+      <em class="replaceable"><code>&lt;dnstyle&gt;</code></em>
+      use; for instance, to allow access to the subtree of the user
+      that matches the <em class="replaceable"><code>&lt;what&gt;</code></em> clause, one
+      could use</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        access to dn.regex="^(.+,)?uid=([^,]+),dc=example,dc=com$"
+                by dn.regex="^uid=$2,dc=example,dc=com$$" write
+                by ...
+</pre>
+      </div>
+
+      <p>However, since all that is required in the <em class="replaceable"><code>&lt;by&gt;</code></em> clause is
+      substring expansion, a more efficient solution is</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        access to dn.regex="^(.+,)?uid=([^,]+),dc=example,dc=com$"
+                by dn.exact,expand="uid=$2,dc=example,dc=com" write
+                by ...
+</pre>
+      </div>
+
+      <p>In fact, while a <em class="replaceable"><code>&lt;dnstyle&gt;</code></em> of
+      <span class="emphasis"><em>regex</em></span> implies
+      substring expansion, <em class="replaceable"><code>exact</code></em>, as well as all the
+      other DN specific <em class="replaceable"><code>&lt;dnstyle&gt;</code></em> values, does
+      not, so it must be explicitly requested.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-access-5_sect9" name="slapd-access-5_sect9" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">ETCDIR/slapd.conf</span></dt>
+
+          <dd>
+            <p>default slapd configuration file</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-access-5_sect10" name="slapd-access-5_sect10" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a>, <span class="citerefentry"><span class="refentrytitle">slapd-*</span>(5)</span>, <a class="link" href="../htmlman8/slapacl.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapacl</span>(8)</span></a>, <a class="link" href="../htmlman7/regex.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">regex</span>(7)</span></a>, <span class="citerefentry"><span class="refentrytitle">re_format</span>(7)</span></p>
+
+      <p>"OpenLDAP Administrator's Guide"
+      (http://www.OpenLDAP.org/doc/admin/)</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapd-access-5_sect11" name="slapd-access-5_sect11" shape="rect"> </a>
+
+      <h2>ACKNOWLEDGEMENTS</h2>
+
+      <p><span class="emphasis"><em>OpenLDAP Software</em></span>
+      is developed and maintained by The OpenLDAP Project
+      &lt;<a class="literalurl" href="http://www.openldap.org/" target="_top" shape="rect">http://www.openldap.org/</a>&gt;. <span class="emphasis"><em>OpenLDAP Software</em></span> is derived from
+      University of Michigan LDAP 3.3 Release.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                  See the following documents: <a class="ulink" href="../openldap-COPYRIGHT.html" target="_top" shape="rect">COPYRIGHT</a>, <a class="ulink" href="../openldap-LICENSE.html" target="_top" shape="rect">LICENSE</a><br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

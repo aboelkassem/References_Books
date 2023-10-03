@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>taskset(1) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="taskset(1) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index1.html" shape="rect">Section 1</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="taskset.1" name="taskset.1" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>taskset — set or retrieve a process's CPU
+      affinity</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">taskset</code> [options] mask
+        command [ argument... ]</p>
+      </div>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">taskset</code> [options]
+        <code class="option">−p</code> [mask] pid</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="taskset-1_sect1" name="taskset-1_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><span class="command"><strong>taskset</strong></span> is
+      used to set or retrieve the CPU affinity of a running process
+      given its <em class="parameter"><code>pid</code></em>, or to
+      launch a new <em class="parameter"><code>command</code></em>
+      with a given CPU affinity. CPU affinity is a scheduler
+      property that "bonds" a process to a given set of CPUs on the
+      system. The Linux scheduler will honor the given CPU affinity
+      and the process will not run on any other CPUs. Note that the
+      Linux scheduler also supports natural CPU affinity: the
+      scheduler attempts to keep processes on the same CPU as long
+      as practical for performance reasons. Therefore, forcing a
+      specific CPU affinity is useful only in certain
+      applications.</p>
+
+      <p>The CPU affinity is represented as a bitmask, with the
+      lowest order bit corresponding to the first logical CPU and
+      the highest order bit corresponding to the last logical CPU.
+      Not all CPUs may exist on a given system but a mask may
+      specify more CPUs than are present. A retrieved mask will
+      reflect only the bits that correspond to CPUs physically on
+      the system. If an invalid mask is given (i.e., one that
+      corresponds to no valid CPUs on the current system) an error
+      is returned. The masks are typically given in hexadecimal.
+      For example,</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="variablelist">
+            <dl class="variablelist">
+              <dt><span class="term"><code class="constant">0x00000001</code></span></dt>
+
+              <dd>
+                <p>is processor #0,</p>
+              </dd>
+
+              <dt><span class="term"><code class="constant">0x00000003</code></span></dt>
+
+              <dd>
+                <p>is processors #0 and #1,</p>
+              </dd>
+
+              <dt><span class="term"><code class="constant">0xFFFFFFFF</code></span></dt>
+
+              <dd>
+                <p>is all processors (#0 through #31).</p>
+              </dd>
+            </dl>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>When <span class="command"><strong>taskset</strong></span>
+      returns, it is guaranteed that the given program has been
+      scheduled to a legal CPU.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="taskset-1_sect2" name="taskset-1_sect2" shape="rect"> </a>
+
+      <h2>OPTIONS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="option">−a,
+          −−all−tasks</code></span></dt>
+
+          <dd>
+            <p>Set or retrieve the CPU affinity of all the tasks
+            (threads) for a given PID.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−c,
+          −−cpu−list <em class="parameter"><code>numbers</code></em></code></span></dt>
+
+          <dd>
+            <p>Specify a numerical list of processors instead of a
+            bitmask. The <span class="command"><strong>numbers</strong></span> are separated
+            by commas and may include ranges. For example:
+            <em class="replaceable"><code>0,5,8-11</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−p,
+          −−pid</code></span></dt>
+
+          <dd>
+            <p>Operate on an existing PID and do not launch a new
+            task.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−V,
+          −−version</code></span></dt>
+
+          <dd>
+            <p>Display version information and exit.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−h,
+          −−help</code></span></dt>
+
+          <dd>
+            <p>Display help text and exit.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="taskset-1_sect3" name="taskset-1_sect3" shape="rect"> </a>
+
+      <h2>USAGE</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">The default behavior is to run a
+          new command with a given affinity mask:</span></dt>
+
+          <dd>
+            <p><span class="command"><strong>taskset</strong></span> <em class="parameter"><code>mask</code></em> <em class="parameter"><code>command</code></em>[<span class="command"><strong>arguments</strong></span>]</p>
+          </dd>
+
+          <dt><span class="term">You can also retrieve the CPU
+          affinity of an existing task:</span></dt>
+
+          <dd>
+            <p><span class="emphasis"><em>taskset
+            −p</em></span> <em class="parameter"><code>pid</code></em></p>
+          </dd>
+
+          <dt><span class="term">Or set it:</span></dt>
+
+          <dd>
+            <p><span class="emphasis"><em>taskset
+            −p</em></span> <span class="emphasis"><em>mask
+            pid</em></span></p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="taskset-1_sect4" name="taskset-1_sect4" shape="rect"> </a>
+
+      <h2>PERMISSIONS</h2>
+
+      <p>A user can change the CPU affinity of a process belonging
+      to the same user. A user must possess <code class="constant">CAP_SYS_NICE</code> to change the CPU affinity of
+      a process belonging to another user. A user can retrieve the
+      affinity mask of any process.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="taskset-1_sect5" name="taskset-1_sect5" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman1/chrt.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chrt</span>(1)</span></a>, <a class="link" href="../htmlman1/nice.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">nice</span>(1)</span></a>, <a class="link" href="../htmlman1/renice.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">renice</span>(1)</span></a>, <a class="link" href="../htmlman2/sched_setaffinity.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_setaffinity</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/sched_setaffinity.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_getaffinity</span>(2)</span></a></p>
+
+      <p>See <a class="link" href="../htmlman2/sched_setscheduler.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_setscheduler</span>(2)</span></a> for a
+      description of the Linux scheduling scheme.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="taskset-1_sect6" name="taskset-1_sect6" shape="rect"> </a>
+
+      <h2>AUTHOR</h2>
+
+      <p>Written by Robert M. Love.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="taskset-1_sect7" name="taskset-1_sect7" shape="rect"> </a>
+
+      <h2>COPYRIGHT</h2>
+
+      <p>Copyright © 2004 Robert M. Love. This is free
+      software; see the source for copying conditions. There is NO
+      warranty; not even for MERCHANTABILITY or FITNESS FOR A
+      PARTICULAR PURPOSE.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="taskset-1_sect8" name="taskset-1_sect8" shape="rect"> </a>
+
+      <h2>AVAILABILITY</h2>
+
+      <p>The taskset command is part of the util-linux package and
+      is available from
+      ftp://ftp.kernel.org/pub/linux/utils/util-linux/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    taskset(1) manpage<br />
+                  <br />
+                  Copyright (C) 2004 Robert Love<br />
+
+                  <br />
+                  This is free documentation; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License,<br />
+
+                  version 2, as published by the Free Software Foundation.<br />
+
+                  <br />
+                  The GNU General Public License's references to "object code"<br />
+
+                  and "executables" are to be interpreted as the output of any<br />
+
+                  document formatting or typesetting system, including<br />
+
+                  intermediate and printed output.<br />
+
+                  <br />
+                  This manual is distributed in the hope that it will be useful,<br />
+
+                  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+
+                  GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public License along<br />
+
+                  with this program; if not, write to the Free Software Foundation, Inc.,<br />
+
+                  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>sem_overview(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="sem_overview(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="sem-overview.7" name="sem-overview.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>sem_overview — overview of POSIX semaphores</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sem-overview-7_sect1" name="sem-overview-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>POSIX semaphores allow processes and threads to
+      synchronize their actions.</p>
+
+      <p>A semaphore is an integer whose value is never allowed to
+      fall below zero. Two operations can be performed on
+      semaphores: increment the semaphore value by one (<a class="link" href="../htmlman3/sem_post.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_post</span>(3)</span></a>); and decrement
+      the semaphore value by one (<a class="link" href="../htmlman3/sem_wait.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_wait</span>(3)</span></a>). If the value
+      of a semaphore is currently zero, then a <a class="link" href="../htmlman3/sem_wait.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_wait</span>(3)</span></a> operation will
+      block until the value becomes greater than zero.</p>
+
+      <p>POSIX semaphores come in two forms: named semaphores and
+      unnamed semaphores.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="emphasis"><em>Named
+          semaphores</em></span></span></dt>
+
+          <dd>
+            <p>A named semaphore is identified by a name of the
+            form <code class="filename">/somename</code>; that is,
+            a null-terminated string of up to <code class="constant">NAME_MAX</code><span class="emphasis"><em>−4</em></span> (i.e., 251)
+            characters consisting of an initial slash, followed by
+            one or more characters, none of which are slashes. Two
+            processes can operate on the same named semaphore by
+            passing the same name to <a class="link" href="../htmlman3/sem_open.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_open</span>(3)</span></a>.</p>
+
+            <p>The <a class="link" href="../htmlman3/sem_open.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_open</span>(3)</span></a> function
+            creates a new named semaphore or opens an existing
+            named semaphore. After the semaphore has been opened,
+            it can be operated on using <a class="link" href="../htmlman3/sem_post.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_post</span>(3)</span></a> and
+            <a class="link" href="../htmlman3/sem_wait.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_wait</span>(3)</span></a>. When a
+            process has finished using the semaphore, it can use
+            <a class="link" href="../htmlman3/sem_close.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_close</span>(3)</span></a> to close
+            the semaphore. When all processes have finished using
+            the semaphore, it can be removed from the system using
+            <a class="link" href="../htmlman3/sem_unlink.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_unlink</span>(3)</span></a>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="emphasis"><em>Unnamed
+          semaphores (memory-based
+          semaphores)</em></span></span></dt>
+
+          <dd>
+            <p>An unnamed semaphore does not have a name. Instead
+            the semaphore is placed in a region of memory that is
+            shared between multiple threads (a <span class="emphasis"><em>thread-shared semaphore</em></span>) or
+            processes (a <span class="emphasis"><em>process-shared
+            semaphore</em></span>). A thread-shared semaphore is
+            placed in an area of memory shared between the threads
+            of a process, for example, a global variable. A
+            process-shared semaphore must be placed in a shared
+            memory region (e.g., a System V shared memory segment
+            created using <a class="link" href="../htmlman2/shmget.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">shmget</span>(2)</span></a>, or a POSIX
+            shared memory object built created using <a class="link" href="../htmlman3/shm_open.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">shm_open</span>(3)</span></a>).</p>
+
+            <p>Before being used, an unnamed semaphore must be
+            initialized using <a class="link" href="../htmlman3/sem_init.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_init</span>(3)</span></a>. It can
+            then be operated on using <a class="link" href="../htmlman3/sem_post.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_post</span>(3)</span></a> and
+            <a class="link" href="../htmlman3/sem_wait.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_wait</span>(3)</span></a>. When the
+            semaphore is no longer required, and before the memory
+            in which it is located is deallocated, the semaphore
+            should be destroyed using <a class="link" href="../htmlman3/sem_destroy.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_destroy</span>(3)</span></a>.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>The remainder of this section describes some specific
+      details of the Linux implementation of POSIX semaphores.</p>
+
+      <div class="refsect2">
+        <a id="sem-overview-7_sect2" name="sem-overview-7_sect2" shape="rect"> </a>
+
+        <h3>Versions</h3>
+
+        <p>Prior to kernel 2.6, Linux supported only unnamed,
+        thread-shared semaphores. On a system with Linux 2.6 and a
+        glibc that provides the NPTL threading implementation, a
+        complete implementation of POSIX semaphores is
+        provided.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="sem-overview-7_sect3" name="sem-overview-7_sect3" shape="rect"> </a>
+
+        <h3>Persistence</h3>
+
+        <p>POSIX named semaphores have kernel persistence: if not
+        removed by <a class="link" href="../htmlman3/sem_unlink.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_unlink</span>(3)</span></a>, a
+        semaphore will exist until the system is shut down.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="sem-overview-7_sect4" name="sem-overview-7_sect4" shape="rect"> </a>
+
+        <h3>Linking</h3>
+
+        <p>Programs using the POSIX semaphores API must be compiled
+        with <span class="emphasis"><em>cc
+        −pthread</em></span> to link against the real-time
+        library, <em class="replaceable"><code>librt</code></em>.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="sem-overview-7_sect5" name="sem-overview-7_sect5" shape="rect"> </a>
+
+        <h3>Accessing named semaphores via the filesystem</h3>
+
+        <p>On Linux, named semaphores are created in a virtual
+        filesystem, normally mounted under <code class="filename">/dev/shm</code>, with names of the form
+        <em class="replaceable"><code><em class="replaceable"><code>sem.</code></em>somename</code></em>.
+        (This is the reason that semaphore names are limited to
+        <code class="constant">NAME_MAX</code><span class="emphasis"><em>−4</em></span> rather than
+        <code class="constant">NAME_MAX</code> characters.)</p>
+
+        <p>Since Linux 2.6.19, ACLs can be placed on files under
+        this directory, to control object permissions on a per-user
+        and per-group basis.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sem-overview-7_sect6" name="sem-overview-7_sect6" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>POSIX.1-2001.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sem-overview-7_sect7" name="sem-overview-7_sect7" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>System V semaphores (<a class="link" href="../htmlman2/semget.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">semget</span>(2)</span></a>, <a class="link" href="../htmlman2/semop.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">semop</span>(2)</span></a>, etc.) are an
+      older semaphore API. POSIX semaphores provide a simpler, and
+      better designed interface than System V semaphores; on the
+      other hand POSIX semaphores are less widely available
+      (especially on older systems) than System V semaphores.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sem-overview-7_sect8" name="sem-overview-7_sect8" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>An example of the use of various POSIX semaphore functions
+      is shown in <a class="link" href="../htmlman3/sem_wait.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_wait</span>(3)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sem-overview-7_sect9" name="sem-overview-7_sect9" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/sem_close.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_close</span>(3)</span></a>, <a class="link" href="../htmlman3/sem_destroy.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_destroy</span>(3)</span></a>, <a class="link" href="../htmlman3/sem_getvalue.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_getvalue</span>(3)</span></a>, <a class="link" href="../htmlman3/sem_init.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_init</span>(3)</span></a>, <a class="link" href="../htmlman3/sem_open.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_open</span>(3)</span></a>, <a class="link" href="../htmlman3/sem_post.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_post</span>(3)</span></a>, <a class="link" href="../htmlman3/sem_unlink.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_unlink</span>(3)</span></a>, <a class="link" href="../htmlman3/sem_wait.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_wait</span>(3)</span></a>, <a class="link" href="../htmlman7/pthreads.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthreads</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="sem-overview-7_sect10" name="sem-overview-7_sect10" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    t<br />
+                  Copyright (C) 2006 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

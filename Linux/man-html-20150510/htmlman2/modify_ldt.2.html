@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>modify_ldt(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="modify_ldt(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="modify-ldt.2" name="modify-ldt.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>modify_ldt — get or set a per-process LDT entry</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;sys/types.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>modify_ldt</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">func</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">void *<var class="pdparam">ptr</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">unsigned long <var class="pdparam">bytecount</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">There is no glibc wrapper
+            for this system call; see NOTES.</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="modify-ldt-2_sect1" name="modify-ldt-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">modify_ldt</code>() reads or writes
+      the local descriptor table (LDT) for a process. The LDT is an
+      array of segment descriptors that can be referenced by user
+      code. Linux allows processes to configure a per-process
+      (actually per-mm) LDT. For more information about the LDT,
+      see the Intel Software Developer's Manual or the AMD
+      Architecture Programming Manual.</p>
+
+      <p>When <em class="parameter"><code>func</code></em> is 0,
+      <code class="function">modify_ldt</code>() reads the LDT into
+      the memory pointed to by <em class="parameter"><code>ptr</code></em>. The number of bytes read
+      is the smaller of <em class="parameter"><code>bytecount</code></em> and the actual size
+      of the LDT, although the kernel may act as though the LDT is
+      padded with additional trailing zero bytes. On success,
+      <code class="function">modify_ldt</code>() will return the
+      number of bytes read.</p>
+
+      <p>When <em class="parameter"><code>func</code></em> is 1 or
+      0x11, <code class="function">modify_ldt</code>() modifies the
+      LDT entry indicated by <em class="replaceable"><code>ptr−&gt;entry_number</code></em>.
+      <em class="parameter"><code>ptr</code></em> points to a
+      <em class="replaceable"><code>user_desc</code></em> structure
+      and <em class="parameter"><code>bytecount</code></em> must
+      equal the size of this structure.</p>
+
+      <p>The <em class="replaceable"><code>user_desc</code></em>
+      structure is defined in <code class="literal">&lt;</code><code class="filename">asm/ldt.h</code><code class="literal">&gt;</code>
+      as:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="structdef">
+            <table style="border-collapse: collapse;">
+              <colgroup span="1">
+                <col class="c1" span="1" />
+                <col class="c2" span="1" />
+                <col class="c3" span="1" />
+                <col class="c4" span="1" />
+                <col class="c5" span="1" />
+              </colgroup>
+
+              <tbody>
+                <tr>
+                  <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                  struct</td>
+
+                  <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">user_desc</span> {</td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned int</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>entry_number</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned long</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>base_addr</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned int</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>limit</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned int</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>seg_32bit</code></em>:1;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned int</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>contents</code></em>:2;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned int</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>read_exec_only</code></em>:1;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned int</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>limit_in_pages</code></em>:1;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned int</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>seg_not_present</code></em>:1;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned int</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>useable</code></em>:1;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>In Linux 2.4 and earlier, this structure was named
+      <em class="replaceable"><code>modify_ldt_ldt_s</code></em>.</p>
+
+      <p>The <em class="parameter"><code>contents</code></em> field
+      is the segment type (data, expand-down data, non-conforming
+      code, or conforming code). The other fields match their
+      descriptions in the CPU manual, although <code class="function">modify_ldt</code>() cannot set the
+      hardware-defined "accessed" bit described in the CPU
+      manual.</p>
+
+      <p>A <em class="replaceable"><code>user_desc</code></em> is
+      considered "empty" if <em class="parameter"><code>read_exec_only</code></em> and <em class="parameter"><code>seg_not_present</code></em> are set to 1
+      and all of the other fields are 0. An LDT entry can be
+      cleared by setting it to an "empty" <em class="replaceable"><code>user_desc</code></em> or, if <em class="parameter"><code>func</code></em> is 1, by setting both
+      <em class="replaceable"><code>base</code></em> and <em class="parameter"><code>limit</code></em> to 0.</p>
+
+      <p>A conforming code segment (i.e., one with <em class="replaceable"><code>contents==3</code></em>) will be rejected
+      if <em class="parameter"><code>func</code></em> is 1 or if
+      <em class="parameter"><code>seg_not_present</code></em> is
+      0.</p>
+
+      <p>When <em class="parameter"><code>func</code></em> is 2,
+      <code class="function">modify_ldt</code>() will read zeros.
+      This appears to be a leftover from Linux 2.4.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="modify-ldt-2_sect2" name="modify-ldt-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">modify_ldt</code>()
+      returns either the actual number of bytes read (for reading)
+      or 0 (for writing). On failure, <code class="function">modify_ldt</code>() returns −1 and sets
+      <code class="varname">errno</code> to indicate the error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="modify-ldt-2_sect3" name="modify-ldt-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>ptr</code></em> points
+            outside the address space.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>ptr</code></em> is 0, or
+            <em class="parameter"><code>func</code></em> is 1 and
+            <em class="parameter"><code>bytecount</code></em> is
+            not equal to the size of the structure <em class="replaceable"><code>user_desc</code></em>, or
+            <em class="parameter"><code>func</code></em> is 1 or
+            0x11 and the new LDT entry has invalid values.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOSYS</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>func</code></em> is
+            neither 0, 1, 2, nor 0x11.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="modify-ldt-2_sect4" name="modify-ldt-2_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>This call is Linux-specific and should not be used in
+      programs intended to be portable.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="modify-ldt-2_sect5" name="modify-ldt-2_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Glibc does not provide a wrapper for this system call;
+      call it using <a class="link" href="../htmlman2/syscall.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">syscall</span>(2)</span></a>.</p>
+
+      <p><code class="function">modify_ldt</code>() should not be
+      used for thread-local storage, as it slows down context
+      switches and only supports a limited number of threads.
+      Threading libraries should use <a class="link" href="../htmlman2/set_thread_area.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">set_thread_area</span>(2)</span></a> or
+      <a class="link" href="../htmlman2/arch_prctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">arch_prctl</span>(2)</span></a> instead,
+      except on extremely old kernels that do not support those
+      system calls.</p>
+
+      <p>The normal use for <a class="link" href="../htmlman2/modify_ldt.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">modify_ldt</span>(2)</span></a> is to run
+      legacy 16-bit or segmented 32-bit code. Not all kernels allow
+      16-bit segments to be installed, however.</p>
+
+      <p>Even on 64-bit kernels, <a class="link" href="../htmlman2/modify_ldt.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">modify_ldt</span>(2)</span></a> cannot be
+      used to create a long mode (i.e., 64-bit) code segment. The
+      undocumented field "lm" in <em class="replaceable"><code>user_desc</code></em> is not useful, and,
+      despite its name, does not result in a long mode segment.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="modify-ldt-2_sect6" name="modify-ldt-2_sect6" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>On 64-bit kernels before Linux 3.19, setting the "lm" bit
+      in <em class="replaceable"><code>user_desc</code></em>
+      prevents the descriptor from being considered empty. Keep in
+      mind that the "lm" bit does not exist in the 32-bit headers,
+      but these buggy kernels will still notice the bit even when
+      set in a 32-bit process.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="modify-ldt-2_sect7" name="modify-ldt-2_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/arch_prctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">arch_prctl</span>(2)</span></a>, <a class="link" href="../htmlman2/set_thread_area.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">set_thread_area</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/vm86.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">vm86</span>(2)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="modify-ldt-2_sect8" name="modify-ldt-2_sect8" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 1995 Michael Chastain (mec<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>duracef.shout.net), 22 July 1995.<br />
+
+                  Copyright (c) 2015 Andrew Lutomirski<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_DOC_FULL)<br />
+                  This is free documentation; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License as<br />
+
+                  published by the Free Software Foundation; either version 2 of<br />
+
+                  the License, or (at your option) any later version.<br />
+
+                  <br />
+                  The GNU General Public License's references to "object code"<br />
+
+                  and "executables" are to be interpreted as the output of any<br />
+
+                  document formatting or typesetting system, including<br />
+
+                  intermediate and printed output.<br />
+
+                  <br />
+                  This manual is distributed in the hope that it will be useful,<br />
+
+                  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+
+                  GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,581 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>epoll_ctl(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="epoll_ctl(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="epoll-ctl.2" name="epoll-ctl.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>epoll_ctl — control interface for an epoll
+      descriptor</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;sys/epoll.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>epoll_ctl</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">epfd</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">op</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">fd</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">struct epoll_event *<var class="pdparam">event</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="epoll-ctl-2_sect1" name="epoll-ctl-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>This system call performs control operations on the
+      <a class="link" href="../htmlman7/epoll.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll</span>(7)</span></a> instance referred
+      to by the file descriptor <em class="parameter"><code>epfd</code></em>. It requests that the
+      operation <em class="parameter"><code>op</code></em> be
+      performed for the target file descriptor, <em class="parameter"><code>fd</code></em>.</p>
+
+      <p>Valid values for the <em class="parameter"><code>op</code></em> argument are:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">EPOLL_CTL_ADD</code></span></dt>
+
+          <dd>
+            <p>Register the target file descriptor <em class="parameter"><code>fd</code></em> on the <em class="replaceable"><code>epoll</code></em> instance referred
+            to by the file descriptor <em class="parameter"><code>epfd</code></em> and associate the
+            event <em class="parameter"><code>event</code></em>
+            with the internal file linked to <em class="parameter"><code>fd</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">EPOLL_CTL_MOD</code></span></dt>
+
+          <dd>
+            <p>Change the event <em class="parameter"><code>event</code></em> associated with the
+            target file descriptor <em class="parameter"><code>fd</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">EPOLL_CTL_DEL</code></span></dt>
+
+          <dd>
+            <p>Remove (deregister) the target file descriptor
+            <em class="parameter"><code>fd</code></em> from the
+            <em class="replaceable"><code>epoll</code></em>
+            instance referred to by <em class="parameter"><code>epfd</code></em>. The <em class="parameter"><code>event</code></em> is ignored and can
+            be NULL (but see BUGS below).</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>The <em class="parameter"><code>event</code></em> argument
+      describes the object linked to the file descriptor <em class="parameter"><code>fd</code></em>. The <span class="emphasis"><em>struct epoll_event</em></span> is defined
+      as:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="structdef">
+            <table style="border-collapse: collapse;">
+              <colgroup span="1">
+                <col class="c1" span="1" />
+                <col class="c2" span="1" />
+                <col class="c3" span="1" />
+                <col class="c4" span="1" />
+                <col class="c5" span="1" />
+              </colgroup>
+
+              <tbody>
+                <tr>
+                  <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                  typedef</td>
+
+                  <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1">union <span class="structname">epoll_data</span> {</td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">void</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                  *</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ptr</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>fd</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>u32</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>u64</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"> </td>
+                </tr>
+
+                <tr>
+                  <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">} epoll_data_t;</td>
+                </tr>
+
+                <tr>
+                  <td class="structsep" style="" colspan="5" align="left" rowspan="1"></td>
+                </tr>
+
+                <tr>
+                  <td class="structdefhdr2" style="" align="left" rowspan="1" colspan="1">
+                  struct</td>
+
+                  <td class="structdefhdr2" style="" colspan="4" align="left" rowspan="1"><span class="structname">epoll_event</span> {</td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint32_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>events</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      /* Epoll events */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">epoll_data_t</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>data</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      
+                      /* User data variable */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>The <em class="parameter"><code>events</code></em> member
+      is a bit set composed using the following available event
+      types:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">EPOLLIN</code></span></dt>
+
+          <dd>
+            <p>The associated file is available for <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>
+            operations.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">EPOLLOUT</code></span></dt>
+
+          <dd>
+            <p>The associated file is available for <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a>
+            operations.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">EPOLLRDHUP</code> (since Linux
+          2.6.17)</span></dt>
+
+          <dd>
+            <p>Stream socket peer closed connection, or shut down
+            writing half of connection. (This flag is especially
+            useful for writing simple code to detect peer shutdown
+            when using Edge Triggered monitoring.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">EPOLLPRI</code></span></dt>
+
+          <dd>
+            <p>There is urgent data available for <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>
+            operations.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">EPOLLERR</code></span></dt>
+
+          <dd>
+            <p>Error condition happened on the associated file
+            descriptor. <a class="link" href="../htmlman2/epoll_wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_wait</span>(2)</span></a> will
+            always wait for this event; it is not necessary to set
+            it in <em class="parameter"><code>events</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">EPOLLHUP</code></span></dt>
+
+          <dd>
+            <p>Hang up happened on the associated file descriptor.
+            <a class="link" href="../htmlman2/epoll_wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_wait</span>(2)</span></a> will
+            always wait for this event; it is not necessary to set
+            it in <em class="parameter"><code>events</code></em>.
+            Note that when reading from a channel such as a pipe or
+            a stream socket, this event merely indicates that the
+            peer closed its end of the channel. Subsequent reads
+            from the channel will return 0 (end of file) only after
+            all outstanding data in the channel has been
+            consumed.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">EPOLLET</code></span></dt>
+
+          <dd>
+            <p>Sets the Edge Triggered behavior for the associated
+            file descriptor. The default behavior for <em class="replaceable"><code>epoll</code></em> is Level
+            Triggered. See <a class="link" href="../htmlman7/epoll.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll</span>(7)</span></a> for more
+            detailed information about Edge and Level Triggered
+            event distribution architectures.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">EPOLLONESHOT</code> (since Linux
+          2.6.2)</span></dt>
+
+          <dd>
+            <p>Sets the one-shot behavior for the associated file
+            descriptor. This means that after an event is pulled
+            out with <a class="link" href="../htmlman2/epoll_wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_wait</span>(2)</span></a> the
+            associated file descriptor is internally disabled and
+            no other events will be reported by the <em class="replaceable"><code>epoll</code></em> interface. The
+            user must call <code class="function">epoll_ctl</code>() with <code class="constant">EPOLL_CTL_MOD</code> to rearm the file
+            descriptor with a new event mask.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">EPOLLWAKEUP</code> (since Linux
+          3.5)</span></dt>
+
+          <dd>
+            <p>If <code class="constant">EPOLLONESHOT</code> and
+            <code class="constant">EPOLLET</code> are clear and the
+            process has the <code class="constant">CAP_BLOCK_SUSPEND</code> capability, ensure
+            that the system does not enter "suspend" or "hibernate"
+            while this event is pending or being processed. The
+            event is considered as being "processed" from the time
+            when it is returned by a call to <a class="link" href="../htmlman2/epoll_wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_wait</span>(2)</span></a> until
+            the next call to <a class="link" href="../htmlman2/epoll_wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_wait</span>(2)</span></a> on the
+            same <a class="link" href="../htmlman7/epoll.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll</span>(7)</span></a> file
+            descriptor, the closure of that file descriptor, the
+            removal of the event file descriptor with <code class="constant">EPOLL_CTL_DEL</code>, or the clearing of
+            <code class="constant">EPOLLWAKEUP</code> for the event
+            file descriptor with <code class="constant">EPOLL_CTL_MOD</code>. See also BUGS.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="epoll-ctl-2_sect2" name="epoll-ctl-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>When successful, <code class="function">epoll_ctl</code>()
+      returns zero. When an error occurs, <code class="function">epoll_ctl</code>() returns −1 and
+      <code class="varname">errno</code> is set appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="epoll-ctl-2_sect3" name="epoll-ctl-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EBADF</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>epfd</code></em> or
+            <em class="parameter"><code>fd</code></em> is not a
+            valid file descriptor.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EEXIST</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>op</code></em> was
+            <code class="constant">EPOLL_CTL_ADD</code>, and the
+            supplied file descriptor <em class="parameter"><code>fd</code></em> is already registered
+            with this epoll instance.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>epfd</code></em> is not
+            an <em class="replaceable"><code>epoll</code></em> file
+            descriptor, or <em class="parameter"><code>fd</code></em> is the same as
+            <em class="parameter"><code>epfd</code></em>, or the
+            requested operation <em class="parameter"><code>op</code></em> is not supported by
+            this interface.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOENT</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>op</code></em> was
+            <code class="constant">EPOLL_CTL_MOD</code> or
+            <code class="constant">EPOLL_CTL_DEL</code>, and
+            <em class="parameter"><code>fd</code></em> is not
+            registered with this epoll instance.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>There was insufficient memory to handle the
+            requested <em class="parameter"><code>op</code></em>
+            control operation.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOSPC</span></span></dt>
+
+          <dd>
+            <p>The limit imposed by <code class="filename">/proc/sys/fs/epoll/max_user_watches</code>
+            was encountered while trying to register (<code class="constant">EPOLL_CTL_ADD</code>) a new file descriptor
+            on an epoll instance. See <a class="link" href="../htmlman7/epoll.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll</span>(7)</span></a> for further
+            details.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The target file <em class="parameter"><code>fd</code></em> does not support
+            <em class="replaceable"><code>epoll</code></em>. This
+            error can occur if <em class="parameter"><code>fd</code></em> refers to, for
+            example, a regular file or a directory.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="epoll-ctl-2_sect4" name="epoll-ctl-2_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p><code class="function">epoll_ctl</code>() was added to the
+      kernel in version 2.6.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="epoll-ctl-2_sect5" name="epoll-ctl-2_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p><code class="function">epoll_ctl</code>() is
+      Linux-specific. Library support is provided in glibc starting
+      with version 2.3.2.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="epoll-ctl-2_sect6" name="epoll-ctl-2_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>The <em class="replaceable"><code>epoll</code></em>
+      interface supports all file descriptors that support
+      <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="epoll-ctl-2_sect7" name="epoll-ctl-2_sect7" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>In kernel versions before 2.6.9, the <code class="constant">EPOLL_CTL_DEL</code> operation required a non-null
+      pointer in <em class="parameter"><code>event</code></em>,
+      even though this argument is ignored. Since Linux 2.6.9,
+      <em class="parameter"><code>event</code></em> can be
+      specified as NULL when using <code class="constant">EPOLL_CTL_DEL</code>. Applications that need to be
+      portable to kernels before 2.6.9 should specify a non-null
+      pointer in <em class="parameter"><code>event</code></em>.</p>
+
+      <p>If <code class="constant">EPOLLWAKEUP</code> is specified
+      in <em class="replaceable"><code>flags</code></em>, but the
+      caller does not have the <code class="constant">CAP_BLOCK_SUSPEND</code> capability, then the
+      <code class="constant">EPOLLWAKEUP</code> flag is
+      <span class="emphasis"><em>silently ignored</em></span>. This
+      unfortunate behavior is necessary because no validity checks
+      were performed on the <em class="replaceable"><code>flags</code></em> argument in the
+      original implementation, and the addition of the <code class="constant">EPOLLWAKEUP</code> with a check that caused the
+      call to fail if the caller did not have the <code class="constant">CAP_BLOCK_SUSPEND</code> capability caused a
+      breakage in at least one existing user-space application that
+      happened to randomly (and uselessly) specify this bit. A
+      robust application should therefore double check that it has
+      the <code class="constant">CAP_BLOCK_SUSPEND</code>
+      capability if attempting to use the <code class="constant">EPOLLWAKEUP</code> flag.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="epoll-ctl-2_sect8" name="epoll-ctl-2_sect8" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/epoll_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_create</span>(2)</span></a>, <a class="link" href="../htmlman2/epoll_wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_wait</span>(2)</span></a>, <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a>, <a class="link" href="../htmlman7/epoll.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="epoll-ctl-2_sect9" name="epoll-ctl-2_sect9" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                     Copyright (C) 2003  Davide Libenzi<br />
+
+                   Davide Libenzi &lt;davidel<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>xmailserver.org&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_SW_3_PARA)<br />
+                   This program is free software; you can redistribute it and/or modify<br />
+
+                   it under the terms of the GNU General Public License as published by<br />
+
+                   the Free Software Foundation; either version 2 of the License, or<br />
+
+                   (at your option) any later version.<br />
+
+                  <br />
+                   This program is distributed in the hope that it will be useful,<br />
+
+                   but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+
+                   GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

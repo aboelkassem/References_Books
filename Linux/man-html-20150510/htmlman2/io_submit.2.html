@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>io_submit(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="io_submit(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="io-submit.2" name="io-submit.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>io_submit — submit asynchronous I/O blocks for
+      processing</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;linux/aio_abi.h&gt;           /* Defines needed types */
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>io_submit</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">aio_context_t <var class="pdparam">ctx_id</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">long <var class="pdparam">nr</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">struct iocb **<var class="pdparam">iocbpp</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">There is no glibc wrapper
+            for this system call; see NOTES.</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="io-submit-2_sect1" name="io-submit-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">io_submit</code>() system call
+      queues <em class="parameter"><code>nr</code></em> I/O request
+      blocks for processing in the AIO context <em class="parameter"><code>ctx_id</code></em>. The <em class="parameter"><code>iocbpp</code></em> argument should be an
+      array of <em class="parameter"><code>nr</code></em> AIO
+      control blocks, which will be submitted to context <em class="parameter"><code>ctx_id</code></em>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="io-submit-2_sect2" name="io-submit-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">io_submit</code>()
+      returns the number of <span class="structname">iocb</span>s
+      submitted (which may be 0 if <em class="parameter"><code>nr</code></em> is zero). For the failure
+      return, see NOTES.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="io-submit-2_sect3" name="io-submit-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EAGAIN</span></span></dt>
+
+          <dd>
+            <p>Insufficient resources are available to queue any
+            <span class="structname">iocb</span>s.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EBADF</span></span></dt>
+
+          <dd>
+            <p>The file descriptor specified in the first
+            <span class="structname">iocb</span> is invalid.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p>One of the data structures points to invalid
+            data.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>The AIO context specified by <em class="parameter"><code>ctx_id</code></em> is invalid.
+            <em class="parameter"><code>nr</code></em> is less than
+            0. The <span class="structname">iocb</span> at
+            <em class="replaceable"><code>*iocbpp[0]</code></em> is
+            not properly initialized, or the operation specified is
+            invalid for the file descriptor in the <span class="structname">iocb</span>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOSYS</span></span></dt>
+
+          <dd>
+            <p><code class="function">io_submit</code>() is not
+            implemented on this architecture.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="io-submit-2_sect4" name="io-submit-2_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p>The asynchronous I/O system calls first appeared in Linux
+      2.5.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="io-submit-2_sect5" name="io-submit-2_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p><code class="function">io_submit</code>() is
+      Linux-specific and should not be used in programs that are
+      intended to be portable.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="io-submit-2_sect6" name="io-submit-2_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Glibc does not provide a wrapper function for this system
+      call. You could invoke it using <a class="link" href="../htmlman2/syscall.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">syscall</span>(2)</span></a>. But instead,
+      you probably want to use the <code class="function">io_submit</code>() wrapper function provided by
+      <em class="replaceable"><code>libaio</code></em>.</p>
+
+      <p>Note that the <em class="replaceable"><code>libaio</code></em> wrapper function uses
+      a different type (<span class="type">io_context_t</span>) for
+      the <em class="parameter"><code>ctx_id</code></em> argument.
+      Note also that the <em class="replaceable"><code>libaio</code></em> wrapper does not
+      follow the usual C library conventions for indicating errors:
+      on error it returns a negated error number (the negative of
+      one of the values listed in ERRORS). If the system call is
+      invoked via <a class="link" href="../htmlman2/syscall.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">syscall</span>(2)</span></a>, then the return
+      value follows the usual conventions for indicating an error:
+      −1, with <code class="varname">errno</code> set to a
+      (positive) value that indicates the error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="io-submit-2_sect7" name="io-submit-2_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/io_cancel.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">io_cancel</span>(2)</span></a>, <a class="link" href="../htmlman2/io_destroy.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">io_destroy</span>(2)</span></a>, <a class="link" href="../htmlman2/io_getevents.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">io_getevents</span>(2)</span></a>, <a class="link" href="../htmlman2/io_setup.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">io_setup</span>(2)</span></a>, <a class="link" href="../htmlman7/aio.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">aio</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="io-submit-2_sect8" name="io-submit-2_sect8" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2003 Free Software Foundation, Inc.<br />
+
+                  <br />
+                  %%%LICENSE_START(GPL_NOVERSION_ONELINE)<br />
+                  This file is distributed according to the GNU General Public License.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

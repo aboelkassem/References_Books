@@ -1,0 +1,583 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>ddp(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="ddp(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="ddp.7" name="ddp.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>ddp — Linux AppleTalk protocol implementation</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;sys/socket.h&gt;
+#include &lt;netatalk/at.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">ddp_socket =
+            <strong>socket</strong>(</code></td>
+
+            <td rowspan="1" colspan="1"><var class="pdparam">AF_APPLETALK</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1"><var class="pdparam">SOCK_DGRAM</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1"><var class="pdparam">0</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">raw_socket =
+            <strong>socket</strong>(</code></td>
+
+            <td rowspan="1" colspan="1"><var class="pdparam">AF_APPLETALK</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1"><var class="pdparam">SOCK_RAW</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1"><var class="pdparam">protocol</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ddp-7_sect1" name="ddp-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>Linux implements the AppleTalk protocols described in
+      <span class="emphasis"><em>Inside AppleTalk</em></span>. Only
+      the DDP layer and AARP are present in the kernel. They are
+      designed to be used via the <em class="replaceable"><code>netatalk</code></em> protocol libraries.
+      This page documents the interface for those who wish or need
+      to use the DDP layer directly.</p>
+
+      <p>The communication between AppleTalk and the user program
+      works using a BSD-compatible socket interface. For more
+      information on sockets, see <a class="link" href="../htmlman7/socket.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">socket</span>(7)</span></a>.</p>
+
+      <p>An AppleTalk socket is created by calling the <a class="link" href="../htmlman2/socket.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">socket</span>(2)</span></a> function with a
+      <em class="parameter"><code>AF_APPLETALK</code></em> socket
+      family argument. Valid socket types are <em class="parameter"><code>SOCK_DGRAM</code></em> to open a <em class="replaceable"><code>ddp</code></em> socket or <em class="parameter"><code>SOCK_RAW</code></em> to open a <em class="replaceable"><code>raw</code></em> socket. <em class="parameter"><code>protocol</code></em> is the AppleTalk
+      protocol to be received or sent. For <em class="parameter"><code>SOCK_RAW</code></em> you must specify
+      <code class="constant">ATPROTO_DDP</code>.</p>
+
+      <p>Raw sockets may be opened only by a process with effective
+      user ID 0 or when the process has the <code class="constant">CAP_NET_RAW</code> capability.</p>
+
+      <div class="refsect2">
+        <a id="ddp-7_sect2" name="ddp-7_sect2" shape="rect"> </a>
+
+        <h3>Address format</h3>
+
+        <p>An AppleTalk socket address is defined as a combination
+        of a network number, a node number, and a port number.</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="structdef">
+              <table style="border-collapse: collapse;">
+                <colgroup span="1">
+                  <col class="c1" span="1" />
+                  <col class="c2" span="1" />
+                  <col class="c3" span="1" />
+                  <col class="c4" span="1" />
+                  <col class="c5" span="1" />
+                </colgroup>
+
+                <tbody>
+                  <tr>
+                    <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                    struct</td>
+
+                    <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">at_addr</span> {</td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>s_net</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"> </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>s_node</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"> </td>
+                  </tr>
+
+                  <tr>
+                    <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                  </tr>
+
+                  <tr>
+                    <td class="structsep" style="" colspan="5" align="left" rowspan="1"></td>
+                  </tr>
+
+                  <tr>
+                    <td class="structdefhdr2" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                    <td class="structdefhdr2" style="" colspan="4" align="left" rowspan="1"><span class="structname">sockaddr_atalk</span> {</td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">sa_family_t</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sat_family</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        /* address family */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sat_port</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        /* port */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">struct at_addr</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>sat_addr</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        /* net/node */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </blockquote>
+        </div>
+
+        <p><em class="parameter"><code>sat_family</code></em> is
+        always set to <em class="parameter"><code>AF_APPLETALK</code></em>. <em class="parameter"><code>sat_port</code></em> contains the port.
+        The port numbers below 129 are known as <span class="emphasis"><em>reserved ports</em></span>. Only processes
+        with the effective user ID 0 or the <code class="constant">CAP_NET_BIND_SERVICE</code> capability may
+        <a class="link" href="../htmlman2/bind.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">bind</span>(2)</span></a> to these sockets.
+        <em class="parameter"><code>sat_addr</code></em> is the
+        host address. The <em class="replaceable"><code>net</code></em> member of <span class="emphasis"><em>struct at_addr</em></span> contains the host
+        network in network byte order. The value of <code class="constant">AT_ANYNET</code> is a wildcard and also implies
+        <span class="quote">“<span class="quote">this
+        network</span>”</span>. The <em class="replaceable"><code>node</code></em> member of <span class="emphasis"><em>struct at_addr</em></span> contains the host
+        node number. The value of <code class="constant">AT_ANYNODE</code> is a wildcard and also implies
+        <span class="quote">“<span class="quote">this
+        node</span>”</span>. The value of <code class="constant">ATADDR_BCAST</code> is a link local broadcast
+        address.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="ddp-7_sect3" name="ddp-7_sect3" shape="rect"> </a>
+
+        <h3>Socket options</h3>
+
+        <p>No protocol-specific socket options are supported.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="ddp-7_sect4" name="ddp-7_sect4" shape="rect"> </a>
+
+        <h3>/proc interfaces</h3>
+
+        <p>IP supports a set of <code class="filename">/proc</code>
+        interfaces to configure some global AppleTalk parameters.
+        The parameters can be accessed by reading or writing files
+        in the directory <code class="filename">/proc/sys/net/atalk/</code>.</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><em class="replaceable"><code>aarp-expiry-time</code></em></span></dt>
+
+            <dd>
+              <p>The time interval (in seconds) before an AARP
+              cache entry expires.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>aarp-resolve-time</code></em></span></dt>
+
+            <dd>
+              <p>The time interval (in seconds) before an AARP
+              cache entry is resolved.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>aarp-retransmit-limit</code></em></span></dt>
+
+            <dd>
+              <p>The number of retransmissions of an AARP query
+              before the node is declared dead.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>aarp-tick-time</code></em></span></dt>
+
+            <dd>
+              <p>The timer rate (in seconds) for the timer driving
+              AARP.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>The default values match the specification and should
+        never need to be changed.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="ddp-7_sect5" name="ddp-7_sect5" shape="rect"> </a>
+
+        <h3>Ioctls</h3>
+
+        <p>All ioctls described in <a class="link" href="../htmlman7/socket.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">socket</span>(7)</span></a> apply to
+        DDP.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ddp-7_sect6" name="ddp-7_sect6" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EACCES</span></span></dt>
+
+          <dd>
+            <p>The user tried to execute an operation without the
+            necessary permissions. These include sending to a
+            broadcast address without having the broadcast flag
+            set, and trying to bind to a reserved port without
+            effective user ID 0 or <code class="constant">CAP_NET_BIND_SERVICE</code>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EADDRINUSE</span></span></dt>
+
+          <dd>
+            <p>Tried to bind to an address already in use.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EADDRNOTAVAIL</span></span></dt>
+
+          <dd>
+            <p>A nonexistent interface was requested or the
+            requested source address was not local.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EAGAIN</span></span></dt>
+
+          <dd>
+            <p>Operation on a nonblocking socket would block.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EALREADY</span></span></dt>
+
+          <dd>
+            <p>A connection operation on a nonblocking socket is
+            already in progress.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ECONNABORTED</span></span></dt>
+
+          <dd>
+            <p>A connection was closed during an <a class="link" href="../htmlman2/accept.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">accept</span>(2)</span></a>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EHOSTUNREACH</span></span></dt>
+
+          <dd>
+            <p>No routing table entry matches the destination
+            address.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>Invalid argument passed.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EISCONN</span></span></dt>
+
+          <dd>
+            <p><a class="link" href="../htmlman2/connect.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">connect</span>(2)</span></a> was called
+            on an already connected socket.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EMSGSIZE</span></span></dt>
+
+          <dd>
+            <p>Datagram is bigger than the DDP MTU.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENODEV</span></span></dt>
+
+          <dd>
+            <p>Network device not available or not capable of
+            sending IP.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOENT</span></span></dt>
+
+          <dd>
+            <p><code class="constant">SIOCGSTAMP</code> was called
+            on a socket where no packet arrived.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span> and <span class="errorname">ENOBUFS</span></span></dt>
+
+          <dd>
+            <p>Not enough memory available.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOPKG</span></span></dt>
+
+          <dd>
+            <p>A kernel subsystem was not configured.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOPROTOOPT</span> and <span class="errorname">EOPNOTSUPP</span></span></dt>
+
+          <dd>
+            <p>Invalid socket option passed.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOTCONN</span></span></dt>
+
+          <dd>
+            <p>The operation is defined only on a connected socket,
+            but the socket wasn't connected.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>User doesn't have permission to set high priority,
+            make a configuration change, or send signals to the
+            requested process or group.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPIPE</span></span></dt>
+
+          <dd>
+            <p>The connection was unexpectedly closed or shut down
+            by the other end.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ESOCKTNOSUPPORT</span></span></dt>
+
+          <dd>
+            <p>The socket was unconfigured, or an unknown socket
+            type was requested.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ddp-7_sect7" name="ddp-7_sect7" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p>AppleTalk is supported by Linux 2.0 or higher. The
+      <code class="filename">/proc</code> interfaces exist since
+      Linux 2.2.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ddp-7_sect8" name="ddp-7_sect8" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Be very careful with the <code class="constant">SO_BROADCAST</code> option − it is not
+      privileged in Linux. It is easy to overload the network with
+      careless sending to broadcast addresses.</p>
+
+      <div class="refsect2">
+        <a id="ddp-7_sect9" name="ddp-7_sect9" shape="rect"> </a>
+
+        <h3>Compatibility</h3>
+
+        <p>The basic AppleTalk socket interface is compatible with
+        <em class="replaceable"><code>netatalk</code></em> on
+        BSD-derived systems. Many BSD systems fail to check
+        <code class="constant">SO_BROADCAST</code> when sending
+        broadcast frames; this can lead to compatibility
+        problems.</p>
+
+        <p>The raw socket mode is unique to Linux and exists to
+        support the alternative CAP package and AppleTalk
+        monitoring tools more easily.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="ddp-7_sect10" name="ddp-7_sect10" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>There are too many inconsistent error values.</p>
+
+      <p>The ioctls used to configure routing tables, devices, AARP
+      tables and other devices are not yet described.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="ddp-7_sect11" name="ddp-7_sect11" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/recv.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">recvmsg</span>(2)</span></a>, <a class="link" href="../htmlman2/send.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sendmsg</span>(2)</span></a>, <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>, <a class="link" href="../htmlman7/socket.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">socket</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="ddp-7_sect12" name="ddp-7_sect12" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    This man page is Copyright (C) 1998 Alan Cox.<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM_ONE_PARA)<br />
+                  Permission is granted to distribute possibly modified copies<br />
+
+                  of this page provided the header is included verbatim,<br />
+
+                  and in case of nontrivial modification author and date<br />
+
+                  of the modification is added to the header.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  $Id: ddp.7,v 1.3 1999/05/13 11:33:22 freitag Exp $<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

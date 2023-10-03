@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>pipe(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="pipe(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="pipe.7" name="pipe.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>pipe — overview of pipes and FIFOs</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pipe-7_sect1" name="pipe-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>Pipes and FIFOs (also known as named pipes) provide a
+      unidirectional interprocess communication channel. A pipe has
+      a <span class="emphasis"><em>read end</em></span> and a
+      <span class="emphasis"><em>write end</em></span>. Data
+      written to the write end of a pipe can be read from the read
+      end of the pipe.</p>
+
+      <p>A pipe is created using <a class="link" href="../htmlman2/pipe.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pipe</span>(2)</span></a>, which creates a
+      new pipe and returns two file descriptors, one referring to
+      the read end of the pipe, the other referring to the write
+      end. Pipes can be used to create a communication channel
+      between related processes; see <a class="link" href="../htmlman2/pipe.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pipe</span>(2)</span></a> for an example.</p>
+
+      <p>A FIFO (short for First In First Out) has a name within
+      the filesystem (created using <a class="link" href="../htmlman3/mkfifo.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mkfifo</span>(3)</span></a>), and is opened
+      using <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>. Any process may
+      open a FIFO, assuming the file permissions allow it. The read
+      end is opened using the <code class="constant">O_RDONLY</code> flag; the write end is opened
+      using the <code class="constant">O_WRONLY</code> flag. See
+      <a class="link" href="../htmlman7/fifo.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fifo</span>(7)</span></a> for further
+      details. <em class="replaceable"><code>Note</code></em>:
+      although FIFOs have a pathname in the filesystem, I/O on
+      FIFOs does not involve operations on the underlying device
+      (if there is one).</p>
+
+      <div class="refsect2">
+        <a id="pipe-7_sect2" name="pipe-7_sect2" shape="rect"> </a>
+
+        <h3>I/O on pipes and FIFOs</h3>
+
+        <p>The only difference between pipes and FIFOs is the
+        manner in which they are created and opened. Once these
+        tasks have been accomplished, I/O on pipes and FIFOs has
+        exactly the same semantics.</p>
+
+        <p>If a process attempts to read from an empty pipe, then
+        <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> will block until
+        data is available. If a process attempts to write to a full
+        pipe (see below), then <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a> blocks until
+        sufficient data has been read from the pipe to allow the
+        write to complete. Nonblocking I/O is possible by using the
+        <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a> <code class="constant">F_SETFL</code> operation to enable the
+        <code class="constant">O_NONBLOCK</code> open file status
+        flag.</p>
+
+        <p>The communication channel provided by a pipe is a
+        <span class="emphasis"><em>byte stream</em></span>: there
+        is no concept of message boundaries.</p>
+
+        <p>If all file descriptors referring to the write end of a
+        pipe have been closed, then an attempt to <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> from the pipe
+        will see end-of-file (<a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> will return 0).
+        If all file descriptors referring to the read end of a pipe
+        have been closed, then a <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a> will cause a
+        <code class="constant">SIGPIPE</code> signal to be
+        generated for the calling process. If the calling process
+        is ignoring this signal, then <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a> fails with the
+        error <span class="errorname">EPIPE</span>. An application
+        that uses <a class="link" href="../htmlman2/pipe.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pipe</span>(2)</span></a> and <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> should use
+        suitable <a class="link" href="../htmlman2/close.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">close</span>(2)</span></a> calls to close
+        unnecessary duplicate file descriptors; this ensures that
+        end-of-file and <code class="constant">SIGPIPE</code>/<span class="errorname">EPIPE</span> are delivered when
+        appropriate.</p>
+
+        <p>It is not possible to apply <a class="link" href="../htmlman2/lseek.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">lseek</span>(2)</span></a> to a pipe.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pipe-7_sect3" name="pipe-7_sect3" shape="rect"> </a>
+
+        <h3>Pipe capacity</h3>
+
+        <p>A pipe has a limited capacity. If the pipe is full, then
+        a <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a> will block or
+        fail, depending on whether the <code class="constant">O_NONBLOCK</code> flag is set (see below).
+        Different implementations have different limits for the
+        pipe capacity. Applications should not rely on a particular
+        capacity: an application should be designed so that a
+        reading process consumes data as soon as it is available,
+        so that a writing process does not remain blocked.</p>
+
+        <p>In Linux versions before 2.6.11, the capacity of a pipe
+        was the same as the system page size (e.g., 4096 bytes on
+        i386). Since Linux 2.6.11, the pipe capacity is 65536
+        bytes. Since Linux 2.6.35, the default pipe capacity is
+        65536 bytes, but the capacity can be queried and set using
+        the <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a> <code class="constant">F_GETPIPE_SZ</code> and <code class="constant">F_SETPIPE_SZ</code> operations. See <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a> for more
+        information.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pipe-7_sect4" name="pipe-7_sect4" shape="rect"> </a>
+
+        <h3>PIPE_BUF</h3>
+
+        <p>POSIX.1-2001 says that <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a>s of less than
+        <code class="constant">PIPE_BUF</code> bytes must be
+        atomic: the output data is written to the pipe as a
+        contiguous sequence. Writes of more than <code class="constant">PIPE_BUF</code> bytes may be nonatomic: the
+        kernel may interleave the data with data written by other
+        processes. POSIX.1-2001 requires <code class="constant">PIPE_BUF</code> to be at least 512 bytes. (On
+        Linux, <code class="constant">PIPE_BUF</code> is 4096
+        bytes.) The precise semantics depend on whether the file
+        descriptor is nonblocking (<code class="constant">O_NONBLOCK</code>), whether there are multiple
+        writers to the pipe, and on <em class="replaceable"><code>n</code></em>, the number of bytes to
+        be written:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">O_NONBLOCK</code> disabled, <em class="replaceable"><code>n</code></em> &lt;= <code class="constant">PIPE_BUF</code></span></dt>
+
+            <dd>
+              <p>All <em class="replaceable"><code>n</code></em>
+              bytes are written atomically; <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a> may block
+              if there is not room for <em class="replaceable"><code>n</code></em> bytes to be written
+              immediately</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">O_NONBLOCK</code> enabled, <em class="replaceable"><code>n</code></em> &lt;= <code class="constant">PIPE_BUF</code></span></dt>
+
+            <dd>
+              <p>If there is room to write <em class="replaceable"><code>n</code></em> bytes to the pipe,
+              then <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a> succeeds
+              immediately, writing all <em class="replaceable"><code>n</code></em> bytes; otherwise
+              <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a> fails,
+              with <code class="varname">errno</code> set to
+              <span class="errorname">EAGAIN</span>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">O_NONBLOCK</code> disabled, <em class="replaceable"><code>n</code></em> &gt; <code class="constant">PIPE_BUF</code></span></dt>
+
+            <dd>
+              <p>The write is nonatomic: the data given to
+              <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a> may be
+              interleaved with <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a>s by other
+              process; the <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a> blocks
+              until <em class="replaceable"><code>n</code></em>
+              bytes have been written.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">O_NONBLOCK</code> enabled, <em class="replaceable"><code>n</code></em> &gt; <code class="constant">PIPE_BUF</code></span></dt>
+
+            <dd>
+              <p>If the pipe is full, then <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a> fails,
+              with <code class="varname">errno</code> set to
+              <span class="errorname">EAGAIN</span>. Otherwise,
+              from 1 to <em class="replaceable"><code>n</code></em>
+              bytes may be written (i.e., a "partial write" may
+              occur; the caller should check the return value from
+              <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a> to see how
+              many bytes were actually written), and these bytes
+              may be interleaved with writes by other
+              processes.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="pipe-7_sect5" name="pipe-7_sect5" shape="rect"> </a>
+
+        <h3>Open file status flags</h3>
+
+        <p>The only open file status flags that can be meaningfully
+        applied to a pipe or FIFO are <code class="constant">O_NONBLOCK</code> and <code class="constant">O_ASYNC</code>.</p>
+
+        <p>Setting the <code class="constant">O_ASYNC</code> flag
+        for the read end of a pipe causes a signal (<code class="constant">SIGIO</code> by default) to be generated when
+        new input becomes available on the pipe (see <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a> for details). On
+        Linux, <code class="constant">O_ASYNC</code> is supported
+        for pipes and FIFOs only since kernel 2.6.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pipe-7_sect6" name="pipe-7_sect6" shape="rect"> </a>
+
+        <h3>Portability notes</h3>
+
+        <p>On some systems (but not Linux), pipes are
+        bidirectional: data can be transmitted in both directions
+        between the pipe ends. According to POSIX.1-2001, pipes
+        need only need be unidirectional. Portable applications
+        should avoid reliance on bidirectional pipe semantics.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pipe-7_sect7" name="pipe-7_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/dup.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">dup</span>(2)</span></a>, <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a>, <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>, <a class="link" href="../htmlman2/pipe.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pipe</span>(2)</span></a>, <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a>, <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a>, <a class="link" href="../htmlman2/socketpair.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">socketpair</span>(2)</span></a>, <a class="link" href="../htmlman2/stat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">stat</span>(2)</span></a>, <a class="link" href="../htmlman3/mkfifo.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mkfifo</span>(3)</span></a>, <a class="link" href="../htmlman7/epoll.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll</span>(7)</span></a>, <a class="link" href="../htmlman7/fifo.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fifo</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="pipe-7_sect8" name="pipe-7_sect8" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2005 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

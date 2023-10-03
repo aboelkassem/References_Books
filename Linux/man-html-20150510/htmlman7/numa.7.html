@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>numa(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="numa(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="numa.7" name="numa.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>numa — overview of Non-Uniform Memory
+      Architecture</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="numa-7_sect1" name="numa-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>Non-Uniform Memory Access (NUMA) refers to multiprocessor
+      systems whose memory is divided into multiple memory nodes.
+      The access time of a memory node depends on the relative
+      locations of the accessing CPU and the accessed node. (This
+      contrasts with a symmetric multiprocessor system, where the
+      access time for all of the memory is the same for all CPUs.)
+      Normally, each CPU on a NUMA system has a local memory node
+      whose contents can be accessed faster than the memory in the
+      node local to another CPU or the memory on a bus shared by
+      all CPUs.</p>
+
+      <div class="refsect2">
+        <a id="numa-7_sect2" name="numa-7_sect2" shape="rect"> </a>
+
+        <h3>NUMA system calls</h3>
+
+        <p>The Linux kernel implements the following NUMA-related
+        system calls: <a class="link" href="../htmlman2/get_mempolicy.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">get_mempolicy</span>(2)</span></a>,
+        <a class="link" href="../htmlman2/mbind.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mbind</span>(2)</span></a>, <a class="link" href="../htmlman2/migrate_pages.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">migrate_pages</span>(2)</span></a>,
+        <a class="link" href="../htmlman2/move_pages.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">move_pages</span>(2)</span></a>, and
+        <a class="link" href="../htmlman2/set_mempolicy.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">set_mempolicy</span>(2)</span></a>.
+        However, applications should normally use the interface
+        provided by <em class="replaceable"><code>libnuma</code></em>; see "Library
+        Support" below.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="numa-7_sect3" name="numa-7_sect3" shape="rect"> </a>
+
+        <h3>/proc/[number]/numa_maps (since Linux 2.6.14)</h3>
+
+        <p>This file displays information about a process's NUMA
+        memory policy and allocation.</p>
+
+        <p>Each line contains information about a memory range used
+        by the process, displaying—among other
+        information—the effective memory policy for that
+        memory range and on which nodes the pages have been
+        allocated.</p>
+
+        <p><em class="replaceable"><code>numa_maps</code></em> is a
+        read-only file. When <code class="filename">/proc/&lt;pid&gt;/numa_maps</code> is read, the
+        kernel will scan the virtual address space of the process
+        and report how memory is used. One line is displayed for
+        each unique memory range of the process.</p>
+
+        <p>The first field of each line shows the starting address
+        of the memory range. This field allows a correlation with
+        the contents of the <code class="filename">/proc/&lt;pid&gt;/maps</code> file, which
+        contains the end address of the range and other
+        information, such as the access permissions and
+        sharing.</p>
+
+        <p>The second field shows the memory policy currently in
+        effect for the memory range. Note that the effective policy
+        is not necessarily the policy installed by the process for
+        that memory range. Specifically, if the process installed a
+        "default" policy for that range, the effective policy for
+        that range will be the process policy, which may or may not
+        be "default".</p>
+
+        <p>The rest of the line contains information about the
+        pages allocated in the memory range, as follows:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><em class="replaceable"><code>N&lt;node&gt;=&lt;nr_pages&gt;</code></em></span></dt>
+
+            <dd>
+              <p>The number of pages allocated on <em class="replaceable"><code>&lt;node&gt;</code></em>.
+              <em class="replaceable"><code>&lt;nr_pages&gt;</code></em>
+              includes only pages currently mapped by the process.
+              Page migration and memory reclaim may have
+              temporarily unmapped pages associated with this
+              memory range. These pages may show up again only
+              after the process has attempted to reference them. If
+              the memory range represents a shared memory area or
+              file mapping, other processes may currently have
+              additional pages mapped in a corresponding memory
+              range.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>file=&lt;filename&gt;</code></em></span></dt>
+
+            <dd>
+              <p>The file backing the memory range. If the file is
+              mapped as private, write accesses may have generated
+              COW (Copy-On-Write) pages in this memory range. These
+              pages are displayed as anonymous pages.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>heap</code></em></span></dt>
+
+            <dd>
+              <p>Memory range is used for the heap.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>stack</code></em></span></dt>
+
+            <dd>
+              <p>Memory range is used for the stack.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>huge</code></em></span></dt>
+
+            <dd>
+              <p>Huge memory range. The page counts shown are huge
+              pages and not regular sized pages.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>anon=&lt;pages&gt;</code></em></span></dt>
+
+            <dd>
+              <p>The number of anonymous page in the range.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>dirty=&lt;pages&gt;</code></em></span></dt>
+
+            <dd>
+              <p>Number of dirty pages.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>mapped=&lt;pages&gt;</code></em></span></dt>
+
+            <dd>
+              <p>Total number of mapped pages, if different from
+              <em class="replaceable"><code>dirty</code></em> and
+              <em class="replaceable"><code>anon</code></em>
+              pages.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>mapmax=&lt;count&gt;</code></em></span></dt>
+
+            <dd>
+              <p>Maximum mapcount (number of processes mapping a
+              single page) encountered during the scan. This may be
+              used as an indicator of the degree of sharing
+              occurring in a given memory range.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>swapcache=&lt;count&gt;</code></em></span></dt>
+
+            <dd>
+              <p>Number of pages that have an associated entry on a
+              swap device.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>active=&lt;pages&gt;</code></em></span></dt>
+
+            <dd>
+              <p>The number of pages on the active list. This field
+              is shown only if different from the number of pages
+              in this range. This means that some inactive pages
+              exist in the memory range that may be removed from
+              memory by the swapper soon.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>writeback=&lt;pages&gt;</code></em></span></dt>
+
+            <dd>
+              <p>Number of pages that are currently being written
+              out to disk.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="numa-7_sect4" name="numa-7_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>No standards govern NUMA interfaces.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="numa-7_sect5" name="numa-7_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>The Linux NUMA system calls and <code class="filename">/proc</code> interface are available only if the
+      kernel was configured and built with the <code class="constant">CONFIG_NUMA</code> option.</p>
+
+      <div class="refsect2">
+        <a id="numa-7_sect6" name="numa-7_sect6" shape="rect"> </a>
+
+        <h3>Library support</h3>
+
+        <p>Link with <code class="option">−lnuma</code> to
+        get the system call definitions. <em class="replaceable"><code>libnuma</code></em> and the required
+        <code class="literal">&lt;</code><code class="filename">numaif.h</code><code class="literal">&gt;</code>
+        header are available in the <em class="replaceable"><code>numactl</code></em> package.</p>
+
+        <p>However, applications should not use these system calls
+        directly. Instead, the higher level interface provided by
+        the <span class="citerefentry"><span class="refentrytitle">numa</span>(3)</span> functions in the
+        <em class="replaceable"><code>numactl</code></em> package
+        is recommended. The <em class="replaceable"><code>numactl</code></em> package is
+        available at <a class="literalurl" href="ftp://oss.sgi.com/www/projects/libnuma/download/" target="_top" shape="rect">ftp://oss.sgi.com/www/projects/libnuma/download/</a>
+        The package is also included in some Linux distributions.
+        Some distributions include the development library and
+        header in the separate <em class="replaceable"><code>numactl-devel</code></em> package.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="numa-7_sect7" name="numa-7_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/get_mempolicy.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">get_mempolicy</span>(2)</span></a>, <a class="link" href="../htmlman2/mbind.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mbind</span>(2)</span></a>, <a class="link" href="../htmlman2/move_pages.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">move_pages</span>(2)</span></a>, <a class="link" href="../htmlman2/set_mempolicy.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">set_mempolicy</span>(2)</span></a>,
+      <span class="citerefentry"><span class="refentrytitle">numa</span>(3)</span>, <a class="link" href="../htmlman7/cpuset.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">cpuset</span>(7)</span></a>, <span class="citerefentry"><span class="refentrytitle">numactl</span>(8)</span></p>
+    </div>
+
+    <div class="colophon">
+      <a id="numa-7_sect8" name="numa-7_sect8" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 2008, Linux Foundation, written by Michael Kerrisk<br />
+
+                      &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  and Copyright 2003,2004 Andi Kleen, SuSE Labs.<br />
+
+                  numa_maps material Copyright (c) 2005 Silicon Graphics Incorporated.<br />
+
+                      Christoph Lameter, &lt;cl<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>linux-foundation.org&gt;.<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

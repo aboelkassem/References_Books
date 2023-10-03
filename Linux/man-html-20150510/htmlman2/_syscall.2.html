@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>_syscall(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="_syscall(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="u-syscall.2" name="u-syscall.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>_syscall — invoking a system call without library
+      support (OBSOLETE)</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;linux/unistd.h&gt;
+
+A _syscall macro
+
+desired system call
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="u-syscall-2_sect1" name="u-syscall-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The important thing to know about a system call is its
+      prototype. You need to know how many arguments, their types,
+      and the function return type. There are seven macros that
+      make the actual call into the system easier. They have the
+      form:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>_syscall<code class="constant">X</code>(<em class="replaceable"><code>type</code></em>,<em class="replaceable"><code>name</code></em>,<em class="replaceable"><code>type1</code></em>,<em class="replaceable"><code>arg1</code></em>,<em class="replaceable"><code>type2</code></em>,<em class="replaceable"><code>arg2</code></em>,...)</p>
+        </blockquote>
+      </div>
+
+      <p>where</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p><code class="constant">X</code> is 0–6, which
+            are the number of arguments taken by the system
+            call</p>
+          </li>
+
+          <li class="listitem">
+            <p><em class="replaceable"><code>type</code></em> is
+            the return type of the system call</p>
+          </li>
+
+          <li class="listitem">
+            <p><em class="replaceable"><code>name</code></em> is
+            the name of the system call</p>
+          </li>
+
+          <li class="listitem">
+            <p><em class="replaceable"><code>typeN</code></em> is
+            the Nth argument's type</p>
+          </li>
+
+          <li class="listitem">
+            <p><em class="replaceable"><code>argN</code></em> is
+            the name of the Nth argument</p>
+          </li>
+        </ul>
+      </div>
+
+      <p>These macros create a function called <em class="replaceable"><code>name</code></em> with the arguments you
+      specify. Once you include the _syscall() in your source file,
+      you call the system call by <em class="replaceable"><code>name</code></em>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="u-syscall-2_sect2" name="u-syscall-2_sect2" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <p><code class="filename">/usr/include/linux/unistd.h</code></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="u-syscall-2_sect3" name="u-syscall-2_sect3" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>The use of these macros is Linux-specific, and
+      deprecated.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="u-syscall-2_sect4" name="u-syscall-2_sect4" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Starting around kernel 2.6.18, the _syscall macros were
+      removed from header files supplied to user space. Use
+      <a class="link" href="../htmlman2/syscall.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">syscall</span>(2)</span></a> instead. (Some
+      architectures, notably ia64, never provided the _syscall
+      macros; on those architectures, <a class="link" href="../htmlman2/syscall.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">syscall</span>(2)</span></a> was always
+      required.)</p>
+
+      <p>The _syscall() macros <span class="emphasis"><em>do
+      not</em></span> produce a prototype. You may have to create
+      one, especially for C++ users.</p>
+
+      <p>System calls are not required to return only positive or
+      negative error codes. You need to read the source to be sure
+      how it will return errors. Usually, it is the negative of a
+      standard error code, for example, −<span class="errorname">EPERM</span>. The _syscall() macros will return
+      the result <em class="replaceable"><code>r</code></em> of the
+      system call when <em class="replaceable"><code>r</code></em>
+      is nonnegative, but will return −1 and set the variable
+      <code class="varname">errno</code> to −<em class="replaceable"><code>r</code></em> when <em class="replaceable"><code>r</code></em> is negative. For the error
+      codes, see <a class="link" href="../htmlman3/errno.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">errno</span>(3)</span></a>.</p>
+
+      <p>When defining a system call, the argument types <em class="replaceable"><code>must</code></em> be passed by-value or
+      by-pointer (for aggregates like structs).</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="u-syscall-2_sect5" name="u-syscall-2_sect5" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;linux/unistd.h&gt;       /* for _syscallX macros/related stuff */
+#include &lt;linux/kernel.h&gt;       /* for struct sysinfo */
+
+_syscall1(int, sysinfo, struct sysinfo *, info);
+
+/* Note: if you copy directly from the nroff source, remember to
+REMOVE the extra backslashes in the printf statement. */
+
+int
+main(void)
+{
+    struct sysinfo s_info;
+    int error;
+
+    error = sysinfo(&amp;s_info);
+    printf("code error = %d\n", error);
+    printf("Uptime = %lds\nLoad: 1 min %lu / 5 min %lu / 15 min %lu\n"
+           "RAM: total %lu / free %lu / shared %lu\n"
+           "Memory in buffers = %lu\nSwap: total %lu / free %lu\n"
+           "Number of processes = %d\n",
+           s_info.uptime, s_info.loads[0],
+           s_info.loads[1], s_info.loads[2],
+           s_info.totalram, s_info.freeram,
+           s_info.sharedram, s_info.bufferram,
+           s_info.totalswap, s_info.freeswap,
+           s_info.procs);
+    exit(EXIT_SUCCESS);
+}
+</pre>
+      </div>
+
+      <div class="refsect2">
+        <a id="u-syscall-2_sect6" name="u-syscall-2_sect6" shape="rect"> </a>
+
+        <h3>Sample output</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+code error = 0
+uptime = 502034s
+Load: 1 min 13376 / 5 min 5504 / 15 min 1152
+RAM: total 15343616 / free 827392 / shared 8237056
+Memory in buffers = 5066752
+Swap: total 27881472 / free 24698880
+Number of processes = 40
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="u-syscall-2_sect7" name="u-syscall-2_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/intro.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">intro</span>(2)</span></a>, <a class="link" href="../htmlman2/syscall.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">syscall</span>(2)</span></a>, <a class="link" href="../htmlman3/errno.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">errno</span>(3)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="u-syscall-2_sect8" name="u-syscall-2_sect8" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 1993 Michael Haardt (michael<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>moria.de),<br />
+
+                    Fri Apr  2 11:32:09 MET DST 1993<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_DOC_FULL)<br />
+                  This is free documentation; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License as<br />
+
+                  published by the Free Software Foundation; either version 2 of<br />
+
+                  the License, or (at your option) any later version.<br />
+
+                  <br />
+                  The GNU General Public License's references to "object code"<br />
+
+                  and "executables" are to be interpreted as the output of any<br />
+
+                  document formatting or typesetting system, including<br />
+
+                  intermediate and printed output.<br />
+
+                  <br />
+                  This manual is distributed in the hope that it will be useful,<br />
+
+                  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+
+                  GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Tue Jul  6 12:42:46 MDT 1993 &lt;dminer<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>nyx.cs.du.edu&gt;<br />
+
+                  Added "Calling Directly" and supporting paragraphs<br />
+
+                  <br />
+                  Modified Sat Jul 24 15:19:12 1993 by Rik Faith &lt;faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu&gt;<br />
+
+                  <br />
+                  Modified 21 Aug 1994 by Michael Chastain &lt;mec<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>shell.portal.com&gt;:<br />
+
+                    Added explanation of arg stacking when 6 or more args.<br />
+
+                  <br />
+                  Modified 10 June 1995 by Andries Brouwer &lt;aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl&gt;<br />
+
+                  <br />
+                  2007-10-23 mtk: created as a new page, by taking the content<br />
+
+                  specific to the _syscall() macros from intro(2).<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

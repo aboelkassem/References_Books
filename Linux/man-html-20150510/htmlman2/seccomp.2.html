@@ -1,0 +1,1204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>seccomp(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="seccomp(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="seccomp.2" name="seccomp.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>seccomp — operate on Secure Computing state of the
+      process</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;linux/seccomp.h&gt;
+#include &lt;linux/filter.h&gt;
+#include &lt;linux/audit.h&gt;
+#include &lt;linux/signal.h&gt;
+#include &lt;sys/ptrace.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>seccomp</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">unsigned int <var class="pdparam">operation</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">unsigned int <var class="pdparam">flags</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">void *<var class="pdparam">args</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="seccomp-2_sect1" name="seccomp-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">seccomp</code>() system call
+      operates on the Secure Computing (seccomp) state of the
+      calling process.</p>
+
+      <p>Currently, Linux supports the following <em class="parameter"><code>operation</code></em> values:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">SECCOMP_SET_MODE_STRICT</code></span></dt>
+
+          <dd>
+            <p>The only system calls that the calling thread is
+            permitted to make are <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>, <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a>, <a class="link" href="../htmlman2/_exit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">_exit</span>(2)</span></a>, and
+            <a class="link" href="../htmlman2/sigreturn.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigreturn</span>(2)</span></a>. Other
+            system calls result in the delivery of a <code class="constant">SIGKILL</code> signal. Strict secure
+            computing mode is useful for number-crunching
+            applications that may need to execute untrusted byte
+            code, perhaps obtained by reading from a pipe or
+            socket.</p>
+
+            <p>Note that although the calling thread can no longer
+            call <a class="link" href="../htmlman2/sigprocmask.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigprocmask</span>(2)</span></a>, it
+            can use <a class="link" href="../htmlman2/sigreturn.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigreturn</span>(2)</span></a> to block
+            all signals apart from <code class="constant">SIGKILL</code> and <code class="constant">SIGSTOP</code>. This means that <a class="link" href="../htmlman2/alarm.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">alarm</span>(2)</span></a> (for
+            example) is not sufficient for restricting the
+            process's execution time. Instead, to reliably
+            terminate the process, <code class="constant">SIGKILL</code> must be used. This can be
+            done by using <a class="link" href="../htmlman2/timer_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">timer_create</span>(2)</span></a> with
+            <code class="constant">SIGEV_SIGNAL</code> and
+            <em class="replaceable"><code>sigev_signo</code></em>
+            set to <code class="constant">SIGKILL</code>, or by
+            using <a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setrlimit</span>(2)</span></a> to set
+            the hard limit for <code class="constant">RLIMIT_CPU</code>.</p>
+
+            <p>This operation is available only if the kernel is
+            configured with <code class="constant">CONFIG_SECCOMP</code> enabled.</p>
+
+            <p>The value of <em class="parameter"><code>flags</code></em> must be 0, and
+            <em class="parameter"><code>args</code></em> must be
+            NULL.</p>
+
+            <p>This operation is functionally identical to the
+            call:</p>
+
+            <p>prctl(PR_SET_SECCOMP, SECCOMP_MODE_STRICT);</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">SECCOMP_SET_MODE_FILTER</code></span></dt>
+
+          <dd>
+            <p>The system calls allowed are defined by a pointer to
+            a Berkeley Packet Filter (BPF) passed via <em class="parameter"><code>args</code></em>. This argument is a
+            pointer to a <span class="emphasis"><em>struct
+            sock_fprog</em></span>; it can be designed to filter
+            arbitrary system calls and system call arguments. If
+            the filter is invalid, <code class="function">seccomp</code>() fails, returning
+            <span class="errorname">EINVAL</span> in <code class="varname">errno</code>.</p>
+
+            <p>If <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> or <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> is allowed
+            by the filter, any child processes will be constrained
+            to the same system call filters as the parent. If
+            <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a> is allowed,
+            the existing filters will be preserved across a call to
+            <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>.</p>
+
+            <p>In order to use the <code class="constant">SECCOMP_SET_MODE_FILTER</code> operation,
+            either the caller must have the <code class="constant">CAP_SYS_ADMIN</code> capability, or the
+            thread must already have the <em class="replaceable"><code>no_new_privs</code></em> bit set.
+            If that bit was not already set by an ancestor of this
+            thread, the thread must make the following call:</p>
+
+            <p>prctl(PR_SET_NO_NEW_PRIVS, 1);</p>
+
+            <p>Otherwise, the <code class="constant">SECCOMP_SET_MODE_FILTER</code> operation
+            will fail and return <span class="errorname">EACCES</span> in <code class="varname">errno</code>. This requirement ensures that
+            an unprivileged process cannot apply a malicious filter
+            and then invoke a set-user-ID or other privileged
+            program using <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>, thus
+            potentially compromising that program. (Such a
+            malicious filter might, for example, cause an attempt
+            to use <a class="link" href="../htmlman2/setuid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setuid</span>(2)</span></a> to set the
+            caller's user IDs to non-zero values to instead return
+            0 without actually making the system call. Thus, the
+            program might be tricked into retaining superuser
+            privileges in circumstances where it is possible to
+            influence it to do dangerous things because it did not
+            actually drop privileges.)</p>
+
+            <p>If <a class="link" href="../htmlman2/prctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">prctl</span>(2)</span></a> or <a class="link" href="../htmlman2/seccomp.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">seccomp</span>(2)</span></a> is allowed
+            by the attached filter, further filters may be added.
+            This will increase evaluation time, but allows for
+            further reduction of the attack surface during
+            execution of a thread.</p>
+
+            <p>The <code class="constant">SECCOMP_SET_MODE_FILTER</code> operation is
+            available only if the kernel is configured with
+            <code class="constant">CONFIG_SECCOMP_FILTER</code>
+            enabled.</p>
+
+            <p>When <em class="parameter"><code>flags</code></em>
+            is 0, this operation is functionally identical to the
+            call:</p>
+
+            <p>prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER,
+            args);</p>
+
+            <p>The recognized <em class="parameter"><code>flags</code></em> are:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><code class="constant">SECCOMP_FILTER_FLAG_TSYNC</code></span></dt>
+
+                    <dd>
+                      <p>When adding a new filter, synchronize all
+                      other threads of the calling process to the
+                      same seccomp filter tree. A "filter tree" is
+                      the ordered list of filters attached to a
+                      thread. (Attaching identical filters in
+                      separate <code class="function">seccomp</code>() calls results in
+                      different filters from this perspective.)</p>
+
+                      <p>If any thread cannot synchronize to the
+                      same filter tree, the call will not attach
+                      the new seccomp filter, and will fail,
+                      returning the first thread ID found that
+                      cannot synchronize. Synchronization will fail
+                      if another thread in the same process is in
+                      <code class="constant">SECCOMP_MODE_STRICT</code> or if
+                      it has attached new seccomp filters to
+                      itself, diverging from the calling thread's
+                      filter tree.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+          </dd>
+        </dl>
+      </div>
+
+      <div class="refsect2">
+        <a id="seccomp-2_sect2" name="seccomp-2_sect2" shape="rect"> </a>
+
+        <h3>Filters</h3>
+
+        <p>When adding filters via <code class="constant">SECCOMP_SET_MODE_FILTER</code>, <em class="parameter"><code>args</code></em> points to a filter
+        program:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="structdef">
+              <table style="border-collapse: collapse;">
+                <colgroup span="1">
+                  <col class="c1" span="1" />
+                  <col class="c2" span="1" />
+                  <col class="c3" span="1" />
+                  <col class="c4" span="1" />
+                  <col class="c5" span="1" />
+                </colgroup>
+
+                <tbody>
+                  <tr>
+                    <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                    struct</td>
+
+                    <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">sock_fprog</span> {</td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>len</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Number of BPF instructions */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">struct sock_filter</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                    *</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>filter</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Pointer to array of<br />
+
+                        BPF instructions */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>Each program must contain one or more BPF
+        instructions:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="structdef">
+              <table style="border-collapse: collapse;">
+                <colgroup span="1">
+                  <col class="c1" span="1" />
+                  <col class="c2" span="1" />
+                  <col class="c3" span="1" />
+                  <col class="c4" span="1" />
+                  <col class="c5" span="1" />
+                </colgroup>
+
+                <tbody>
+                  <tr>
+                    <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                    struct</td>
+
+                    <td class="structdefhdr" style="" colspan="3" align="left" rowspan="1"><span class="structname">sock_filter</span> {</td>
+
+                    <td class="structdefhdrcomment" style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        /* Filter block */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u16</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>code</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Actual filter code */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u8</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>jt</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        /* Jump true */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u8</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>jf</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        /* Jump false */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u32</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>k</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Generic multiuse field */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>When executing the instructions, the BPF program
+        operates on the system call information made available
+        (i.e., use the <code class="constant">BPF_ABS</code>
+        addressing mode) as a (read-only) buffer of the following
+        form:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="structdef">
+              <table style="border-collapse: collapse;">
+                <colgroup span="1">
+                  <col class="c1" span="1" />
+                  <col class="c2" span="1" />
+                  <col class="c3" span="1" />
+                  <col class="c4" span="1" />
+                  <col class="c5" span="1" />
+                </colgroup>
+
+                <tbody>
+                  <tr>
+                    <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                    struct</td>
+
+                    <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">seccomp_data</span> {</td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>nr</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* System call number */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u32</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>arch</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        /* AUDIT_ARCH_* value<br />
+                        (see &lt;linux/audit.h&gt;) */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u64</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>instruction_pointer</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* CPU instruction pointer */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u64</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>args</code></em>[6];</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Up to 6 system call arguments */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>Because the numbers of system calls vary between
+        architectures and some architectures (e.g., X86-64) allow
+        user-space code to use the calling conventions of multiple
+        architectures, it is usually necessary to verify the value
+        of the <em class="parameter"><code>arch</code></em>
+        field.</p>
+
+        <p>It is strongly recommended to use a whitelisting
+        approach whenever possible because such an approach is more
+        robust and simple. A blacklist will have to be updated
+        whenever a potentially dangerous system call is added (or a
+        dangerous flag or option if those are blacklisted), and it
+        is often possible to alter the representation of a value
+        without altering its meaning, leading to a blacklist
+        bypass.</p>
+
+        <p>The <em class="parameter"><code>arch</code></em> field
+        is not unique for all calling conventions. The X86-64 ABI
+        and the X32 ABI both use <code class="constant">AUDIT_ARCH_X86_64</code> as <em class="parameter"><code>arch</code></em>, and they run on the
+        same processors. Instead, the mask <code class="constant">__X32_SYSCALL_BIT</code> is used on the system
+        call number to tell the two ABIs apart. This means that in
+        order to create a seccomp-based blacklist for system calls
+        performed through the X86-64 ABI, it is necessary to not
+        only check that <em class="parameter"><code>arch</code></em> equals <code class="constant">AUDIT_ARCH_X86_64</code>, but also to explicitly
+        reject all system call that contain <code class="constant">__X32_SYSCALL_BIT</code> in <em class="parameter"><code>nr</code></em>.</p>
+
+        <p>When checking values from <em class="parameter"><code>args</code></em> against a blacklist,
+        keep in mind that arguments are often silently truncated
+        before being processed, but after the seccomp check. For
+        example, this happens if the i386 ABI is used on an X86-64
+        kernel: Although the kernel will normally not look beyond
+        the 32 lowest bits of the arguments, the values of the full
+        64-bit registers will be present in the seccomp data. A
+        less surprising example is that if the X86-64 ABI is used
+        to perform a system call that takes an argument of type
+        <span class="type">int</span>, the more-significant half of
+        the argument register is ignored by the system call, but
+        visible in the seccomp data.</p>
+
+        <p>A seccomp filter returns a 32-bit value consisting of
+        two parts: the most significant 16 bits (corresponding to
+        the mask defined by the constant <code class="constant">SECCOMP_RET_ACTION</code>) contain one of the
+        "action" values listed below; the least significant 16-bits
+        (defined by the constant <code class="constant">SECCOMP_RET_DATA</code>) are "data" to be
+        associated with this return value.</p>
+
+        <p>If multiple filters exist, they are all executed, in
+        reverse order of their addition to the filter tree (i.e.,
+        the most recently installed filter is executed first). The
+        return value for the evaluation of a given system call is
+        the first-seen <code class="constant">SECCOMP_RET_ACTION</code> value of highest
+        precedence (along with its accompanying data) returned by
+        execution of all of the filters.</p>
+
+        <p>In decreasing order of precedence, the values that may
+        be returned by a seccomp filter are:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">SECCOMP_RET_KILL</code></span></dt>
+
+            <dd>
+              <p>This value results in the process exiting
+              immediately without executing the system call. The
+              process terminates as though killed by a <code class="constant">SIGSYS</code> signal (<em class="replaceable"><code>not</code></em> <code class="constant">SIGKILL</code>).</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SECCOMP_RET_TRAP</code></span></dt>
+
+            <dd>
+              <p>This value results in the kernel sending a
+              <code class="constant">SIGSYS</code> signal to the
+              triggering process without executing the system call.
+              Various fields will be set in the <span class="type">siginfo_t</span> structure (see <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a>)
+              associated with signal:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="itemizedlist">
+                    <ul class="itemizedlist" style="list-style-type: disc;">
+                      <li class="listitem">
+                        <p><em class="replaceable"><code>si_signo</code></em>
+                        will contain <code class="constant">SIGSYS</code>.</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p><em class="replaceable"><code>si_call_addr</code></em>
+                        will show the address of the system call
+                        instruction.</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p><em class="replaceable"><code>si_syscall</code></em>
+                        and <em class="replaceable"><code>si_arch</code></em>
+                        will indicate which system call was
+                        attempted.</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p><em class="replaceable"><code>si_code</code></em>
+                        will contain <code class="constant">SYS_SECCOMP</code>.</p>
+                      </li>
+
+                      <li class="listitem">
+                        <p><em class="replaceable"><code>si_errno</code></em>
+                        will contain the <code class="constant">SECCOMP_RET_DATA</code> portion
+                        of the filter return value.</p>
+                      </li>
+                    </ul>
+                  </div>
+                </blockquote>
+              </div>
+
+              <p>The program counter will be as though the system
+              call happened (i.e., it will not point to the system
+              call instruction). The return value register will
+              contain an architecture−dependent value; if
+              resuming execution, set it to something appropriate
+              for the system call. (The architecture dependency is
+              because replacing it with <span class="errorname">ENOSYS</span> could overwrite some useful
+              information.)</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SECCOMP_RET_ERRNO</code></span></dt>
+
+            <dd>
+              <p>This value results in the <code class="constant">SECCOMP_RET_DATA</code> portion of the
+              filter's return value being passed to user space as
+              the <code class="varname">errno</code> value without
+              executing the system call.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SECCOMP_RET_TRACE</code></span></dt>
+
+            <dd>
+              <p>When returned, this value will cause the kernel to
+              attempt to notify a <a class="link" href="../htmlman2/ptrace.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ptrace</span>(2)</span></a>-based
+              tracer prior to executing the system call. If there
+              is no tracer present, the system call is not executed
+              and returns a failure status with <code class="varname">errno</code> set to <span class="errorname">ENOSYS</span>.</p>
+
+              <p>A tracer will be notified if it requests
+              <code class="constant">PTRACE_O_TRACESECCOMP</code>
+              using <em class="replaceable"><code>ptrace(PTRACE_SETOPTIONS)</code></em>.
+              The tracer will be notified of a <code class="constant">PTRACE_EVENT_SECCOMP</code> and the
+              <code class="constant">SECCOMP_RET_DATA</code>
+              portion of the filter's return value will be
+              available to the tracer via <code class="constant">PTRACE_GETEVENTMSG</code>.</p>
+
+              <p>The tracer can skip the system call by changing
+              the system call number to −1. Alternatively,
+              the tracer can change the system call requested by
+              changing the system call to a valid system call
+              number. If the tracer asks to skip the system call,
+              then the system call will appear to return the value
+              that the tracer puts in the return value
+              register.</p>
+
+              <p>The seccomp check will not be run again after the
+              tracer is notified. (This means that seccomp-based
+              sandboxes <span class="emphasis"><em>must
+              not</em></span> allow use of <a class="link" href="../htmlman2/ptrace.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ptrace</span>(2)</span></a>\(emeven
+              of other sandboxed processes—without extreme
+              care; ptracers can use this mechanism to escape from
+              the seccomp sandbox.)</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SECCOMP_RET_ALLOW</code></span></dt>
+
+            <dd>
+              <p>This value results in the system call being
+              executed.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="seccomp-2_sect3" name="seccomp-2_sect3" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">seccomp</code>()
+      returns 0. On error, if <code class="constant">SECCOMP_FILTER_FLAG_TSYNC</code> was used, the
+      return value is the ID of the thread that caused the
+      synchronization failure. (This ID is a kernel thread ID of
+      the type returned by <a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a> and <a class="link" href="../htmlman2/gettid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gettid</span>(2)</span></a>.) On other
+      errors, −1 is returned, and <code class="varname">errno</code> is set to indicate the cause of the
+      error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="seccomp-2_sect4" name="seccomp-2_sect4" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <p><code class="function">seccomp</code>() can fail for the
+      following reasons:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">EACCESS</code></span></dt>
+
+          <dd>
+            <p>The caller did not have the <code class="constant">CAP_SYS_ADMIN</code> capability, or had not
+            set <em class="replaceable"><code>no_new_privs</code></em> before
+            using <code class="constant">SECCOMP_SET_MODE_FILTER</code>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>args</code></em> was not
+            a valid address.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>operation</code></em> is
+            unknown; or <em class="parameter"><code>flags</code></em> are invalid for the
+            given <em class="parameter"><code>operation</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>operation</code></em>
+            included <code class="constant">BPF_ABS</code>, but the
+            specified offset was not aligned to a 32-bit boundary
+            or exceeded <span class="emphasis"><em>sizeof(struct
+            seccomp_data)</em></span>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>A secure computing mode has already been set, and
+            <em class="parameter"><code>operation</code></em>
+            differs from the existing setting.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>operation</code></em>
+            specified <code class="constant">SECCOMP_SET_MODE_FILTER</code>, but the
+            kernel was not built with <code class="constant">CONFIG_SECCOMP_FILTER</code> enabled.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>operation</code></em>
+            specified <code class="constant">SECCOMP_SET_MODE_FILTER</code>, but the
+            filter program pointed to by <em class="parameter"><code>args</code></em> was not valid or the
+            length of the filter program was zero or exceeded
+            <code class="constant">BPF_MAXINSNS</code> (4096)
+            instructions. <span class="errorname">EINVAL</span></p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>Out of memory.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>The total length of all filter programs attached to
+            the calling thread would exceed <code class="constant">MAX_INSNS_PER_PATH</code> (32768)
+            instructions. Note that for the purposes of calculating
+            this limit, each already existing filter program incurs
+            an overhead penalty of 4 instructions.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ESRCH</span></span></dt>
+
+          <dd>
+            <p>Another thread caused a failure during thread sync,
+            but its ID could not be determined.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="seccomp-2_sect5" name="seccomp-2_sect5" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p>The <code class="function">seccomp</code>() system call
+      first appeared in Linux 3.17.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="seccomp-2_sect6" name="seccomp-2_sect6" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>The <code class="function">seccomp</code>() system call is
+      a nonstandard Linux extension.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="seccomp-2_sect7" name="seccomp-2_sect7" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Rather than hand-coding seccomp filters as shown in the
+      example below, you may prefer to employ the <em class="replaceable"><code>libseccomp</code></em> library, which
+      provides a front-end for generating seccomp filters.</p>
+
+      <p>The <em class="replaceable"><code>Seccomp</code></em>
+      field of the <code class="filename">/proc/[pid]/status</code>
+      file provides a method of viewing the seccomp mode of a
+      process; see <a class="link" href="../htmlman5/proc.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">proc</span>(5)</span></a>.</p>
+
+      <p><code class="function">seccomp</code>() provides a
+      superset of the functionality provided by the <a class="link" href="../htmlman2/prctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">prctl</span>(2)</span></a> <code class="constant">PR_SET_SECCOMP</code> operation (which does not
+      support <em class="parameter"><code>flags</code></em>).</p>
+
+      <div class="refsect2">
+        <a id="seccomp-2_sect8" name="seccomp-2_sect8" shape="rect"> </a>
+
+        <h3>Seccomp-specific BPF details</h3>
+
+        <p>Note the following BPF details specific to seccomp
+        filters:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>The <code class="constant">BPF_H</code> and
+              <code class="constant">BPF_B</code> size modifiers
+              are not supported: all operations must load and store
+              (4-byte) words (<code class="constant">BPF_W</code>).</p>
+            </li>
+
+            <li class="listitem">
+              <p>To access the contents of the <em class="replaceable"><code>seccomp_data</code></em> buffer,
+              use the <code class="constant">BPF_ABS</code>
+              addressing mode modifier.</p>
+            </li>
+
+            <li class="listitem">
+              <p>The <code class="constant">BPF_LEN</code>
+              addressing mode modifier yields an immediate mode
+              operand whose value is the size of the <em class="replaceable"><code>seccomp_data</code></em>
+              buffer.</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="seccomp-2_sect9" name="seccomp-2_sect9" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>The program below accepts four or more arguments. The
+      first three arguments are a system call number, a numeric
+      architecture identifier, and an error number. The program
+      uses these values to construct a BPF filter that is used at
+      run time to perform the following checks:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><em class="replaceable"><code>[1]</code></em></span></dt>
+
+          <dd>
+            <p>If the program is not running on the specified
+            architecture, the BPF filter causes system calls to
+            fail with the error <span class="errorname">ENOSYS</span>.</p>
+          </dd>
+
+          <dt><span class="term"><em class="replaceable"><code>[2]</code></em></span></dt>
+
+          <dd>
+            <p>If the program attempts to execute the system call
+            with the specified number, the BPF filter causes the
+            system call to fail, with <code class="varname">errno</code> being set to the specified error
+            number.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>The remaining command-line arguments specify the pathname
+      and additional arguments of a program that the example
+      program should attempt to execute using <a class="link" href="../htmlman3/exec.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execv</span>(3)</span></a> (a library
+      function that employs the <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a> system call).
+      Some example runs of the program are shown below.</p>
+
+      <p>First, we display the architecture that we are running on
+      (x86-64) and then construct a shell function that looks up
+      system call numbers on this architecture:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$ uname -m
+x86_64
+$ syscall_nr() {
+    cat /usr/src/linux/arch/x86/syscalls/syscall_64.tbl | \
+    awk '$2 != "x32" &amp;&amp; $3 == "'$1'" { print $1 }'
+}
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>When the BPF filter rejects a system call (case [2]
+      above), it causes the system call to fail with the error
+      number specified on the command line. In the experiments
+      shown here, we'll use error number 99:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$ <span class="emphasis"><em>errno 99</em></span>
+EADDRNOTAVAIL 99 Cannot assign requested address
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>In the following example, we attempt to run the command
+      <a class="link" href="../htmlman1/whoami.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">whoami</span>(1)</span></a>, but the BPF
+      filter rejects the <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a> system call, so
+      that the command is not even executed:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$ <span class="emphasis"><em>syscall_nr execve</em></span>
+59
+$ <em class="replaceable"><code>./a.out</code></em>
+Usage: ./a.out &lt;syscall_nr&gt; &lt;arch&gt; &lt;errno&gt; &lt;prog&gt; [&lt;args&gt;]
+Hint for &lt;arch&gt;: AUDIT_ARCH_I386: 0x40000003
+                 AUDIT_ARCH_X86_64: 0xC000003E
+$ <span class="emphasis"><em>./a.out 59 0xC000003E 99 /bin/whoami</em></span>
+execv: Cannot assign requested address
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>In the next example, the BPF filter rejects the <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a> system call, so
+      that, although it is successfully started, the <a class="link" href="../htmlman1/whoami.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">whoami</span>(1)</span></a> command is not
+      able to write output:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$ <span class="emphasis"><em>syscall_nr write</em></span>
+1
+$ <span class="emphasis"><em>./a.out 1 0xC000003E 99 /bin/whoami</em></span>
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>In the final example, the BPF filter rejects a system call
+      that is not used by the <a class="link" href="../htmlman1/whoami.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">whoami</span>(1)</span></a> command, so it is
+      able to successfully execute and produce output:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+$ <span class="emphasis"><em>syscall_nr preadv</em></span>
+295
+$ <span class="emphasis"><em>./a.out 295 0xC000003E 99 /bin/whoami</em></span>
+cecilia
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="refsect2">
+        <a id="seccomp-2_sect10" name="seccomp-2_sect10" shape="rect"> </a>
+
+        <h3>Program source</h3>
+
+        <div class="informalexample">
+          <pre class="programlisting" xml:space="preserve">
+#include &lt;errno.h&gt;
+#include &lt;stddef.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;linux/audit.h&gt;
+#include &lt;linux/filter.h&gt;
+#include &lt;linux/seccomp.h&gt;
+#include &lt;sys/prctl.h&gt;
+
+#define X32_SYSCALL_BIT 0x40000000
+
+static int
+install_filter(int syscall_nr, int t_arch, int f_errno)
+{
+    unsigned int upper_nr_limit = 0xffffffff;
+    /* assume that AUDIT_ARCH_X86_64 means the normal X86-64 ABI */
+    if (t_arch == AUDIT_ARCH_X86_64)
+        upper_nr_limit = X32_SYSCALL_BIT - 1;
+
+    struct sock_filter filter[] = {
+        /* [0] Load architecture from 'seccomp_data' buffer into
+               accumulator */
+        BPF_STMT(BPF_LD | BPF_W | BPF_ABS,
+                 (offsetof(struct seccomp_data, arch))),
+
+        /* [1] Jump forward 5 instructions if architecture does not
+               match 't_arch' */
+        BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, t_arch, 0, 5),
+
+        /* [2] Load system call number from 'seccomp_data' buffer into
+               accumulator */
+        BPF_STMT(BPF_LD | BPF_W | BPF_ABS,
+                 (offsetof(struct seccomp_data, nr))),
+
+        /* [3] Check ABI - only needed for X86-64 in blacklist use
+               cases.  Use JGT instead of checking against the bit
+               mask to avoid having to reload the syscall number. */
+        BPF_JUMP(BPF_JMP | BPF_JGT | BPF_K, upper_nr_limit, 3, 0),
+
+        /* [4] Jump forward 1 instruction if system call number
+               does not match 'syscall_nr' */
+        BPF_JUMP(BPF_JMP | BPF_JEQ | BPF_K, syscall_nr, 0, 1),
+
+        /* [5] Matching architecture and system call: don't execute
+               the system call, and return 'f_errno' in 'errno' */
+        BPF_STMT(BPF_RET | BPF_K,
+                 SECCOMP_RET_ERRNO | (f_errno &amp; SECCOMP_RET_DATA)),
+
+        /* [6] Destination of system call number mismatch: allow other
+               system calls */
+        BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),
+
+        /* [7] Destination of architecture mismatch: kill process */
+        BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_KILL),
+    };
+
+    struct sock_fprog prog = {
+        .len = (unsigned short) (sizeof(filter) / sizeof(filter[0])),
+        .filter = filter,
+    };
+
+    if (seccomp(SECCOMP_SET_MODE_FILTER, 0, &amp;prog)) {
+        perror("seccomp");
+        return 1;
+    }
+
+    return 0;
+}
+
+int
+main(int argc, char **argv)
+{
+    if (argc &lt; 5) {
+        fprintf(stderr, "Usage: "
+                "%s &lt;syscall_nr&gt; &lt;arch&gt; &lt;errno&gt; &lt;prog&gt; [&lt;args&gt;]\n"
+                "Hint for &lt;arch&gt;: AUDIT_ARCH_I386: 0x%X\n"
+                "                 AUDIT_ARCH_X86_64: 0x%X\n"
+                "\n", argv[0], AUDIT_ARCH_I386, AUDIT_ARCH_X86_64);
+        exit(EXIT_FAILURE);
+    }
+
+    if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0)) {
+        perror("prctl");
+        exit(EXIT_FAILURE);
+    }
+
+    if (install_filter(strtol(argv[1], NULL, 0),
+                       strtol(argv[2], NULL, 0),
+                       strtol(argv[3], NULL, 0)))
+        exit(EXIT_FAILURE);
+
+    execv(argv[4], &amp;argv[4]);
+    perror("execv");
+    exit(EXIT_FAILURE);
+}
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="seccomp-2_sect11" name="seccomp-2_sect11" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/prctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">prctl</span>(2)</span></a>, <a class="link" href="../htmlman2/ptrace.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ptrace</span>(2)</span></a>, <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a>, <a class="link" href="../htmlman7/signal.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(7)</span></a>, <a class="link" href="../htmlman7/socket.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">socket</span>(7)</span></a></p>
+
+      <p>The kernel source files <code class="filename">Documentation/networking/filter.txt</code> and
+      <code class="filename">Documentation/prctl/seccomp_filter.txt</code>.</p>
+
+      <p>McCanne, S. and Jacobson, V. (1992) <span class="emphasis"><em>The BSD Packet Filter: A New Architecture for
+      User-level Packet Capture</em></span>, Proceedings of the
+      USENIX Winter 1993 Conference <a class="literalurl" href="http://www.tcpdump.org/papers/bpf-usenix93.pdf" target="_top" shape="rect">http://www.tcpdump.org/papers/bpf-usenix93.pdf</a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="seccomp-2_sect12" name="seccomp-2_sect12" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2014 Kees Cook &lt;keescook<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>chromium.org&gt;<br />
+
+                  and Copyright (C) 2012 Will Drewry &lt;wad<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>chromium.org&gt;<br />
+
+                  and Copyright (C) 2008, 2014 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

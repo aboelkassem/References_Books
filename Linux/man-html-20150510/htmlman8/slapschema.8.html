@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>slapschema(8) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="slapschema(8) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index8.html" shape="rect">Section 8</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="slapschema.8" name="slapschema.8" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>slapschema — SLAPD in-database schema checking
+      utility</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">SBINDIR/slapschema</code> [
+        <code class="option">−a</code> filter ] [
+        <code class="option">−b</code> suffix ] [<code class="option">−c</code>] [ <code class="option">−d</code> debug−level ] [ <code class="option">−f</code> slapd.conf ] [ <code class="option">−F</code> confdir ] [<code class="option">−g</code>] [ <code class="option">−H</code> URI ] [ <code class="option">−l</code> error−file ] [ <code class="option">−n</code> dbnum ] [ <code class="option">−o</code> option[= value] ] [ <code class="option">−s</code> subtree−dn ] [<code class="option">−v</code>]</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapschema-8_sect1" name="slapschema-8_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><em class="replaceable"><code>Slapschema</code></em> is
+      used to check schema compliance of the contents of a
+      <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a> database. It opens
+      the given database determined by the database number or
+      suffix and checks the compliance of its contents with the
+      corresponding schema. Errors are written to standard output
+      or the specified file. Databases configured as <em class="replaceable"><code>subordinate</code></em> of this one are
+      also output, unless <code class="option">−g</code> is
+      specified.</p>
+
+      <p>Administrators may need to modify existing schema items,
+      including adding new required attributes to objectClasses,
+      removing existing required or allowed attributes from
+      objectClasses, entirely removing objectClasses, or any other
+      change that may result in making perfectly valid entries no
+      longer compliant with the modified schema. The execution of
+      the <span class="command"><strong>slapschema</strong></span>
+      tool after modifying the schema can point out inconsistencies
+      that would otherwise surface only when inconsistent entries
+      need to be modified.</p>
+
+      <p>The entry records are checked in database order, not
+      superior first order. The entry records will be checked
+      considering all (user and operational) attributes stored in
+      the database. Dynamically generated attributes (such as
+      subschemaSubentry) will not be considered.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapschema-8_sect2" name="slapschema-8_sect2" shape="rect"> </a>
+
+      <h2>OPTIONS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="option">−a
+          filter</code></span></dt>
+
+          <dd>
+            <p>Only check entries matching the asserted filter. For
+            example</p>
+
+            <p>slapschema −a \
+            "(!(entryDN:dnSubtreeMatch:=ou=People,dc=example,dc=com))"</p>
+
+            <p>will check all but the "ou=People,dc=example,dc=com"
+            subtree of the "dc=example,dc=com" database.
+            Deprecated; use <em class="parameter"><code>−H</code></em> <em class="replaceable"><code>ldap:///???(filter)</code></em>
+            instead.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−b
+          suffix</code></span></dt>
+
+          <dd>
+            <p>Use the specified <em class="parameter"><code>suffix</code></em> to determine which
+            database to check. The <code class="option">−b</code> cannot be used in conjunction
+            with the <code class="option">−n</code>
+            option.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−c</code></span></dt>
+
+          <dd>
+            <p>Enable continue (ignore errors) mode.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−d
+          debug−level</code></span></dt>
+
+          <dd>
+            <p>Enable debugging messages as defined by the
+            specified <em class="parameter"><code>debug-level</code></em>; see
+            <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a> for
+            details.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−f
+          slapd.conf</code></span></dt>
+
+          <dd>
+            <p>Specify an alternative <a class="link" href="../htmlman5/slapd.conf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd.conf</span>(5)</span></a>
+            file.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−F
+          confdir</code></span></dt>
+
+          <dd>
+            <p>specify a config directory. If both <code class="option">−f</code> and <code class="option">−F</code> are specified, the config file
+            will be read and converted to config directory format
+            and written to the specified directory. If neither
+            option is specified, an attempt to read the default
+            config directory will be made before trying to use the
+            default config file. If a valid config directory exists
+            then the default config file is ignored.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−g</code></span></dt>
+
+          <dd>
+            <p>disable subordinate gluing. Only the specified
+            database will be processed, and not its glued
+            subordinates (if any).</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−H
+          URI</code></span></dt>
+
+          <dd>
+            <p>use dn, scope and filter from URI to only handle
+            matching entries.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−l
+          error−file</code></span></dt>
+
+          <dd>
+            <p>Write errors to specified file instead of standard
+            output.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−n
+          dbnum</code></span></dt>
+
+          <dd>
+            <p>Check the <em class="parameter"><code>dbnum</code></em>−th database
+            listed in the configuration file. The config database
+            <a class="link" href="../htmlman5/slapd-config.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-config</span>(5)</span></a>, is
+            always the first database, so use <code class="option">−n 0</code></p>
+
+            <p>The <code class="option">−n</code> cannot be
+            used in conjunction with the <code class="option">−b</code> option.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−o
+          option[=value]</code></span></dt>
+
+          <dd>
+            <p>Specify an <em class="replaceable"><code>option</code></em> with a(n
+            optional) <em class="replaceable"><code>value</code></em>. Possible generic
+            options/values are:</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+              syslog=&lt;subsystems&gt;  (see `−s' in slapd(8))
+              syslog−level=&lt;level&gt; (see `−S' in slapd(8))
+              syslog−user=&lt;user&gt;   (see `−l' in slapd(8))
+</pre>
+            </div>
+          </dd>
+
+          <dt><span class="term"><code class="option">−s
+          subtree−dn</code></span></dt>
+
+          <dd>
+            <p>Only check entries in the subtree specified by this
+            DN. Implies <code class="option">−b</code>
+            <em class="parameter"><code>subtree-dn</code></em> if
+            no <code class="option">−b</code> nor
+            <code class="option">−n</code> option is given.
+            Deprecated; use <em class="parameter"><code>−H</code></em> <em class="replaceable"><code>ldap:///subtree-dn</code></em>
+            instead.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−v</code></span></dt>
+
+          <dd>
+            <p>Enable verbose mode.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapschema-8_sect3" name="slapschema-8_sect3" shape="rect"> </a>
+
+      <h2>LIMITATIONS</h2>
+
+      <p>For some backend types, your <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a> should not be
+      running (at least, not in read-write mode) when you do this
+      to ensure consistency of the database. It is always safe to
+      run <span class="command"><strong>slapschema</strong></span>
+      with the <a class="link" href="../htmlman5/slapd-bdb.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-bdb</span>(5)</span></a>, <span class="citerefentry"><span class="refentrytitle">slapd-hdb</span>(5)</span>, and <a class="link" href="../htmlman5/slapd-null.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd-null</span>(5)</span></a> backends.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapschema-8_sect4" name="slapschema-8_sect4" shape="rect"> </a>
+
+      <h2>EXAMPLES</h2>
+
+      <p>To check the schema compliance of your SLAPD database
+      after modifications to the schema, and put any error in a
+      file called <em class="replaceable"><code>errors.ldif</code></em>, give the
+      command:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+        SBINDIR/slapschema −l errors.ldif
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapschema-8_sect5" name="slapschema-8_sect5" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/ldap.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldap</span>(3)</span></a>, <a class="link" href="../htmlman5/ldif.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ldif</span>(5)</span></a>, <a class="link" href="../htmlman8/slapd.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">slapd</span>(8)</span></a></p>
+
+      <p>"OpenLDAP Administrator's Guide"
+      (http://www.OpenLDAP.org/doc/admin/)</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="slapschema-8_sect6" name="slapschema-8_sect6" shape="rect"> </a>
+
+      <h2>ACKNOWLEDGEMENTS</h2>
+
+      <p><span class="emphasis"><em>OpenLDAP Software</em></span>
+      is developed and maintained by The OpenLDAP Project
+      &lt;<a class="literalurl" href="http://www.openldap.org/" target="_top" shape="rect">http://www.openldap.org/</a>&gt;. <span class="emphasis"><em>OpenLDAP Software</em></span> is derived from
+      University of Michigan LDAP 3.3 Release.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                  See the following documents: <a class="ulink" href="../openldap-COPYRIGHT.html" target="_top" shape="rect">COPYRIGHT</a>, <a class="ulink" href="../openldap-LICENSE.html" target="_top" shape="rect">LICENSE</a><br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>sigreturn(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="sigreturn(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="sigreturn.2" name="sigreturn.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>sigreturn, rt_sigreturn — return from signal handler
+      and cleanup stack frame</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>sigreturn</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">...<code>)</code>;</td>
+
+            <td rowspan="1" colspan="1"> </td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sigreturn-2_sect1" name="sigreturn-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>If the Linux kernel determines that an unblocked signal is
+      pending for a process, then, at the next transition back to
+      user mode in that process (e.g., upon return from a system
+      call or when the process is rescheduled onto the CPU), it
+      saves various pieces of process context (processor status
+      word, registers, signal mask, and signal stack settings) into
+      the user-space stack.</p>
+
+      <p>The kernel also arranges that, during the transition back
+      to user mode, the signal handler is called, and that, upon
+      return from the handler, control passes to a piece of
+      user-space code commonly called the "signal trampoline". The
+      signal trampoline code in turn calls <code class="function">sigreturn</code>().</p>
+
+      <p>This <code class="function">sigreturn</code>() call undoes
+      everything that was done—changing the process's signal
+      mask, switching signal stacks (see <a class="link" href="../htmlman2/sigaltstack.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaltstack</span>(2)</span></a>)\(emin order
+      to invoke the signal handler. It restores the process's
+      signal mask, switches stacks, and restores the process's
+      context (processor flags and registers, including the stack
+      pointer and instruction pointer), so that the process resumes
+      execution at the point where it was interrupted by the
+      signal.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sigreturn-2_sect2" name="sigreturn-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p><code class="function">sigreturn</code>() never
+      returns.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sigreturn-2_sect3" name="sigreturn-2_sect3" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>Many UNIX-type systems have a <code class="function">sigreturn</code>() system call or near equivalent.
+      However, this call is not specified in POSIX, and details of
+      its behavior vary across systems.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sigreturn-2_sect4" name="sigreturn-2_sect4" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p><code class="function">sigreturn</code>() exists only to
+      allow the implementation of signal handlers. It should
+      <em class="replaceable"><code>never</code></em> be called
+      directly. Details of the arguments (if any) passed to
+      <code class="function">sigreturn</code>() vary depending on
+      the architecture.</p>
+
+      <p>Once upon a time, UNIX systems placed the signal
+      trampoline code onto the user stack. Nowadays, pages of the
+      user stack are protected so as to disallow code execution.
+      Thus, on contemporary Linux systems, depending on the
+      architecture, the signal trampoline code lives either in the
+      <a class="link" href="../htmlman7/vdso.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">vdso</span>(7)</span></a> or in the C
+      library. In the latter case, the C library supplies the
+      location of the trampoline code using the <em class="replaceable"><code>sa_restorer</code></em> field of the
+      <em class="replaceable"><code>sigaction</code></em> structure
+      that is passed to <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a>, and sets the
+      <code class="constant">SA_RESTORER</code> flag in the
+      <em class="replaceable"><code>sa_flags</code></em> field.</p>
+
+      <p>The saved process context information is placed in a
+      <span class="type">ucontext_t</span> structure (see
+      <code class="literal">&lt;</code><code class="filename">sys/ucontext.h</code><code class="literal">&gt;</code> That structure is visible within the
+      signal handler as the third argument of a handler established
+      with the <code class="constant">SA_SIGINFO</code> flag.</p>
+
+      <p>On some other UNIX systems, the operation of the signal
+      trampoline differs a little. In particular, on some systems,
+      upon transitioning back to user mode, the kernel passes
+      control to the trampoline (rather than the signal handler),
+      and the trampoline code calls the signal handler (and then
+      calls <code class="function">sigreturn</code>() once the
+      handler returns).</p>
+
+      <div class="refsect2">
+        <a id="sigreturn-2_sect5" name="sigreturn-2_sect5" shape="rect"> </a>
+
+        <h3>C library/kernel ABI differences</h3>
+
+        <p>The original Linux system call was named <code class="function">sigreturn</code>(). However, with the addition
+        of real-time signals in Linux 2.2, a new system call,
+        <code class="function">rt_sigreturn</code>() was added to
+        support an enlarged <span class="type">sigset_t</span>
+        type. The GNU C library hides these details from us,
+        transparently employing <code class="function">rt_sigreturn</code>() when the kernel provides
+        it.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sigreturn-2_sect6" name="sigreturn-2_sect6" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/kill.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">kill</span>(2)</span></a>, <a class="link" href="../htmlman2/restart_syscall.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">restart_syscall</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/sigaltstack.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaltstack</span>(2)</span></a>, <a class="link" href="../htmlman2/signal.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(2)</span></a>, <a class="link" href="../htmlman3/getcontext.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getcontext</span>(3)</span></a>, <a class="link" href="../htmlman7/signal.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="sigreturn-2_sect7" name="sigreturn-2_sect7" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2008, 2014, Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Created   Sat Aug 21 1995     Thomas K. Dyas &lt;tdyas<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>eden.rutgers.edu&gt;<br />
+
+                  Modified Tue Oct 22 22:09:03 1996 by Eric S. Raymond &lt;esr<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>thyrsus.com&gt;<br />
+
+                  2008-06-26, mtk, added some more detail on the work done by sigreturn()<br />
+
+                  2014-12-05, mtk, rewrote all of the rest of the original page<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

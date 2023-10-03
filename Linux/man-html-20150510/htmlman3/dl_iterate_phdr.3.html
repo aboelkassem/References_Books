@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>dl_iterate_phdr(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="dl_iterate_phdr(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="dl-iterate-phdr.3" name="dl-iterate-phdr.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>dl_iterate_phdr — walk through list of shared
+      objects</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#define _GNU_SOURCE          /* See feature_test_macros(7) */
+#include &lt;link.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>dl_iterate_phdr</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">(*callback)</var><code>(</code>struct
+            dl_phdr_info *info, size_t size, void
+            *data<code>)</code>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">void *<var class="pdparam">data</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="dl-iterate-phdr-3_sect1" name="dl-iterate-phdr-3_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">dl_iterate_phdr</code>()
+      function allows an application to inquire at run time to find
+      out which shared objects it has loaded.</p>
+
+      <p>The <code class="function">dl_iterate_phdr</code>()
+      function walks through the list of an application's shared
+      objects and calls the function <em class="parameter"><code>callback</code></em> once for each object,
+      until either all shared objects have been processed or
+      <em class="parameter"><code>callback</code></em> returns a
+      nonzero value.</p>
+
+      <p>Each call to <em class="parameter"><code>callback</code></em> receives three
+      arguments: <em class="parameter"><code>info</code></em>,
+      which is a pointer to a structure containing information
+      about the shared object; <em class="parameter"><code>size</code></em>, which is the size of the
+      structure pointed to by <em class="parameter"><code>info</code></em>; and <em class="parameter"><code>data</code></em>, which is a copy of
+      whatever value was passed by the calling program as the
+      second argument (also named <em class="parameter"><code>data</code></em>) in the call to
+      <code class="function">dl_iterate_phdr</code>().</p>
+
+      <p>The <em class="parameter"><code>info</code></em> argument
+      is a structure of the following type:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+struct dl_phdr_info {
+    ElfW(Addr)        dlpi_addr;  /* Base address of object */
+    const char       *dlpi_name;  /* (Null-terminated) name of
+                                     object */
+    const ElfW(Phdr) *dlpi_phdr;  /* Pointer to array of
+                                     ELF program headers
+                                     for this object */
+    ElfW(Half)        dlpi_phnum; /* # of items in <code class="varname">dlpi_phdr</code> */
+};
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>(The <code class="function">ElfW</code>() macro definition
+      turns its argument into the name of an ELF data type suitable
+      for the hardware architecture. For example, on a 32-bit
+      platform, ElfW(Addr) yields the data type name Elf32_Addr.
+      Further information on these types can be found in the
+      <code class="literal">&lt;</code><code class="filename">elf.h</code><code class="literal">&gt;</code><code class="literal">&lt;</code><code class="filename">link.h</code><code class="literal">&gt;</code>
+      header files.)</p>
+
+      <p>The <code class="varname">dlpi_addr</code> field indicates
+      the base address of the shared object (i.e., the difference
+      between the virtual memory address of the shared object and
+      the offset of that object in the file from which it was
+      loaded). The <code class="varname">dlpi_name</code> field is
+      a null-terminated string giving the pathname from which the
+      shared object was loaded.</p>
+
+      <p>To understand the meaning of the <code class="varname">dlpi_phdr</code> and <code class="varname">dlpi_phnum</code> fields, we need to be aware that
+      an ELF shared object consists of a number of segments, each
+      of which has a corresponding program header describing the
+      segment. The <code class="varname">dlpi_phdr</code> field is
+      a pointer to an array of the program headers for this shared
+      object. The <code class="varname">dlpi_phnum</code> field
+      indicates the size of this array.</p>
+
+      <p>These program headers are structures of the following
+      form:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="structdef">
+            <table style="border-collapse: collapse;">
+              <colgroup span="1">
+                <col class="c1" span="1" />
+                <col class="c2" span="1" />
+                <col class="c3" span="1" />
+                <col class="c4" span="1" />
+                <col class="c5" span="1" />
+              </colgroup>
+
+              <tbody>
+                <tr>
+                  <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                  typedef</td>
+
+                  <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1">struct {</td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">Elf32_Word</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>p_type</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      /* Segment type */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">Elf32_Off</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>p_offset</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      
+                      /* Segment file offset */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">Elf32_Addr</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>p_vaddr</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      
+                      /* Segment virtual address */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">Elf32_Addr</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>p_paddr</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      
+                      /* Segment physical address */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">Elf32_Word</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>p_filesz</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      
+                      /* Segment size in file */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">Elf32_Word</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>p_memsz</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      
+                      /* Segment size in memory */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">Elf32_Word</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>p_flags</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      /* Segment flags */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="" rowspan="1" colspan="1"> </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><span class="type">Elf32_Word</span></td>
+
+                  <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                   </td>
+
+                  <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>p_align</code></em>;</td>
+
+                  <td style="" align="left" rowspan="1" colspan="1">
+                    <div class="literallayout">
+                      /* Segment alignment */
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">} Elf32_Phdr;</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>Note that we can calculate the location of a particular
+      program header, <code class="literal">x</code>, in virtual
+      memory using the formula:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+  addr == info−&gt;dlpi_addr + info−&gt;dlpi_phdr[x].p_vaddr;
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="dl-iterate-phdr-3_sect2" name="dl-iterate-phdr-3_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>The <code class="function">dl_iterate_phdr</code>()
+      function returns whatever value was returned by the last call
+      to <em class="parameter"><code>callback</code></em>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="dl-iterate-phdr-3_sect3" name="dl-iterate-phdr-3_sect3" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p><code class="function">dl_iterate_phdr</code>() has been
+      supported in glibc since version 2.2.4.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="dl-iterate-phdr-3_sect4" name="dl-iterate-phdr-3_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>The <code class="function">dl_iterate_phdr</code>()
+      function is Linux-specific and should be avoided in portable
+      applications.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="dl-iterate-phdr-3_sect5" name="dl-iterate-phdr-3_sect5" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>The following program displays a list of pathnames of the
+      shared objects it has loaded. For each shared object, the
+      program lists the virtual addresses at which the object's ELF
+      segments are loaded.</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#define _GNU_SOURCE
+#include &lt;link.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+
+static int
+callback(struct dl_phdr_info *info, size_t size, void *data)
+{
+    int j;
+
+    printf("name=%s (%d segments)\n", info−&gt;dlpi_name,
+        info−&gt;dlpi_phnum);
+
+    for (j = 0; j &lt; info−&gt;dlpi_phnum; j++)
+         printf("\t\t header %2d: address=%10p\n", j,
+             (void *) (info−&gt;dlpi_addr + info−&gt;dlpi_phdr[j].p_vaddr));
+    return 0;
+}
+
+int
+main(int argc, char *argv[])
+{
+    dl_iterate_phdr(callback, NULL);
+
+    exit(EXIT_SUCCESS);
+}
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="dl-iterate-phdr-3_sect6" name="dl-iterate-phdr-3_sect6" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><span class="citerefentry"><span class="refentrytitle">ldd</span>(1)</span>, <span class="citerefentry"><span class="refentrytitle">objdump</span>(1)</span>, <span class="citerefentry"><span class="refentrytitle">readelf</span>(1)</span>, <a class="link" href="../htmlman3/dlopen.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">dlopen</span>(3)</span></a>, <a class="link" href="../htmlman5/elf.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">elf</span>(5)</span></a>, <a class="link" href="../htmlman8/ld.so.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ld.so</span>(8)</span></a></p>
+
+      <p><span class="emphasis"><em>Executable and Linking Format
+      Specification</em></span>, available at various locations
+      online.</p>
+    </div>
+
+    <div class="colophon">
+      <a id="dl-iterate-phdr-3_sect7" name="dl-iterate-phdr-3_sect7" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 2003 by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

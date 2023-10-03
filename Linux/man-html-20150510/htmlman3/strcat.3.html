@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>strcat(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="strcat(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="strcat.3" name="strcat.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>strcat, strncat — concatenate two strings</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;string.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">char
+            *<strong>strcat</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">char *<var class="pdparam">dest</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">src</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">char
+            *<strong>strncat</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">char *<var class="pdparam">dest</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">src</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">size_t <var class="pdparam">n</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="strcat-3_sect1" name="strcat-3_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">strcat</code>() function
+      appends the <em class="parameter"><code>src</code></em>
+      string to the <em class="parameter"><code>dest</code></em>
+      string, overwriting the terminating null byte ('\0') at the
+      end of <em class="parameter"><code>dest</code></em>, and then
+      adds a terminating null byte. The strings may not overlap,
+      and the <em class="parameter"><code>dest</code></em> string
+      must have enough space for the result. If <em class="parameter"><code>dest</code></em> is not large enough,
+      program behavior is unpredictable; <span class="emphasis"><em>buffer overruns are a favorite avenue for
+      attacking secure programs</em></span>.</p>
+
+      <p>The <code class="function">strncat</code>() function is
+      similar, except that</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p>it will use at most <em class="parameter"><code>n</code></em> bytes from <em class="parameter"><code>src</code></em>; and</p>
+          </li>
+
+          <li class="listitem">
+            <p><em class="parameter"><code>src</code></em> does not
+            need to be null-terminated if it contains <em class="parameter"><code>n</code></em> or more bytes.</p>
+          </li>
+        </ul>
+      </div>
+
+      <p>As with <code class="function">strcat</code>(), the
+      resulting string in <em class="parameter"><code>dest</code></em> is always
+      null-terminated.</p>
+
+      <p>If <em class="parameter"><code>src</code></em> contains
+      <em class="parameter"><code>n</code></em> or more bytes,
+      <code class="function">strncat</code>() writes <em class="replaceable"><code>n+1</code></em> bytes to <em class="parameter"><code>dest</code></em> (<em class="parameter"><code>n</code></em> from <em class="parameter"><code>src</code></em> plus the terminating null
+      byte). Therefore, the size of <em class="parameter"><code>dest</code></em> must be at least
+      <em class="replaceable"><code>strlen(dest)+n+1</code></em>.</p>
+
+      <p>A simple implementation of <code class="function">strncat</code>() might be:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+char *
+strncat(char *dest, const char *src, size_t n)
+{
+    size_t dest_len = strlen(dest);
+    size_t i;
+
+    for (i = 0 ; i &lt; n &amp;&amp; src[i] != '\0' ; i++)
+        dest[dest_len + i] = src[i];
+    dest[dest_len + i] = '\0';
+
+    return dest;
+}
+</pre>
+          </div>
+        </blockquote>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="strcat-3_sect2" name="strcat-3_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>The <code class="function">strcat</code>() and
+      <code class="function">strncat</code>() functions return a
+      pointer to the resulting string <em class="parameter"><code>dest</code></em>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="strcat-3_sect3" name="strcat-3_sect3" shape="rect"> </a>
+
+      <h2>ATTRIBUTES</h2>
+
+      <p>For an explanation of the terms used in this section, see
+      <a class="link" href="../htmlman7/attributes.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">attributes</span>(7)</span></a>.</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">Interface</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Attribute</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Value</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><code class="literal">strcat</code>(), <code class="literal">strncat</code>()</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Thread safety</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">MT-Safe</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="strcat-3_sect4" name="strcat-3_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>SVr4, 4.3BSD, C89, C99.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="strcat-3_sect5" name="strcat-3_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Some systems (the BSDs, Solaris, and others) provide the
+      following function:</p>
+
+      <p>size_t strlcat(char *dest, const char *src, size_t
+      size);</p>
+
+      <p>This function appends the null-terminated string
+      <em class="parameter"><code>src</code></em> to the string
+      <em class="parameter"><code>dest</code></em>, copying at most
+      <em class="replaceable"><code>size−strlen(dest)−1</code></em>
+      from <em class="parameter"><code>src</code></em>, and adds a
+      terminating null byte to the result, <code class="function">unless</code> <code class="function">size</code>
+      is less than <em class="replaceable"><code>strlen(dest)</code></em>. This function
+      fixes the buffer overrun problem of <code class="function">strcat</code>(), but the caller must still handle
+      the possibility of data loss if <code class="function">size</code> is too small. The function returns the
+      length of the string <code class="function">strlcat</code>()
+      tried to create; if the return value is greater than or equal
+      to <code class="function">size</code>, data loss occurred. If
+      data loss matters, the caller <span class="emphasis"><em>must</em></span> either check the arguments
+      before the call, or test the function return value.
+      <code class="function">strlcat</code>() is not present in
+      glibc and is not standardized by POSIX, but is available on
+      Linux via the <code class="function">libbsd</code>
+      library.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="strcat-3_sect6" name="strcat-3_sect6" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/bcopy.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">bcopy</span>(3)</span></a>, <a class="link" href="../htmlman3/memccpy.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">memccpy</span>(3)</span></a>, <a class="link" href="../htmlman3/memcpy.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">memcpy</span>(3)</span></a>, <a class="link" href="../htmlman3/strcpy.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">strcpy</span>(3)</span></a>, <a class="link" href="../htmlman3/string.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">string</span>(3)</span></a>, <a class="link" href="../htmlman3/strcpy.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">strncpy</span>(3)</span></a>, <a class="link" href="../htmlman3/wcscat.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">wcscat</span>(3)</span></a>, <a class="link" href="../htmlman3/wcsncat.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">wcsncat</span>(3)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="strcat-3_sect7" name="strcat-3_sect7" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright 1993 David Metcalfe (david<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>prism.demon.co.uk)<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  References consulted:<br />
+                      Linux libc source code<br />
+
+                      Lewine's _POSIX Programmer's Guide_ (O'Reilly &amp; Associates, 1991)<br />
+
+                      386BSD man pages<br />
+
+                  Modified Sat Jul 24 18:11:47 1993 by Rik Faith (faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu)<br />
+
+                  2007-06-15, Marc Boyer &lt;marc.boyer<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>enseeiht.fr&gt; + mtk<br />
+
+                      Improve discussion of strncat().<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

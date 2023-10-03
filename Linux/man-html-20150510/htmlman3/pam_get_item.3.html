@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>pam_get_item(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="pam_get_item(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry" title="pam_get_item(3) — Linux manual pages">
+    <a id="pam-get-item.3" name="pam-get-item.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <a id="pam_get_item-name" name="pam_get_item-name" shape="rect"> </a>
+
+      <h2>Name</h2>
+
+      <p>pam_get_item — getting PAM informations</p>
+    </div>
+
+    <div class="refsynopsisdiv" title="Synopsis">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <a id="pam_get_item-synopsis" name="pam_get_item-synopsis" shape="rect"> </a>
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;security/pam_modules.h&gt;
+</pre>
+
+        <table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>pam_get_item</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">const pam_handle_t *<var class="pdparam">pamh</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">item_type</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const void **<var class="pdparam">item</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1" title="DESCRIPTION">
+      <a id="pam_get_item-description" name="pam_get_item-description" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">pam_get_item</code> function
+      allows applications and PAM service modules to access and
+      retrieve PAM informations of <span class="emphasis"><em>item_type</em></span>. Upon successful return,
+      <span class="emphasis"><em>item</em></span> contains a
+      pointer to the value of the corresponding item. Note, this is
+      a pointer to the <span class="emphasis"><em>actual</em></span> data and should
+      <span class="emphasis"><em>not</em></span> be <span class="emphasis"><em>free()</em></span>'ed or over-written! The
+      following values are supported for <span class="emphasis"><em>item_type</em></span>:</p>
+
+      <div class="variablelist">
+        <dl>
+          <dt><span class="term">PAM_SERVICE</span></dt>
+
+          <dd>
+            <p>The service name (which identifies that PAM stack
+            that the PAM functions will use to authenticate the
+            program).</p>
+          </dd>
+
+          <dt><span class="term">PAM_USER</span></dt>
+
+          <dd>
+            <p>The username of the entity under whose identity
+            service will be given. That is, following
+            authentication, <span class="emphasis"><em>PAM_USER</em></span> identifies the
+            local entity that gets to use the service. Note, this
+            value can be mapped from something (eg., "anonymous")
+            to something else (eg. "guest119") by any module in the
+            PAM stack. As such an application should consult the
+            value of <span class="emphasis"><em>PAM_USER</em></span> after each call to
+            a PAM function.</p>
+          </dd>
+
+          <dt><span class="term">PAM_USER_PROMPT</span></dt>
+
+          <dd>
+            <p>The string used when prompting for a user's name.
+            The default value for this string is a localized
+            version of "login: ".</p>
+          </dd>
+
+          <dt><span class="term">PAM_TTY</span></dt>
+
+          <dd>
+            <p>The terminal name: prefixed by <code class="filename">/dev/</code> if it is a device file; for
+            graphical, X-based, applications the value for this
+            item should be the <span class="emphasis"><em>$DISPLAY</em></span> variable.</p>
+          </dd>
+
+          <dt><span class="term">PAM_RUSER</span></dt>
+
+          <dd>
+            <p>The requesting user name: local name for a locally
+            requesting user or a remote user name for a remote
+            requesting user.</p>
+
+            <p>Generally an application or module will attempt to
+            supply the value that is most strongly authenticated (a
+            local account before a remote one. The level of trust
+            in this value is embodied in the actual authentication
+            stack associated with the application, so it is
+            ultimately at the discretion of the system
+            administrator.</p>
+
+            <p><span class="emphasis"><em>PAM_RUSER@PAM_RHOST</em></span> should
+            always identify the requesting user. In some cases,
+            <span class="emphasis"><em>PAM_RUSER</em></span> may be
+            NULL. In such situations, it is unclear who the
+            requesting entity is.</p>
+          </dd>
+
+          <dt><span class="term">PAM_RHOST</span></dt>
+
+          <dd>
+            <p>The requesting hostname (the hostname of the machine
+            from which the <span class="emphasis"><em>PAM_RUSER</em></span> entity is
+            requesting service). That is <span class="emphasis"><em>PAM_RUSER@PAM_RHOST</em></span> does
+            identify the requesting user. In some applications,
+            <span class="emphasis"><em>PAM_RHOST</em></span> may be
+            NULL. In such situations, it is unclear where the
+            authentication request is originating from.</p>
+          </dd>
+
+          <dt><span class="term">PAM_AUTHTOK</span></dt>
+
+          <dd>
+            <p>The authentication token (often a password). This
+            token should be ignored by all module functions besides
+            <a class="link" href="../htmlman3/pam_sm_authenticate.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_sm_authenticate</span>(3)</span></a>
+            and <a class="link" href="../htmlman3/pam_sm_chauthtok.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_sm_chauthtok</span>(3)</span></a>.
+            In the former function it is used to pass the most
+            recent authentication token from one stacked module to
+            another. In the latter function the token is used for
+            another purpose. It contains the currently active
+            authentication token.</p>
+          </dd>
+
+          <dt><span class="term">PAM_OLDAUTHTOK</span></dt>
+
+          <dd>
+            <p>The old authentication token. This token should be
+            ignored by all module functions except <a class="link" href="../htmlman3/pam_sm_chauthtok.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_sm_chauthtok</span>(3)</span></a>.</p>
+          </dd>
+
+          <dt><span class="term">PAM_CONV</span></dt>
+
+          <dd>
+            <p>The pam_conv structure. See <a class="link" href="../htmlman3/pam_conv.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_conv</span>(3)</span></a>.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>The following additional items are specific to Linux-PAM
+      and should not be used in portable applications:</p>
+
+      <div class="variablelist">
+        <dl>
+          <dt><span class="term">PAM_FAIL_DELAY</span></dt>
+
+          <dd>
+            <p>A function pointer to redirect centrally managed
+            failure delays. See <a class="link" href="../htmlman3/pam_fail_delay.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_fail_delay</span>(3)</span></a>.</p>
+          </dd>
+
+          <dt><span class="term">PAM_XDISPLAY</span></dt>
+
+          <dd>
+            <p>The name of the X display. For graphical, X-based
+            applications the value for this item should be the
+            <span class="emphasis"><em>$DISPLAY</em></span>
+            variable. This value may be used independently of
+            <span class="emphasis"><em>PAM_TTY</em></span> for
+            passing the name of the display.</p>
+          </dd>
+
+          <dt><span class="term">PAM_XAUTHDATA</span></dt>
+
+          <dd>
+            <p>A pointer to a structure containing the X
+            authentication data required to make a connection to
+            the display specified by <span class="emphasis"><em>PAM_XDISPLAY</em></span>, if such
+            information is necessary. See <span class="citerefentry"><span class="refentrytitle">pam_xauth_data</span>(3)</span>.</p>
+          </dd>
+
+          <dt><span class="term">PAM_AUTHTOK_TYPE</span></dt>
+
+          <dd>
+            <p>The default action is for the module to use the
+            following prompts when requesting passwords: "New UNIX
+            password: " and "Retype UNIX password: ". The example
+            word <span class="emphasis"><em>UNIX</em></span> can be
+            replaced with this item, by default it is empty. This
+            item is used by <a class="link" href="../htmlman3/pam_get_authtok.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_get_authtok</span>(3)</span></a>.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>If a service module wishes to obtain the name of the user,
+      it should not use this function, but instead perform a call
+      to <a class="link" href="../htmlman3/pam_get_user.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_get_user</span>(3)</span></a>.</p>
+
+      <p>Only a service module is privileged to read the
+      authentication tokens, PAM_AUTHTOK and PAM_OLDAUTHTOK.</p>
+    </div>
+
+    <div class="refsect1" title="RETURN VALUES">
+      <a id="pam_get_item-return_values" name="pam_get_item-return_values" shape="rect"> </a>
+
+      <h2>RETURN VALUES</h2>
+
+      <div class="variablelist">
+        <dl>
+          <dt><span class="term">PAM_BAD_ITEM</span></dt>
+
+          <dd>
+            <p>The application attempted to set an undefined or
+            inaccessible item.</p>
+          </dd>
+
+          <dt><span class="term">PAM_BUF_ERR</span></dt>
+
+          <dd>
+            <p>Memory buffer error.</p>
+          </dd>
+
+          <dt><span class="term">PAM_PERM_DENIED</span></dt>
+
+          <dd>
+            <p>The value of <span class="emphasis"><em>item</em></span> was NULL.</p>
+          </dd>
+
+          <dt><span class="term">PAM_SUCCESS</span></dt>
+
+          <dd>
+            <p>Data was successful updated.</p>
+          </dd>
+
+          <dt><span class="term">PAM_SYSTEM_ERR</span></dt>
+
+          <dd>
+            <p>The <span class="emphasis"><em>pam_handle_t</em></span> passed as first
+            argument was invalid.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1" title="SEE ALSO">
+      <a id="pam_get_item-see_also" name="pam_get_item-see_also" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/pam_set_item.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_set_item</span>(3)</span></a>, <a class="link" href="../htmlman3/pam_strerror.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_strerror</span>(3)</span></a></p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  See <a class="ulink" href="../linuxpam-copyright.html" target="_top" shape="rect">Linux-PAM copyright notice</a> for more information.
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

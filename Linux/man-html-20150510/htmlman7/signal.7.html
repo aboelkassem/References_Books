@@ -1,0 +1,1600 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>signal(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="signal(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="signal.7" name="signal.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>signal — overview of signals</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="signal-7_sect1" name="signal-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>Linux supports both POSIX reliable signals (hereinafter
+      "standard signals") and POSIX real-time signals.</p>
+
+      <div class="refsect2">
+        <a id="signal-7_sect2" name="signal-7_sect2" shape="rect"> </a>
+
+        <h3>Signal dispositions</h3>
+
+        <p>Each signal has a current <em class="replaceable"><code>disposition</code></em>, which
+        determines how the process behaves when it is delivered the
+        signal.</p>
+
+        <p>The entries in the "Action" column of the tables below
+        specify the default disposition for each signal, as
+        follows:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><em class="replaceable"><code>Term</code></em></span></dt>
+
+            <dd>
+              <p>Default action is to terminate the process.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>Ign</code></em></span></dt>
+
+            <dd>
+              <p>Default action is to ignore the signal.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>Core</code></em></span></dt>
+
+            <dd>
+              <p>Default action is to terminate the process and
+              dump core (see <a class="link" href="../htmlman5/core.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">core</span>(5)</span></a>).</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>Stop</code></em></span></dt>
+
+            <dd>
+              <p>Default action is to stop the process.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>Cont</code></em></span></dt>
+
+            <dd>
+              <p>Default action is to continue the process if it is
+              currently stopped.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>A process can change the disposition of a signal using
+        <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a> or <a class="link" href="../htmlman2/signal.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(2)</span></a>. (The latter is
+        less portable when establishing a signal handler; see
+        <a class="link" href="../htmlman2/signal.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(2)</span></a> for details.)
+        Using these system calls, a process can elect one of the
+        following behaviors to occur on delivery of the signal:
+        perform the default action; ignore the signal; or catch the
+        signal with a <span class="emphasis"><em>signal
+        handler</em></span>, a programmer-defined function that is
+        automatically invoked when the signal is delivered. (By
+        default, the signal handler is invoked on the normal
+        process stack. It is possible to arrange that the signal
+        handler uses an alternate stack; see <a class="link" href="../htmlman2/sigaltstack.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaltstack</span>(2)</span></a> for a
+        discussion of how to do this and when it might be
+        useful.)</p>
+
+        <p>The signal disposition is a per-process attribute: in a
+        multithreaded application, the disposition of a particular
+        signal is the same for all threads.</p>
+
+        <p>A child created via <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> inherits a copy
+        of its parent's signal dispositions. During an <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>, the
+        dispositions of handled signals are reset to the default;
+        the dispositions of ignored signals are left unchanged.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="signal-7_sect3" name="signal-7_sect3" shape="rect"> </a>
+
+        <h3>Sending a signal</h3>
+
+        <p>The following system calls and library functions allow
+        the caller to send a signal:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><a class="link" href="../htmlman3/raise.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">raise</span>(3)</span></a></span></dt>
+
+            <dd>
+              <p>Sends a signal to the calling thread.</p>
+            </dd>
+
+            <dt><span class="term"><a class="link" href="../htmlman2/kill.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">kill</span>(2)</span></a></span></dt>
+
+            <dd>
+              <p>Sends a signal to a specified process, to all
+              members of a specified process group, or to all
+              processes on the system.</p>
+            </dd>
+
+            <dt><span class="term"><a class="link" href="../htmlman2/killpg.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">killpg</span>(2)</span></a></span></dt>
+
+            <dd>
+              <p>Sends a signal to all of the members of a
+              specified process group.</p>
+            </dd>
+
+            <dt><span class="term"><a class="link" href="../htmlman3/pthread_kill.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_kill</span>(3)</span></a></span></dt>
+
+            <dd>
+              <p>Sends a signal to a specified POSIX thread in the
+              same process as the caller.</p>
+            </dd>
+
+            <dt><span class="term"><a class="link" href="../htmlman2/tkill.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tgkill</span>(2)</span></a></span></dt>
+
+            <dd>
+              <p>Sends a signal to a specified thread within a
+              specific process. (This is the system call used to
+              implement <a class="link" href="../htmlman3/pthread_kill.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_kill</span>(3)</span></a>.)</p>
+            </dd>
+
+            <dt><span class="term"><a class="link" href="../htmlman3/sigqueue.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigqueue</span>(3)</span></a></span></dt>
+
+            <dd>
+              <p>Sends a real-time signal with accompanying data to
+              a specified process.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="signal-7_sect4" name="signal-7_sect4" shape="rect"> </a>
+
+        <h3>Waiting for a signal to be caught</h3>
+
+        <p>The following system calls suspend execution of the
+        calling process or thread until a signal is caught (or an
+        unhandled signal terminates the process):</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><a class="link" href="../htmlman2/pause.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pause</span>(2)</span></a></span></dt>
+
+            <dd>
+              <p>Suspends execution until any signal is caught.</p>
+            </dd>
+
+            <dt><span class="term"><a class="link" href="../htmlman2/sigsuspend.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigsuspend</span>(2)</span></a></span></dt>
+
+            <dd>
+              <p>Temporarily changes the signal mask (see below)
+              and suspends execution until one of the unmasked
+              signals is caught.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="signal-7_sect5" name="signal-7_sect5" shape="rect"> </a>
+
+        <h3>Synchronously accepting a signal</h3>
+
+        <p>Rather than asynchronously catching a signal via a
+        signal handler, it is possible to synchronously accept the
+        signal, that is, to block execution until the signal is
+        delivered, at which point the kernel returns information
+        about the signal to the caller. There are two general ways
+        to do this:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p><a class="link" href="../htmlman2/sigwaitinfo.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigwaitinfo</span>(2)</span></a>,
+              <a class="link" href="../htmlman2/sigwaitinfo.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigtimedwait</span>(2)</span></a>,
+              and <a class="link" href="../htmlman3/sigwait.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigwait</span>(3)</span></a> suspend
+              execution until one of the signals in a specified set
+              is delivered. Each of these calls returns information
+              about the delivered signal.</p>
+            </li>
+
+            <li class="listitem">
+              <p><a class="link" href="../htmlman2/signalfd.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signalfd</span>(2)</span></a> returns
+              a file descriptor that can be used to read
+              information about signals that are delivered to the
+              caller. Each <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> from this
+              file descriptor blocks until one of the signals in
+              the set specified in the <a class="link" href="../htmlman2/signalfd.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signalfd</span>(2)</span></a> call is
+              delivered to the caller. The buffer returned by
+              <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> contains a
+              structure describing the signal.</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="signal-7_sect6" name="signal-7_sect6" shape="rect"> </a>
+
+        <h3>Signal mask and pending signals</h3>
+
+        <p>A signal may be <em class="replaceable"><code>blocked</code></em>, which means that
+        it will not be delivered until it is later unblocked.
+        Between the time when it is generated and when it is
+        delivered a signal is said to be <em class="replaceable"><code>pending</code></em>.</p>
+
+        <p>Each thread in a process has an independent <span class="emphasis"><em>signal mask</em></span>, which indicates the
+        set of signals that the thread is currently blocking. A
+        thread can manipulate its signal mask using <a class="link" href="../htmlman3/pthread_sigmask.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_sigmask</span>(3)</span></a>. In a
+        traditional single-threaded application, <a class="link" href="../htmlman2/sigprocmask.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigprocmask</span>(2)</span></a> can be
+        used to manipulate the signal mask.</p>
+
+        <p>A child created via <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> inherits a copy
+        of its parent's signal mask; the signal mask is preserved
+        across <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>.</p>
+
+        <p>A signal may be generated (and thus pending) for a
+        process as a whole (e.g., when sent using <a class="link" href="../htmlman2/kill.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">kill</span>(2)</span></a>) or for a
+        specific thread (e.g., certain signals, such as
+        <code class="constant">SIGSEGV</code> and <code class="constant">SIGFPE</code>, generated as a consequence of
+        executing a specific machine-language instruction are
+        thread directed, as are signals targeted at a specific
+        thread using <a class="link" href="../htmlman3/pthread_kill.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_kill</span>(3)</span></a>). A
+        process-directed signal may be delivered to any one of the
+        threads that does not currently have the signal blocked. If
+        more than one of the threads has the signal unblocked, then
+        the kernel chooses an arbitrary thread to which to deliver
+        the signal.</p>
+
+        <p>A thread can obtain the set of signals that it currently
+        has pending using <a class="link" href="../htmlman2/sigpending.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigpending</span>(2)</span></a>. This set
+        will consist of the union of the set of pending
+        process-directed signals and the set of signals pending for
+        the calling thread.</p>
+
+        <p>A child created via <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> initially has an
+        empty pending signal set; the pending signal set is
+        preserved across an <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="signal-7_sect7" name="signal-7_sect7" shape="rect"> </a>
+
+        <h3>Standard signals</h3>
+
+        <p>Linux supports the standard signals listed below.
+        Several signal numbers are architecture-dependent, as
+        indicated in the "Value" column. (Where three values are
+        given, the first one is usually valid for alpha and sparc,
+        the middle one for x86, arm, and most other architectures,
+        and the last one for mips. (Values for parisc are
+        <em class="replaceable"><code>not</code></em> shown; see
+        the Linux kernel source for signal numbering on that
+        architecture.) A − denotes that a signal is absent on
+        the corresponding architecture.)</p>
+
+        <p>First the signals described in the original POSIX.1-1990
+        standard.</p>
+
+        <div class="informaltable">
+          <table style="border-collapse: collapse;border-left: 0.5pt solid ; border-right: 0.5pt solid ;">
+          <colgroup span="1">
+              <col class="c0" span="1" />
+              <col class="c1" span="1" />
+              <col class="c2" span="1" />
+              <col class="c3" span="1" />
+            </colgroup>
+
+            <tbody>
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">Signal</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Value</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Action</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Comment</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGHUP</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1"> 1</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Term</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Hangup detected on
+                controlling terminal or death of controlling
+                process</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGINT</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1"> 2</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Term</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Interrupt from
+                keyboard</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGQUIT</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1"> 3</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Core</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Quit from keyboard</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGILL</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1"> 4</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Core</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Illegal Instruction</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGABRT</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1"> 6</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Core</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Abort signal from
+                <a class="link" href="../htmlman3/abort.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">abort</span>(3)</span></a></td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGFPE</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1"> 8</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Core</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Floating point
+                exception</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGKILL</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1"> 9</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Term</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Kill signal</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGSEGV</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">11</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Core</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Invalid memory
+                reference</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGPIPE</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">13</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Term</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Broken pipe: write to
+                pipe with no readers</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGALRM</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">14</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Term</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Timer signal from
+                <a class="link" href="../htmlman2/alarm.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">alarm</span>(2)</span></a></td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGTERM</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">15</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Term</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Termination signal</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGUSR1</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">30,10,16</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Term</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">User-defined signal
+                1</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGUSR2</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">31,12,17</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Term</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">User-defined signal
+                2</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGCHLD</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">20,17,18</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Ign</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Child stopped or
+                terminated</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGCONT</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">19,18,25</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Cont</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Continue if stopped</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGSTOP</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">17,19,23</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Stop</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Stop process</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGTSTP</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">18,20,24</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Stop</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Stop typed at
+                terminal</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGTTIN</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">21,21,26</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Stop</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Terminal input for
+                background process</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGTTOU</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">22,22,27</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Stop</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Terminal output for
+                background process</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>The signals <code class="constant">SIGKILL</code> and
+        <code class="constant">SIGSTOP</code> cannot be caught,
+        blocked, or ignored.</p>
+
+        <p>Next the signals not in the POSIX.1-1990 standard but
+        described in SUSv2 and POSIX.1-2001.</p>
+
+        <div class="informaltable">
+          <table style="border-collapse: collapse;border-left: 0.5pt solid ; border-right: 0.5pt solid ;">
+          <colgroup span="1">
+              <col class="c0" span="1" />
+              <col class="c1" span="1" />
+              <col class="c2" span="1" />
+              <col class="c3" span="1" />
+            </colgroup>
+
+            <tbody>
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">Signal</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Value</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Action</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Comment</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGBUS</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">10,7,10</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Core</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Bus error (bad memory
+                access)</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGPOLL</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1"> </td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Term</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Pollable event (Sys V).
+                Synonym for <code class="constant">SIGIO</code></td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGPROF</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">27,27,29</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Term</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Profiling timer
+                expired</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGSYS</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">12,31,12</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Core</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Bad argument to routine
+                (SVr4)</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGTRAP</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">5</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Core</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Trace/breakpoint
+                trap</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGURG</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">16,23,21</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Ign</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Urgent condition on
+                socket (4.2BSD)</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGVTALRM</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">26,26,28</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Term</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Virtual alarm clock
+                (4.2BSD)</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGXCPU</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">24,24,30</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Core</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">CPU time limit exceeded
+                (4.2BSD)</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGXFSZ</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">25,25,31</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Core</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">File size limit exceeded
+                (4.2BSD)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>Up to and including Linux 2.2, the default behavior for
+        <code class="constant">SIGSYS</code>, <code class="constant">SIGXCPU</code>, <code class="constant">SIGXFSZ</code>, and (on architectures other than
+        SPARC and MIPS) <code class="constant">SIGBUS</code> was to
+        terminate the process (without a core dump). (On some other
+        UNIX systems the default action for <code class="constant">SIGXCPU</code> and <code class="constant">SIGXFSZ</code> is to terminate the process
+        without a core dump.) Linux 2.4 conforms to the
+        POSIX.1-2001 requirements for these signals, terminating
+        the process with a core dump.</p>
+
+        <p>Next various other signals.</p>
+
+        <div class="informaltable">
+          <table style="border-collapse: collapse;border-left: 0.5pt solid ; border-right: 0.5pt solid ;">
+          <colgroup span="1">
+              <col class="c0" span="1" />
+              <col class="c1" span="1" />
+              <col class="c2" span="1" />
+              <col class="c3" span="1" />
+            </colgroup>
+
+            <tbody>
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">Signal</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Value</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Action</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Comment</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGIOT</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">6</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Core</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">IOT trap. A synonym for
+                <code class="constant">SIGABRT</code></td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGEMT</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">7,−,7</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Term</td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGSTKFLT</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">−,16,−</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Term</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Stack fault on
+                coprocessor (unused)</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGIO</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">23,29,22</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Term</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">I/O now possible
+                (4.2BSD)</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGCLD</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">−,−,18</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Ign</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">A synonym for
+                <code class="constant">SIGCHLD</code></td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGPWR</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">29,30,19</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Term</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Power failure (System
+                V)</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGINFO</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">29,−,−</td>
+
+                <td style="" align="center" rowspan="1" colspan="1"> </td>
+
+                <td style="" align="left" rowspan="1" colspan="1">A synonym for
+                <code class="constant">SIGPWR</code></td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGLOST</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">
+                −,−,−</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Term</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">File lock lost
+                (unused)</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGWINCH</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">28,28,20</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Ign</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Window resize signal
+                (4.3BSD, Sun)</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><code class="constant">SIGUNUSED</code></td>
+
+                <td style="" align="center" rowspan="1" colspan="1">−,31,−</td>
+
+                <td style="" align="center" rowspan="1" colspan="1">Core</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Synonymous with
+                <code class="constant">SIGSYS</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>(Signal 29 is <code class="constant">SIGINFO</code> /
+        <code class="constant">SIGPWR</code> on an alpha but
+        <code class="constant">SIGLOST</code> on a sparc.)</p>
+
+        <p><code class="constant">SIGEMT</code> is not specified in
+        POSIX.1-2001, but nevertheless appears on most other UNIX
+        systems, where its default action is typically to terminate
+        the process with a core dump.</p>
+
+        <p><code class="constant">SIGPWR</code> (which is not
+        specified in POSIX.1-2001) is typically ignored by default
+        on those other UNIX systems where it appears.</p>
+
+        <p><code class="constant">SIGIO</code> (which is not
+        specified in POSIX.1-2001) is ignored by default on several
+        other UNIX systems.</p>
+
+        <p>Where defined, <code class="constant">SIGUNUSED</code>
+        is synonymous with <code class="constant">SIGSYS</code> on
+        most architectures.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="signal-7_sect8" name="signal-7_sect8" shape="rect"> </a>
+
+        <h3>Real-time signals</h3>
+
+        <p>Starting with version 2.2, Linux supports real-time
+        signals as originally defined in the POSIX.1b real-time
+        extensions (and now included in POSIX.1-2001). The range of
+        supported real-time signals is defined by the macros
+        <code class="constant">SIGRTMIN</code> and <code class="constant">SIGRTMAX</code>. POSIX.1-2001 requires that an
+        implementation support at least <code class="constant">_POSIX_RTSIG_MAX</code> (8) real-time
+        signals.</p>
+
+        <p>The Linux kernel supports a range of 33 different
+        real-time signals, numbered 32 to 64. However, the glibc
+        POSIX threads implementation internally uses two (for NPTL)
+        or three (for LinuxThreads) real-time signals (see
+        <a class="link" href="../htmlman7/pthreads.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthreads</span>(7)</span></a>), and adjusts
+        the value of <code class="constant">SIGRTMIN</code>
+        suitably (to 34 or 35). Because the range of available
+        real-time signals varies according to the glibc threading
+        implementation (and this variation can occur at run time
+        according to the available kernel and glibc), and indeed
+        the range of real-time signals varies across UNIX systems,
+        programs should <span class="emphasis"><em>never refer to
+        real-time signals using hard-coded numbers</em></span>, but
+        instead should always refer to real-time signals using the
+        notation <code class="constant">SIGRTMIN</code>+n, and
+        include suitable (run-time) checks that <code class="constant">SIGRTMIN</code>+n does not exceed <code class="constant">SIGRTMAX</code>.</p>
+
+        <p>Unlike standard signals, real-time signals have no
+        predefined meanings: the entire set of real-time signals
+        can be used for application-defined purposes.</p>
+
+        <p>The default action for an unhandled real-time signal is
+        to terminate the receiving process.</p>
+
+        <p>Real-time signals are distinguished by the
+        following:</p>
+
+        <div class="orderedlist">
+          <ol class="orderedlist" type="1">
+            <li class="listitem">
+              <p>Multiple instances of real-time signals can be
+              queued. By contrast, if multiple instances of a
+              standard signal are delivered while that signal is
+              currently blocked, then only one instance is
+              queued.</p>
+            </li>
+
+            <li class="listitem">
+              <p>If the signal is sent using <a class="link" href="../htmlman3/sigqueue.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigqueue</span>(3)</span></a>, an
+              accompanying value (either an integer or a pointer)
+              can be sent with the signal. If the receiving process
+              establishes a handler for this signal using the
+              <code class="constant">SA_SIGINFO</code> flag to
+              <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a>, then
+              it can obtain this data via the <em class="replaceable"><code>si_value</code></em> field of the
+              <em class="replaceable"><code>siginfo_t</code></em>
+              structure passed as the second argument to the
+              handler. Furthermore, the <em class="replaceable"><code>si_pid</code></em> and <em class="replaceable"><code>si_uid</code></em> fields of this
+              structure can be used to obtain the PID and real user
+              ID of the process sending the signal.</p>
+            </li>
+
+            <li class="listitem">
+              <p>Real-time signals are delivered in a guaranteed
+              order. Multiple real-time signals of the same type
+              are delivered in the order they were sent. If
+              different real-time signals are sent to a process,
+              they are delivered starting with the lowest-numbered
+              signal. (I.e., low-numbered signals have highest
+              priority.) By contrast, if multiple standard signals
+              are pending for a process, the order in which they
+              are delivered is unspecified.</p>
+            </li>
+          </ol>
+        </div>
+
+        <p>If both standard and real-time signals are pending for a
+        process, POSIX leaves it unspecified which is delivered
+        first. Linux, like many other implementations, gives
+        priority to standard signals in this case.</p>
+
+        <p>According to POSIX, an implementation should permit at
+        least <code class="constant">_POSIX_SIGQUEUE_MAX</code>
+        (32) real-time signals to be queued to a process. However,
+        Linux does things differently. In kernels up to and
+        including 2.6.7, Linux imposes a system-wide limit on the
+        number of queued real-time signals for all processes. This
+        limit can be viewed and (with privilege) changed via the
+        <code class="filename">/proc/sys/kernel/rtsig-max</code>
+        file. A related file, <code class="filename">/proc/sys/kernel/rtsig-nr</code>, can be used to
+        find out how many real-time signals are currently queued.
+        In Linux 2.6.8, these <code class="filename">/proc</code>
+        interfaces were replaced by the <code class="constant">RLIMIT_SIGPENDING</code> resource limit, which
+        specifies a per-user limit for queued signals; see
+        <a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setrlimit</span>(2)</span></a> for further
+        details.</p>
+
+        <p>The addition or real-time signals required the widening
+        of the signal set structure (<em class="replaceable"><code>sigset_t</code></em>) from 32 to 64
+        bits. Consequently, various system calls were superseded by
+        new system calls that supported the larger signal sets. The
+        old and new system calls are as follows:</p>
+
+        <div class="informaltable">
+          <table style="border-collapse: collapse;">
+            <colgroup span="1">
+              <col class="c0" span="1" />
+              <col class="c1" span="1" />
+            </colgroup>
+
+            <tbody>
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">Linux 2.0 and
+                earlier</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Linux 2.2 and later</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a></td>
+
+                <td style="" align="left" rowspan="1" colspan="1"><a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rt_sigaction</span>(2)</span></a></td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><a class="link" href="../htmlman2/sigpending.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigpending</span>(2)</span></a></td>
+
+                <td style="" align="left" rowspan="1" colspan="1"><a class="link" href="../htmlman2/sigpending.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rt_sigpending</span>(2)</span></a></td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><a class="link" href="../htmlman2/sigprocmask.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigprocmask</span>(2)</span></a></td>
+
+                <td style="" align="left" rowspan="1" colspan="1"><a class="link" href="../htmlman2/sigprocmask.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rt_sigprocmask</span>(2)</span></a></td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><a class="link" href="../htmlman2/sigreturn.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigreturn</span>(2)</span></a></td>
+
+                <td style="" align="left" rowspan="1" colspan="1"><a class="link" href="../htmlman2/sigreturn.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rt_sigreturn</span>(2)</span></a></td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><a class="link" href="../htmlman2/sigsuspend.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigsuspend</span>(2)</span></a></td>
+
+                <td style="" align="left" rowspan="1" colspan="1"><a class="link" href="../htmlman2/sigsuspend.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rt_sigsuspend</span>(2)</span></a></td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1"><a class="link" href="../htmlman2/sigwaitinfo.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigtimedwait</span>(2)</span></a></td>
+
+                <td style="" align="left" rowspan="1" colspan="1"><a class="link" href="../htmlman2/sigwaitinfo.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rt_sigtimedwait</span>(2)</span></a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="signal-7_sect9" name="signal-7_sect9" shape="rect"> </a>
+
+        <h3>Async-signal-safe functions</h3>
+
+        <p>A signal handler function must be very careful, since
+        processing elsewhere may be interrupted at some arbitrary
+        point in the execution of the program. POSIX has the
+        concept of "safe function". If a signal interrupts the
+        execution of an unsafe function, and <em class="replaceable"><code>handler</code></em> calls an unsafe
+        function, then the behavior of the program is
+        undefined.</p>
+
+        <p>POSIX.1-2004 (also known as POSIX.1-2001 Technical
+        Corrigendum 2) requires an implementation to guarantee that
+        the following functions can be safely called inside a
+        signal handler:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+_Exit()
+_exit()
+abort()
+accept()
+access()
+aio_error()
+aio_return()
+aio_suspend()
+alarm()
+bind()
+cfgetispeed()
+cfgetospeed()
+cfsetispeed()
+cfsetospeed()
+chdir()
+chmod()
+chown()
+clock_gettime()
+close()
+connect()
+creat()
+dup()
+dup2()
+execle()
+execve()
+fchmod()
+fchown()
+fcntl()
+fdatasync()
+fork()
+fpathconf()
+fstat()
+fsync()
+ftruncate()
+getegid()
+geteuid()
+getgid()
+getgroups()
+getpeername()
+getpgrp()
+getpid()
+getppid()
+getsockname()
+getsockopt()
+getuid()
+kill()
+link()
+listen()
+lseek()
+lstat()
+mkdir()
+mkfifo()
+open()
+pathconf()
+pause()
+pipe()
+poll()
+posix_trace_event()
+pselect()
+raise()
+read()
+readlink()
+recv()
+recvfrom()
+recvmsg()
+rename()
+rmdir()
+select()
+sem_post()
+send()
+sendmsg()
+sendto()
+setgid()
+setpgid()
+setsid()
+setsockopt()
+setuid()
+shutdown()
+sigaction()
+sigaddset()
+sigdelset()
+sigemptyset()
+sigfillset()
+sigismember()
+signal()
+sigpause()
+sigpending()
+sigprocmask()
+sigqueue()
+sigset()
+sigsuspend()
+sleep()
+sockatmark()
+socket()
+socketpair()
+stat()
+symlink()
+sysconf()
+tcdrain()
+tcflow()
+tcflush()
+tcgetattr()
+tcgetpgrp()
+tcsendbreak()
+tcsetattr()
+tcsetpgrp()
+time()
+timer_getoverrun()
+timer_gettime()
+timer_settime()
+times()
+umask()
+uname()
+unlink()
+utime()
+wait()
+waitpid()
+write()
+</pre>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>POSIX.1-2008 removes fpathconf(), pathconf(), and
+        sysconf() from the above list, and adds the following
+        functions:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+execl()
+execv()
+faccessat()
+fchmodat()
+fchownat()
+fexecve()
+fstatat()
+futimens()
+linkat()
+mkdirat()
+mkfifoat()
+mknod()
+mknodat()
+openat()
+readlinkat()
+renameat()
+symlinkat()
+unlinkat()
+utimensat()
+utimes()
+</pre>
+            </div>
+          </blockquote>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="signal-7_sect10" name="signal-7_sect10" shape="rect"> </a>
+
+        <h3>Interruption of system calls and library functions by
+        signal handlers</h3>
+
+        <p>If a signal handler is invoked while a system call or
+        library function call is blocked, then either:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>the call is automatically restarted after the
+              signal handler returns; or</p>
+            </li>
+
+            <li class="listitem">
+              <p>the call fails with the error <span class="errorname">EINTR</span>.</p>
+            </li>
+          </ul>
+        </div>
+
+        <p>Which of these two behaviors occurs depends on the
+        interface and whether or not the signal handler was
+        established using the <code class="constant">SA_RESTART</code> flag (see <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a>). The
+        details vary across UNIX systems; below, the details for
+        Linux.</p>
+
+        <p>If a blocked call to one of the following interfaces is
+        interrupted by a signal handler, then the call will be
+        automatically restarted after the signal handler returns if
+        the <code class="constant">SA_RESTART</code> flag was used;
+        otherwise the call will fail with the error <span class="errorname">EINTR</span>:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="itemizedlist">
+              <ul class="itemizedlist" style="list-style-type: disc;">
+                <li class="listitem">
+                  <p><a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/readv.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">readv</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/readv.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">writev</span>(2)</span></a>, and
+                  <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> calls
+                  on "slow" devices. A "slow" device is one where
+                  the I/O call may block for an indefinite time,
+                  for example, a terminal, pipe, or socket. If an
+                  I/O call on a slow device has already transferred
+                  some data by the time it is interrupted by a
+                  signal handler, then the call will return a
+                  success status (normally, the number of bytes
+                  transferred). Note that a (local) disk is not a
+                  slow device according to this definition; I/O
+                  operations on disk devices are not interrupted by
+                  signals.</p>
+                </li>
+
+                <li class="listitem">
+                  <p><a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>, if it
+                  can block (e.g., when opening a FIFO; see
+                  <a class="link" href="../htmlman7/fifo.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fifo</span>(7)</span></a>).</p>
+                </li>
+
+                <li class="listitem">
+                  <p><a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">wait</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/wait4.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">wait3</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/wait4.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">wait4</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitid</span>(2)</span></a>, and
+                  <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a>.</p>
+                </li>
+
+                <li class="listitem">
+                  <p>Socket interfaces: <a class="link" href="../htmlman2/accept.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">accept</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/connect.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">connect</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/recv.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">recv</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/recv.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">recvfrom</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/recvmmsg.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">recvmmsg</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/recv.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">recvmsg</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/send.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">send</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/send.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sendto</span>(2)</span></a>, and
+                  <a class="link" href="../htmlman2/send.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sendmsg</span>(2)</span></a>,
+                  unless a timeout has been set on the socket (see
+                  below).</p>
+                </li>
+
+                <li class="listitem">
+                  <p>File locking interfaces: <a class="link" href="../htmlman2/flock.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">flock</span>(2)</span></a> and
+                  the <code class="constant">F_SETLKW</code> and
+                  <code class="constant">F_OFD_SETLKW</code>
+                  operations of <a class="link" href="../htmlman2/fcntl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fcntl</span>(2)</span></a></p>
+                </li>
+
+                <li class="listitem">
+                  <p>POSIX message queue interfaces: <a class="link" href="../htmlman3/mq_receive.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_receive</span>(3)</span></a>,
+                  <a class="link" href="../htmlman3/mq_receive.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_timedreceive</span>(3)</span></a>,
+                  <a class="link" href="../htmlman3/mq_send.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_send</span>(3)</span></a>, and
+                  <a class="link" href="../htmlman3/mq_send.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_timedsend</span>(3)</span></a>.</p>
+                </li>
+
+                <li class="listitem">
+                  <p><a class="link" href="../htmlman2/futex.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">futex</span>(2)</span></a>
+                  <code class="constant">FUTEX_WAIT</code> (since
+                  Linux 2.6.22; beforehand, always failed with
+                  <span class="errorname">EINTR</span>).</p>
+                </li>
+
+                <li class="listitem">
+                  <p><a class="link" href="../htmlman2/getrandom.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getrandom</span>(2)</span></a>.</p>
+                </li>
+
+                <li class="listitem">
+                  <p><span class="citerefentry"><span class="refentrytitle">pthread_mutex_lock</span>(3)</span>,
+                  <span class="citerefentry"><span class="refentrytitle">pthread_cond_wait</span>(3)</span>,
+                  and related APIs.</p>
+                </li>
+
+                <li class="listitem">
+                  <p><a class="link" href="../htmlman2/futex.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">futex</span>(2)</span></a>
+                  <code class="constant">FUTEX_WAIT_BITSET</code>.</p>
+                </li>
+
+                <li class="listitem">
+                  <p>POSIX semaphore interfaces: <a class="link" href="../htmlman3/sem_wait.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_wait</span>(3)</span></a> and
+                  <a class="link" href="../htmlman3/sem_wait.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_timedwait</span>(3)</span></a>
+                  (since Linux 2.6.22; beforehand, always failed
+                  with <span class="errorname">EINTR</span>).</p>
+                </li>
+              </ul>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>The following interfaces are never restarted after being
+        interrupted by a signal handler, regardless of the use of
+        <code class="constant">SA_RESTART</code>; they always fail
+        with the error <span class="errorname">EINTR</span> when
+        interrupted by a signal handler:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="itemizedlist">
+              <ul class="itemizedlist" style="list-style-type: disc;">
+                <li class="listitem">
+                  <p>"Input" socket interfaces, when a timeout
+                  (<code class="constant">SO_RCVTIMEO</code>) has
+                  been set on the socket using <a class="link" href="../htmlman2/getsockopt.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setsockopt</span>(2)</span></a>:
+                  <a class="link" href="../htmlman2/accept.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">accept</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/recv.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">recv</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/recv.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">recvfrom</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/recvmmsg.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">recvmmsg</span>(2)</span></a>
+                  (also with a non-NULL <em class="replaceable"><code>timeout</code></em>
+                  argument), and <a class="link" href="../htmlman2/recv.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">recvmsg</span>(2)</span></a>.</p>
+                </li>
+
+                <li class="listitem">
+                  <p>"Output" socket interfaces, when a timeout
+                  (<code class="constant">SO_RCVTIMEO</code>) has
+                  been set on the socket using <a class="link" href="../htmlman2/getsockopt.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setsockopt</span>(2)</span></a>:
+                  <a class="link" href="../htmlman2/connect.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">connect</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/send.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">send</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/send.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sendto</span>(2)</span></a>, and
+                  <a class="link" href="../htmlman2/send.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sendmsg</span>(2)</span></a>.</p>
+                </li>
+
+                <li class="listitem">
+                  <p>Interfaces used to wait for signals: <a class="link" href="../htmlman2/pause.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pause</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/sigsuspend.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigsuspend</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/sigwaitinfo.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigtimedwait</span>(2)</span></a>,
+                  and <a class="link" href="../htmlman2/sigwaitinfo.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigwaitinfo</span>(2)</span></a>.</p>
+                </li>
+
+                <li class="listitem">
+                  <p>File descriptor multiplexing interfaces:
+                  <a class="link" href="../htmlman2/epoll_wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_wait</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/epoll_wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_pwait</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ppoll</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a>, and
+                  <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pselect</span>(2)</span></a>.</p>
+                </li>
+
+                <li class="listitem">
+                  <p>System V IPC interfaces: <a class="link" href="../htmlman2/msgop.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">msgrcv</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/msgop.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">msgsnd</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/semop.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">semop</span>(2)</span></a>, and
+                  <a class="link" href="../htmlman2/semop.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">semtimedop</span>(2)</span></a>.</p>
+                </li>
+
+                <li class="listitem">
+                  <p>Sleep interfaces: <a class="link" href="../htmlman2/clock_nanosleep.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clock_nanosleep</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/nanosleep.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">nanosleep</span>(2)</span></a>,
+                  and <a class="link" href="../htmlman3/usleep.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">usleep</span>(3)</span></a>.</p>
+                </li>
+
+                <li class="listitem">
+                  <p><a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> from an
+                  <a class="link" href="../htmlman7/inotify.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">inotify</span>(7)</span></a> file
+                  descriptor.</p>
+                </li>
+
+                <li class="listitem">
+                  <p><a class="link" href="../htmlman2/io_getevents.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">io_getevents</span>(2)</span></a>.</p>
+                </li>
+              </ul>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>The <a class="link" href="../htmlman3/sleep.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sleep</span>(3)</span></a> function is also
+        never restarted if interrupted by a handler, but gives a
+        success return: the number of seconds remaining to
+        sleep.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="signal-7_sect11" name="signal-7_sect11" shape="rect"> </a>
+
+        <h3>Interruption of system calls and library functions by
+        stop signals</h3>
+
+        <p>On Linux, even in the absence of signal handlers,
+        certain blocking interfaces can fail with the error
+        <span class="errorname">EINTR</span> after the process is
+        stopped by one of the stop signals and then resumed via
+        <code class="constant">SIGCONT</code>. This behavior is not
+        sanctioned by POSIX.1, and doesn't occur on other
+        systems.</p>
+
+        <p>The Linux interfaces that display this behavior are:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="itemizedlist">
+              <ul class="itemizedlist" style="list-style-type: disc;">
+                <li class="listitem">
+                  <p>"Input" socket interfaces, when a timeout
+                  (<code class="constant">SO_RCVTIMEO</code>) has
+                  been set on the socket using <a class="link" href="../htmlman2/getsockopt.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setsockopt</span>(2)</span></a>:
+                  <a class="link" href="../htmlman2/accept.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">accept</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/recv.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">recv</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/recv.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">recvfrom</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/recvmmsg.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">recvmmsg</span>(2)</span></a>
+                  (also with a non-NULL <em class="replaceable"><code>timeout</code></em>
+                  argument), and <a class="link" href="../htmlman2/recv.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">recvmsg</span>(2)</span></a>.</p>
+                </li>
+
+                <li class="listitem">
+                  <p>"Output" socket interfaces, when a timeout
+                  (<code class="constant">SO_RCVTIMEO</code>) has
+                  been set on the socket using <a class="link" href="../htmlman2/getsockopt.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setsockopt</span>(2)</span></a>:
+                  <a class="link" href="../htmlman2/connect.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">connect</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/send.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">send</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/send.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sendto</span>(2)</span></a>, and
+                  <a class="link" href="../htmlman2/send.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sendmsg</span>(2)</span></a>, if
+                  a send timeout (<code class="constant">SO_SNDTIMEO</code>) has been set.</p>
+                </li>
+
+                <li class="listitem">
+                  <p><a class="link" href="../htmlman2/epoll_wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_wait</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/epoll_wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll_pwait</span>(2)</span></a>.</p>
+                </li>
+
+                <li class="listitem">
+                  <p><a class="link" href="../htmlman2/semop.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">semop</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/semop.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">semtimedop</span>(2)</span></a>.</p>
+                </li>
+
+                <li class="listitem">
+                  <p><a class="link" href="../htmlman2/sigwaitinfo.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigtimedwait</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/sigwaitinfo.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigwaitinfo</span>(2)</span></a>.</p>
+                </li>
+
+                <li class="listitem">
+                  <p><a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> from an
+                  <a class="link" href="../htmlman7/inotify.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">inotify</span>(7)</span></a> file
+                  descriptor.</p>
+                </li>
+
+                <li class="listitem">
+                  <p>Linux 2.6.21 and earlier: <a class="link" href="../htmlman2/futex.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">futex</span>(2)</span></a>
+                  <code class="constant">FUTEX_WAIT</code>,
+                  <a class="link" href="../htmlman3/sem_wait.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_timedwait</span>(3)</span></a>,
+                  <a class="link" href="../htmlman3/sem_wait.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_wait</span>(3)</span></a>.</p>
+                </li>
+
+                <li class="listitem">
+                  <p>Linux 2.6.8 and earlier: <a class="link" href="../htmlman2/msgop.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">msgrcv</span>(2)</span></a>,
+                  <a class="link" href="../htmlman2/msgop.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">msgsnd</span>(2)</span></a>.</p>
+                </li>
+
+                <li class="listitem">
+                  <p>Linux 2.4 and earlier: <a class="link" href="../htmlman2/nanosleep.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">nanosleep</span>(2)</span></a>.</p>
+                </li>
+              </ul>
+            </div>
+          </blockquote>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="signal-7_sect12" name="signal-7_sect12" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>POSIX.1, except as noted.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="signal-7_sect13" name="signal-7_sect13" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman1/kill.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">kill</span>(1)</span></a>, <a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getrlimit</span>(2)</span></a>, <a class="link" href="../htmlman2/kill.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">kill</span>(2)</span></a>, <a class="link" href="../htmlman2/killpg.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">killpg</span>(2)</span></a>, <a class="link" href="../htmlman2/restart_syscall.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">restart_syscall</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/rt_sigqueueinfo.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rt_sigqueueinfo</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/getitimer.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setitimer</span>(2)</span></a>, <a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setrlimit</span>(2)</span></a>, <a class="link" href="../htmlman2/sgetmask.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sgetmask</span>(2)</span></a>, <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a>, <a class="link" href="../htmlman2/sigaltstack.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaltstack</span>(2)</span></a>, <a class="link" href="../htmlman2/signal.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(2)</span></a>, <a class="link" href="../htmlman2/signalfd.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signalfd</span>(2)</span></a>, <a class="link" href="../htmlman2/sigpending.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigpending</span>(2)</span></a>, <a class="link" href="../htmlman2/sigprocmask.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigprocmask</span>(2)</span></a>, <a class="link" href="../htmlman2/sigsuspend.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigsuspend</span>(2)</span></a>, <a class="link" href="../htmlman2/sigwaitinfo.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigwaitinfo</span>(2)</span></a>, <a class="link" href="../htmlman3/abort.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">abort</span>(3)</span></a>, <a class="link" href="../htmlman3/bsd_signal.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">bsd_signal</span>(3)</span></a>, <a class="link" href="../htmlman3/longjmp.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">longjmp</span>(3)</span></a>, <a class="link" href="../htmlman3/raise.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">raise</span>(3)</span></a>, <a class="link" href="../htmlman3/pthread_sigqueue.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_sigqueue</span>(3)</span></a>,
+      <a class="link" href="../htmlman3/sigqueue.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigqueue</span>(3)</span></a>, <a class="link" href="../htmlman3/sigset.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigset</span>(3)</span></a>, <a class="link" href="../htmlman3/sigsetops.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigsetops</span>(3)</span></a>, <a class="link" href="../htmlman3/sigvec.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigvec</span>(3)</span></a>, <a class="link" href="../htmlman3/sigwait.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigwait</span>(3)</span></a>, <a class="link" href="../htmlman3/strsignal.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">strsignal</span>(3)</span></a>, <a class="link" href="../htmlman3/sysv_signal.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sysv_signal</span>(3)</span></a>, <a class="link" href="../htmlman5/core.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">core</span>(5)</span></a>, <a class="link" href="../htmlman5/proc.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">proc</span>(5)</span></a>, <a class="link" href="../htmlman7/nptl.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">nptl</span>(7)</span></a>, <a class="link" href="../htmlman7/pthreads.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthreads</span>(7)</span></a>, <a class="link" href="../htmlman7/sigevent.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigevent</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="signal-7_sect14" name="signal-7_sect14" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    t<br />
+                  Copyright (c) 1993 by Thomas Koenig (ig25<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>rz.uni-karlsruhe.de)<br />
+
+                  and Copyright (c) 2002, 2006 by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  and Copyright (c) 2008 Linux Foundation, written by Michael Kerrisk<br />
+
+                      &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Modified Sat Jul 24 17:34:08 1993 by Rik Faith (faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu)<br />
+
+                  Modified Sun Jan  7 01:41:27 1996 by Andries Brouwer (aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl)<br />
+
+                  Modified Sun Apr 14 12:02:29 1996 by Andries Brouwer (aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl)<br />
+
+                  Modified Sat Nov 13 16:28:23 1999 by Andries Brouwer (aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl)<br />
+
+                  Modified 10 Apr 2002, by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  Modified  7 Jun 2002, by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  Added information on real-time signals<br />
+
+                  Modified 13 Jun 2002, by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  Noted that SIGSTKFLT is in fact unused<br />
+
+                  2004-12-03, Modified mtk, added notes on RLIMIT_SIGPENDING<br />
+
+                  2006-04-24, mtk, Added text on changing signal dispositions,<br />
+
+                  signal mask, and pending signals.<br />
+
+                  2008-07-04, mtk:<br />
+                      Added section on system call restarting (SA_RESTART)<br />
+
+                      Added section on stop/cont signals interrupting syscalls.<br />
+
+                  2008-10-05, mtk: various additions<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

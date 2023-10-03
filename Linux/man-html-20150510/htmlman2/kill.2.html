@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>kill(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="kill(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="kill.2" name="kill.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>kill — send signal to a process</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;sys/types.h&gt;
+#include &lt;signal.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>kill</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">pid_t <var class="pdparam">pid</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">sig</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <div class="featuretests">
+                <table style="border-collapse: collapse;">
+                  <colgroup span="1">
+                    <col span="1" />
+                  </colgroup>
+
+                  <thead>
+                    <tr>
+                      <th style="" rowspan="1" colspan="1">Feature Test Macro Requirements
+                      for glibc (see <a class="link" href="../htmlman7/feature_test_macros.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">feature_test_macros</span>(7)</span></a>):</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"><code class="function">kill</code>():</td>
+                    </tr>
+
+                    <tr>
+                      <td class="featuretestdef" style="" rowspan="1" colspan="1">
+                      <code class="constant">_POSIX_C_SOURCE</code>
+                      &gt;= 1 || <code class="constant">_XOPEN_SOURCE</code> ||
+                      <code class="constant">_POSIX_SOURCE</code></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="kill-2_sect1" name="kill-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">kill</code>() system call can
+      be used to send any signal to any process group or
+      process.</p>
+
+      <p>If <em class="parameter"><code>pid</code></em> is
+      positive, then signal <em class="parameter"><code>sig</code></em> is sent to the process with
+      the ID specified by <em class="parameter"><code>pid</code></em>.</p>
+
+      <p>If <em class="parameter"><code>pid</code></em> equals 0,
+      then <em class="parameter"><code>sig</code></em> is sent to
+      every process in the process group of the calling
+      process.</p>
+
+      <p>If <em class="parameter"><code>pid</code></em> equals
+      −1, then <em class="parameter"><code>sig</code></em> is
+      sent to every process for which the calling process has
+      permission to send signals, except for process 1 (<em class="replaceable"><code>init</code></em>), but see below.</p>
+
+      <p>If <em class="parameter"><code>pid</code></em> is less
+      than −1, then <em class="parameter"><code>sig</code></em> is sent to every process in
+      the process group whose ID is <code class="option">−pid</code>.</p>
+
+      <p>If <em class="parameter"><code>sig</code></em> is 0, then
+      no signal is sent, but error checking is still performed;
+      this can be used to check for the existence of a process ID
+      or process group ID.</p>
+
+      <p>For a process to have permission to send a signal it must
+      either be privileged (under Linux: have the <code class="constant">CAP_KILL</code> capability), or the real or
+      effective user ID of the sending process must equal the real
+      or saved set-user-ID of the target process. In the case of
+      <code class="constant">SIGCONT</code> it suffices when the
+      sending and receiving processes belong to the same session.
+      (Historically, the rules were different; see NOTES.)</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="kill-2_sect2" name="kill-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success (at least one signal was sent), zero is
+      returned. On error, −1 is returned, and <code class="varname">errno</code> is set appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="kill-2_sect3" name="kill-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>An invalid signal was specified.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The process does not have permission to send the
+            signal to any of the target processes.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ESRCH</span></span></dt>
+
+          <dd>
+            <p>The pid or process group does not exist. Note that
+            an existing process might be a zombie, a process which
+            already committed termination, but has not yet been
+            <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">wait</span>(2)</span></a>ed for.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="kill-2_sect4" name="kill-2_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>SVr4, 4.3BSD, POSIX.1-2001.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="kill-2_sect5" name="kill-2_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>The only signals that can be sent to process ID 1, the
+      <em class="replaceable"><code>init</code></em> process, are
+      those for which <em class="replaceable"><code>init</code></em> has explicitly installed
+      signal handlers. This is done to assure the system is not
+      brought down accidentally.</p>
+
+      <p>POSIX.1-2001 requires that <em class="replaceable"><code>kill(−1,sig)</code></em> send
+      <em class="parameter"><code>sig</code></em> to all processes
+      that the calling process may send signals to, except possibly
+      for some implementation-defined system processes. Linux
+      allows a process to signal itself, but on Linux the call
+      <em class="replaceable"><code>kill(−1,sig)</code></em>
+      does not signal the calling process.</p>
+
+      <p>POSIX.1-2001 requires that if a process sends a signal to
+      itself, and the sending thread does not have the signal
+      blocked, and no other thread has it unblocked or is waiting
+      for it in <a class="link" href="../htmlman3/sigwait.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigwait</span>(3)</span></a>, at least one
+      unblocked signal must be delivered to the sending thread
+      before the <code class="function">kill</code>() returns.</p>
+
+      <div class="refsect2">
+        <a id="kill-2_sect6" name="kill-2_sect6" shape="rect"> </a>
+
+        <h3>Linux notes</h3>
+
+        <p>Across different kernel versions, Linux has enforced
+        different rules for the permissions required for an
+        unprivileged process to send a signal to another process.
+        In kernels 1.0 to 1.2.2, a signal could be sent if the
+        effective user ID of the sender matched effective user ID
+        of the target, or the real user ID of the sender matched
+        the real user ID of the target. From kernel 1.2.3 until
+        1.3.77, a signal could be sent if the effective user ID of
+        the sender matched either the real or effective user ID of
+        the target. The current rules, which conform to
+        POSIX.1-2001, were adopted in kernel 1.3.78.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="kill-2_sect7" name="kill-2_sect7" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>In 2.6 kernels up to and including 2.6.7, there was a bug
+      that meant that when sending signals to a process group,
+      <code class="function">kill</code>() failed with the error
+      <span class="errorname">EPERM</span> if the caller did not
+      have permission to send the signal to <em class="replaceable"><code>any</code></em> (rather than <em class="replaceable"><code>all</code></em>) of the members of the
+      process group. Notwithstanding this error return, the signal
+      was still delivered to all of the processes for which the
+      caller had permission to signal.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="kill-2_sect8" name="kill-2_sect8" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/_exit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">_exit</span>(2)</span></a>, <a class="link" href="../htmlman2/killpg.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">killpg</span>(2)</span></a>, <a class="link" href="../htmlman2/signal.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(2)</span></a>, <a class="link" href="../htmlman2/tkill.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tkill</span>(2)</span></a>, <a class="link" href="../htmlman3/exit.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">exit</span>(3)</span></a>, <a class="link" href="../htmlman3/sigqueue.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigqueue</span>(3)</span></a>, <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>, <a class="link" href="../htmlman7/credentials.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">credentials</span>(7)</span></a>, <a class="link" href="../htmlman7/signal.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="kill-2_sect9" name="kill-2_sect9" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 1992 Drew Eckhardt (drew<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.colorado.edu), March 28, 1992<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Modified by Michael Haardt &lt;michael<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>moria.de&gt;<br />
+
+                  Modified by Thomas Koenig &lt;ig25<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>rz.uni-karlsruhe.de&gt;<br />
+
+                  Modified 1993-07-23 by Rik Faith &lt;faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu&gt;<br />
+
+                  Modified 1993-07-25 by Rik Faith &lt;faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu&gt;<br />
+
+                  Modified 1995-11-01 by Michael Haardt<br />
+
+                   &lt;michael<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cantor.informatik.rwth-aachen.de&gt;<br />
+
+                  Modified 1996-04-14 by Andries Brouwer &lt;aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl&gt;<br />
+
+                   [added some polishing contributed by Mike Battersby &lt;mib<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>deakin.edu.au&gt;]<br />
+
+                  Modified 1996-07-21 by Andries Brouwer &lt;aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl&gt;<br />
+
+                  Modified 1997-01-17 by Andries Brouwer &lt;aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl&gt;<br />
+
+                  Modified 2001-12-18 by Andries Brouwer &lt;aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl&gt;<br />
+
+                  Modified 2002-07-24 by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  Added note on historical rules enforced when an unprivileged process<br />
+
+                  sends a signal.<br />
+                  Modified 2004-06-16 by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                      Added note on CAP_KILL<br />
+
+                  Modified 2004-06-24 by aeb<br />
+                  Modified, 2004-11-30, after idea from emmanuel.colbus<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>ensimag.imag.fr<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

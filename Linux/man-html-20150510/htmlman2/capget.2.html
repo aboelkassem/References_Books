@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>capget(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="capget(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="capget.2" name="capget.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>capget, capset — set/get capabilities of
+      thread(s)</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;sys/capability.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>capget</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">cap_user_header_t <var class="pdparam">hdrp</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">cap_user_data_t <var class="pdparam">datap</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>capset</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">cap_user_header_t <var class="pdparam">hdrp</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const cap_user_data_t <var class="pdparam">datap</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="capget-2_sect1" name="capget-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>As of Linux 2.2, the power of the superuser (root) has
+      been partitioned into a set of discrete capabilities. Each
+      thread has a set of effective capabilities identifying which
+      capabilities (if any) it may currently exercise. Each thread
+      also has a set of inheritable capabilities that may be passed
+      through an <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a> call, and a set
+      of permitted capabilities that it can make effective or
+      inheritable.</p>
+
+      <p>These two system calls are the raw kernel interface for
+      getting and setting thread capabilities. Not only are these
+      system calls specific to Linux, but the kernel API is likely
+      to change and use of these system calls (in particular the
+      format of the <em class="replaceable"><code>cap_user_*_t</code></em> types) is
+      subject to extension with each kernel revision, but old
+      programs will keep working.</p>
+
+      <p>The portable interfaces are <span class="citerefentry"><span class="refentrytitle">cap_set_proc</span>(3)</span> and
+      <span class="citerefentry"><span class="refentrytitle">cap_get_proc</span>(3)</span>; if possible,
+      you should use those interfaces in applications. If you wish
+      to use the Linux extensions in applications, you should use
+      the easier-to-use interfaces <span class="citerefentry"><span class="refentrytitle">capsetp</span>(3)</span> and <span class="citerefentry"><span class="refentrytitle">capgetp</span>(3)</span>.</p>
+
+      <div class="refsect2">
+        <a id="capget-2_sect2" name="capget-2_sect2" shape="rect"> </a>
+
+        <h3>Current details</h3>
+
+        <p>Now that you have been warned, some current kernel
+        details. The structures are defined as follows.</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+#define _LINUX_CAPABILITY_VERSION_1  0x19980330
+#define _LINUX_CAPABILITY_U32S_1     1
+
+        /* V2 added in Linux 2.6.25; deprecated */
+#define _LINUX_CAPABILITY_VERSION_2  0x20071026
+#define _LINUX_CAPABILITY_U32S_2     2
+
+        /* V3 added in Linux 2.6.26 */
+#define _LINUX_CAPABILITY_VERSION_3  0x20080522
+#define _LINUX_CAPABILITY_U32S_3     2
+
+
+typedef struct __user_cap_header_struct {
+   __u32 version;
+   int pid;
+} *cap_user_header_t;
+
+typedef struct __user_cap_data_struct {
+   __u32 effective;
+   __u32 permitted;
+   __u32 inheritable;
+} *cap_user_data_t;
+</pre>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>The <em class="replaceable"><code>effective</code></em>,
+        <em class="replaceable"><code>permitted</code></em>, and
+        <em class="replaceable"><code>inheritable</code></em>
+        fields are bit masks of the capabilities defined in
+        <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>. Note
+        that the <em class="replaceable"><code>CAP_*</code></em>
+        values are bit indexes and need to be bit-shifted before
+        ORing into the bit fields. To define the structures for
+        passing to the system call, you have to use the
+        <span class="emphasis"><em>struct
+        __user_cap_header_struct</em></span> and <span class="emphasis"><em>struct __user_cap_data_struct</em></span>
+        names because the typedefs are only pointers.</p>
+
+        <p>Kernels prior to 2.6.25 prefer 32-bit capabilities with
+        version <code class="constant">_LINUX_CAPABILITY_VERSION_1</code>. Linux 2.6.25
+        added 64-bit capability sets, with version <code class="constant">_LINUX_CAPABILITY_VERSION_2</code>. There was,
+        however, an API glitch, and Linux 2.6.26 added <code class="constant">_LINUX_CAPABILITY_VERSION_3</code> to fix the
+        problem.</p>
+
+        <p>Note that 64-bit capabilities use <em class="parameter"><code>datap</code></em>[0] and <em class="parameter"><code>datap</code></em>[1], whereas 32-bit
+        capabilities use only <em class="parameter"><code>datap</code></em>[0].</p>
+
+        <p>On kernels that support file capabilities (VFS
+        capability support), these system calls behave slightly
+        differently. This support was added as an option in Linux
+        2.6.24, and became fixed (nonoptional) in Linux 2.6.33.</p>
+
+        <p>For <code class="function">capget</code>() calls, one
+        can probe the capabilities of any process by specifying its
+        process ID with the <em class="replaceable"><code>hdrp-&gt;pid</code></em> field
+        value.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="capget-2_sect3" name="capget-2_sect3" shape="rect"> </a>
+
+        <h3>With VFS capability support</h3>
+
+        <p>VFS Capability support creates a file-attribute method
+        for adding capabilities to privileged executables. This
+        privilege model obsoletes kernel support for one process
+        asynchronously setting the capabilities of another. That
+        is, with VFS support, for <code class="function">capset</code>() calls the only permitted values
+        for <em class="replaceable"><code>hdrp-&gt;pid</code></em>
+        are 0 or <a class="link" href="../htmlman2/getpid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getpid</span>(2)</span></a>, which are
+        equivalent.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="capget-2_sect4" name="capget-2_sect4" shape="rect"> </a>
+
+        <h3>Without VFS capability support</h3>
+
+        <p>When the kernel does not support VFS capabilities,
+        <code class="function">capset</code>() calls can operate on
+        the capabilities of the thread specified by the <em class="replaceable"><code>pid</code></em> field of <em class="parameter"><code>hdrp</code></em> when that is nonzero, or
+        on the capabilities of the calling thread if <em class="replaceable"><code>pid</code></em> is 0. If <em class="replaceable"><code>pid</code></em> refers to a
+        single-threaded process, then <em class="replaceable"><code>pid</code></em> can be specified as a
+        traditional process ID; operating on a thread of a
+        multithreaded process requires a thread ID of the type
+        returned by <a class="link" href="../htmlman2/gettid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gettid</span>(2)</span></a>. For
+        <code class="function">capset</code>(), <em class="replaceable"><code>pid</code></em> can also be: −1,
+        meaning perform the change on all threads except the caller
+        and <span class="citerefentry"><span class="refentrytitle">init</span>(1)</span>; or a value less than
+        −1, in which case the change is applied to all
+        members of the process group whose ID is −<em class="replaceable"><code>pid</code></em>.</p>
+
+        <p>For details on the data, see <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="capget-2_sect5" name="capget-2_sect5" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, zero is returned. On error, −1 is
+      returned, and <code class="varname">errno</code> is set
+      appropriately.</p>
+
+      <p>The calls will fail with the error <span class="errorname">EINVAL</span>, and set the <em class="replaceable"><code>version</code></em> field of <em class="parameter"><code>hdrp</code></em> to the kernel preferred
+      value of <em class="replaceable"><code>_LINUX_CAPABILITY_VERSION_?</code></em>
+      when an unsupported <em class="replaceable"><code>version</code></em> value is specified.
+      In this way, one can probe what the current preferred
+      capability revision is.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="capget-2_sect6" name="capget-2_sect6" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p>Bad memory address. <em class="parameter"><code>hdrp</code></em> must not be NULL.
+            <em class="parameter"><code>datap</code></em> may be
+            NULL only when the user is trying to determine the
+            preferred capability version format supported by the
+            kernel.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>One of the arguments was invalid.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>An attempt was made to add a capability to the
+            Permitted set, or to set a capability in the Effective
+            or Inheritable sets that is not in the Permitted
+            set.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The caller attempted to use <code class="function">capset</code>() to modify the capabilities
+            of a thread other than itself, but lacked sufficient
+            privilege. For kernels supporting VFS capabilities,
+            this is never permitted. For kernels lacking VFS
+            support, the <code class="constant">CAP_SETPCAP</code>
+            capability is required. (A bug in kernels before 2.6.11
+            meant that this error could also occur if a thread
+            without this capability tried to change its own
+            capabilities by specifying the <em class="replaceable"><code>pid</code></em> field as a nonzero
+            value (i.e., the value returned by <a class="link" href="../htmlman2/getpid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getpid</span>(2)</span></a>) instead of
+            0.)</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ESRCH</span></span></dt>
+
+          <dd>
+            <p>No such thread.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="capget-2_sect7" name="capget-2_sect7" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>These system calls are Linux-specific.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="capget-2_sect8" name="capget-2_sect8" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>The portable interface to the capability querying and
+      setting functions is provided by the <em class="replaceable"><code>libcap</code></em> library and is
+      available here:</p>
+
+      <p><a class="literalurl" href="http://git.kernel.org/cgit/linux/kernel/git/morgan/libcap.git" target="_top" shape="rect">http://git.kernel.org/cgit/linux/kernel/git/morgan/libcap.git</a></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="capget-2_sect9" name="capget-2_sect9" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/clone.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clone</span>(2)</span></a>, <a class="link" href="../htmlman2/gettid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gettid</span>(2)</span></a>, <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="capget-2_sect10" name="capget-2_sect10" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    written by Andrew Morgan &lt;morgan<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>kernel.org&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(GPL_NOVERSION_ONELINE)<br />
+                  may be distributed as per GPL<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Modified by David A. Wheeler &lt;dwheeler<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>ida.org&gt;<br />
+
+                  Modified 2004-05-27, mtk<br />
+                  Modified 2004-06-21, aeb<br />
+                  Modified 2008-04-28, morgan of kernel.org<br />
+
+                      Update in line with addition of file capabilities and<br />
+
+                      64-bit capability sets in kernel 2.6.2[45].<br />
+
+                  Modified 2009-01-26, andi kleen<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

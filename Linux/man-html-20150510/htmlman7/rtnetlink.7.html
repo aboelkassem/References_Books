@@ -1,0 +1,1848 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>rtnetlink(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="rtnetlink(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="rtnetlink.7" name="rtnetlink.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>rtnetlink — Linux IPv4 routing socket</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;asm/types.h&gt;
+#include &lt;linux/netlink.h&gt;
+#include &lt;linux/rtnetlink.h&gt;
+#include &lt;sys/socket.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">rtnetlink_socket =
+            <strong>socket</strong>(</code></td>
+
+            <td rowspan="1" colspan="1"><var class="pdparam">AF_NETLINK</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">socket_type</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1"><var class="pdparam">NETLINK_ROUTE</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="rtnetlink-7_sect1" name="rtnetlink-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>Rtnetlink allows the kernel's routing tables to be read
+      and altered. It is used within the kernel to communicate
+      between various subsystems, though this usage is not
+      documented here, and for communication with user-space
+      programs. Network routes, IP addresses, link parameters,
+      neighbor setups, queueing disciplines, traffic classes and
+      packet classifiers may all be controlled through <em class="parameter"><code>NETLINK_ROUTE</code></em> sockets. It is
+      based on netlink messages; see <a class="link" href="../htmlman7/netlink.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">netlink</span>(7)</span></a> for more
+      information.</p>
+
+      <div class="refsect2">
+        <a id="rtnetlink-7_sect2" name="rtnetlink-7_sect2" shape="rect"> </a>
+
+        <h3>Routing attributes</h3>
+
+        <p>Some rtnetlink messages have optional attributes after
+        the initial header:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="structdef">
+              <table style="border-collapse: collapse;">
+                <colgroup span="1">
+                  <col class="c1" span="1" />
+                  <col class="c2" span="1" />
+                  <col class="c3" span="1" />
+                  <col class="c4" span="1" />
+                  <col class="c5" span="1" />
+                </colgroup>
+
+                <tbody>
+                  <tr>
+                    <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">
+                    struct</td>
+
+                    <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">rtattr</span> {</td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>rta_len</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Length of option */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" rowspan="1" colspan="1"> </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1">
+                     </td>
+
+                    <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>rta_type</code></em>;</td>
+
+                    <td style="" align="left" rowspan="1" colspan="1">
+                      <div class="literallayout">
+                        
+                        /* Type of option */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="" colspan="5" align="left" rowspan="1">
+                      <div class="literallayout">
+                        /* Data follows */
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>These attributes should be manipulated using only the
+        RTA_* macros or libnetlink, see <a class="link" href="../htmlman3/rtnetlink.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rtnetlink</span>(3)</span></a>.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="rtnetlink-7_sect3" name="rtnetlink-7_sect3" shape="rect"> </a>
+
+        <h3>Messages</h3>
+
+        <p>Rtnetlink consists of these message types (in addition
+        to standard netlink messages):</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">RTM_NEWLINK</code>, <code class="constant">RTM_DELLINK</code>, <code class="constant">RTM_GETLINK</code></span></dt>
+
+            <dd>
+              <p>Create, remove or get information about a specific
+              network interface. These messages contain an
+              <em class="replaceable"><code>ifinfomsg</code></em>
+              structure followed by a series of <em class="replaceable"><code>rtattr</code></em>
+              structures.</p>
+
+              <div class="structdef">
+                <table style="border-collapse: collapse;">
+                  <colgroup span="1">
+                    <col class="c1" span="1" />
+                    <col class="c2" span="1" />
+                    <col class="c3" span="1" />
+                    <col class="c4" span="1" />
+                    <col class="c5" span="1" />
+                  </colgroup>
+
+                  <tbody>
+                    <tr>
+                      <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                      <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">ifinfomsg</span> {</td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ifi_family</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1">
+                        <div class="literallayout">
+                          /* AF_UNSPEC */
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned short</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ifi_type</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1">
+                        <div class="literallayout">
+                          /* Device type */
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ifi_index</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1">
+                        <div class="literallayout">
+                          
+                          /* Interface index */
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned int</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ifi_flags</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1">
+                        <div class="literallayout">
+                          
+                          /* Device flags  */
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned int</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ifi_change</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1">
+                        <div class="literallayout">
+                          /* change mask */
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <p><em class="parameter"><code>ifi_flags</code></em>
+              contains the device flags, see <a class="link" href="../htmlman7/netdevice.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">netdevice</span>(7)</span></a>;
+              <em class="parameter"><code>ifi_index</code></em> is
+              the unique interface index (since Linux 3.7, it is
+              possible to feed a nonzero value with the
+              <code class="constant">RTM_NEWLINK</code> message,
+              thus creating a link with the given <em class="replaceable"><code>ifindex</code></em>); <em class="parameter"><code>ifi_change</code></em> is reserved
+              for future use and should be always set to
+              0xFFFFFFFF.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <div class="informaltable">
+          <table style="border-collapse: collapse;">
+            <colgroup span="1">
+              <col class="c0" span="1" />
+              <col class="c1" span="1" />
+              <col class="c2" span="1" />
+            </colgroup>
+
+            <tbody>
+              <tr>
+                <td style="" colspan="3" align="center" rowspan="1">Routing
+                attributes</td>
+              </tr>
+
+              <tr style="">
+                <td style="" align="left" rowspan="1" colspan="1">rta_type</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">value type</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">description</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFLA_UNSPEC</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">-</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">unspecified.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFLA_ADDRESS</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">hardware address</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">interface L2 address</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFLA_BROADCAST</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">hardware address</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">L2 broadcast
+                address.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFLA_IFNAME</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">asciiz string</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Device name.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFLA_MTU</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">unsigned int</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">MTU of the device.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFLA_LINK</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">int</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Link type.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFLA_QDISC</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">asciiz string</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Queueing discipline.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFLA_STATS</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">see below</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Interface
+                Statistics.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>The value type for <code class="constant">IFLA_STATS</code> is <span class="emphasis"><em>struct rtnl_link_stats</em></span>
+        (<span class="emphasis"><em>struct
+        net_device_stats</em></span> in Linux 2.4 and earlier).</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">RTM_NEWADDR</code>, <code class="constant">RTM_DELADDR</code>, <code class="constant">RTM_GETADDR</code></span></dt>
+
+            <dd>
+              <p>Add, remove or receive information about an IP
+              address associated with an interface. In Linux 2.2,
+              an interface can carry multiple IP addresses, this
+              replaces the alias device concept in 2.0. In Linux
+              2.2, these messages support IPv4 and IPv6 addresses.
+              They contain an <em class="replaceable"><code>ifaddrmsg</code></em> structure,
+              optionally followed by <em class="replaceable"><code>rtattr</code></em> routing
+              attributes.</p>
+
+              <div class="structdef">
+                <table style="border-collapse: collapse;">
+                  <colgroup span="1">
+                    <col class="c1" span="1" />
+                    <col class="c2" span="1" />
+                    <col class="c3" span="1" />
+                    <col class="c4" span="1" />
+                    <col class="c5" span="1" />
+                  </colgroup>
+
+                  <tbody>
+                    <tr>
+                      <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                      <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">ifaddrmsg</span> {</td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ifa_family</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1">
+                        <div class="literallayout">
+                          /* Address type */
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ifa_prefixlen</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1">
+                        <div class="literallayout">
+                          
+                          /* Prefixlength of address */
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ifa_flags</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1">
+                        <div class="literallayout">
+                          /* Address flags */
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ifa_scope</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1">
+                        <div class="literallayout">
+                          /* Address scope */
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ifa_index</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1">
+                        <div class="literallayout">
+                          
+                          /* Interface index */
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <p><em class="parameter"><code>ifa_family</code></em>
+              is the address family type (currently <code class="constant">AF_INET</code> or <code class="constant">AF_INET6</code>), <em class="parameter"><code>ifa_prefixlen</code></em> is the
+              length of the address mask of the address if defined
+              for the family (like for IPv4), <em class="parameter"><code>ifa_scope</code></em> is the
+              address scope, <em class="parameter"><code>ifa_index</code></em> is the
+              interface index of the interface the address is
+              associated with. <em class="parameter"><code>ifa_flags</code></em> is a flag
+              word of <code class="constant">IFA_F_SECONDARY</code>
+              for secondary address (old alias interface),
+              <code class="constant">IFA_F_PERMANENT</code> for a
+              permanent address set by the user and other
+              undocumented flags.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <div class="informaltable">
+          <table style="border-collapse: collapse;">
+            <colgroup span="1">
+              <col class="c0" span="1" />
+              <col class="c1" span="1" />
+              <col class="c2" span="1" />
+            </colgroup>
+
+            <tbody>
+              <tr>
+                <td style="" colspan="3" align="center" rowspan="1">
+                Attributes</td>
+              </tr>
+
+              <tr style="">
+                <td style="" align="left" rowspan="1" colspan="1">rta_type</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">value type</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">description</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFA_UNSPEC</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">-</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">unspecified.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFA_ADDRESS</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">raw protocol address</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">interface address</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFA_LOCAL</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">raw protocol address</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">local address</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFA_LABEL</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">asciiz string</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">name of the
+                interface</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFA_BROADCAST</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">raw protocol address</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">broadcast address.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFA_ANYCAST</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">raw protocol address</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">anycast address</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">IFA_CACHEINFO</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">struct ifa_cacheinfo</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Address information.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">RTM_NEWROUTE</code>, <code class="constant">RTM_DELROUTE</code>, <code class="constant">RTM_GETROUTE</code></span></dt>
+
+            <dd>
+              <p>Create, remove or receive information about a
+              network route. These messages contain an <em class="replaceable"><code>rtmsg</code></em> structure with
+              an optional sequence of <em class="replaceable"><code>rtattr</code></em> structures
+              following. For <code class="constant">RTM_GETROUTE</code>, setting <em class="replaceable"><code>rtm_dst_len</code></em> and
+              <em class="replaceable"><code>rtm_src_len</code></em>
+              to 0 means you get all entries for the specified
+              routing table. For the other fields, except
+              <em class="replaceable"><code>rtm_table</code></em>
+              and <em class="replaceable"><code>rtm_protocol</code></em>, 0 is
+              the wildcard.</p>
+
+              <div class="structdef">
+                <table style="border-collapse: collapse;">
+                  <colgroup span="1">
+                    <col class="c1" span="1" />
+                    <col class="c2" span="1" />
+                    <col class="c3" span="1" />
+                    <col class="c4" span="1" />
+                    <col class="c5" span="1" />
+                  </colgroup>
+
+                  <tbody>
+                    <tr>
+                      <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                      <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">rtmsg</span> {</td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>rtm_family</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1">
+                        <div class="literallayout">
+                          
+                          /* Address family of route */
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>rtm_dst_len</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1">
+                        <div class="literallayout">
+                          
+                          /* Length of destination */
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>rtm_src_len</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1">
+                        <div class="literallayout">
+                          
+                          /* Length of source */
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>rtm_tos</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1">
+                        <div class="literallayout">
+                          /* TOS filter */
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>rtm_table</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1">
+                        <div class="literallayout">
+                          
+                          /* Routing table ID */
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>rtm_protocol</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1">
+                        <div class="literallayout">
+                          
+                          /* Routing protocol; see below */
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>rtm_scope</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1">
+                        <div class="literallayout">
+                          /* See below */
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>rtm_type</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1">
+                        <div class="literallayout">
+                          /* See below */
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned int</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>rtm_flags</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"> </td>
+                    </tr>
+
+                    <tr>
+                      <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </dd>
+          </dl>
+        </div>
+
+        <div class="informaltable">
+          <table style="border-collapse: collapse;">
+            <colgroup span="1">
+              <col class="c0" span="1" />
+              <col class="c1" span="1" />
+            </colgroup>
+
+            <tbody>
+              <tr style="">
+                <td style="" align="left" rowspan="1" colspan="1">rtm_type</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Route type</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTN_UNSPEC</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">unknown route</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTN_UNICAST</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">a gateway or direct
+                route</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTN_LOCAL</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">a local interface
+                route</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTN_BROADCAST</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">a local broadcast route
+                (sent as a broadcast)</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTN_ANYCAST</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">a local broadcast route
+                (sent as a unicast)</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTN_MULTICAST</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">a multicast route</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTN_BLACKHOLE</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">a packet dropping
+                route</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTN_UNREACHABLE</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">an unreachable
+                destination</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTN_PROHIBIT</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">a packet rejection
+                route</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTN_THROW</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">continue routing lookup
+                in another table</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTN_NAT</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">a network address
+                translation rule</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTN_XRESOLVE</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">refer to an external
+                resolver (not implemented)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="informaltable">
+          <table style="border-collapse: collapse;">
+            <colgroup span="1">
+              <col class="c0" span="1" />
+              <col class="c1" span="1" />
+            </colgroup>
+
+            <tbody>
+              <tr style="">
+                <td style="" align="left" rowspan="1" colspan="1">rtm_protocol</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Route origin.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTPROT_UNSPEC</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">unknown</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTPROT_REDIRECT</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">by an ICMP redirect
+                (currently unused)</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTPROT_KERNEL</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">by the kernel</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTPROT_BOOT</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">during boot</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTPROT_STATIC</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">by the administrator</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>Values larger than <code class="constant">RTPROT_STATIC</code> are not interpreted by the
+        kernel, they are just for user information. They may be
+        used to tag the source of a routing information or to
+        distinguish between multiple routing daemons. See
+        <code class="literal">&lt;</code><code class="filename">linux/rtnetlink.h</code><code class="literal">&gt;</code> for the routing daemon identifiers
+        which are already assigned.</p>
+
+        <p><em class="parameter"><code>rtm_scope</code></em> is the
+        distance to the destination:</p>
+
+        <div class="informaltable">
+          <table style="border-collapse: collapse;">
+            <colgroup span="1">
+              <col class="c0" span="1" />
+              <col class="c1" span="1" />
+            </colgroup>
+
+            <tbody>
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RT_SCOPE_UNIVERSE</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">global route</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RT_SCOPE_SITE</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">interior route in the
+                local autonomous system</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RT_SCOPE_LINK</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">route on this link</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RT_SCOPE_HOST</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">route on the local
+                host</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RT_SCOPE_NOWHERE</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">destination doesn't
+                exist</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>The values between <code class="constant">RT_SCOPE_UNIVERSE</code> and <code class="constant">RT_SCOPE_SITE</code> are available to the
+        user.</p>
+
+        <p>The <em class="parameter"><code>rtm_flags</code></em>
+        have the following meanings:</p>
+
+        <div class="informaltable">
+          <table style="border-collapse: collapse;">
+            <colgroup span="1">
+              <col class="c0" span="1" />
+              <col class="c1" span="1" />
+            </colgroup>
+
+            <tbody>
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTM_F_NOTIFY</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">if the route changes,
+                notify the user via rtnetlink</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTM_F_CLONED</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">route is cloned from
+                another route</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTM_F_EQUALIZE</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">a multipath equalizer
+                (not yet implemented)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p><em class="parameter"><code>rtm_table</code></em>
+        specifies the routing table</p>
+
+        <div class="informaltable">
+          <table style="border-collapse: collapse;">
+            <colgroup span="1">
+              <col class="c0" span="1" />
+              <col class="c1" span="1" />
+            </colgroup>
+
+            <tbody>
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RT_TABLE_UNSPEC</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">an unspecified routing
+                table</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RT_TABLE_DEFAULT</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">the default table</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RT_TABLE_MAIN</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">the main table</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RT_TABLE_LOCAL</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">the local table</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>The user may assign arbitrary values between
+        <code class="constant">RT_TABLE_UNSPEC</code> and
+        <code class="constant">RT_TABLE_DEFAULT</code>.</p>
+
+        <div class="informaltable">
+          <table style="border-collapse: collapse;">
+            <colgroup span="1">
+              <col class="c0" span="1" />
+              <col class="c1" span="1" />
+              <col class="c2" span="1" />
+            </colgroup>
+
+            <tbody>
+              <tr>
+                <td style="" colspan="3" align="center" rowspan="1">
+                Attributes</td>
+              </tr>
+
+              <tr style="">
+                <td style="" align="left" rowspan="1" colspan="1">rta_type</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">value type</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">description</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTA_UNSPEC</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">-</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">ignored.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTA_DST</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">protocol address</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Route destination
+                address.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTA_SRC</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">protocol address</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Route source
+                address.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTA_IIF</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">int</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Input interface
+                index.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTA_OIF</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">int</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Output interface
+                index.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTA_GATEWAY</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">protocol address</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">The gateway of the
+                route</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTA_PRIORITY</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">int</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Priority of route.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTA_PREFSRC</td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTA_METRICS</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">int</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Route metric</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTA_MULTIPATH</td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTA_PROTOINFO</td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTA_FLOW</td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">RTA_CACHEINFO</td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+                <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p><span class="emphasis"><em>Fill these values
+        in!</em></span></p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">RTM_NEWNEIGH</code>, <code class="constant">RTM_DELNEIGH</code>, <code class="constant">RTM_GETNEIGH</code></span></dt>
+
+            <dd>
+              <p>Add, remove or receive information about a
+              neighbor table entry (e.g., an ARP entry). The
+              message contains an <em class="replaceable"><code>ndmsg</code></em> structure.</p>
+
+              <div class="structdef">
+                <table style="border-collapse: collapse;">
+                  <colgroup span="1">
+                    <col class="c1" span="1" />
+                    <col class="c2" span="1" />
+                    <col class="c3" span="1" />
+                    <col class="c4" span="1" />
+                    <col class="c5" span="1" />
+                  </colgroup>
+
+                  <tbody>
+                    <tr>
+                      <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                      <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">ndmsg</span> {</td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ndm_family</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"> </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ndm_ifindex</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1">
+                        <div class="literallayout">
+                          
+                          /* Interface index */
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u16</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ndm_state</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1">
+                        <div class="literallayout">
+                          /* State */
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u8</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ndm_flags</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1">
+                        <div class="literallayout">
+                          /* Flags */
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u8</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ndm_type</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"> </td>
+                    </tr>
+
+                    <tr>
+                      <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                    </tr>
+
+                    <tr>
+                      <td class="structsep" style="" colspan="5" align="left" rowspan="1"></td>
+                    </tr>
+
+                    <tr>
+                      <td class="structdefhdr2" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                      <td class="structdefhdr2" style="" colspan="4" align="left" rowspan="1"><span class="structname">nda_cacheinfo</span> {</td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u32</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ndm_confirmed</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"> </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u32</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ndm_used</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"> </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u32</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ndm_updated</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"> </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u32</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>ndm_refcnt</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"> </td>
+                    </tr>
+
+                    <tr>
+                      <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <p><em class="parameter"><code>ndm_state</code></em>
+              is a bit mask of the following states:</p>
+            </dd>
+          </dl>
+        </div>
+
+        <div class="informaltable">
+          <table style="border-collapse: collapse;">
+            <colgroup span="1">
+              <col class="c0" span="1" />
+              <col class="c1" span="1" />
+            </colgroup>
+
+            <tbody>
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">NUD_INCOMPLETE</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">a currently resolving
+                cache entry</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">NUD_REACHABLE</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">a confirmed working cache
+                entry</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">NUD_STALE</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">an expired cache
+                entry</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">NUD_DELAY</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">an entry waiting for a
+                timer</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">NUD_PROBE</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">a cache entry that is
+                currently reprobed</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">NUD_FAILED</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">an invalid cache
+                entry</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">NUD_NOARP</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">a device with no
+                destination cache</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">NUD_PERMANENT</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">a static entry</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>Valid <em class="parameter"><code>ndm_flags</code></em>
+        are:</p>
+
+        <div class="informaltable">
+          <table style="border-collapse: collapse;">
+            <colgroup span="1">
+              <col class="c0" span="1" />
+              <col class="c1" span="1" />
+            </colgroup>
+
+            <tbody>
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">NTF_PROXY</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">a proxy arp entry</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">NTF_ROUTER</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">an IPv6 router</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>The <em class="replaceable"><code>rtattr</code></em>
+        struct has the following meanings for the <em class="parameter"><code>rta_type</code></em> field:</p>
+
+        <div class="informaltable">
+          <table style="border-collapse: collapse;">
+            <colgroup span="1">
+              <col class="c0" span="1" />
+              <col class="c1" span="1" />
+            </colgroup>
+
+            <tbody>
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">NDA_UNSPEC</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">unknown type</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">NDA_DST</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">a neighbor cache n/w
+                layer destination address</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">NDA_LLADDR</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">a neighbor cache link
+                layer address</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">NDA_CACHEINFO</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">cache statistics.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>If the <em class="parameter"><code>rta_type</code></em>
+        field is <code class="constant">NDA_CACHEINFO</code>, then
+        a <span class="emphasis"><em>struct
+        nda_cacheinfo</em></span> header follows</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">RTM_NEWRULE</code>, <code class="constant">RTM_DELRULE</code>, <code class="constant">RTM_GETRULE</code></span></dt>
+
+            <dd>
+              <p>Add, delete or retrieve a routing rule. Carries a
+              <span class="emphasis"><em>struct
+              rtmsg</em></span></p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">RTM_NEWQDISC</code>, <code class="constant">RTM_DELQDISC</code>, <code class="constant">RTM_GETQDISC</code></span></dt>
+
+            <dd>
+              <p>Add, remove or get a queueing discipline. The
+              message contains a <span class="emphasis"><em>struct
+              tcmsg</em></span> and may be followed by a series of
+              attributes.</p>
+
+              <div class="structdef">
+                <table style="border-collapse: collapse;">
+                  <colgroup span="1">
+                    <col class="c1" span="1" />
+                    <col class="c2" span="1" />
+                    <col class="c3" span="1" />
+                    <col class="c4" span="1" />
+                    <col class="c5" span="1" />
+                  </colgroup>
+
+                  <tbody>
+                    <tr>
+                      <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                      <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">tcmsg</span> {</td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">unsigned char</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>tcm_family</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"> </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">int</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>tcm_ifindex</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1">
+                        <div class="literallayout">
+                          
+                          /* interface index */
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u32</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>tcm_handle</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1">
+                        <div class="literallayout">
+                          /* Qdisc handle */
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u32</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>tcm_parent</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1">
+                        <div class="literallayout">
+                          /* Parent qdisc */
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><span class="type">__u32</span></td>
+
+                      <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>tcm_info</code></em>;</td>
+
+                      <td style="" align="left" rowspan="1" colspan="1"> </td>
+                    </tr>
+
+                    <tr>
+                      <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </dd>
+          </dl>
+        </div>
+
+        <div class="informaltable">
+          <table style="border-collapse: collapse;">
+            <colgroup span="1">
+              <col class="c0" span="1" />
+              <col class="c1" span="1" />
+              <col class="c2" span="1" />
+            </colgroup>
+
+            <tbody>
+              <tr>
+                <td style="" colspan="3" align="center" rowspan="1">
+                Attributes</td>
+              </tr>
+
+              <tr style="">
+                <td style="" align="left" rowspan="1" colspan="1">rta_type</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">value type</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Description</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">TCA_UNSPEC</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">-</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">unspecified</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">TCA_KIND</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">asciiz string</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Name of queueing
+                discipline</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">TCA_OPTIONS</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">byte sequence</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Qdisc-specific options
+                follow</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">TCA_STATS</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">struct tc_stats</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Qdisc statistics.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">TCA_XSTATS</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">qdisc-specific</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Module-specific
+                statistics.</td>
+              </tr>
+
+              <tr>
+                <td style="" align="left" rowspan="1" colspan="1">TCA_RATE</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">struct tc_estimator</td>
+
+                <td style="" align="left" rowspan="1" colspan="1">Rate limit.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>In addition, various other qdisc-module-specific
+        attributes are allowed. For more information see the
+        appropriate include files.</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">RTM_NEWTCLASS</code>, <code class="constant">RTM_DELTCLASS</code>, <code class="constant">RTM_GETTCLASS</code></span></dt>
+
+            <dd>
+              <p>Add, remove or get a traffic class. These messages
+              contain a <span class="emphasis"><em>struct
+              tcmsg</em></span> as described above.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">RTM_NEWTFILTER</code>, <code class="constant">RTM_DELTFILTER</code>, <code class="constant">RTM_GETTFILTER</code></span></dt>
+
+            <dd>
+              <p>Add, remove or receive information about a traffic
+              filter. These messages contain a <span class="emphasis"><em>struct tcmsg</em></span> as described
+              above.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="rtnetlink-7_sect4" name="rtnetlink-7_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p><em class="replaceable"><code>rtnetlink</code></em> is a
+      new feature of Linux 2.2.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="rtnetlink-7_sect5" name="rtnetlink-7_sect5" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>This manual page is incomplete.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="rtnetlink-7_sect6" name="rtnetlink-7_sect6" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/cmsg.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">cmsg</span>(3)</span></a>, <a class="link" href="../htmlman3/rtnetlink.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rtnetlink</span>(3)</span></a>, <a class="link" href="../htmlman7/ip.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ip</span>(7)</span></a>, <a class="link" href="../htmlman7/netlink.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">netlink</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="rtnetlink-7_sect7" name="rtnetlink-7_sect7" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    t<br />
+                  This man page is Copyright (C) 1999 Andi Kleen &lt;ak<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>muc.de&gt;.<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM_ONE_PARA)<br />
+                  Permission is granted to distribute possibly modified copies<br />
+
+                  of this page provided the header is included verbatim,<br />
+
+                  and in case of nontrivial modification author and date<br />
+
+                  of the modification is added to the header.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Based on the original comments from Alexey Kuznetsov, written with<br />
+
+                  help from Matthew Wilcox.<br />
+                  $Id: rtnetlink.7,v 1.8 2000/01/22 01:55:04 freitag Exp $<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

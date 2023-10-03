@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>semget(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="semget(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="semget.2" name="semget.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>semget — get a System V semaphore set identifier</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;sys/types.h&gt;
+#include &lt;sys/ipc.h&gt;
+#include &lt;sys/sem.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>semget</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">key_t <var class="pdparam">key</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">nsems</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">semflg</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="semget-2_sect1" name="semget-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">semget</code>() system call
+      returns the System V semaphore set identifier associated with
+      the argument <em class="parameter"><code>key</code></em>. A
+      new set of <em class="parameter"><code>nsems</code></em>
+      semaphores is created if <em class="parameter"><code>key</code></em> has the value <code class="constant">IPC_PRIVATE</code> or if no existing semaphore set
+      is associated with <em class="parameter"><code>key</code></em> and <code class="constant">IPC_CREAT</code> is specified in <em class="parameter"><code>semflg</code></em>.</p>
+
+      <p>If <em class="parameter"><code>semflg</code></em>
+      specifies both <code class="constant">IPC_CREAT</code> and
+      <code class="constant">IPC_EXCL</code> and a semaphore set
+      already exists for <em class="parameter"><code>key</code></em>, then <code class="function">semget</code>() fails with <code class="varname">errno</code> set to <span class="errorname">EEXIST</span>. (This is analogous to the effect
+      of the combination <span class="emphasis"><em>O_CREAT |
+      O_EXCL</em></span> for <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>.)</p>
+
+      <p>Upon creation, the least significant 9 bits of the
+      argument <em class="parameter"><code>semflg</code></em>
+      define the permissions (for owner, group and others) for the
+      semaphore set. These bits have the same format, and the same
+      meaning, as the <em class="replaceable"><code>mode</code></em> argument of <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a> (though the execute
+      permissions are not meaningful for semaphores, and write
+      permissions mean permission to alter semaphore values).</p>
+
+      <p>When creating a new semaphore set, <code class="function">semget</code>() initializes the set's associated
+      data structure, <em class="replaceable"><code>semid_ds</code></em> (see <a class="link" href="../htmlman2/semctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">semctl</span>(2)</span></a>), as follows:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p><em class="replaceable"><code>sem_perm.cuid</code></em> and
+            <em class="replaceable"><code>sem_perm.uid</code></em>
+            are set to the effective user ID of the calling
+            process.</p>
+          </li>
+
+          <li class="listitem">
+            <p><em class="replaceable"><code>sem_perm.cgid</code></em> and
+            <em class="replaceable"><code>sem_perm.gid</code></em>
+            are set to the effective group ID of the calling
+            process.</p>
+          </li>
+
+          <li class="listitem">
+            <p>The least significant 9 bits of <em class="replaceable"><code>sem_perm.mode</code></em> are set
+            to the least significant 9 bits of <em class="parameter"><code>semflg</code></em>.</p>
+          </li>
+
+          <li class="listitem">
+            <p><em class="replaceable"><code>sem_nsems</code></em>
+            is set to the value of <em class="parameter"><code>nsems</code></em>.</p>
+          </li>
+
+          <li class="listitem">
+            <p><em class="replaceable"><code>sem_otime</code></em>
+            is set to 0.</p>
+          </li>
+
+          <li class="listitem">
+            <p><em class="replaceable"><code>sem_ctime</code></em>
+            is set to the current time.</p>
+          </li>
+        </ul>
+      </div>
+
+      <p>The argument <em class="parameter"><code>nsems</code></em>
+      can be 0 (a don't care) when a semaphore set is not being
+      created. Otherwise, <em class="parameter"><code>nsems</code></em> must be greater than 0
+      and less than or equal to the maximum number of semaphores
+      per semaphore set (<code class="constant">SEMMSL</code>).</p>
+
+      <p>If the semaphore set already exists, the permissions are
+      verified.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="semget-2_sect2" name="semget-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>If successful, the return value will be the semaphore set
+      identifier (a nonnegative integer), otherwise, −1 is
+      returned, with <code class="varname">errno</code> indicating
+      the error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="semget-2_sect3" name="semget-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <p>On failure, <code class="varname">errno</code> will be set
+      to one of the following:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EACCES</span></span></dt>
+
+          <dd>
+            <p>A semaphore set exists for <em class="parameter"><code>key</code></em>, but the calling
+            process does not have permission to access the set, and
+            does not have the <code class="constant">CAP_IPC_OWNER</code> capability.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EEXIST</span></span></dt>
+
+          <dd>
+            <p><code class="constant">IPC_CREAT</code> and
+            <code class="constant">IPC_EXCL</code> were specified
+            in <em class="parameter"><code>semflg</code></em>, but
+            a semaphore set already exists for <em class="parameter"><code>key</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>nsems</code></em> is
+            less than 0 or greater than the limit on the number of
+            semaphores per semaphore set (<code class="constant">SEMMSL</code>).</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>A semaphore set corresponding to <em class="parameter"><code>key</code></em> already exists, but
+            <em class="parameter"><code>nsems</code></em> is larger
+            than the number of semaphores in that set.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOENT</span></span></dt>
+
+          <dd>
+            <p>No semaphore set exists for <em class="parameter"><code>key</code></em> and <em class="parameter"><code>semflg</code></em> did not specify
+            <code class="constant">IPC_CREAT</code>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>A semaphore set has to be created but the system
+            does not have enough memory for the new data
+            structure.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOSPC</span></span></dt>
+
+          <dd>
+            <p>A semaphore set has to be created but the system
+            limit for the maximum number of semaphore sets
+            (<code class="constant">SEMMNI</code>), or the system
+            wide maximum number of semaphores (<code class="constant">SEMMNS</code>), would be exceeded.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="semget-2_sect4" name="semget-2_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>SVr4, POSIX.1-2001.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="semget-2_sect5" name="semget-2_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>The inclusion of <code class="literal">&lt;</code><code class="filename">sys/types.h</code><code class="literal">&gt;</code> and <code class="literal">&lt;</code><code class="filename">sys/ipc.h</code><code class="literal">&gt;</code>
+      isn't required on Linux or by any version of POSIX. However,
+      some old implementations required the inclusion of these
+      header files, and the SVID also documented their inclusion.
+      Applications intended to be portable to such old systems may
+      need to include these header files.</p>
+
+      <p><code class="constant">IPC_PRIVATE</code> isn't a flag
+      field but a <span class="type">key_t</span> type. If this
+      special value is used for <em class="parameter"><code>key</code></em>, the system call ignores
+      all but the least significant 9 bits of <em class="parameter"><code>semflg</code></em> and creates a new
+      semaphore set (on success).</p>
+
+      <div class="refsect2">
+        <a id="semget-2_sect6" name="semget-2_sect6" shape="rect"> </a>
+
+        <h3>Semaphore initialization</h3>
+
+        <p>The values of the semaphores in a newly created set are
+        indeterminate. (POSIX.1-2001 and POSIX.1-2008 are explicit
+        on this point, although POSIX.1-2008 notes that a future
+        version of the standard may require an implementation to
+        initialize the semaphores to 0.) Although Linux, like many
+        other implementations, initializes the semaphore values to
+        0, a portable application cannot rely on this: it should
+        explicitly initialize the semaphores to the desired
+        values.</p>
+
+        <p>Initialization can be done using <a class="link" href="../htmlman2/semctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">semctl</span>(2)</span></a> <code class="constant">SETVAL</code> or <code class="constant">SETALL</code> operation. Where multiple peers do
+        not know who will be the first to initialize the set,
+        checking for a nonzero <em class="replaceable"><code>sem_otime</code></em> in the associated
+        data structure retrieved by a <a class="link" href="../htmlman2/semctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">semctl</span>(2)</span></a> <code class="constant">IPC_STAT</code> operation can be used to avoid
+        races.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="semget-2_sect7" name="semget-2_sect7" shape="rect"> </a>
+
+        <h3>Semaphore limits</h3>
+
+        <p>The following limits on semaphore set resources affect
+        the <code class="function">semget</code>() call:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">SEMMNI</code></span></dt>
+
+            <dd>
+              <p>System-wide limit on the number of semaphore sets.
+              On Linux systems before version 3.19, the default
+              value for this limit was 128. Since Linux 3.19, the
+              default value is 32,000. On Linux, this limit can be
+              read and modified via the fourth field of
+              <code class="filename">/proc/sys/kernel/sem</code>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SEMMSL</code></span></dt>
+
+            <dd>
+              <p>Maximum number of semaphores per semaphore ID. On
+              Linux systems before version 3.19, the default value
+              for this limit was 250. Since Linux 3.19, the default
+              value is 32,000. On Linux, this limit can be read and
+              modified via the first field of <code class="filename">/proc/sys/kernel/sem</code>.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">SEMMNS</code></span></dt>
+
+            <dd>
+              <p>System-wide limit on the number of semaphores:
+              policy dependent (on Linux, this limit can be read
+              and modified via the second field of <code class="filename">/proc/sys/kernel/sem</code>). Note that
+              the number of semaphores system-wide is also limited
+              by the product of <code class="constant">SEMMSL</code> and <code class="constant">SEMMNI</code>.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="semget-2_sect8" name="semget-2_sect8" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>The name choice <code class="constant">IPC_PRIVATE</code>
+      was perhaps unfortunate, <code class="constant">IPC_NEW</code> would more clearly show its
+      function.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="semget-2_sect9" name="semget-2_sect9" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/semctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">semctl</span>(2)</span></a>, <a class="link" href="../htmlman2/semop.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">semop</span>(2)</span></a>, <a class="link" href="../htmlman3/ftok.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ftok</span>(3)</span></a>, <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>, <a class="link" href="../htmlman7/sem_overview.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sem_overview</span>(7)</span></a>, <a class="link" href="../htmlman7/svipc.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">svipc</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="semget-2_sect10" name="semget-2_sect10" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright 1993 Giorgio Ciucci (giorgio<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>crcc.it)<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Modified Tue Oct 22 17:54:56 1996 by Eric S. Raymond &lt;esr<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>thyrsus.com&gt;<br />
+
+                  Modified 1 Jan 2002, Martin Schulze &lt;joey<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>infodrom.org&gt;<br />
+
+                  Modified 4 Jan 2002, Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  Modified, 27 May 2004, Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                      Added notes on capability requirements<br />
+
+                  Modified, 11 Nov 2004, Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  Language and formatting clean-ups<br />
+
+                  Added notes on /proc files<br />
+
+                  Rewrote BUGS note about semget()'s failure to initialize<br />
+
+                  semaphore values<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

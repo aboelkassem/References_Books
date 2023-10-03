@@ -1,0 +1,651 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>quotactl(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="quotactl(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="quotactl.2" name="quotactl.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>quotactl — manipulate disk quotas</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;sys/quota.h&gt;
+#include &lt;xfs/xqm.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>quotactl</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">cmd</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">special</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">id</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">caddr_t <var class="pdparam">addr</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+.fi
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="quotactl-2_sect1" name="quotactl-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The quota system can be used to set per-user and per-group
+      limits on the amount of disk space used on a filesystem. For
+      each user and/or group, a soft limit and a hard limit can be
+      set for each filesystem. The hard limit can't be exceeded.
+      The soft limit can be exceeded, but warnings will ensue.
+      Moreover, the user can't exceed the soft limit for more than
+      one week (by default) at a time; after this time, the soft
+      limit counts as a hard limit.</p>
+
+      <p>The <code class="function">quotactl</code>() call
+      manipulates disk quotas. The <em class="parameter"><code>cmd</code></em> argument indicates a
+      command to be applied to the user or group ID specified in
+      <em class="parameter"><code>id</code></em>. To initialize the
+      <em class="parameter"><code>cmd</code></em> argument, use the
+      <span class="emphasis"><em>QCMD(subcmd, type)</em></span>
+      macro. The <em class="replaceable"><code>type</code></em>
+      value is either <code class="constant">USRQUOTA</code>, for
+      user quotas, or <code class="constant">GRPQUOTA</code>, for
+      group quotas. The <em class="replaceable"><code>subcmd</code></em> value is described
+      below.</p>
+
+      <p>The <em class="parameter"><code>special</code></em>
+      argument is a pointer to a null-terminated string containing
+      the pathname of the (mounted) block special device for the
+      filesystem being manipulated.</p>
+
+      <p>The <em class="parameter"><code>addr</code></em> argument
+      is the address of an optional, command-specific, data
+      structure that is copied in or out of the system. The
+      interpretation of <em class="parameter"><code>addr</code></em> is given with each command
+      below.</p>
+
+      <p>The <em class="replaceable"><code>subcmd</code></em> value
+      is one of the following:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">Q_QUOTAON</code></span></dt>
+
+          <dd>
+            <p>Turn on quotas for a filesystem. The <em class="parameter"><code>id</code></em> argument is the
+            identification number of the quota format to be used.
+            Currently, there are three supported quota formats:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="variablelist">
+                  <dl class="variablelist">
+                    <dt><span class="term"><code class="constant">QFMT_VFS_OLD</code></span></dt>
+
+                    <dd>
+                      <p>The original quota format.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">QFMT_VFS_V0</code></span></dt>
+
+                    <dd>
+                      <p>The standard VFS v0 quota format, which
+                      can handle 32-bit UIDs and GIDs and quota
+                      limits up to 2^42 bytes and 2^32 inodes.</p>
+                    </dd>
+
+                    <dt><span class="term"><code class="constant">QFMT_VFS_V1</code></span></dt>
+
+                    <dd>
+                      <p>A quota format that can handle 32-bit UIDs
+                      and GIDs and quota limits of 2^64 bytes and
+                      2^64 inodes.</p>
+                    </dd>
+                  </dl>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>The <em class="parameter"><code>addr</code></em>
+            argument points to the pathname of a file containing
+            the quotas for the filesystem. The quota file must
+            exist; it is normally created with the <span class="citerefentry"><span class="refentrytitle">quotacheck</span>(8)</span> program.
+            This operation requires privilege (<code class="constant">CAP_SYS_ADMIN</code>).</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">Q_QUOTAOFF</code></span></dt>
+
+          <dd>
+            <p>Turn off quotas for a filesystem. The <em class="parameter"><code>addr</code></em> and <em class="parameter"><code>id</code></em> arguments are ignored.
+            This operation requires privilege (<code class="constant">CAP_SYS_ADMIN</code>).</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">Q_GETQUOTA</code></span></dt>
+
+          <dd>
+            <p>Get disk quota limits and current usage for user or
+            group <em class="parameter"><code>id</code></em>. The
+            <em class="parameter"><code>addr</code></em> argument
+            is a pointer to a <em class="replaceable"><code>dqblk</code></em> structure defined
+            in <code class="literal">&lt;</code><code class="filename">sys/quota.h</code><code class="literal">&gt;</code> as follows:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="informalexample">
+                  <pre class="programlisting" xml:space="preserve">
+/* uint64_t is an unsigned 64−bit integer;
+   uint32_t is an unsigned 32−bit integer */
+
+struct dqblk {          /* Definition since Linux 2.4.22 */
+    uint64_t dqb_bhardlimit;   /* absolute limit on disk
+                                  quota blocks alloc */
+    uint64_t dqb_bsoftlimit;   /* preferred limit on
+                                  disk quota blocks */
+    uint64_t dqb_curspace;     /* current quota block
+                                  count */
+    uint64_t dqb_ihardlimit;   /* maximum number of
+                                  allocated inodes */
+    uint64_t dqb_isoftlimit;   /* preferred inode limit */
+    uint64_t dqb_curinodes;    /* current number of
+                                  allocated inodes */
+    uint64_t dqb_btime;        /* time limit for excessive
+                                  disk use */
+    uint64_t dqb_itime;        /* time limit for excessive
+                                  files */
+    uint32_t dqb_valid;        /* bit mask of QIF_*
+                                  constants */
+};
+
+/* Flags in dqb_valid that indicate which fields in
+   dqblk structure are valid. */
+
+#define QIF_BLIMITS   1
+#define QIF_SPACE     2
+#define QIF_ILIMITS   4
+#define QIF_INODES    8
+#define QIF_BTIME     16
+#define QIF_ITIME     32
+#define QIF_LIMITS    (QIF_BLIMITS | QIF_ILIMITS)
+#define QIF_USAGE     (QIF_SPACE | QIF_INODES)
+#define QIF_TIMES     (QIF_BTIME | QIF_ITIME)
+#define QIF_ALL       (QIF_LIMITS | QIF_USAGE | QIF_TIMES)
+</pre>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>The <em class="replaceable"><code>dqb_valid</code></em> field is a
+            bit mask that is set to indicate the entries in the
+            <em class="replaceable"><code>dqblk</code></em>
+            structure that are valid. Currently, the kernel fills
+            in all entries of the <em class="replaceable"><code>dqblk</code></em> structure and
+            marks them as valid in the <em class="replaceable"><code>dqb_valid</code></em> field.
+            Unprivileged users may retrieve only their own quotas;
+            a privileged user (<code class="constant">CAP_SYS_ADMIN</code>) can retrieve the
+            quotas of any user.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">Q_SETQUOTA</code></span></dt>
+
+          <dd>
+            <p>Set quota information for user or group <em class="parameter"><code>id</code></em>, using the information
+            supplied in the <em class="replaceable"><code>dqblk</code></em> structure pointed
+            to by <em class="parameter"><code>addr</code></em>. The
+            <em class="replaceable"><code>dqb_valid</code></em>
+            field of the <em class="replaceable"><code>dqblk</code></em> structure
+            indicates which entries in the structure have been set
+            by the caller. This operation supersedes the
+            <code class="constant">Q_SETQLIM</code> and
+            <code class="constant">Q_SETUSE</code> operations in
+            the previous quota interfaces. This operation requires
+            privilege (<code class="constant">CAP_SYS_ADMIN</code>).</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">Q_GETINFO</code></span></dt>
+
+          <dd>
+            <p>Get information (like grace times) about quotafile.
+            The <em class="parameter"><code>addr</code></em>
+            argument should be a pointer to a <em class="replaceable"><code>dqinfo</code></em> structure. This
+            structure is defined in <code class="literal">&lt;</code><code class="filename">sys/quota.h</code><code class="literal">&gt;</code> as follows:</p>
+
+            <div class="blockquote">
+              <blockquote class="blockquote">
+                <div class="informalexample">
+                  <pre class="programlisting" xml:space="preserve">
+/* uint64_t is an unsigned 64−bit integer;
+   uint32_t is an unsigned 32−bit integer */
+
+struct dqinfo {         /* Defined since kernel 2.4.22 */
+    uint64_t dqi_bgrace;    /* Time before block soft limit
+                               becomes hard limit */
+
+    uint64_t dqi_igrace;    /* Time before inode soft limit
+                               becomes hard limit */
+    uint32_t dqi_flags;     /* Flags for quotafile
+                               (DQF_*) */
+    uint32_t dqi_valid;
+};
+
+/* Bits for dqi_flags */
+
+/* Quota format QFMT_VFS_OLD */
+
+#define V1_DQF_RSQUASH  1   /* Root squash enabled */
+
+/* Other quota formats have no dqi_flags bits defined */
+
+/* Flags in dqi_valid that indicate which fields in
+   dqinfo structure are valid. */
+
+# define IIF_BGRACE     1
+# define IIF_IGRACE     2
+# define IIF_FLAGS      4
+# define IIF_ALL        (IIF_BGRACE | IIF_IGRACE | IIF_FLAGS)
+</pre>
+                </div>
+              </blockquote>
+            </div>
+
+            <p>The <em class="replaceable"><code>dqi_valid</code></em> field in the
+            <em class="replaceable"><code>dqinfo</code></em>
+            structure indicates the entries in the structure that
+            are valid. Currently, the kernel fills in all entries
+            of the <em class="replaceable"><code>dqinfo</code></em>
+            structure and marks them all as valid in the <em class="replaceable"><code>dqi_valid</code></em> field. The
+            <em class="parameter"><code>id</code></em> argument is
+            ignored.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">Q_SETINFO</code></span></dt>
+
+          <dd>
+            <p>Set information about quotafile. The <em class="parameter"><code>addr</code></em> argument should be a
+            pointer to a <em class="replaceable"><code>dqinfo</code></em> structure. The
+            <em class="replaceable"><code>dqi_valid</code></em>
+            field of the <em class="replaceable"><code>dqinfo</code></em> structure
+            indicates the entries in the structure that have been
+            set by the caller. This operation supersedes the
+            <code class="constant">Q_SETGRACE</code> and
+            <code class="constant">Q_SETFLAGS</code> operations in
+            the previous quota interfaces. The <em class="parameter"><code>id</code></em> argument is ignored.
+            This operation requires privilege (<code class="constant">CAP_SYS_ADMIN</code>).</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">Q_GETFMT</code></span></dt>
+
+          <dd>
+            <p>Get quota format used on the specified filesystem.
+            The <em class="parameter"><code>addr</code></em>
+            argument should be a pointer to a 4-byte buffer where
+            the format number will be stored.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">Q_SYNC</code></span></dt>
+
+          <dd>
+            <p>Update the on-disk copy of quota usages for a
+            filesystem. If <em class="parameter"><code>special</code></em> is NULL, then all
+            filesystems with active quotas are sync'ed. The
+            <em class="parameter"><code>addr</code></em> and
+            <em class="parameter"><code>id</code></em> arguments
+            are ignored.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">Q_GETSTATS</code></span></dt>
+
+          <dd>
+            <p>Get statistics and other generic information about
+            the quota subsystem. The <em class="parameter"><code>addr</code></em> argument should be a
+            pointer to a <em class="replaceable"><code>dqstats</code></em> structure in
+            which data should be stored. This structure is defined
+            in <code class="literal">&lt;</code><code class="filename">sys/quota.h</code><code class="literal">&gt;</code> The <em class="parameter"><code>special</code></em> and <em class="parameter"><code>id</code></em> arguments are ignored.
+            This operation is obsolete and not supported by recent
+            kernels. Files in <code class="filename">/proc/sys/fs/quota/</code> carry the
+            information instead.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>For XFS filesystems making use of the XFS Quota Manager
+      (XQM), the above commands are bypassed and the following
+      commands are used:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">Q_XQUOTAON</code></span></dt>
+
+          <dd>
+            <p>Turn on quotas for an XFS filesystem. XFS provides
+            the ability to turn on/off quota limit enforcement with
+            quota accounting. Therefore, XFS expects <em class="parameter"><code>addr</code></em> to be a pointer to
+            an <span class="type">unsigned int</span> that contains
+            either the flags <code class="constant">XFS_QUOTA_UDQ_ACCT</code> and/or
+            <code class="constant">XFS_QUOTA_UDQ_ENFD</code> (for
+            user quota), or <code class="constant">XFS_QUOTA_GDQ_ACCT</code> and/or
+            <code class="constant">XFS_QUOTA_GDQ_ENFD</code> (for
+            group quota), as defined in <code class="literal">&lt;</code><code class="filename">xfs/xqm.h</code><code class="literal">&gt;</code> This operation requires privilege
+            (<code class="constant">CAP_SYS_ADMIN</code>).</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">Q_XQUOTAOFF</code></span></dt>
+
+          <dd>
+            <p>Turn off quotas for an XFS filesystem. As with
+            <code class="constant">Q_QUOTAON</code>, XFS
+            filesystems expect a pointer to an <span class="type">unsigned int</span> that specifies whether quota
+            accounting and/or limit enforcement need to be turned
+            off. This operation requires privilege (<code class="constant">CAP_SYS_ADMIN</code>).</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">Q_XGETQUOTA</code></span></dt>
+
+          <dd>
+            <p>Get disk quota limits and current usage for user
+            <em class="parameter"><code>id</code></em>. The
+            <em class="parameter"><code>addr</code></em> argument
+            is a pointer to an <em class="replaceable"><code>fs_disk_quota</code></em> structure
+            (defined in <code class="literal">&lt;</code><code class="filename">xfs/xqm.h</code><code class="literal">&gt;</code> Unprivileged users may retrieve
+            only their own quotas; a privileged user (<code class="constant">CAP_SYS_ADMIN</code>) may retrieve the
+            quotas of any user.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">Q_XSETQLIM</code></span></dt>
+
+          <dd>
+            <p>Set disk quota limits for user <em class="parameter"><code>id</code></em>. The <em class="parameter"><code>addr</code></em> argument is a
+            pointer to an <em class="replaceable"><code>fs_disk_quota</code></em> structure
+            (defined in <code class="literal">&lt;</code><code class="filename">xfs/xqm.h</code><code class="literal">&gt;</code> This operation requires privilege
+            (<code class="constant">CAP_SYS_ADMIN</code>).</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">Q_XGETQSTAT</code></span></dt>
+
+          <dd>
+            <p>Returns an <em class="replaceable"><code>fs_quota_stat</code></em> structure
+            containing XFS filesystem-specific quota information.
+            This is useful for finding out how much space is used
+            to store quota information, and also to get quotaon/off
+            status of a given local XFS filesystem.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">Q_XQUOTARM</code></span></dt>
+
+          <dd>
+            <p>Free the disk space taken by disk quotas. Quotas
+            must have already been turned off.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>There is no command equivalent to <code class="constant">Q_SYNC</code> for XFS since <a class="link" href="../htmlman1/sync.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sync</span>(1)</span></a> writes quota
+      information to disk (in addition to the other filesystem
+      metadata that it writes out).</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="quotactl-2_sect2" name="quotactl-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">quotactl</code>()
+      returns 0; on error −1 is returned, and <code class="varname">errno</code> is set to indicate the error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="quotactl-2_sect3" name="quotactl-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>addr</code></em> or
+            <em class="parameter"><code>special</code></em> is
+            invalid.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>cmd</code></em> or
+            <em class="replaceable"><code>type</code></em> is
+            invalid.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOENT</span></span></dt>
+
+          <dd>
+            <p>The file specified by <em class="parameter"><code>special</code></em> or <em class="parameter"><code>addr</code></em> does not exist.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOSYS</span></span></dt>
+
+          <dd>
+            <p>The kernel has not been compiled with the
+            <code class="constant">CONFIG_QUOTA</code> option.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOTBLK</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>special</code></em> is
+            not a block device.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The caller lacked the required privilege
+            (<code class="constant">CAP_SYS_ADMIN</code>) for the
+            specified operation.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ESRCH</span></span></dt>
+
+          <dd>
+            <p>No disk quota is found for the indicated user.
+            Quotas have not been turned on for this filesystem.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>If <em class="parameter"><code>cmd</code></em> is
+      <code class="constant">Q_SETQUOTA</code>, <code class="function">quotactl</code>() may also set <code class="varname">errno</code> to:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">ERANGE</span></span></dt>
+
+          <dd>
+            <p>Specified limits are out of range allowed by quota
+            format.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>If <em class="parameter"><code>cmd</code></em> is
+      <code class="constant">Q_QUOTAON</code>, <code class="function">quotactl</code>() may also set <code class="varname">errno</code> to:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EACCES</span></span></dt>
+
+          <dd>
+            <p>The quota file pointed to by <em class="parameter"><code>addr</code></em> exists, but is not a
+            regular file; or, the quota file pointed to by
+            <em class="parameter"><code>addr</code></em> exists,
+            but is not on the filesystem pointed to by <em class="parameter"><code>special</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EBUSY</span></span></dt>
+
+          <dd>
+            <p><code class="constant">Q_QUOTAON</code> attempted,
+            but another <code class="constant">Q_QUOTAON</code> had
+            already been performed.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>The quota file is corrupted.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ESRCH</span></span></dt>
+
+          <dd>
+            <p>Specified quota format was not found.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="quotactl-2_sect4" name="quotactl-2_sect4" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><span class="citerefentry"><span class="refentrytitle">quota</span>(1)</span>, <a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getrlimit</span>(2)</span></a>, <span class="citerefentry"><span class="refentrytitle">quotacheck</span>(8)</span>, <span class="citerefentry"><span class="refentrytitle">quotaon</span>(8)</span></p>
+    </div>
+
+    <div class="colophon">
+      <a id="quotactl-2_sect5" name="quotactl-2_sect5" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 2010, Jan Kara<br />
+
+                  A few pieces copyright (c) 1996 Andries Brouwer (aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl)<br />
+
+                  and copyright 2010 (c) Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of<br />
+
+                  this manual under the conditions for verbatim copying, provided that<br />
+
+                  the entire resulting derived work is distributed under the terms of<br />
+
+                  a permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume<br />
+
+                  no responsibility for errors or omissions, or for damages resulting<br />
+
+                  from the use of the information contained herein.  The author(s) may<br />
+
+                  not have taken the same level of care in the production of this<br />
+
+                  manual, which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

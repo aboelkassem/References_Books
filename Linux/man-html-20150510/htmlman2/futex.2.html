@@ -1,0 +1,518 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>futex(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="futex(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="futex.2" name="futex.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>futex — fast user-space locking</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+
+#include &lt;linux/futex.h&gt;
+#include &lt;sys/time.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>futex</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int *<var class="pdparam">uaddr</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">op</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">val</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const struct timespec *<var class="pdparam">timeout</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int *<var class="pdparam">uaddr2</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">val3</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">There is no glibc wrapper
+            for this system call; see NOTES.</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="futex-2_sect1" name="futex-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">futex</code>() system call
+      provides a method for a program to wait for a value at a
+      given address to change, and a method to wake up anyone
+      waiting on a particular address (while the addresses for the
+      same memory in separate processes may not be equal, the
+      kernel maps them internally so the same memory mapped in
+      different locations will correspond for <code class="function">futex</code>() calls). This system call is
+      typically used to implement the contended case of a lock in
+      shared memory, as described in <a class="link" href="../htmlman7/futex.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">futex</span>(7)</span></a>.</p>
+
+      <p>When a <a class="link" href="../htmlman7/futex.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">futex</span>(7)</span></a> operation did not
+      finish uncontended in user space, a call needs to be made to
+      the kernel to arbitrate. Arbitration can either mean putting
+      the calling process to sleep or, conversely, waking a waiting
+      process.</p>
+
+      <p>Callers of this function are expected to adhere to the
+      semantics as set out in <a class="link" href="../htmlman7/futex.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">futex</span>(7)</span></a>. As these
+      semantics involve writing nonportable assembly instructions,
+      this in turn probably means that most users will in fact be
+      library authors and not general application developers.</p>
+
+      <p>The <em class="parameter"><code>uaddr</code></em> argument
+      needs to point to an aligned integer which stores the
+      counter. The operation to execute is passed via the
+      <em class="parameter"><code>op</code></em> argument, along
+      with a value <em class="parameter"><code>val</code></em>.</p>
+
+      <p>Five operations are currently defined:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">FUTEX_WAIT</code></span></dt>
+
+          <dd>
+            <p>This operation atomically verifies that the futex
+            address <em class="parameter"><code>uaddr</code></em>
+            still contains the value <em class="parameter"><code>val</code></em>, and sleeps awaiting
+            <code class="constant">FUTEX_WAKE</code> on this futex
+            address. If the <em class="parameter"><code>timeout</code></em> argument is
+            non-NULL, its contents specify the duration of the
+            wait. (This interval will be rounded up to the system
+            clock granularity, and kernel scheduling delays mean
+            that the blocking interval may overrun by a small
+            amount.) If <em class="parameter"><code>timeout</code></em> is NULL, the call
+            blocks indefinitely. The arguments <em class="parameter"><code>uaddr2</code></em> and <em class="parameter"><code>val3</code></em> are ignored.</p>
+
+            <p>For <a class="link" href="../htmlman7/futex.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">futex</span>(7)</span></a>, this call
+            is executed if decrementing the count gave a negative
+            value (indicating contention), and will sleep until
+            another process releases the futex and executes the
+            <code class="constant">FUTEX_WAKE</code> operation.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FUTEX_WAKE</code></span></dt>
+
+          <dd>
+            <p>This operation wakes at most <em class="parameter"><code>val</code></em> processes waiting on
+            this futex address (i.e., inside <code class="constant">FUTEX_WAIT</code>). The arguments <em class="parameter"><code>timeout</code></em>, <em class="parameter"><code>uaddr2</code></em> and <em class="parameter"><code>val3</code></em> are ignored.</p>
+
+            <p>For <a class="link" href="../htmlman7/futex.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">futex</span>(7)</span></a>, this is
+            executed if incrementing the count showed that there
+            were waiters, once the futex value has been set to 1
+            (indicating that it is available).</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FUTEX_FD</code> (present up to and including
+          Linux 2.6.25)</span></dt>
+
+          <dd>
+            <p>To support asynchronous wakeups, this operation
+            associates a file descriptor with a futex. If another
+            process executes a <code class="constant">FUTEX_WAKE</code>, the process will receive
+            the signal number that was passed in <em class="parameter"><code>val</code></em>. The calling process
+            must close the returned file descriptor after use. The
+            arguments <em class="parameter"><code>timeout</code></em>, <em class="parameter"><code>uaddr2</code></em> and <em class="parameter"><code>val3</code></em> are ignored.</p>
+
+            <p>To prevent race conditions, the caller should test
+            if the futex has been upped after <code class="constant">FUTEX_FD</code> returns.</p>
+
+            <p>Because it was inherently racy, <code class="constant">FUTEX_FD</code> has been removed from Linux
+            2.6.26 onward.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FUTEX_REQUEUE</code> (since Linux
+          2.5.70)</span></dt>
+
+          <dd>
+            <p>This operation was introduced in order to avoid a
+            "thundering herd" effect when <code class="constant">FUTEX_WAKE</code> is used and all processes
+            woken up need to acquire another futex. This call wakes
+            up <em class="parameter"><code>val</code></em>
+            processes, and requeues all other waiters on the futex
+            at address <em class="parameter"><code>uaddr2</code></em>. The arguments
+            <em class="parameter"><code>timeout</code></em> and
+            <em class="parameter"><code>val3</code></em> are
+            ignored.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FUTEX_CMP_REQUEUE</code> (since Linux
+          2.6.7)</span></dt>
+
+          <dd>
+            <p>There was a race in the intended use of <code class="constant">FUTEX_REQUEUE</code>, so <code class="constant">FUTEX_CMP_REQUEUE</code> was introduced.
+            This is similar to <code class="constant">FUTEX_REQUEUE</code>, but first checks
+            whether the location <em class="parameter"><code>uaddr</code></em> still contains the
+            value <em class="parameter"><code>val3</code></em>. If
+            not, the operation fails with the error <span class="errorname">EAGAIN</span>. The argument <em class="parameter"><code>timeout</code></em> is ignored.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="futex-2_sect2" name="futex-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>In the event of an error, all operations return −1,
+      and set <code class="varname">errno</code> to indicate the
+      error. The return value on success depends on the operation,
+      as described in the following list:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">FUTEX_WAIT</code></span></dt>
+
+          <dd>
+            <p>Returns 0 if the process was woken by a <code class="constant">FUTEX_WAKE</code> call. See ERRORS for the
+            various possible error returns.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FUTEX_WAKE</code></span></dt>
+
+          <dd>
+            <p>Returns the number of processes woken up.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FUTEX_FD</code></span></dt>
+
+          <dd>
+            <p>Returns the new file descriptor associated with the
+            futex.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FUTEX_REQUEUE</code></span></dt>
+
+          <dd>
+            <p>Returns the number of processes woken up.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">FUTEX_CMP_REQUEUE</code></span></dt>
+
+          <dd>
+            <p>Returns the number of processes woken up.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="futex-2_sect3" name="futex-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EACCES</span></span></dt>
+
+          <dd>
+            <p>No read access to futex memory.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EAGAIN</span></span></dt>
+
+          <dd>
+            <p><code class="constant">FUTEX_CMP_REQUEUE</code>
+            detected that the value pointed to by <em class="parameter"><code>uaddr</code></em> is not equal to the
+            expected value <em class="parameter"><code>val3</code></em>. (This probably
+            indicates a race; use the safe <code class="constant">FUTEX_WAKE</code> now.)</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p>Error retrieving <em class="parameter"><code>timeout</code></em> information from
+            user space.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINTR</span></span></dt>
+
+          <dd>
+            <p>A <code class="constant">FUTEX_WAIT</code> operation
+            was interrupted by a signal (see <a class="link" href="../htmlman7/signal.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(7)</span></a>) or a
+            spurious wakeup.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>Invalid argument.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENFILE</span></span></dt>
+
+          <dd>
+            <p>The system limit on the total number of open files
+            has been reached.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOSYS</span></span></dt>
+
+          <dd>
+            <p>Invalid operation specified in <em class="parameter"><code>op</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ETIMEDOUT</span></span></dt>
+
+          <dd>
+            <p>Timeout during the <code class="constant">FUTEX_WAIT</code> operation.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EWOULDBLOCK</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>op</code></em> was
+            <code class="constant">FUTEX_WAIT</code> and the value
+            pointed to by <em class="parameter"><code>uaddr</code></em> was not equal to
+            the expected value <em class="parameter"><code>val</code></em> at the time of the
+            call.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="futex-2_sect4" name="futex-2_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p>Initial futex support was merged in Linux 2.5.7 but with
+      different semantics from what was described above. A
+      4-argument system call with the semantics described in this
+      page was introduced in Linux 2.5.40. In Linux 2.5.70, one
+      argument was added. In Linux 2.6.7, a sixth argument was
+      added—messy, especially on the s390 architecture.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="futex-2_sect5" name="futex-2_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>This system call is Linux-specific.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="futex-2_sect6" name="futex-2_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>To reiterate, bare futexes are not intended as an
+      easy-to-use abstraction for end-users. (There is no wrapper
+      function for this system call in glibc.) Implementors are
+      expected to be assembly literate and to have read the sources
+      of the futex user-space library referenced below.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="futex-2_sect7" name="futex-2_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/restart_syscall.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">restart_syscall</span>(2)</span></a>,
+      <a class="link" href="../htmlman7/futex.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">futex</span>(7)</span></a></p>
+
+      <p><span class="emphasis"><em>Fuss, Futexes and Furwocks:
+      Fast Userlevel Locking in Linux</em></span> (proceedings of
+      the Ottawa Linux Symposium 2002), online at</p>
+
+      <p><a class="literalurl" href="http://kernel.org/doc/ols/2002/ols2002-pages-479-495.pdf" target="_top" shape="rect">http://kernel.org/doc/ols/2002/ols2002-pages-479-495.pdf</a></p>
+
+      <p>Futex example library, futex-*.tar.bz2 at</p>
+
+      <p><a class="literalurl" href="ftp://ftp.kernel.org/pub/linux/kernel/people/rusty/" target="_top" shape="rect">ftp://ftp.kernel.org/pub/linux/kernel/people/rusty/</a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="futex-2_sect8" name="futex-2_sect8" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Page by b.hubert<br />
+                  <br />
+                  %%%LICENSE_START(FREELY_REDISTRIBUTABLE)<br />
+                  may be freely modified and distributed<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Niki A. Rahimi (LTC Security Development, narahimi<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>us.ibm.com)<br />
+
+                  added ERRORS section.<br />
+                  <br />
+                  Modified 2004-06-17 mtk<br />
+                  Modified 2004-10-07 aeb, added FUTEX_REQUEUE, FUTEX_CMP_REQUEUE<br />
+
+                  <br />
+                  FIXME .<br />
+                  See also https://bugzilla.kernel.org/show_bug.cgi?id=14303<br />
+
+                  2.6.14 adds FUTEX_WAKE_OP<br />
+                  commit 4732efbeb997189d9f9b04708dc26bf8613ed721<br />
+
+                  Author: Jakub Jelinek &lt;jakub<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>redhat.com&gt;<br />
+
+                  Date:   Tue Sep 6 15:16:25 2005 -0700<br />
+
+                  <br />
+                  FIXME .<br />
+                  2.6.18 adds (Ingo Molnar) priority inheritance support:<br />
+
+                  FUTEX_LOCK_PI, FUTEX_UNLOCK_PI, and FUTEX_TRYLOCK_PI.  These need<br />
+
+                  to be documented in the manual page.  Probably there is sufficient<br />
+
+                  material in the kernel source file Documentation/pi-futex.txt.<br />
+
+                  commit c87e2837be82df479a6bae9f155c43516d2feebc<br />
+
+                  Author: Ingo Molnar &lt;mingo<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>elte.hu&gt;<br />
+
+                  Date:   Tue Jun 27 02:54:58 2006 -0700<br />
+
+                  <br />
+                  commit e2970f2fb6950183a34e8545faa093eb49d186e1<br />
+
+                  Author: Ingo Molnar &lt;mingo<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>elte.hu&gt;<br />
+
+                  Date:   Tue Jun 27 02:54:47 2006 -0700<br />
+
+                  <br />
+                  See Documentation/pi-futex.txt<br />
+                  <br />
+                  FIXME .<br />
+                  2.6.25 adds FUTEX_WAKE_BITSET, FUTEX_WAIT_BITSET<br />
+
+                  commit cd689985cf49f6ff5c8eddc48d98b9d581d9475d<br />
+
+                  Author: Thomas Gleixner &lt;tglx<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>linutronix.de&gt;<br />
+
+                  Date:   Fri Feb 1 17:45:14 2008 +0100<br />
+
+                  <br />
+                  FIXME .<br />
+                  2.6.31 adds FUTEX_WAIT_REQUEUE_PI, FUTEX_CMP_REQUEUE_PI<br />
+
+                  commit 52400ba946759af28442dee6265c5c0180ac7122<br />
+
+                  Author: Darren Hart &lt;dvhltc<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>us.ibm.com&gt;<br />
+
+                  Date:   Fri Apr 3 13:40:49 2009 -0700<br />
+
+                  <br />
+                  commit ba9c22f2c01cf5c88beed5a6b9e07d42e10bd358<br />
+
+                  Author: Darren Hart &lt;dvhltc<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>us.ibm.com&gt;<br />
+
+                  Date:   Mon Apr 20 22:22:22 2009 -0700<br />
+
+                  <br />
+                  See Documentation/futex-requeue-pi.txt<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

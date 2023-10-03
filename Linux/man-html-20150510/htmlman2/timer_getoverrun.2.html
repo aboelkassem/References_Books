@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>timer_getoverrun(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="timer_getoverrun(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="timer-getoverrun.2" name="timer-getoverrun.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>timer_getoverrun — get overrun count for a POSIX
+      per-process timer</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;time.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>timer_getoverrun</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">timer_t <var class="pdparam">timerid</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <div class="featuretests">
+                <table style="border-collapse: collapse;">
+                  <colgroup span="1">
+                    <col span="1" />
+                  </colgroup>
+
+                  <thead>
+                    <tr>
+                      <th style="" rowspan="1" colspan="1">Feature Test Macro Requirements
+                      for glibc (see <a class="link" href="../htmlman7/feature_test_macros.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">feature_test_macros</span>(7)</span></a>):</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr>
+                      <td style="" rowspan="1" colspan="1"><code class="function">timer_getoverrun</code>():</td>
+                    </tr>
+
+                    <tr>
+                      <td class="featuretestdef" style="" rowspan="1" colspan="1">
+                      <code class="constant">_POSIX_C_SOURCE</code>
+                      &gt;= 199309L</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <p>Link with <code class="option">−lrt</code>.</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="timer-getoverrun-2_sect1" name="timer-getoverrun-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">timer_getoverrun</code>() returns
+      the "overrun count" for the timer referred to by <em class="parameter"><code>timerid</code></em>. An application can use
+      the overrun count to accurately calculate the number of timer
+      expirations that would have occurred over a given time
+      interval. Timer overruns can occur both when receiving
+      expiration notifications via signals (<code class="constant">SIGEV_SIGNAL</code>), and via threads
+      (<code class="constant">SIGEV_THREAD</code>).</p>
+
+      <p>When expiration notifications are delivered via a signal,
+      overruns can occur as follows. Regardless of whether or not a
+      real-time signal is used for timer notifications, the system
+      queues at most one signal per timer. (This is the behavior
+      specified by POSIX.1-2001. The alternative, queuing one
+      signal for each timer expiration, could easily result in
+      overflowing the allowed limits for queued signals on the
+      system.) Because of system scheduling delays, or because the
+      signal may be temporarily blocked, there can be a delay
+      between the time when the notification signal is generated
+      and the time when it is delivered (e.g., caught by a signal
+      handler) or accepted (e.g., using <a class="link" href="../htmlman2/sigwaitinfo.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigwaitinfo</span>(2)</span></a>). In this
+      interval, further timer expirations may occur. The timer
+      overrun count is the number of additional timer expirations
+      that occurred between the time when the signal was generated
+      and when it was delivered or accepted.</p>
+
+      <p>Timer overruns can also occur when expiration
+      notifications are delivered via invocation of a thread, since
+      there may be an arbitrary delay between an expiration of the
+      timer and the invocation of the notification thread, and in
+      that delay interval, additional timer expirations may
+      occur.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="timer-getoverrun-2_sect2" name="timer-getoverrun-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">timer_getoverrun</code>() returns the overrun
+      count of the specified timer; this count may be 0 if no
+      overruns have occurred. On failure, −1 is returned, and
+      <code class="varname">errno</code> is set to indicate the
+      error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="timer-getoverrun-2_sect3" name="timer-getoverrun-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>timerid</code></em> is
+            not a valid timer ID.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="timer-getoverrun-2_sect4" name="timer-getoverrun-2_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p>This system call is available since Linux 2.6.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="timer-getoverrun-2_sect5" name="timer-getoverrun-2_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>POSIX.1-2001.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="timer-getoverrun-2_sect6" name="timer-getoverrun-2_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>When timer notifications are delivered via signals
+      (<code class="constant">SIGEV_SIGNAL</code>), on Linux it is
+      also possible to obtain the overrun count via the <em class="replaceable"><code>si_overrun</code></em> field of the
+      <span class="type">siginfo_t</span> structure (see <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a>). This allows
+      an application to avoid the overhead of making a system call
+      to obtain the overrun count, but is a nonportable extension
+      to POSIX.1-2001.</p>
+
+      <p>POSIX.1-2001 discusses timer overruns only in the context
+      of timer notifications using signals.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="timer-getoverrun-2_sect7" name="timer-getoverrun-2_sect7" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>POSIX.1-2001 specifies that if the timer overrun count is
+      equal to or greater than an implementation-defined maximum,
+      <code class="constant">DELAYTIMER_MAX</code>, then
+      <code class="function">timer_getoverrun</code>() should
+      return <code class="constant">DELAYTIMER_MAX</code>. However,
+      Linux does not implement this feature: instead, if the timer
+      overrun value exceeds the maximum representable integer, the
+      counter cycles, starting once more from low values.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="timer-getoverrun-2_sect8" name="timer-getoverrun-2_sect8" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <p>See <a class="link" href="../htmlman2/timer_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">timer_create</span>(2)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="timer-getoverrun-2_sect9" name="timer-getoverrun-2_sect9" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/clock_getres.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clock_gettime</span>(2)</span></a>, <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a>, <a class="link" href="../htmlman2/signalfd.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signalfd</span>(2)</span></a>, <a class="link" href="../htmlman2/sigwaitinfo.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigwaitinfo</span>(2)</span></a>, <a class="link" href="../htmlman2/timer_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">timer_create</span>(2)</span></a>, <a class="link" href="../htmlman2/timer_delete.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">timer_delete</span>(2)</span></a>, <a class="link" href="../htmlman2/timer_settime.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">timer_settime</span>(2)</span></a>, <a class="link" href="../htmlman7/signal.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(7)</span></a>, <a class="link" href="../htmlman7/time.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">time</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="timer-getoverrun-2_sect10" name="timer-getoverrun-2_sect10" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 2009 Linux Foundation, written by Michael Kerrisk<br />
+
+                      &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

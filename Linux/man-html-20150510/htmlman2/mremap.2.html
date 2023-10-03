@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>mremap(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="mremap(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="mremap.2" name="mremap.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>mremap — remap a virtual memory address</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#define _GNU_SOURCE          /* See feature_test_macros(7) */
+#include &lt;sys/mman.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">void
+            *<strong>mremap</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">void *<var class="pdparam">old_address</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">size_t <var class="pdparam">old_size</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">size_t <var class="pdparam">new_size</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">flags</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1"><var class="pdparam">... /* void *new_address
+            */</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mremap-2_sect1" name="mremap-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">mremap</code>() expands (or
+      shrinks) an existing memory mapping, potentially moving it at
+      the same time (controlled by the <em class="parameter"><code>flags</code></em> argument and the
+      available virtual address space).</p>
+
+      <p><em class="parameter"><code>old_address</code></em> is the
+      old address of the virtual memory block that you want to
+      expand (or shrink). Note that <em class="parameter"><code>old_address</code></em> has to be page
+      aligned. <em class="parameter"><code>old_size</code></em> is
+      the old size of the virtual memory block. <em class="parameter"><code>new_size</code></em> is the requested size
+      of the virtual memory block after the resize. An optional
+      fifth argument, <em class="replaceable"><code>new_address</code></em>, may be provided;
+      see the description of <code class="constant">MREMAP_FIXED</code> below.</p>
+
+      <p>In Linux the memory is divided into pages. A user process
+      has (one or) several linear virtual memory segments. Each
+      virtual memory segment has one or more mappings to real
+      memory pages (in the page table). Each virtual memory segment
+      has its own protection (access rights), which may cause a
+      segmentation violation if the memory is accessed incorrectly
+      (e.g., writing to a read-only segment). Accessing virtual
+      memory outside of the segments will also cause a segmentation
+      violation.</p>
+
+      <p><code class="function">mremap</code>() uses the Linux page
+      table scheme. <code class="function">mremap</code>() changes
+      the mapping between virtual addresses and memory pages. This
+      can be used to implement a very efficient <a class="link" href="../htmlman3/malloc.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">realloc</span>(3)</span></a>.</p>
+
+      <p>The <em class="parameter"><code>flags</code></em> bit-mask
+      argument may be 0, or include the following flag:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">MREMAP_MAYMOVE</code></span></dt>
+
+          <dd>
+            <p>By default, if there is not sufficient space to
+            expand a mapping at its current location, then
+            <code class="function">mremap</code>() fails. If this
+            flag is specified, then the kernel is permitted to
+            relocate the mapping to a new virtual address, if
+            necessary. If the mapping is relocated, then absolute
+            pointers into the old mapping location become invalid
+            (offsets relative to the starting address of the
+            mapping should be employed).</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MREMAP_FIXED</code> (since Linux
+          2.3.31)</span></dt>
+
+          <dd>
+            <p>This flag serves a similar purpose to the
+            <code class="constant">MAP_FIXED</code> flag of
+            <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>. If this flag
+            is specified, then <code class="function">mremap</code>() accepts a fifth argument,
+            <span class="emphasis"><em>void
+            *new_address</em></span>, which specifies a
+            page-aligned address to which the mapping must be
+            moved. Any previous mapping at the address range
+            specified by <em class="replaceable"><code>new_address</code></em> and
+            <em class="parameter"><code>new_size</code></em> is
+            unmapped. If <code class="constant">MREMAP_FIXED</code>
+            is specified, then <code class="constant">MREMAP_MAYMOVE</code> must also be
+            specified.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>If the memory segment specified by <em class="parameter"><code>old_address</code></em> and <em class="parameter"><code>old_size</code></em> is locked (using
+      <a class="link" href="../htmlman2/mlock.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mlock</span>(2)</span></a> or similar), then
+      this lock is maintained when the segment is resized and/or
+      relocated. As a consequence, the amount of memory locked by
+      the process may change.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mremap-2_sect2" name="mremap-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success <code class="function">mremap</code>() returns
+      a pointer to the new virtual memory area. On error, the value
+      <code class="constant">MAP_FAILED</code> (that is,
+      <span class="emphasis"><em>(void *) −1</em></span>) is
+      returned, and <code class="varname">errno</code> is set
+      appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mremap-2_sect3" name="mremap-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EAGAIN</span></span></dt>
+
+          <dd>
+            <p>The caller tried to expand a memory segment that is
+            locked, but this was not possible without exceeding the
+            <code class="constant">RLIMIT_MEMLOCK</code> resource
+            limit.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p>"Segmentation fault." Some address in the range
+            <em class="parameter"><code>old_address</code></em> to
+            <em class="parameter"><code>old_address</code></em>+<em class="parameter"><code>old_size</code></em> is an invalid
+            virtual memory address for this process. You can also
+            get <span class="errorname">EFAULT</span> even if there
+            exist mappings that cover the whole address space
+            requested, but those mappings are of different
+            types.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>An invalid argument was given. Possible causes are:
+            <em class="parameter"><code>old_address</code></em> was
+            not page aligned; a value other than <code class="constant">MREMAP_MAYMOVE</code> or <code class="constant">MREMAP_FIXED</code> was specified in
+            <em class="parameter"><code>flags</code></em>;
+            <em class="parameter"><code>new_size</code></em> was
+            zero; <em class="parameter"><code>new_size</code></em>
+            or <em class="replaceable"><code>new_address</code></em> was
+            invalid; or the new address range specified by
+            <em class="replaceable"><code>new_address</code></em>
+            and <em class="parameter"><code>new_size</code></em>
+            overlapped the old address range specified by
+            <em class="parameter"><code>old_address</code></em> and
+            <em class="parameter"><code>old_size</code></em>; or
+            <code class="constant">MREMAP_FIXED</code> was
+            specified without also specifying <code class="constant">MREMAP_MAYMOVE</code>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>The memory area cannot be expanded at the current
+            virtual address, and the <code class="constant">MREMAP_MAYMOVE</code> flag is not set in
+            <em class="parameter"><code>flags</code></em>. Or,
+            there is not enough (virtual) memory available.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mremap-2_sect4" name="mremap-2_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>This call is Linux-specific, and should not be used in
+      programs intended to be portable.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mremap-2_sect5" name="mremap-2_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Prior to version 2.4, glibc did not expose the definition
+      of <code class="constant">MREMAP_FIXED</code>, and the
+      prototype for <code class="function">mremap</code>() did not
+      allow for the <em class="replaceable"><code>new_address</code></em> argument.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mremap-2_sect6" name="mremap-2_sect6" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/brk.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">brk</span>(2)</span></a>, <a class="link" href="../htmlman2/getpagesize.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getpagesize</span>(2)</span></a>, <a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getrlimit</span>(2)</span></a>, <a class="link" href="../htmlman2/mlock.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mlock</span>(2)</span></a>, <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>, <a class="link" href="../htmlman2/brk.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sbrk</span>(2)</span></a>, <a class="link" href="../htmlman3/malloc.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">malloc</span>(3)</span></a>, <a class="link" href="../htmlman3/malloc.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">realloc</span>(3)</span></a></p>
+
+      <p>Your favorite text book on operating systems for more
+      information on paged memory (e.g., <span class="emphasis"><em>Modern Operating Systems</em></span> by Andrew
+      S. Tanenbaum, <span class="emphasis"><em>Inside
+      Linux</em></span> by Randolf Bentson, <span class="emphasis"><em>The Design of the UNIX Operating
+      System</em></span> by Maurice J. Bach)</p>
+    </div>
+
+    <div class="colophon">
+      <a id="mremap-2_sect7" name="mremap-2_sect7" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 1996 Tom Bjorkholm &lt;tomb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>mydata.se&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_DOC_FULL)<br />
+                  This is free documentation; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License as<br />
+
+                  published by the Free Software Foundation; either version 2 of<br />
+
+                  the License, or (at your option) any later version.<br />
+
+                  <br />
+                  The GNU General Public License's references to "object code"<br />
+
+                  and "executables" are to be interpreted as the output of any<br />
+
+                  document formatting or typesetting system, including<br />
+
+                  intermediate and printed output.<br />
+
+                  <br />
+                  This manual is distributed in the hope that it will be useful,<br />
+
+                  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+
+                  GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  1996-04-11 Tom Bjorkholm &lt;tomb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>mydata.se&gt;<br />
+
+                             First version written (1.3.86)<br />
+
+                  1996-04-12 Tom Bjorkholm &lt;tomb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>mydata.se&gt;<br />
+
+                             Update for Linux 1.3.87 and later<br />
+
+                  2005-10-11 mtk: Added NOTES for MREMAP_FIXED; revised EINVAL text.<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

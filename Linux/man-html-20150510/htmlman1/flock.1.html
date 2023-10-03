@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>flock(1) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="flock(1) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index1.html" shape="rect">Section 1</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="flock.1" name="flock.1" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>flock — manage locks from shell scripts</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">flock</code> [options] file |
+        directory command [arguments]</p>
+      </div>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">flock</code> [options] file |
+        directory <code class="option">−c</code> command</p>
+      </div>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">flock</code> [options] number</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="flock-1_sect1" name="flock-1_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>This utility manages <a class="link" href="../htmlman2/flock.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">flock</span>(2)</span></a> locks from within
+      shell scripts or from the command line.</p>
+
+      <p>The first and second of the above forms wrap the lock
+      around the execution of a <em class="parameter"><code>command</code></em>, in a manner similar to
+      <a class="link" href="../htmlman1/su.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">su</span>(1)</span></a> or <a class="link" href="../htmlman1/newgrp.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">newgrp</span>(1)</span></a>. They lock a
+      specified <em class="parameter"><code>file</code></em> or
+      <em class="parameter"><code>directory</code></em>, which is
+      created (assuming appropriate permissions) if it does not
+      already exist. By default, if the lock cannot be immediately
+      acquired, <span class="command"><strong>flock</strong></span>
+      waits until the lock is available.</p>
+
+      <p>The third form uses an open file by its file descriptor
+      <em class="parameter"><code>number</code></em>. See the
+      examples below for how that can be used.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="flock-1_sect2" name="flock-1_sect2" shape="rect"> </a>
+
+      <h2>OPTIONS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="option">−c,
+          −−command <em class="parameter"><code>command</code></em></code></span></dt>
+
+          <dd>
+            <p>Pass a single <em class="parameter"><code>command</code></em>, without
+            arguments, to the shell with <code class="option">−c</code>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−E,
+          −−conflict−exit−code <em class="parameter"><code>number</code></em></code></span></dt>
+
+          <dd>
+            <p>The exit code used when the <code class="option">−n</code> option is in use, and the
+            conflicting lock exists, or the <code class="option">−w</code> option is in use, and the
+            timeout is reached. The default value is <code class="constant">1</code>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−e,
+          −x, −−exclusive</code></span></dt>
+
+          <dd>
+            <p>Obtain an exclusive lock, sometimes called a write
+            lock. This is the default.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−n,
+          −−nb,
+          −−nonblock</code></span></dt>
+
+          <dd>
+            <p>Fail rather than wait if the lock cannot be
+            immediately acquired. See the <code class="option">−E</code> option for the exit code
+            used.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−o,
+          −−close</code></span></dt>
+
+          <dd>
+            <p>Close the file descriptor on which the lock is held
+            before executing <em class="parameter"><code>command</code></em>. This is useful
+            if <em class="parameter"><code>command</code></em>
+            spawns a child process which should not be holding the
+            lock.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−s,
+          −−shared</code></span></dt>
+
+          <dd>
+            <p>Obtain a shared lock, sometimes called a read
+            lock.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−u,
+          −−unlock</code></span></dt>
+
+          <dd>
+            <p>Drop a lock. This is usually not required, since a
+            lock is automatically dropped when the file is closed.
+            However, it may be required in special cases, for
+            example if the enclosed command group may have forked a
+            background process which should not be holding the
+            lock.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−w,
+          −−wait, −−timeout <em class="parameter"><code>seconds</code></em></code></span></dt>
+
+          <dd>
+            <p>Fail if the lock cannot be acquired within
+            <span class="command"><strong>seconds</strong></span>.
+            Decimal fractional values are allowed. See the
+            <code class="option">−E</code> option for the
+            exit code used. The zero number of <span class="command"><strong>seconds</strong></span> is
+            interpreted as <code class="option">−−nonblock</code>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−V,
+          −−version</code></span></dt>
+
+          <dd>
+            <p>Display version information and exit.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−h,
+          −−help</code></span></dt>
+
+          <dd>
+            <p>Display help text and exit.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="flock-1_sect3" name="flock-1_sect3" shape="rect"> </a>
+
+      <h2>EXAMPLES</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+shell1&gt; flock /tmp -c cat
+shell2&gt; flock -w .007 /tmp -c echo; /bin/echo $?
+</pre>
+      </div>
+
+      <p>Set exclusive lock to directory /tmp and the second
+      command will fail.</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+shell1&gt; flock -s /tmp -c cat
+shell2&gt; flock -s -w .007 /tmp -c echo; /bin/echo $?
+</pre>
+      </div>
+
+      <p>Set shared lock to directory /tmp and the second command
+      will not fail. Notice that attempting to get exclusive lock
+      with second command would fail.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term">shell&gt; flock -x local-lock-file
+          echo 'a b c'</span></dt>
+
+          <dd>
+            <p>Grab the exclusive lock "local-lock-file" before
+            running echo with 'a b c'.</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+(
+  flock -n 9 || exit 1
+  # ... commands executed under lock ...
+) 9&gt;/var/lock/mylockfile
+</pre>
+            </div>
+
+            <p>The form is convenient inside shell scripts. The
+            mode used to open the file doesn't matter to
+            <span class="command"><strong>flock</strong></span>;
+            using <em class="replaceable"><code>&gt;</code></em> or
+            <em class="replaceable"><code>&gt;&gt;</code></em>
+            allows the lockfile to be created if it does not
+            already exist, however, write permission is required.
+            Using <em class="replaceable"><code>&lt;</code></em>
+            requires that the file already exists but only read
+            permission is required.</p>
+          </dd>
+
+          <dt><span class="term">[ "${FLOCKER}" != "$0" ]
+          &amp;&amp; exec env FLOCKER="$0" flock -en "$0" "$0" "$@"
+          || :</span></dt>
+
+          <dd>
+            <p>This is useful boilerplate code for shell scripts.
+            Put it at the top of the shell script you want to lock
+            and it'll automatically lock itself on the first run.
+            If the env var $FLOCKER is not set to the shell script
+            that is being run, then execute flock and grab an
+            exclusive non-blocking lock (using the script itself as
+            the lock file) before re-execing itself with the right
+            arguments. It also sets the FLOCKER env var to the
+            right value so it doesn't run again.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="flock-1_sect4" name="flock-1_sect4" shape="rect"> </a>
+
+      <h2>EXIT STATUS</h2>
+
+      <p>The command uses <code class="filename">sysexits.h</code>
+      return values for everything, except when using either of the
+      options <code class="option">−n</code> or <code class="option">−w</code> which report a failure to acquire
+      the lock with a return value given by the <code class="option">−E</code> option, or 1 by default.</p>
+
+      <p>When using the <em class="parameter"><code>command</code></em> variant, and executing
+      the child worked, then the exit status is that of the child
+      command.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="flock-1_sect5" name="flock-1_sect5" shape="rect"> </a>
+
+      <h2>AUTHOR</h2>
+
+      <p><a class="literalurl" href="mailto:hpa%20REMOVE%20@%20THIS%20zytor.com" target="_top" shape="rect">H.
+      Peter Anvin</a></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="flock-1_sect6" name="flock-1_sect6" shape="rect"> </a>
+
+      <h2>COPYRIGHT</h2>
+
+      <p>Copyright © 2003−2006 H. Peter Anvin.</p>
+
+      <p>This is free software; see the source for copying
+      conditions. There is NO warranty; not even for
+      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="flock-1_sect7" name="flock-1_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/flock.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">flock</span>(2)</span></a></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="flock-1_sect8" name="flock-1_sect8" shape="rect"> </a>
+
+      <h2>AVAILABILITY</h2>
+
+      <p>The flock command is part of the util-linux package and is
+      available from <a class="literalurl" href="ftp://ftp.kernel.org/pub/linux/utils/util-linux/" target="_top" shape="rect">Linux Kernel Archive</a></p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    -----------------------------------------------------------------------<br />
+
+                  <br />
+                    Copyright 2003-2006 H. Peter Anvin - All Rights Reserved<br />
+
+                  <br />
+                    Permission is hereby granted, free of charge, to any person<br />
+
+                    obtaining a copy of this software and associated documentation<br />
+
+                    files (the "Software"), to deal in the Software without<br />
+
+                    restriction, including without limitation the rights to use,<br />
+
+                    copy, modify, merge, publish, distribute, sublicense, and/or<br />
+
+                    sell copies of the Software, and to permit persons to whom<br />
+
+                    the Software is furnished to do so, subject to the following<br />
+
+                    conditions:<br />
+                  <br />
+                    The above copyright notice and this permission notice shall<br />
+
+                    be included in all copies or substantial portions of the Software.<br />
+
+                  <br />
+                    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,<br />
+
+                    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES<br />
+
+                    OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND<br />
+
+                    NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT<br />
+
+                    HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,<br />
+
+                    WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING<br />
+
+                    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR<br />
+
+                    OTHER DEALINGS IN THE SOFTWARE.<br />
+
+                  <br />
+                  -----------------------------------------------------------------------<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

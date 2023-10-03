@@ -1,0 +1,978 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>bootparam(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="bootparam(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="bootparam.7" name="bootparam.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>bootparam — introduction to boot time parameters of
+      the Linux kernel</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="bootparam-7_sect1" name="bootparam-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The Linux kernel accepts certain 'command-line options' or
+      'boot time parameters' at the moment it is started. In
+      general this is used to supply the kernel with information
+      about hardware parameters that the kernel would not be able
+      to determine on its own, or to avoid/override the values that
+      the kernel would otherwise detect.</p>
+
+      <p>When the kernel is booted directly by the BIOS, you have
+      no opportunity to specify any parameters. So, in order to
+      take advantage of this possibility you have to use a boot
+      loader that is able to pass parameters, such as GRUB.</p>
+
+      <div class="refsect2">
+        <a id="bootparam-7_sect2" name="bootparam-7_sect2" shape="rect"> </a>
+
+        <h3>The argument list</h3>
+
+        <p>The kernel command line is parsed into a list of strings
+        (boot arguments) separated by spaces. Most of the boot
+        arguments have the form:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+name[=value_1][,value_2]...[,value_10]
+</pre>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>where 'name' is a unique keyword that is used to
+        identify what part of the kernel the associated values (if
+        any) are to be given to. Note the limit of 10 is real, as
+        the present code handles only 10 comma separated parameters
+        per keyword. (However, you can reuse the same keyword with
+        up to an additional 10 parameters in unusually complicated
+        situations, assuming the setup function supports it.)</p>
+
+        <p>Most of the sorting is coded in the kernel source file
+        <code class="filename">init/main.c</code>. First, the
+        kernel checks to see if the argument is any of the special
+        arguments 'root=', 'nfsroot=', 'nfsaddrs=', 'ro', 'rw',
+        'debug' or 'init'. The meaning of these special arguments
+        is described below.</p>
+
+        <p>Then it walks a list of setup functions to see if the
+        specified argument string (such as 'foo') has been
+        associated with a setup function ('foo_setup()') for a
+        particular device or part of the kernel. If you passed the
+        kernel the line foo=3,4,5,6 then the kernel would search
+        the bootsetups array to see if 'foo' was registered. If it
+        was, then it would call the setup function associated with
+        'foo' (foo_setup()) and hand it the arguments 3, 4, 5, and
+        6 as given on the kernel command line.</p>
+
+        <p>Anything of the form 'foo=bar' that is not accepted as a
+        setup function as described above is then interpreted as an
+        environment variable to be set. A (useless?) example would
+        be to use 'TERM=vt100' as a boot argument.</p>
+
+        <p>Any remaining arguments that were not picked up by the
+        kernel and were not interpreted as environment variables
+        are then passed onto PID 1, which is usually the
+        <span class="citerefentry"><span class="refentrytitle">init</span>(1)</span> program. The most
+        common argument that is passed to the <em class="replaceable"><code>init</code></em> process is the word
+        'single' which instructs it to boot the computer in single
+        user mode, and not launch all the usual daemons. Check the
+        manual page for the version of <span class="citerefentry"><span class="refentrytitle">init</span>(1)</span> installed on your
+        system to see what arguments it accepts.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="bootparam-7_sect3" name="bootparam-7_sect3" shape="rect"> </a>
+
+        <h3>General non-device-specific boot arguments</h3>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term">'init=...'</span></dt>
+
+            <dd>
+              <p>This sets the initial command to be executed by
+              the kernel. If this is not set, or cannot be found,
+              the kernel will try <code class="filename">/sbin/init</code>, then <code class="filename">/etc/init</code>, then <code class="filename">/bin/init</code>, then <code class="filename">/bin/sh</code> and panic if all of this
+              fails.</p>
+            </dd>
+
+            <dt><span class="term">'nfsaddrs=...'</span></dt>
+
+            <dd>
+              <p>This sets the NFS boot address to the given
+              string. This boot address is used in case of a net
+              boot.</p>
+            </dd>
+
+            <dt><span class="term">'nfsroot=...'</span></dt>
+
+            <dd>
+              <p>This sets the NFS root name to the given string.
+              If this string does not begin with '/' or ',' or a
+              digit, then it is prefixed by '/tftpboot/'. This root
+              name is used in case of a net boot.</p>
+            </dd>
+
+            <dt><span class="term">'root=...'</span></dt>
+
+            <dd>
+              <p>This argument tells the kernel what device is to
+              be used as the root filesystem while booting. The
+              default of this setting is determined at compile
+              time, and usually is the value of the root device of
+              the system that the kernel was built on. To override
+              this value, and select the second floppy drive as the
+              root device, one would use 'root=/dev/fd1'.</p>
+
+              <p>The root device can be specified symbolically or
+              numerically. A symbolic specification has the form
+              <code class="filename">/dev/XXYN</code>, where XX
+              designates the device type (e.g., 'hd' for ST-506
+              compatible hard disk, with Y in 'a'-'d'; 'sd' for
+              SCSI compatible disk, with Y in 'a'-'e'), Y the
+              driver letter or number, and N the number (in
+              decimal) of the partition on this device.</p>
+
+              <p>Note that this has nothing to do with the
+              designation of these devices on your filesystem. The
+              '/dev/' part is purely conventional.</p>
+
+              <p>The more awkward and less portable numeric
+              specification of the above possible root devices in
+              major/minor format is also accepted. (For example,
+              <code class="filename">/dev/sda3</code> is major 8,
+              minor 3, so you could use 'root=0x803' as an
+              alternative.)</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>'rootdelay='</code></em></span></dt>
+
+            <dd>
+              <p>This parameter sets the delay (in seconds) to
+              pause before attempting to mount the root
+              filesystem.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>'rootflags=...'</code></em></span></dt>
+
+            <dd>
+              <p>This parameter sets the mount option string for
+              the root filesystem (see also <a class="link" href="../htmlman5/fstab.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fstab</span>(5)</span></a>).</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>'rootfstype=...'</code></em></span></dt>
+
+            <dd>
+              <p>The 'rootfstype' option tells the kernel to mount
+              the root filesystem as if it where of the type
+              specified. This can be useful (for example) to mount
+              an ext3 filesystem as ext2 and then remove the
+              journal in the root filesystem, in fact reverting its
+              format from ext3 to ext2 without the need to boot the
+              box from alternate media.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>'ro'</code></em> and <em class="replaceable"><code>'rw'</code></em></span></dt>
+
+            <dd>
+              <p>The 'ro' option tells the kernel to mount the root
+              filesystem as 'read-only' so that filesystem
+              consistency check programs (fsck) can do their work
+              on a quiescent filesystem. No processes can write to
+              files on the filesystem in question until it is
+              'remounted' as read/write capable, for example, by
+              'mount −w −n −o remount /'. (See
+              also <a class="link" href="../htmlman8/mount.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mount</span>(8)</span></a>.)</p>
+
+              <p>The 'rw' option tells the kernel to mount the root
+              filesystem read/write. This is the default.</p>
+            </dd>
+
+            <dt><span class="term">'resume=...'</span></dt>
+
+            <dd>
+              <p>This tells the kernel the location of the
+              suspend-to-disk data that you want the machine to
+              resume from after hibernation. Usually, it is the
+              same as your swap partition or file. Example:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="informalexample">
+                    <pre class="programlisting" xml:space="preserve">
+resume=/dev/hda2
+</pre>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term">'reserve=...'</span></dt>
+
+            <dd>
+              <p>This is used to protect I/O port regions from
+              probes. The form of the command is:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="informalexample">
+                    <pre class="programlisting" xml:space="preserve">
+  <em class="replaceable"><code>reserve=</code></em><em class="replaceable"><code>iobase,extent[,iobase,extent]...</code></em>
+</pre>
+                  </div>
+                </blockquote>
+              </div>
+
+              <p>In some machines it may be necessary to prevent
+              device drivers from checking for devices
+              (auto-probing) in a specific region. This may be
+              because of hardware that reacts badly to the probing,
+              or hardware that would be mistakenly identified, or
+              merely hardware you don't want the kernel to
+              initialize.</p>
+
+              <p>The reserve boot-time argument specifies an I/O
+              port region that shouldn't be probed. A device driver
+              will not probe a reserved region, unless another boot
+              argument explicitly specifies that it do so.</p>
+
+              <p>For example, the boot line</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="informalexample">
+                    <pre class="programlisting" xml:space="preserve">
+reserve=0x300,32  blah=0x300
+</pre>
+                  </div>
+                </blockquote>
+              </div>
+
+              <p>keeps all device drivers except the driver for
+              'blah' from probing 0x300−0x31f.</p>
+            </dd>
+
+            <dt><span class="term">'panic=N'</span></dt>
+
+            <dd>
+              <p>By default, the kernel will not reboot after a
+              panic, but this option will cause a kernel reboot
+              after N seconds (if N is greater than zero). This
+              panic timeout can also be set by</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="informalexample">
+                    <pre class="programlisting" xml:space="preserve">
+echo N &gt; /proc/sys/kernel/panic
+</pre>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term">'reboot=[warm|cold][,[bios|hard]]'</span></dt>
+
+            <dd>
+              <p>Since Linux 2.0.22, a reboot is by default a cold
+              reboot. One asks for the old default with
+              'reboot=warm'. (A cold reboot may be required to
+              reset certain hardware, but might destroy not yet
+              written data in a disk cache. A warm reboot may be
+              faster.) By default, a reboot is hard, by asking the
+              keyboard controller to pulse the reset line low, but
+              there is at least one type of motherboard where that
+              doesn't work. The option 'reboot=bios' will instead
+              jump through the BIOS.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>'nosmp'</code></em> and <em class="replaceable"><code>'maxcpus=N'</code></em></span></dt>
+
+            <dd>
+              <p>(Only when __SMP__ is defined.) A command-line
+              option of 'nosmp' or 'maxcpus=0' will disable SMP
+              activation entirely; an option 'maxcpus=N' limits the
+              maximum number of CPUs activated in SMP mode to
+              N.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="bootparam-7_sect4" name="bootparam-7_sect4" shape="rect"> </a>
+
+        <h3>Boot arguments for use by kernel developers</h3>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term">'debug'</span></dt>
+
+            <dd>
+              <p>Kernel messages are handed off to a daemon (e.g.,
+              <span class="citerefentry"><span class="refentrytitle">klogd</span>(8)</span> or similar) so
+              that they may be logged to disk. Messages with a
+              priority above <em class="replaceable"><code>console_loglevel</code></em> are
+              also printed on the console. (For a discussion of log
+              levels, see <a class="link" href="../htmlman2/syslog.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">syslog</span>(2)</span></a>.) By
+              default, <em class="replaceable"><code>console_loglevel</code></em> is
+              set to log messages at levels higher than
+              <code class="constant">KERN_DEBUG</code>. This boot
+              argument will cause the kernel to also print messages
+              logged at level <code class="constant">KERN_DEBUG</code>. The console loglevel
+              can also be set on a booted system via the
+              <code class="filename">/proc/sys/kernel/printk</code>
+              file (described in <a class="link" href="../htmlman2/syslog.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">syslog</span>(2)</span></a>), the
+              <a class="link" href="../htmlman2/syslog.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">syslog</span>(2)</span></a>
+              <code class="constant">SYSLOG_ACTION_CONSOLE_LEVEL</code>
+              operation, or <span class="citerefentry"><span class="refentrytitle">dmesg</span>(8)</span>.</p>
+            </dd>
+
+            <dt><span class="term">'profile=N'</span></dt>
+
+            <dd>
+              <p>It is possible to enable a kernel profiling
+              function, if one wishes to find out where the kernel
+              is spending its CPU cycles. Profiling is enabled by
+              setting the variable <em class="replaceable"><code>prof_shift</code></em> to a
+              nonzero value. This is done either by specifying
+              <code class="constant">CONFIG_PROFILE</code> at
+              compile time, or by giving the 'profile=' option. Now
+              the value that <em class="replaceable"><code>prof_shift</code></em> gets will
+              be N, when given, or <code class="constant">CONFIG_PROFILE_SHIFT</code>, when that is
+              given, or 2, the default. The significance of this
+              variable is that it gives the granularity of the
+              profiling: each clock tick, if the system was
+              executing kernel code, a counter is incremented:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="informalexample">
+                    <pre class="programlisting" xml:space="preserve">
+profile[address &gt;&gt; prof_shift]++;
+</pre>
+                  </div>
+                </blockquote>
+              </div>
+
+              <p>The raw profiling information can be read from
+              <code class="filename">/proc/profile</code>. Probably
+              you'll want to use a tool such as readprofile.c to
+              digest it. Writing to <code class="filename">/proc/profile</code> will clear the
+              counters.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="bootparam-7_sect5" name="bootparam-7_sect5" shape="rect"> </a>
+
+        <h3>Boot arguments for ramdisk use</h3>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term">(Only if the kernel was compiled
+            with</span></dt>
+
+            <dd>
+              <p><code class="constant">CONFIG_BLK_DEV_RAM</code>.)
+              In general it is a bad idea to use a ramdisk under
+              Linux—the system will use available memory more
+              efficiently itself. But while booting, it is often
+              useful to load the floppy contents into a ramdisk.
+              One might also have a system in which first some
+              modules (for filesystem or hardware) must be loaded
+              before the main disk can be accessed.</p>
+
+              <p>In Linux 1.3.48, ramdisk handling was changed
+              drastically. Earlier, the memory was allocated
+              statically, and there was a 'ramdisk=N' parameter to
+              tell its size. (This could also be set in the kernel
+              image at compile time.) These days ram disks use the
+              buffer cache, and grow dynamically. For a lot of
+              information on the current ramdisk setup, see the
+              kernel source file <code class="filename">Documentation/blockdev/ramdisk.txt</code>
+              (<code class="filename">Documentation/ramdisk.txt</code> in older
+              kernels).</p>
+
+              <p>There are four parameters, two boolean and two
+              integral.</p>
+            </dd>
+
+            <dt><span class="term">'load_ramdisk=N'</span></dt>
+
+            <dd>
+              <p>If N=1, do load a ramdisk. If N=0, do not load a
+              ramdisk. (This is the default.)</p>
+            </dd>
+
+            <dt><span class="term">'prompt_ramdisk=N'</span></dt>
+
+            <dd>
+              <p>If N=1, do prompt for insertion of the floppy.
+              (This is the default.) If N=0, do not prompt. (Thus,
+              this parameter is never needed.)</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>'ramdisk_size=N'</code></em> or
+            (obsolete) <em class="replaceable"><code>'ramdisk=N'</code></em></span></dt>
+
+            <dd>
+              <p>Set the maximal size of the ramdisk(s) to N kB.
+              The default is 4096 (4 MB).</p>
+            </dd>
+
+            <dt><span class="term">'ramdisk_start=N'</span></dt>
+
+            <dd>
+              <p>Sets the starting block number (the offset on the
+              floppy where the ramdisk starts) to N. This is needed
+              in case the ramdisk follows a kernel image.</p>
+            </dd>
+
+            <dt><span class="term">'noinitrd'</span></dt>
+
+            <dd>
+              <p>(Only if the kernel was compiled with <code class="constant">CONFIG_BLK_DEV_RAM</code> and <code class="constant">CONFIG_BLK_DEV_INITRD</code>.) These days
+              it is possible to compile the kernel to use initrd.
+              When this feature is enabled, the boot process will
+              load the kernel and an initial ramdisk; then the
+              kernel converts initrd into a "normal" ramdisk, which
+              is mounted read-write as root device; then
+              <code class="filename">/linuxrc</code> is executed;
+              afterward the "real" root filesystem is mounted, and
+              the initrd filesystem is moved over to <code class="filename">/initrd</code>; finally the usual boot
+              sequence (e.g., invocation of <code class="filename">/sbin/init</code>) is performed.</p>
+
+              <p>For a detailed description of the initrd feature,
+              see the kernel source file <code class="filename">Documentation/initrd.txt</code>.</p>
+
+              <p>The 'noinitrd' option tells the kernel that
+              although it was compiled for operation with initrd,
+              it should not go through the above steps, but leave
+              the initrd data under <code class="filename">/dev/initrd</code>. (This device can be
+              used only once: the data is freed as soon as the last
+              process that used it has closed <code class="filename">/dev/initrd</code>.)</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="bootparam-7_sect6" name="bootparam-7_sect6" shape="rect"> </a>
+
+        <h3>Boot arguments for SCSI devices</h3>
+
+        <p>General notation for this section:</p>
+
+        <p><em class="replaceable"><code>iobase</code></em> -- the
+        first I/O port that the SCSI host occupies. These are
+        specified in hexadecimal notation, and usually lie in the
+        range from 0x200 to 0x3ff.</p>
+
+        <p><em class="replaceable"><code>irq</code></em> -- the
+        hardware interrupt that the card is configured to use.
+        Valid values will be dependent on the card in question, but
+        will usually be 5, 7, 9, 10, 11, 12, and 15. The other
+        values are usually used for common peripherals like IDE
+        hard disks, floppies, serial ports, and so on.</p>
+
+        <p><em class="replaceable"><code>scsi-id</code></em> -- the
+        ID that the host adapter uses to identify itself on the
+        SCSI bus. Only some host adapters allow you to change this
+        value, as most have it permanently specified internally.
+        The usual default value is 7, but the Seagate and Future
+        Domain TMC-950 boards use 6.</p>
+
+        <p><em class="replaceable"><code>parity</code></em> --
+        whether the SCSI host adapter expects the attached devices
+        to supply a parity value with all information exchanges.
+        Specifying a one indicates parity checking is enabled, and
+        a zero disables parity checking. Again, not all adapters
+        will support selection of parity behavior as a boot
+        argument.</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term">'max_scsi_luns=...'</span></dt>
+
+            <dd>
+              <p>A SCSI device can have a number of 'subdevices'
+              contained within itself. The most common example is
+              one of the new SCSI CD-ROMs that handle more than one
+              disk at a time. Each CD is addressed as a 'Logical
+              Unit Number' (LUN) of that particular device. But
+              most devices, such as hard disks, tape drives and
+              such are only one device, and will be assigned to LUN
+              zero.</p>
+
+              <p>Some poorly designed SCSI devices cannot handle
+              being probed for LUNs not equal to zero. Therefore,
+              if the compile-time flag <code class="constant">CONFIG_SCSI_MULTI_LUN</code> is not set,
+              newer kernels will by default probe only LUN
+              zero.</p>
+
+              <p>To specify the number of probed LUNs at boot, one
+              enters 'max_scsi_luns=n' as a boot arg, where n is a
+              number between one and eight. To avoid problems as
+              described above, one would use n=1 to avoid upsetting
+              such broken devices.</p>
+            </dd>
+
+            <dt><span class="term"><span class="emphasis"><em>SCSI
+            tape configuration</em></span></span></dt>
+
+            <dd>
+              <p>Some boot time configuration of the SCSI tape
+              driver can be achieved by using the following:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="informalexample">
+                    <pre class="programlisting" xml:space="preserve">
+  <em class="replaceable"><code>st=</code></em><em class="replaceable"><code>buf_size[,write_threshold[,max_bufs]]</code></em>
+</pre>
+                  </div>
+                </blockquote>
+              </div>
+
+              <p>The first two numbers are specified in units of
+              kB. The default <em class="replaceable"><code>buf_size</code></em> is 32kB, and
+              the maximum size that can be specified is a
+              ridiculous 16384kB. The <em class="replaceable"><code>write_threshold</code></em> is
+              the value at which the buffer is committed to tape,
+              with a default value of 30kB. The maximum number of
+              buffers varies with the number of drives detected,
+              and has a default of two. An example usage would
+              be:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="informalexample">
+                    <pre class="programlisting" xml:space="preserve">
+st=32,30,2
+</pre>
+                  </div>
+                </blockquote>
+              </div>
+
+              <p>Full details can be found in the file <code class="filename">Documentation/scsi/st.txt</code> (or
+              <em class="replaceable"><code>drivers/scsi/README.st</code></em>
+              for older kernels) in the Linux kernel source.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="bootparam-7_sect7" name="bootparam-7_sect7" shape="rect"> </a>
+
+        <h3>Hard disks</h3>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><span class="emphasis"><em>IDE
+            Disk/CD-ROM Driver Parameters</em></span></span></dt>
+
+            <dd>
+              <p>The IDE driver accepts a number of parameters,
+              which range from disk geometry specifications, to
+              support for broken controller chips. Drive-specific
+              options are specified by using 'hdX=' with X in
+              'a'-'h'.</p>
+
+              <p>Non-drive-specific options are specified with the
+              prefix 'hd='. Note that using a drive-specific prefix
+              for a non-drive-specific option will still work, and
+              the option will just be applied as expected.</p>
+
+              <p>Also note that 'hd=' can be used to refer to the
+              next unspecified drive in the (a, ..., h) sequence.
+              For the following discussions, the 'hd=' option will
+              be cited for brevity. See the file <code class="filename">Documentation/ide/ide.txt</code> (or
+              <code class="filename">Documentation/ide.txt</code>
+              in older kernels, or <em class="replaceable"><code>drivers/block/README.ide</code></em>
+              in ancient kernels) in the Linux kernel source for
+              more details.</p>
+            </dd>
+
+            <dt><span class="term"><span class="emphasis"><em>The
+            'hd=cyls,heads,sects[,wpcom[,irq]]'
+            options</em></span></span></dt>
+
+            <dd>
+              <p>These options are used to specify the physical
+              geometry of the disk. Only the first three values are
+              required. The cylinder/head/sectors values will be
+              those used by fdisk. The write precompensation value
+              is ignored for IDE disks. The IRQ value specified
+              will be the IRQ used for the interface that the drive
+              resides on, and is not really a drive-specific
+              parameter.</p>
+            </dd>
+
+            <dt><span class="term"><span class="emphasis"><em>The
+            'hd=serialize' option</em></span></span></dt>
+
+            <dd>
+              <p>The dual IDE interface CMD-640 chip is broken as
+              designed such that when drives on the secondary
+              interface are used at the same time as drives on the
+              primary interface, it will corrupt your data. Using
+              this option tells the driver to make sure that both
+              interfaces are never used at the same time.</p>
+            </dd>
+
+            <dt><span class="term"><span class="emphasis"><em>The
+            'hd=noprobe' option</em></span></span></dt>
+
+            <dd>
+              <p>Do not probe for this drive. For example,</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="informalexample">
+                    <pre class="programlisting" xml:space="preserve">
+hdb=noprobe hdb=1166,7,17
+</pre>
+                  </div>
+                </blockquote>
+              </div>
+
+              <p>would disable the probe, but still specify the
+              drive geometry so that it would be registered as a
+              valid block device, and hence usable.</p>
+            </dd>
+
+            <dt><span class="term"><span class="emphasis"><em>The
+            'hd=nowerr' option</em></span></span></dt>
+
+            <dd>
+              <p>Some drives apparently have the <code class="constant">WRERR_STAT</code> bit stuck on
+              permanently. This enables a work-around for these
+              broken devices.</p>
+            </dd>
+
+            <dt><span class="term"><span class="emphasis"><em>The
+            'hd=cdrom' option</em></span></span></dt>
+
+            <dd>
+              <p>This tells the IDE driver that there is an ATAPI
+              compatible CD-ROM attached in place of a normal IDE
+              hard disk. In most cases the CD-ROM is identified
+              automatically, but if it isn't then this may
+              help.</p>
+            </dd>
+
+            <dt><span class="term"><span class="emphasis"><em>Standard ST-506 Disk Driver Options
+            ('hd=')</em></span></span></dt>
+
+            <dd>
+              <p>The standard disk driver can accept geometry
+              arguments for the disks similar to the IDE driver.
+              Note however that it expects only three values
+              (C/H/S); any more or any less and it will silently
+              ignore you. Also, it accepts only 'hd=' as an
+              argument, that is, 'hda=' and so on are not valid
+              here. The format is as follows:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="informalexample">
+                    <pre class="programlisting" xml:space="preserve">
+hd=cyls,heads,sects
+</pre>
+                  </div>
+                </blockquote>
+              </div>
+
+              <p>If there are two disks installed, the above is
+              repeated with the geometry parameters of the second
+              disk.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="bootparam-7_sect8" name="bootparam-7_sect8" shape="rect"> </a>
+
+        <h3>Ethernet devices</h3>
+
+        <p>Different drivers make use of different parameters, but
+        they all at least share having an IRQ, an I/O port base
+        value, and a name. In its most generic form, it looks
+        something like this:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+ether=irq,iobase[,param_1[,...param_8]],name
+</pre>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>The first nonnumeric argument is taken as the name. The
+        param_n values (if applicable) usually have different
+        meanings for each different card/driver. Typical param_n
+        values are used to specify things like shared memory
+        address, interface selection, DMA channel and the like.</p>
+
+        <p>The most common use of this parameter is to force
+        probing for a second ethercard, as the default is to probe
+        only for one. This can be accomplished with a simple:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+ether=0,0,eth1
+</pre>
+            </div>
+          </blockquote>
+        </div>
+
+        <p>Note that the values of zero for the IRQ and I/O base in
+        the above example tell the driver(s) to autoprobe.</p>
+
+        <p>The Ethernet-HowTo has extensive documentation on using
+        multiple cards and on the card/driver-specific
+        implementation of the param_n values where used. Interested
+        readers should refer to the section in that document on
+        their particular card.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="bootparam-7_sect9" name="bootparam-7_sect9" shape="rect"> </a>
+
+        <h3>The floppy disk driver</h3>
+
+        <p>There are many floppy driver options, and they are all
+        listed in <code class="filename">Documentation/blockdev/floppy.txt</code> (or
+        <code class="filename">Documentation/floppy.txt</code> in
+        oplder kernels, or <em class="replaceable"><code>drivers/block/README.fd</code></em> for
+        ancient kernels) in the Linux kernel source. See that file
+        for the details.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="bootparam-7_sect10" name="bootparam-7_sect10" shape="rect"> </a>
+
+        <h3>The sound driver</h3>
+
+        <p>The sound driver can also accept boot arguments to
+        override the compiled-in values. This is not recommended,
+        as it is rather complex. It is described in the Linux
+        kernel source file <code class="filename">Documentation/sound/oss/README.OSS</code>
+        (<em class="replaceable"><code>drivers/sound/Readme.linux</code></em>
+        in older kernel versions). It accepts a boot argument of
+        the form:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+sound=device1[,device2[,device3...[,device10]]]
+</pre>
+            </div>
+          </blockquote>
+        </div>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>where each deviceN value is of the following
+              format 0xTaaaId and the bytes are used as
+              follows:</p>
+
+              <p>T − device type: 1=FM, 2=SB, 3=PAS, 4=GUS,
+              5=MPU401, 6=SB16, 7=SB16-MPU401</p>
+
+              <p>aaa − I/O address in hex.</p>
+
+              <p>I − interrupt line in hex (i.e 10=a, 11=b,
+              ...)</p>
+
+              <p>d − DMA channel.</p>
+
+              <p>As you can see, it gets pretty messy, and you are
+              better off to compile in your own personal values as
+              recommended. Using a boot argument of 'sound=0' will
+              disable the sound driver entirely.</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="bootparam-7_sect11" name="bootparam-7_sect11" shape="rect"> </a>
+
+        <h3>The line printer driver</h3>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term">'lp='</span></dt>
+          </dl>
+        </div>
+
+        <p>Syntax:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+lp=0
+lp=auto
+lp=reset
+lp=port[,port...]
+</pre>
+            </div>
+          </blockquote>
+        </div>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>You can tell the printer driver what ports to use
+              and what ports not to use. The latter comes in handy
+              if you don't want the printer driver to claim all
+              available parallel ports, so that other drivers
+              (e.g., PLIP, PPA) can use them instead.</p>
+
+              <p>The format of the argument is multiple port names.
+              For example, lp=none,parport0 would use the first
+              parallel port for lp1, and disable lp0. To disable
+              the printer driver entirely, one can use lp=0.</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="bootparam-7_sect12" name="bootparam-7_sect12" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><span class="citerefentry"><span class="refentrytitle">klogd</span>(8)</span>, <a class="link" href="../htmlman8/mount.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mount</span>(8)</span></a></p>
+
+      <p>For up-to-date information, see the kernel source file
+      <code class="filename">Documentation/kernel-parameters.txt</code>.</p>
+    </div>
+
+    <div class="colophon">
+      <a id="bootparam-7_sect13" name="bootparam-7_sect13" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 1995,1997 Paul Gortmaker and Andries Brouwer<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_DOC_FULL)<br />
+                  This is free documentation; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License as<br />
+
+                  published by the Free Software Foundation; either version 2 of<br />
+
+                  the License, or (at your option) any later version.<br />
+
+                  <br />
+                  The GNU General Public License's references to "object code"<br />
+
+                  and "executables" are to be interpreted as the output of any<br />
+
+                  document formatting or typesetting system, including<br />
+
+                  intermediate and printed output.<br />
+
+                  <br />
+                  This manual is distributed in the hope that it will be useful,<br />
+
+                  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+
+                  GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  This man page written 950814 by aeb, based on Paul Gortmaker's HOWTO<br />
+
+                  (dated v1.0.1, 15/08/95).<br />
+                  Major update, aeb, 970114.<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

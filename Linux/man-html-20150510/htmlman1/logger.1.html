@@ -1,0 +1,766 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>logger(1) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="logger(1) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index1.html" shape="rect">Section 1</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="logger.1" name="logger.1" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>logger — enter messages into the system log</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">logger</code> [options]
+        [message]</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="logger-1_sect1" name="logger-1_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><span class="command"><strong>logger</strong></span> makes
+      entries in the system log.</p>
+
+      <p>When the optional <em class="parameter"><code>message</code></em> argument is present, it
+      is written to the log. If it is not present, and the
+      <code class="option">−f</code> option is not given
+      either, then standard input is logged.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="logger-1_sect2" name="logger-1_sect2" shape="rect"> </a>
+
+      <h2>OPTIONS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="option">−d,
+          −−udp</code></span></dt>
+
+          <dd>
+            <p>Use datagrams (UDP) only. By default the connection
+            is tried to the syslog port defined in /etc/services,
+            which is often 514 .</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−e,
+          −−skip−empty</code></span></dt>
+
+          <dd>
+            <p>When processing files, empty lines will be ignored.
+            An empty line is defined to be a line without any
+            characters. Thus a line consisting only of whitespace
+            is NOT considered empty. Note that when the
+            <code class="option">−−prio−prefix</code>
+            option is specified, the priority is not part of the
+            line. Thus an empty line in this mode is a line that
+            does not have any characters after the priority (e.g.
+            "&lt;13&gt;").</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−f,
+          −−file <em class="parameter"><code>file</code></em></code></span></dt>
+
+          <dd>
+            <p>Log the contents of the specified <span class="command"><strong>file</strong></span>. This option
+            cannot be combined with a command-line message.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−i</code></span></dt>
+
+          <dd>
+            <p>Log the PID of the logger process with each
+            line.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−id[=<em class="parameter"><code>id</code></em>]</code></span></dt>
+
+          <dd>
+            <p>Log the PID of the logger process with each line.
+            When the optional argument <span class="command"><strong>id</strong></span> is specified, then
+            it is used instead of the logger command's PID. The use
+            of <code class="option">−−id=$$</code>
+            (PPID) is recommended in scripts that send several
+            messages.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−journald[=<em class="parameter"><code>file</code></em>]</code></span></dt>
+
+          <dd>
+            <p>Write a systemd journal entry. The entry is read
+            from the given <span class="command"><strong>file</strong></span>, when specified,
+            otherwise from standard input. Each line must begin
+            with a field that is accepted by journald; see
+            <span class="citerefentry"><span class="refentrytitle">systemd.journal-fields</span>(7)</span>
+            for details. The use of a MESSAGE_ID field is generally
+            a good idea, as it makes finding entries easy.
+            Examples:</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+<span class="emphasis"><em>    printf "%s\n%s\n%s\n" MESSAGE_ID=42 DOGS=bark "CARAVAN=goes on" | logger --journald</em></span>
+<span class="emphasis"><em>    logger --journald=entry.txt</em></span>
+</pre>
+            </div>
+
+            <p>Notice that <code class="option">−−journald</code> will ignore
+            values of other options, such as priority. If priority
+            is needed it must be within input, and use PRIORITY
+            field. The simple execution of <span class="command"><strong>journalctl</strong></span> will
+            display MESSAGE field. Use <span class="emphasis"><em>journalctl --output
+            json-pretty</em></span> to see rest of the fields.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−msgid <code class="constant">MSGID</code></code></span></dt>
+
+          <dd>
+            <p>Sets the RFC5424 MSGID field. Note that the space
+            character is not permitted inside of <code class="constant">MSGID</code>. This option is only used if
+            <code class="option">−−rfc5424</code> is
+            specified as well. Otherwise, it is silently
+            ignored.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−size <em class="parameter"><code>size</code></em></code></span></dt>
+
+          <dd>
+            <p>Sets the maximum permitted message size to
+            <span class="command"><strong>size</strong></span>. The
+            default is 1KiB characters, which is the limit
+            traditionally used and specified in RFC 3164. With RFC
+            5424, this limit has become flexible. A good assumption
+            is that RFC 5424 receivers can at least process 4KiB
+            messages.</p>
+
+            <p>Most receivers accept larger than 1KiB message over
+            any type of syslog protocol. As such, the <code class="option">−−size</code> option affects
+            logger in all cases (not only when <code class="option">−−rfc5424</code> was used).</p>
+
+            <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+              <table border="0" summary="Note">
+                <tr>
+                  <td rowspan="2" align="center" valign="top" width="25" colspan="1"><img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+                  <th align="left" rowspan="1" colspan="1">Note</th>
+                </tr>
+
+                <tr>
+                  <td align="left" valign="top" rowspan="1" colspan="1">
+                    <p>The message size limit limits the overall
+                    message size, including the syslog header.
+                    Header sizes vary depending on options selected
+                    and hostname length. As a rule of thumb,
+                    headers are usually not longer than 50 to 80
+                    characters. When selecting maximum message
+                    size, it is important to ensure that the
+                    receiver supports the max size as well,
+                    otherwise messages may become truncated. Again,
+                    as a rule of thumb two to four KiB message size
+                    should generally be OK, whereas anything larger
+                    should be verified to work.</p>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </dd>
+
+          <dt><span class="term"><code class="option">−n,
+          −−server <em class="parameter"><code>server</code></em></code></span></dt>
+
+          <dd>
+            <p>Write to the specified remote syslog <span class="command"><strong>server</strong></span> instead of to
+            the system log socket. Unless <code class="option">−−udp</code> or <code class="option">−−tcp</code> is specified,
+            <span class="command"><strong>logger</strong></span>
+            will first try to use UDP, but if thist fails a TCP
+            connection is attempted.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−P,
+          −−port <em class="parameter"><code>port</code></em></code></span></dt>
+
+          <dd>
+            <p>Use the specified <span class="command"><strong>port</strong></span>. When this
+            option is not specified, the port defaults to syslog
+            for udp and to syslog-conn for tcp connections.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−p,
+          −−priority <em class="parameter"><code>priority</code></em></code></span></dt>
+
+          <dd>
+            <p>Enter the message into the log with the specified
+            <span class="command"><strong>priority</strong></span>.
+            The priority may be specified numerically or as a
+            <span class="command"><strong>facility</strong></span>.<span class="command"><strong>level</strong></span> pair. For
+            example, <code class="option">−p
+            local3.info</code> logs the message as informational in
+            the local3 facility. The default is <em class="replaceable"><code>user.notice</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−prio−prefix</code></span></dt>
+
+          <dd>
+            <p>Look for a syslog prefix on every line read from
+            standard input. This prefix is a decimal number within
+            angle brackets that encodes both the facility and the
+            level. The number is constructed by multiplying the
+            facility by 8 and then adding the level. For example,
+            <em class="replaceable"><code>local0.info</code></em>,
+            meaning facility=16 and level=6, becomes <em class="replaceable"><code>&lt;134&gt;</code></em>.</p>
+
+            <p>If the prefix contains no facility, the facility
+            defaults to what is specified by the <code class="option">−p</code> option. Similarly, if no
+            prefix is provided, the line is logged using the
+            <span class="command"><strong>priority</strong></span>
+            given with <code class="option">−p</code>.</p>
+
+            <p>This option doesn't affect a command-line
+            message.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−rfc3164</code></span></dt>
+
+          <dd>
+            <p>Use the RFC 3164 BSD syslog protocol to submit
+            messages to a remote server.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−rfc5424[=<em class="parameter"><code>without</code></em>]</code></span></dt>
+
+          <dd>
+            <p>Use the RFC 5424 syslog protocol to submit messages
+            to a remote server. The optional <span class="command"><strong>without</strong></span> argument can
+            be a comma-separated list of the following values:
+            <span class="command"><strong>notq</strong></span>,
+            <span class="command"><strong>notime</strong></span>,
+            <span class="command"><strong>nohost</strong></span>.
+            The <span class="command"><strong>notq</strong></span>
+            value suppresses the time-quality structured data from
+            the submitted message. (The time-quality information
+            shows whether the local clock was synchronized plus the
+            maximum number of microseconds the timestamp might be
+            off.) The <span class="command"><strong>notime</strong></span> value (which
+            implies <span class="command"><strong>notq</strong></span>) suppresses the
+            complete sender timestamp that is in ISO-8601 format,
+            including microseconds and timezone. The <span class="command"><strong>nohost</strong></span> value
+            suppresses <a class="link" href="../htmlman2/gethostname.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gethostname</span>(2)</span></a>
+            information from the message header.</p>
+
+            <p>The RFC 5424 protocol has been the default for
+            <span class="command"><strong>logger</strong></span>
+            since version 2.26.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−s,
+          −−stderr</code></span></dt>
+
+          <dd>
+            <p>Output the message to standard error as well as to
+            the system log.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−T,
+          −−tcp</code></span></dt>
+
+          <dd>
+            <p>Use stream (TCP) only. By default the connection is
+            tried to the <em class="replaceable"><code>syslog-conn</code></em> port
+            defined in /etc/services, which is often <code class="constant">601</code>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−t,
+          −−tag <em class="parameter"><code>tag</code></em></code></span></dt>
+
+          <dd>
+            <p>Mark every line to be logged with the specified
+            <span class="command"><strong>tag</strong></span>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−u,
+          −−socket <em class="parameter"><code>socket</code></em></code></span></dt>
+
+          <dd>
+            <p>Write to the specified <span class="command"><strong>socket</strong></span> instead of to
+            the system log socket.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−socket−errors[=<em class="parameter"><code>mode</code></em>]</code></span></dt>
+
+          <dd>
+            <p>Print errors about Unix socket connections. The
+            <span class="command"><strong>mode</strong></span> can
+            be a value of <span class="command"><strong>off</strong></span>, <span class="command"><strong>on</strong></span>, or <span class="command"><strong>auto</strong></span>. When the mode
+            is auto logger will detect if the init process is
+            systemd, and if so assumption is made /dev/log can be
+            used early at boot. Other init systems lack of /dev/log
+            will not cause errors that is identical with messaging
+            using <a class="link" href="../htmlman3/syslog.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">openlog</span>(3)</span></a> system
+            call. The <a class="link" href="../htmlman1/logger.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">logger</span>(1)</span></a> before
+            version 2.26 used openlog, and hence was inable to
+            detected loss of messages sent to Unix sockets.</p>
+
+            <p>The default mode is <span class="command"><strong>auto</strong></span>. When errors are
+            not enabled lost messages are not communicated and will
+            result to successful return value of <a class="link" href="../htmlman1/logger.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">logger</span>(1)</span></a>
+            invocation.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−</code></span></dt>
+
+          <dd>
+            <p>End the argument list. This allows the <em class="parameter"><code>message</code></em> to start with a
+            hyphen (−).</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−V,
+          −−version</code></span></dt>
+
+          <dd>
+            <p>Display version information and exit.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−h,
+          −−help</code></span></dt>
+
+          <dd>
+            <p>Display help text and exit.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="logger-1_sect3" name="logger-1_sect3" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>The <span class="command"><strong>logger</strong></span>
+      utility exits 0 on success, and &gt;0 if an error occurs.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="logger-1_sect4" name="logger-1_sect4" shape="rect"> </a>
+
+      <h2>FACILITIES AND LEVELS</h2>
+
+      <p>Valid facility names are:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+        </ul>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><span class="command"><strong>auth</strong></span></td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><span class="command"><strong>authpriv</strong></span></td>
+
+              <td style="" align="left" rowspan="1" colspan="1">for security information of
+              a sensitive nature</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><span class="command"><strong>cron</strong></span></td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><span class="command"><strong>daemon</strong></span></td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><span class="command"><strong>ftp</strong></span></td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><span class="command"><strong>kern</strong></span></td>
+
+              <td style="" align="left" rowspan="1" colspan="1">cannot be generated from
+              user process</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><span class="command"><strong>lpr</strong></span></td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><span class="command"><strong>mail</strong></span></td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><span class="command"><strong>news</strong></span></td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><span class="command"><strong>syslog</strong></span></td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><span class="command"><strong>user</strong></span></td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><span class="command"><strong>uucp</strong></span></td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><span class="command"><strong>local0</strong></span></td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">to</td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><span class="command"><strong>local7</strong></span></td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><span class="command"><strong>security</strong></span></td>
+
+              <td style="" align="left" rowspan="1" colspan="1">deprecated synonym for
+              <span class="command"><strong>auth</strong></span></td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Valid level names are:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+        </ul>
+      </div>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><span class="command"><strong>emerg</strong></span></td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><span class="command"><strong>alert</strong></span></td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><span class="command"><strong>crit</strong></span></td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><span class="command"><strong>err</strong></span></td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><span class="command"><strong>warning</strong></span></td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><span class="command"><strong>notice</strong></span></td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><span class="command"><strong>info</strong></span></td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><span class="command"><strong>debug</strong></span></td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><span class="command"><strong>panic</strong></span></td>
+
+              <td style="" align="left" rowspan="1" colspan="1">deprecated synonym for
+              <span class="command"><strong>emerg</strong></span></td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><span class="command"><strong>error</strong></span></td>
+
+              <td style="" align="left" rowspan="1" colspan="1">deprecated synonym for
+              <span class="command"><strong>err</strong></span></td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><span class="command"><strong>warn</strong></span></td>
+
+              <td style="" align="left" rowspan="1" colspan="1">deprecated synonym for
+              <span class="command"><strong>warning</strong></span></td>
+
+              <td class="auto-generated" style="" rowspan="1" colspan="1"> </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>For the priority order and intended purposes of these
+      facilities and levels, see <a class="link" href="../htmlman3/syslog.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">syslog</span>(3)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="logger-1_sect5" name="logger-1_sect5" shape="rect"> </a>
+
+      <h2>EXAMPLES</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+<span class="emphasis"><em>logger System rebooted</em></span>
+<span class="emphasis"><em>logger −p local0.notice −t HOSTIDM −f /dev/idmc</em></span>
+<span class="emphasis"><em>logger −n loghost.example.com System rebooted</em></span>
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="logger-1_sect6" name="logger-1_sect6" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/syslog.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">syslog</span>(3)</span></a>, <span class="citerefentry"><span class="refentrytitle">journalctl</span>(1)</span>, <span class="citerefentry"><span class="refentrytitle">systemd.journal-fields</span>(7)</span></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="logger-1_sect7" name="logger-1_sect7" shape="rect"> </a>
+
+      <h2>STANDARDS</h2>
+
+      <p>The <span class="command"><strong>logger</strong></span>
+      command is expected to be IEEE Std 1003.2 ("POSIX.2")
+      compatible.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="logger-1_sect8" name="logger-1_sect8" shape="rect"> </a>
+
+      <h2>AVAILABILITY</h2>
+
+      <p>The logger command is part of the util-linux package and
+      is available from <a class="literalurl" href="ftp://ftp.kernel.org/pub/linux/utils/util-linux/" target="_top" shape="rect">Linux Kernel Archive</a></p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 1983, 1990, 1993<br />
+
+                  The Regents of the University of California.  All rights reserved.<br />
+
+                  <br />
+                  Redistribution and use in source and binary forms, with or without<br />
+
+                  modification, are permitted provided that the following conditions<br />
+
+                  are met:<br />
+                  1. Redistributions of source code must retain the above copyright<br />
+
+                     notice, this list of conditions and the following disclaimer.<br />
+
+                  2. Redistributions in binary form must reproduce the above copyright<br />
+
+                     notice, this list of conditions and the following disclaimer in the<br />
+
+                     documentation and/or other materials provided with the distribution.<br />
+
+                  3. All advertising materials mentioning features or use of this software<br />
+
+                     must display the following acknowledgement:<br />
+
+                  This product includes software developed by the University of<br />
+
+                  California, Berkeley and its contributors.<br />
+
+                  4. Neither the name of the University nor the names of its contributors<br />
+
+                     may be used to endorse or promote products derived from this software<br />
+
+                     without specific prior written permission.<br />
+
+                  <br />
+                  THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND<br />
+
+                  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE<br />
+
+                  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE<br />
+
+                  ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE<br />
+
+                  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL<br />
+
+                  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS<br />
+
+                  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)<br />
+
+                  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT<br />
+
+                  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY<br />
+
+                  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF<br />
+
+                  SUCH DAMAGE.<br />
+                  <br />
+                  <script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>(#)logger.1
+                  8.1 (Berkeley) 6/6/93<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

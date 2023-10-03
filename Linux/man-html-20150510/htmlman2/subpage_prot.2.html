@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>subpage_prot(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="subpage_prot(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="subpage-prot.2" name="subpage-prot.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>subpage_prot — define a subpage protection for an
+      address range</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">long
+            <strong>subpage_prot</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">unsigned long <var class="pdparam">addr</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">unsigned long <var class="pdparam">len</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">uint32_t *<var class="pdparam">map</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">There is no glibc wrapper
+            for this system call; see NOTES.</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="subpage-prot-2_sect1" name="subpage-prot-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The PowerPC-specific <code class="function">subpage_prot</code>() system call provides the
+      facility to control the access permissions on individual 4kB
+      subpages on systems configured with a page size of 64kB.</p>
+
+      <p>The protection map is applied to the memory pages in the
+      region starting at <em class="parameter"><code>addr</code></em> and continuing for
+      <em class="parameter"><code>len</code></em> bytes. Both of
+      these arguments must be aligned to a 64-kB boundary.</p>
+
+      <p>The protection map is specified in the buffer pointed to
+      by <em class="parameter"><code>map</code></em>. The map has 2
+      bits per 4kB subpage; thus each 32-bit word specifies the
+      protections of 16 4kB subpages inside a 64kB page (so, the
+      number of 32-bit words pointed to by <em class="parameter"><code>map</code></em> should equate to the number
+      of 64-kB pages specified by <em class="parameter"><code>len</code></em>). Each 2-bit field in the
+      protection map is either 0 to allow any access, 1 to prevent
+      writes, or 2 or 3 to prevent all accesses.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="subpage-prot-2_sect2" name="subpage-prot-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">subpage_prot</code>()
+      returns 0. Otherwise, one of the error codes specified below
+      is returned.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="subpage-prot-2_sect3" name="subpage-prot-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p>The buffer referred to by <em class="parameter"><code>map</code></em> is not
+            accessible.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>The <em class="parameter"><code>addr</code></em> or
+            <em class="parameter"><code>len</code></em> arguments
+            are incorrect. Both of these arguments must be aligned
+            to a multiple of the system page size, and they must
+            not refer to a region outside of the address space of
+            the process or to a region that consists of huge
+            pages.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>Out of memory.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="subpage-prot-2_sect4" name="subpage-prot-2_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p>This system call is provided on the PowerPC architecture
+      since Linux 2.6.25. The system call is provided only if the
+      kernel is configured with <code class="constant">CONFIG_PPC_64K_PAGES</code>. No library support is
+      provided.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="subpage-prot-2_sect5" name="subpage-prot-2_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>This system call is Linux-specific.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="subpage-prot-2_sect6" name="subpage-prot-2_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Glibc does not provide a wrapper for this system call;
+      call it using <a class="link" href="../htmlman2/syscall.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">syscall</span>(2)</span></a>.</p>
+
+      <p>Normal page protections (at the 64-kB page level) also
+      apply; the subpage protection mechanism is an additional
+      constraint, so putting 0 in a 2-bit field won't allow writes
+      to a page that is otherwise write-protected.</p>
+
+      <div class="refsect2">
+        <a id="subpage-prot-2_sect7" name="subpage-prot-2_sect7" shape="rect"> </a>
+
+        <h3>Rationale</h3>
+
+        <p>This system call is provided to assist writing emulators
+        that operate using 64-kB pages on PowerPC systems. When
+        emulating systems such as x86, which uses a smaller page
+        size, the emulator can no longer use the memory-management
+        unit (MMU) and normal system calls for controlling page
+        protections. (The emulator could emulate the MMU by
+        checking and possibly remapping the address for each memory
+        access in software, but that is slow.) The idea is that the
+        emulator supplies an array of protection masks to apply to
+        a specified range of virtual addresses. These masks are
+        applied at the level where hardware page-table entries
+        (PTEs) are inserted into the hardware page table based on
+        the Linux PTEs, so the Linux PTEs are not affected.
+        Implicit in this is that the regions of the address space
+        that are protected are switched to use 4-kB hardware pages
+        rather than 64-kB hardware pages (on machines with hardware
+        64-kB page support).</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="subpage-prot-2_sect8" name="subpage-prot-2_sect8" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/mprotect.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mprotect</span>(2)</span></a>, <a class="link" href="../htmlman2/syscall.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">syscall</span>(2)</span></a></p>
+
+      <p><code class="filename">Documentation/vm/hugetlbpage.txt</code> in the
+      Linux kernel source tree</p>
+    </div>
+
+    <div class="colophon">
+      <a id="subpage-prot-2_sect9" name="subpage-prot-2_sect9" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 2010 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  based on a proposal from Stephan Mueller &lt;smueller<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>atsec.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of<br />
+
+                  this manual under the conditions for verbatim copying, provided that<br />
+
+                  the entire resulting derived work is distributed under the terms of<br />
+
+                  a permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume<br />
+
+                  no responsibility for errors or omissions, or for damages resulting<br />
+
+                  from the use of the information contained herein.  The author(s) may<br />
+
+                  not have taken the same level of care in the production of this<br />
+
+                  manual, which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Various pieces of text taken from the kernel source and the commentary<br />
+
+                  in kernel commit fa28237cfcc5827553044cbd6ee52e33692b0faa<br />
+
+                  both written by Paul Mackerras &lt;paulus<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>samba.org&gt;<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

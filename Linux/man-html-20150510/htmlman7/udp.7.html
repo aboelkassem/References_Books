@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>udp(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="udp(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="udp.7" name="udp.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>udp — User Datagram Protocol for IPv4</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;sys/socket.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;netinet/udp.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">udp_socket =
+            <strong>socket</strong>(</code></td>
+
+            <td rowspan="1" colspan="1"><var class="pdparam">AF_INET</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1"><var class="pdparam">SOCK_DGRAM</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1"><var class="pdparam">0</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="udp-7_sect1" name="udp-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>This is an implementation of the User Datagram Protocol
+      described in RFC 768. It implements a connectionless,
+      unreliable datagram packet service. Packets may be reordered
+      or duplicated before they arrive. UDP generates and checks
+      checksums to catch transmission errors.</p>
+
+      <p>When a UDP socket is created, its local and remote
+      addresses are unspecified. Datagrams can be sent immediately
+      using <a class="link" href="../htmlman2/send.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sendto</span>(2)</span></a> or <a class="link" href="../htmlman2/send.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sendmsg</span>(2)</span></a> with a valid
+      destination address as an argument. When <a class="link" href="../htmlman2/connect.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">connect</span>(2)</span></a> is called on the
+      socket, the default destination address is set and datagrams
+      can now be sent using <a class="link" href="../htmlman2/send.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">send</span>(2)</span></a> or <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a> without specifying
+      a destination address. It is still possible to send to other
+      destinations by passing an address to <a class="link" href="../htmlman2/send.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sendto</span>(2)</span></a> or <a class="link" href="../htmlman2/send.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sendmsg</span>(2)</span></a>. In order to
+      receive packets, the socket can be bound to a local address
+      first by using <a class="link" href="../htmlman2/bind.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">bind</span>(2)</span></a>. Otherwise, the
+      socket layer will automatically assign a free local port out
+      of the range defined by <code class="filename">/proc/sys/net/ipv4/ip_local_port_range</code> and
+      bind the socket to <code class="constant">INADDR_ANY</code>.</p>
+
+      <p>All receive operations return only one packet. When the
+      packet is smaller than the passed buffer, only that much data
+      is returned; when it is bigger, the packet is truncated and
+      the <code class="constant">MSG_TRUNC</code> flag is set.
+      <code class="constant">MSG_WAITALL</code> is not
+      supported.</p>
+
+      <p>IP options may be sent or received using the socket
+      options described in <a class="link" href="../htmlman7/ip.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ip</span>(7)</span></a>. They are processed
+      by the kernel only when the appropriate <code class="filename">/proc</code> parameter is enabled (but still
+      passed to the user even when it is turned off). See <a class="link" href="../htmlman7/ip.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ip</span>(7)</span></a>.</p>
+
+      <p>When the <code class="constant">MSG_DONTROUTE</code> flag
+      is set on sending, the destination address must refer to a
+      local interface address and the packet is sent only to that
+      interface.</p>
+
+      <p>By default, Linux UDP does path MTU (Maximum Transmission
+      Unit) discovery. This means the kernel will keep track of the
+      MTU to a specific target IP address and return <span class="errorname">EMSGSIZE</span> when a UDP packet write exceeds
+      it. When this happens, the application should decrease the
+      packet size. Path MTU discovery can be also turned off using
+      the <code class="constant">IP_MTU_DISCOVER</code> socket
+      option or the <code class="filename">/proc/sys/net/ipv4/ip_no_pmtu_disc</code> file;
+      see <a class="link" href="../htmlman7/ip.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ip</span>(7)</span></a> for details. When
+      turned off, UDP will fragment outgoing UDP packets that
+      exceed the interface MTU. However, disabling it is not
+      recommended for performance and reliability reasons.</p>
+
+      <div class="refsect2">
+        <a id="udp-7_sect2" name="udp-7_sect2" shape="rect"> </a>
+
+        <h3>Address format</h3>
+
+        <p>UDP uses the IPv4 <em class="replaceable"><code>sockaddr_in</code></em> address format
+        described in <a class="link" href="../htmlman7/ip.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ip</span>(7)</span></a>.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="udp-7_sect3" name="udp-7_sect3" shape="rect"> </a>
+
+        <h3>Error handling</h3>
+
+        <p>All fatal errors will be passed to the user as an error
+        return even when the socket is not connected. This includes
+        asynchronous errors received from the network. You may get
+        an error for an earlier packet that was sent on the same
+        socket. This behavior differs from many other BSD socket
+        implementations which don't pass any errors unless the
+        socket is connected. Linux's behavior is mandated by
+        <span class="emphasis"><em>RFC 1122</em></span>.</p>
+
+        <p>For compatibility with legacy code, in Linux 2.0 and 2.2
+        it was possible to set the <code class="constant">SO_BSDCOMPAT</code> <code class="constant">SOL_SOCKET</code> option to receive remote
+        errors only when the socket has been connected (except for
+        <span class="errorname">EPROTO</span> and <span class="errorname">EMSGSIZE</span>). Locally generated errors are
+        always passed. Support for this socket option was removed
+        in later kernels; see <a class="link" href="../htmlman7/socket.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">socket</span>(7)</span></a> for further
+        information.</p>
+
+        <p>When the <code class="constant">IP_RECVERR</code> option
+        is enabled, all errors are stored in the socket error
+        queue, and can be received by <a class="link" href="../htmlman2/recv.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">recvmsg</span>(2)</span></a> with the
+        <code class="constant">MSG_ERRQUEUE</code> flag set.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="udp-7_sect4" name="udp-7_sect4" shape="rect"> </a>
+
+        <h3>/proc interfaces</h3>
+
+        <p>System-wide UDP parameter settings can be accessed by
+        files in the directory <code class="filename">/proc/sys/net/ipv4/</code>.</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><em class="replaceable"><code>udp_mem</code></em> (since Linux
+            2.6.25)</span></dt>
+
+            <dd>
+              <p>This is a vector of three integers governing the
+              number of pages allowed for queueing by all UDP
+              sockets.</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="variablelist">
+                    <dl class="variablelist">
+                      <dt><span class="term"><em class="replaceable"><code>min</code></em></span></dt>
+
+                      <dd>
+                        <p>Below this number of pages, UDP is not
+                        bothered about its memory appetite. When
+                        the amount of memory allocated by UDP
+                        exceeds this number, UDP starts to moderate
+                        memory usage.</p>
+                      </dd>
+
+                      <dt><span class="term"><em class="replaceable"><code>pressure</code></em></span></dt>
+
+                      <dd>
+                        <p>This value was introduced to follow the
+                        format of <em class="replaceable"><code>tcp_mem</code></em>
+                        (see <a class="link" href="../htmlman7/tcp.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tcp</span>(7)</span></a>).</p>
+                      </dd>
+
+                      <dt><span class="term"><em class="replaceable"><code>max</code></em></span></dt>
+
+                      <dd>
+                        <p>Number of pages allowed for queueing by
+                        all UDP sockets.</p>
+                      </dd>
+                    </dl>
+                  </div>
+                </blockquote>
+              </div>
+
+              <p>Defaults values for these three items are
+              calculated at boot time from the amount of available
+              memory.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>udp_rmem_min</code></em> (integer;
+            default value: PAGE_SIZE; since Linux
+            2.6.25)</span></dt>
+
+            <dd>
+              <p>Minimal size, in bytes, of receive buffers used by
+              UDP sockets in moderation. Each UDP socket is able to
+              use the size for receiving data, even if total pages
+              of UDP sockets exceed <em class="replaceable"><code>udp_mem</code></em> pressure.</p>
+            </dd>
+
+            <dt><span class="term"><em class="replaceable"><code>udp_wmem_min</code></em> (integer;
+            default value: PAGE_SIZE; since Linux
+            2.6.25)</span></dt>
+
+            <dd>
+              <p>Minimal size, in bytes, of send buffer used by UDP
+              sockets in moderation. Each UDP socket is able to use
+              the size for sending data, even if total pages of UDP
+              sockets exceed <em class="replaceable"><code>udp_mem</code></em> pressure.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="udp-7_sect5" name="udp-7_sect5" shape="rect"> </a>
+
+        <h3>Socket options</h3>
+
+        <p>To set or get a UDP socket option, call <a class="link" href="../htmlman2/getsockopt.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getsockopt</span>(2)</span></a> to read or
+        <a class="link" href="../htmlman2/getsockopt.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setsockopt</span>(2)</span></a> to write
+        the option with the option level argument set to
+        <code class="constant">IPPROTO_UDP</code>. Unless otherwise
+        noted, <em class="replaceable"><code>optval</code></em> is
+        a pointer to an <em class="replaceable"><code>int</code></em>.</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">UDP_CORK</code> (since Linux
+            2.5.44)</span></dt>
+
+            <dd>
+              <p>If this option is enabled, then all data output on
+              this socket is accumulated into a single datagram
+              that is transmitted when the option is disabled. This
+              option should not be used in code intended to be
+              portable.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="udp-7_sect6" name="udp-7_sect6" shape="rect"> </a>
+
+        <h3>Ioctls</h3>
+
+        <p>These ioctls can be accessed using <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a>. The correct
+        syntax is:</p>
+
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+  <em class="replaceable"><code>int</code></em><span class="emphasis"><em> value</em></span>;
+<em class="replaceable"><code>error</code></em> = ioctl(<em class="replaceable"><code>udp_socket</code></em>, <em class="replaceable"><code>ioctl_type</code></em>, &amp;<em class="replaceable"><code>value</code></em>);
+</pre>
+            </div>
+          </blockquote>
+        </div>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">FIONREAD</code> (<code class="constant">SIOCINQ</code>)</span></dt>
+
+            <dd>
+              <p>Gets a pointer to an integer as argument. Returns
+              the size of the next pending datagram in the integer
+              in bytes, or 0 when no datagram is pending.
+              <em class="replaceable"><code>Warning:</code></em>
+              Using <code class="constant">FIONREAD</code>, it is
+              impossible to distinguish the case where no datagram
+              is pending from the case where the next pending
+              datagram contains zero bytes of data. It is safer to
+              use <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a>,
+              <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a>, or
+              <a class="link" href="../htmlman7/epoll.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">epoll</span>(7)</span></a> to
+              distinguish these cases.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">TIOCOUTQ</code> (<code class="constant">SIOCOUTQ</code>)</span></dt>
+
+            <dd>
+              <p>Returns the number of data bytes in the local send
+              queue. Only supported with Linux 2.4 and above.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>In addition, all ioctls documented in <a class="link" href="../htmlman7/ip.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ip</span>(7)</span></a> and <a class="link" href="../htmlman7/socket.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">socket</span>(7)</span></a> are
+        supported.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="udp-7_sect7" name="udp-7_sect7" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <p>All errors documented for <a class="link" href="../htmlman7/socket.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">socket</span>(7)</span></a> or <a class="link" href="../htmlman7/ip.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ip</span>(7)</span></a> may be returned by a
+      send or receive on a UDP socket.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">ECONNREFUSED</span></span></dt>
+
+          <dd>
+            <p>No receiver was associated with the destination
+            address. This might be caused by a previous packet sent
+            over the socket.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="udp-7_sect8" name="udp-7_sect8" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p><code class="constant">IP_RECVERR</code> is a new feature
+      in Linux 2.2.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="udp-7_sect9" name="udp-7_sect9" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman7/ip.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ip</span>(7)</span></a>, <a class="link" href="../htmlman7/raw.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">raw</span>(7)</span></a>, <a class="link" href="../htmlman7/socket.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">socket</span>(7)</span></a>, <a class="link" href="../htmlman7/udplite.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">udplite</span>(7)</span></a></p>
+
+      <p>RFC 768 for the User Datagram Protocol.</p>
+
+      <p>RFC 1122 for the host requirements.</p>
+
+      <p>RFC 1191 for a description of path MTU discovery.</p>
+    </div>
+
+    <div class="colophon">
+      <a id="udp-7_sect10" name="udp-7_sect10" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    This man page is Copyright (C) 1999 Andi Kleen &lt;ak<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>muc.de&gt;.<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM_ONE_PARA)<br />
+                  Permission is granted to distribute possibly modified copies<br />
+
+                  of this page provided the header is included verbatim,<br />
+
+                  and in case of nontrivial modification author and date<br />
+
+                  of the modification is added to the header.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  $Id: udp.7,v 1.7 2000/01/22 01:55:05 freitag Exp $<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

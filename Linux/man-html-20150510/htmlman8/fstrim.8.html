@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>fstrim(8) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="fstrim(8) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index8.html" shape="rect">Section 8</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="fstrim.8" name="fstrim.8" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>fstrim — discard unused blocks on a mounted
+      filesystem</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">fstrim</code> [<code class="option">−a</code>] [ <code class="option">−o</code> offset ] [ <code class="option">−l</code> length ] [ <code class="option">−m</code> minimum−size ] [<code class="option">−v</code>] mountpoint</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fstrim-8_sect1" name="fstrim-8_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><span class="command"><strong>fstrim</strong></span> is
+      used on a mounted filesystem to discard (or "trim") blocks
+      which are not in use by the filesystem. This is useful for
+      solid-state drives (SSDs) and thinly-provisioned storage.</p>
+
+      <p>By default, <span class="command"><strong>fstrim</strong></span> will discard all
+      unused blocks in the filesystem. Options may be used to
+      modify this behavior based on range or size, as explained
+      below.</p>
+
+      <p>The <em class="parameter"><code>mountpoint</code></em>
+      argument is the pathname of the directory where the
+      filesystem is mounted.</p>
+
+      <p>Running <span class="command"><strong>fstrim</strong></span> frequently, or even
+      using <span class="emphasis"><em>mount -o
+      discard</em></span>, might negatively affect the lifetime of
+      poor-quality SSD devices. For most desktop and server systems
+      the sufficient trimming frequency is once a week. Note that
+      not all devices support a queued trim, so each trim command
+      incurs a performance penalty on whatever else might be trying
+      to use the disk at the time.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="fstrim-8_sect2" name="fstrim-8_sect2" shape="rect"> </a>
+
+      <h2>OPTIONS</h2>
+
+      <p>The <em class="parameter"><code>offset</code></em>,
+      <em class="parameter"><code>length</code></em>, and
+      <em class="parameter"><code>minimum-size</code></em>
+      arguments may be followed by the multiplicative suffixes KiB
+      (=1024), MiB (=1024*1024), and so on for GiB, TiB, PiB, EiB,
+      ZiB and YiB (the "iB" is optional, e.g., "K" has the same
+      meaning as "KiB") or the suffixes KB (=1000), MB
+      (=1000*1000), and so on for GB, TB, PB, EB, ZB and YB.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="option">−a,
+          −−all</code></span></dt>
+
+          <dd>
+            <p>Trim all mounted filesystems on devices that support
+            the discard operation. The other supplied options, like
+            <code class="option">−−offset</code>,
+            <code class="option">−−length</code> and
+            <code class="option">−−minimum</code>, are
+            applied to all these devices. Errors from filesystems
+            that do not support the discard operation are silently
+            ignored.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−o,
+          −−offset</code> <em class="parameter"><code>offset</code></em></span></dt>
+
+          <dd>
+            <p>Byte offset in the filesystem from which to begin
+            searching for free blocks to discard. The default value
+            is zero, starting at the beginning of the
+            filesystem.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−l,
+          −−length</code> <em class="parameter"><code>length</code></em></span></dt>
+
+          <dd>
+            <p>The number of bytes (after the starting point) to
+            search for free blocks to discard. If the specified
+            value extends past the end of the filesystem,
+            <span class="command"><strong>fstrim</strong></span>
+            will stop at the filesystem size boundary. The default
+            value extends to the end of the filesystem.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−m,
+          −−minimum</code> <em class="parameter"><code>minimum-size</code></em></span></dt>
+
+          <dd>
+            <p>Minimum contiguous free range to discard, in bytes.
+            (This value is internally rounded up to a multiple of
+            the filesystem block size). Free ranges smaller than
+            this will be ignored. By increasing this value, the
+            fstrim operation will complete more quickly for
+            filesystems with badly fragmented freespace, although
+            not all blocks will be discarded. Default value is
+            zero, discard every free block.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−v,
+          −−verbose</code></span></dt>
+
+          <dd>
+            <p>Verbose execution. With this option <span class="command"><strong>fstrim</strong></span> will output
+            the number of bytes passed from the filesystem down the
+            block stack to the device for potential discard. This
+            number is a maximum discard amount from the storage
+            device's perspective, because <code class="constant">FITRIM</code> ioctl called repeated will
+            keep sending the same sectors for discard
+            repeatedly.</p>
+
+            <p><span class="command"><strong>fstrim</strong></span>
+            will report the same potential discard bytes each time,
+            but only sectors which had been written to between the
+            discards would actually be discarded by the storage
+            device. Further, the kernel block layer reserves the
+            right to adjust the discard ranges to fit raid stripe
+            geometry, non-trim capable devices in a LVM setup, etc.
+            These reductions would not be reflected in
+            fstrim_range.len (the <code class="option">−−length</code> option).</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−V,
+          −−version</code></span></dt>
+
+          <dd>
+            <p>Display version information and exit.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−h,
+          −−help</code></span></dt>
+
+          <dd>
+            <p>Display help text and exit.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fstrim-8_sect3" name="fstrim-8_sect3" shape="rect"> </a>
+
+      <h2>RETURN CODES</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">0</code></span></dt>
+
+          <dd>
+            <p>success</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">1</code></span></dt>
+
+          <dd>
+            <p>failure</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">32</code></span></dt>
+
+          <dd>
+            <p>all failed</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">64</code></span></dt>
+
+          <dd>
+            <p>some filesystem discards have succeeded, some
+            failed</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>The command <span class="emphasis"><em>fstrim
+      --all</em></span> returns 0 (all succeeded), 32 (all failed)
+      or 64 (some failed, some succeeded).</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="fstrim-8_sect4" name="fstrim-8_sect4" shape="rect"> </a>
+
+      <h2>AUTHOR</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+Lukas Czerner &lt;lczerner@redhat.com&gt;
+Karel Zak &lt;kzak@redhat.com&gt;
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="fstrim-8_sect5" name="fstrim-8_sect5" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman8/mount.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mount</span>(8)</span></a></p>
+    </div>
+
+    <div class="refsect1">
+      <a id="fstrim-8_sect6" name="fstrim-8_sect6" shape="rect"> </a>
+
+      <h2>AVAILABILITY</h2>
+
+      <p>The fstrim command is part of the util-linux package and
+      is available from
+      ftp://ftp.kernel.org/pub/linux/utils/util-linux/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

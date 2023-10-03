@@ -1,0 +1,1199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>pcre2grep(1) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="pcre2grep(1) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index1.html" shape="rect">Section 1</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="pcre2grep.1" name="pcre2grep.1" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>pcre2grep — a grep with Perl-compatible regular
+      expressions.</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="cmdsynopsis">
+        <p><code class="command">pcre2grep [options] [long options]
+        [pattern] [path1 path2 ...]</code></p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2grep-1_sect1" name="pcre2grep-1_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><span class="command"><strong>pcre2grep</strong></span>
+      searches files for character patterns, in the same way as
+      other grep commands do, but it uses the PCRE2 regular
+      expression library to support patterns that are compatible
+      with the regular expressions of Perl 5. See <a class="link" href="../htmlman3/pcre2syntax.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2syntax</span>(3)</span></a> for a
+      quick-reference summary of pattern syntax, or <a class="link" href="../htmlman3/pcre2pattern.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2pattern</span>(3)</span></a> for a full
+      description of the syntax and semantics of the regular
+      expressions that PCRE2 supports.</p>
+
+      <p>Patterns, whether supplied on the command line or in a
+      separate file, are given without delimiters. For example:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+pcre2grep Thursday /etc/motd
+</pre>
+      </div>
+
+      <p>If you attempt to use delimiters (for example, by
+      surrounding a pattern with slashes, as is common in Perl
+      scripts), they are interpreted as part of the pattern. Quotes
+      can of course be used to delimit patterns on the command line
+      because they are interpreted by the shell, and indeed quotes
+      are required if a pattern contains white space or shell
+      metacharacters.</p>
+
+      <p>The first argument that follows any option settings is
+      treated as the single pattern to be matched when neither
+      <code class="option">−e</code> nor <code class="option">−f</code> is present. Conversely, when one or
+      both of these options are used to specify patterns, all
+      arguments are treated as path names. At least one of
+      <code class="option">−e</code>, <code class="option">−f</code>, or an argument pattern must be
+      provided.</p>
+
+      <p>If no files are specified, <span class="command"><strong>pcre2grep</strong></span> reads the
+      standard input. The standard input can also be referenced by
+      a name consisting of a single hyphen. For example:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+pcre2grep some-pattern file1 - file3
+</pre>
+      </div>
+
+      <p>Input files are searched line by line. By default, each
+      line that matches a pattern is copied to the standard output,
+      and if there is more than one file, the file name is output
+      at the start of each line, followed by a colon. However,
+      there are options that can change how <span class="command"><strong>pcre2grep</strong></span> behaves. In
+      particular, the <code class="option">−M</code> option
+      makes it possible to search for strings that span line
+      boundaries. What defines a line boundary is controlled by the
+      <code class="option">−N</code> (<code class="option">−−newline</code>) option.</p>
+
+      <p>The amount of memory used for buffering files that are
+      being scanned is controlled by a parameter that can be set by
+      the <code class="option">−−buffer−size</code> option. The
+      default value for this parameter is specified when
+      <span class="command"><strong>pcre2grep</strong></span> is
+      built, with the default default being 20K. A block of memory
+      three times this size is used (to allow for buffering
+      "before" and "after" lines). An error occurs if a line
+      overflows the buffer.</p>
+
+      <p>Patterns can be no longer than 8K or BUFSIZ bytes,
+      whichever is the greater. BUFSIZ is defined in <code class="literal">&lt;</code><code class="filename">stdio.h</code><code class="literal">&gt;</code>
+      When there is more than one pattern (specified by the use of
+      <code class="option">−e</code> and/or <code class="option">−f</code>), each pattern is applied to each
+      line in the order in which they are defined, except that all
+      the <code class="option">−e</code> patterns are tried
+      before the <code class="option">−f</code> patterns.</p>
+
+      <p>By default, as soon as one pattern matches a line, no
+      further patterns are considered. However, if <code class="option">−−colour</code> (or <code class="option">−−color</code>) is used to colour the
+      matching substrings, or if <code class="option">−−only−matching</code>,
+      <code class="option">−−file−offsets</code>,
+      or <code class="option">−−line−offsets</code> is used to
+      output only the part of the line that matched (either shown
+      literally, or as an offset), scanning resumes immediately
+      following the match, so that further matches on the same line
+      can be found. If there are multiple patterns, they are all
+      tried on the remainder of the line, but patterns that follow
+      the one that matched are not tried on the earlier part of the
+      line.</p>
+
+      <p>This behaviour means that the order in which multiple
+      patterns are specified can affect the output when one of the
+      above options is used. This is no longer the same behaviour
+      as GNU grep, which now manages to display earlier matches for
+      later patterns (as long as there is no overlap).</p>
+
+      <p>Patterns that can match an empty string are accepted, but
+      empty string matches are never recognized. An example is the
+      pattern "(super)?(man)?", in which all components are
+      optional. This pattern finds all occurrences of both "super"
+      and "man"; the output differs from matching with "super|man"
+      when only the matching substrings are being shown.</p>
+
+      <p>If the <code class="constant">LC_ALL</code> or
+      <code class="constant">LC_CTYPE</code> environment variable
+      is set, <span class="command"><strong>pcre2grep</strong></span> uses the value to
+      set a locale when calling the PCRE2 library. The <code class="option">−−locale</code> option can be used to
+      override this.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2grep-1_sect2" name="pcre2grep-1_sect2" shape="rect"> </a>
+
+      <h2>SUPPORT FOR COMPRESSED FILES</h2>
+
+      <p>It is possible to compile <span class="command"><strong>pcre2grep</strong></span> so that it uses
+      <span class="command"><strong>libz</strong></span> or
+      <span class="command"><strong>libbz2</strong></span> to read
+      files whose names end in <em class="replaceable"><code>.gz</code></em> or <em class="replaceable"><code>.bz2</code></em>, respectively. You can
+      find out whether your binary has support for one or both of
+      these file types by running it with the <code class="option">−−help</code> option. If the appropriate
+      support is not present, files are treated as plain text. The
+      standard input is always so treated.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2grep-1_sect3" name="pcre2grep-1_sect3" shape="rect"> </a>
+
+      <h2>BINARY FILES</h2>
+
+      <p>By default, a file that contains a binary zero byte within
+      the first 1024 bytes is identified as a binary file, and is
+      processed specially. (GNU grep also identifies binary files
+      in this manner.) See the <code class="option">−−binary−files</code> option for a
+      means of changing the way binary files are handled.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2grep-1_sect4" name="pcre2grep-1_sect4" shape="rect"> </a>
+
+      <h2>OPTIONS</h2>
+
+      <p>The order in which some of the options appear can affect
+      the output. For example, both the <code class="option">−h</code> and <code class="option">−l</code> options affect the printing of file
+      names. Whichever comes later in the command line will be the
+      one that takes effect. Similarly, except where noted below,
+      if an option is given twice, the later setting is used.
+      Numerical values for options may be followed by K or M, to
+      signify multiplication by 1024 or 1024*1024 respectively.</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="option">−−</code></span></dt>
+
+          <dd>
+            <p>This terminates the list of options. It is useful if
+            the next item on the command line starts with a hyphen
+            but is not an option. This allows for the processing of
+            patterns and file names that start with hyphens.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−A</code> <span class="command"><strong>number</strong></span>, <code class="option">−−after−context=</code><span class="command"><strong>number</strong></span></span></dt>
+
+          <dd>
+            <p>Output <span class="command"><strong>number</strong></span> lines of
+            context after each matching line. If file names and/or
+            line numbers are being output, a hyphen separator is
+            used instead of a colon for the context lines. A line
+            containing "--" is output between each group of lines,
+            unless they are in fact contiguous in the input file.
+            The value of <span class="command"><strong>number</strong></span> is expected to
+            be relatively small. However, <span class="command"><strong>pcre2grep</strong></span> guarantees
+            to have up to 8K of following text available for
+            context output.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−a</code>, <code class="option">−−text</code></span></dt>
+
+          <dd>
+            <p>Treat binary files as text. This is equivalent to
+            <code class="option">−−binary−files</code>=<span class="command"><strong>text</strong></span>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−B</code> <span class="command"><strong>number</strong></span>, <code class="option">−−before−context=</code><span class="command"><strong>number</strong></span></span></dt>
+
+          <dd>
+            <p>Output <span class="command"><strong>number</strong></span> lines of
+            context before each matching line. If file names and/or
+            line numbers are being output, a hyphen separator is
+            used instead of a colon for the context lines. A line
+            containing "--" is output between each group of lines,
+            unless they are in fact contiguous in the input file.
+            The value of <span class="command"><strong>number</strong></span> is expected to
+            be relatively small. However, <span class="command"><strong>pcre2grep</strong></span> guarantees
+            to have up to 8K of preceding text available for
+            context output.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−binary−files=</code><span class="command"><strong>word</strong></span></span></dt>
+
+          <dd>
+            <p>Specify how binary files are to be processed. If the
+            word is "binary" (the default), pattern matching is
+            performed on binary files, but the only output is
+            "Binary file &lt;name&gt; matches" when a match
+            succeeds. If the word is "text", which is equivalent to
+            the <code class="option">−a</code> or
+            <code class="option">−−text</code> option,
+            binary files are processed in the same way as any other
+            file. In this case, when a match succeeds, the output
+            may be binary garbage, which can have nasty effects if
+            sent to a terminal. If the word is "without-match",
+            which is equivalent to the <code class="option">−I</code> option, binary files are not
+            processed at all; they are assumed not to be of
+            interest and are skipped without causing any output or
+            affecting the return code.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−buffer−size=</code><span class="command"><strong>number</strong></span></span></dt>
+
+          <dd>
+            <p>Set the parameter that controls how much memory is
+            used for buffering files that are being scanned.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−C</code> <span class="command"><strong>number</strong></span>, <code class="option">−−context=</code><span class="command"><strong>number</strong></span></span></dt>
+
+          <dd>
+            <p>Output <span class="command"><strong>number</strong></span> lines of
+            context both before and after each matching line. This
+            is equivalent to setting both <code class="option">−A</code> and <code class="option">−B</code> to the same value.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−c</code>, <code class="option">−−count</code></span></dt>
+
+          <dd>
+            <p>Do not output lines from the files that are being
+            scanned; instead output the number of matches (or
+            non-matches if <code class="option">−v</code> is
+            used) that would otherwise have caused lines to be
+            shown. By default, this count is the same as the number
+            of suppressed lines, but if the <code class="option">−M</code> (multiline) option is used
+            (without <code class="option">−v</code>), there
+            may be more suppressed lines than the number of
+            matches.</p>
+
+            <p>If no lines are selected, the number zero is output.
+            If several files are are being scanned, a count is
+            output for each of them. However, if the <code class="option">−−files−with−matches</code>
+            option is also used, only those files whose counts are
+            greater than zero are listed. When <code class="option">−c</code> is used, the <code class="option">−A</code>, <code class="option">−B</code>, and <code class="option">−C</code> options are ignored.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−colour</code>, <code class="option">−−color</code></span></dt>
+
+          <dd>
+            <p>If this option is given without any data, it is
+            equivalent to "--colour=auto". If data is required, it
+            must be given in the same shell item, separated by an
+            equals sign.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−colour=</code><span class="command"><strong>value</strong></span>, <code class="option">−−color=</code><span class="command"><strong>value</strong></span></span></dt>
+
+          <dd>
+            <p>This option specifies under what circumstances the
+            parts of a line that matched a pattern should be
+            coloured in the output. By default, the output is not
+            coloured. The value (which is optional, see above) may
+            be "never", "always", or "auto". In the latter case,
+            colouring happens only if the standard output is
+            connected to a terminal. More resources are used when
+            colouring is enabled, because <span class="command"><strong>pcre2grep</strong></span> has to
+            search for all possible matches in a line, not just
+            one, in order to colour them all.</p>
+
+            <p>The colour that is used can be specified by setting
+            the environment variable PCRE2GREP_COLOUR or
+            PCRE2GREP_COLOR. The value of this variable should be a
+            string of two numbers, separated by a semicolon. They
+            are copied directly into the control string for setting
+            colour on a terminal, so it is your responsibility to
+            ensure that they make sense. If neither of the
+            environment variables is set, the default is "1;31",
+            which gives red.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−D</code> <span class="command"><strong>action</strong></span>, <code class="option">−−devices=</code><span class="command"><strong>action</strong></span></span></dt>
+
+          <dd>
+            <p>If an input path is not a regular file or a
+            directory, "action" specifies how it is to be
+            processed. Valid values are "read" (the default) or
+            "skip" (silently skip the path).</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−d</code> <span class="command"><strong>action</strong></span>, <code class="option">−−directories=</code><span class="command"><strong>action</strong></span></span></dt>
+
+          <dd>
+            <p>If an input path is a directory, "action" specifies
+            how it is to be processed. Valid values are "read" (the
+            default in non-Windows environments, for compatibility
+            with GNU grep), "recurse" (equivalent to the
+            <code class="option">−r</code> option), or "skip"
+            (silently skip the path, the default in Windows
+            environments). In the "read" case, directories are read
+            as if they were ordinary files. In some operating
+            systems the effect of reading a directory like this is
+            an immediate end-of-file; in others it may provoke an
+            error.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−e</code> <span class="command"><strong>pattern</strong></span>, <code class="option">−−regex=</code><span class="command"><strong>pattern</strong></span>, <code class="option">−−regexp=</code><span class="command"><strong>pattern</strong></span></span></dt>
+
+          <dd>
+            <p>Specify a pattern to be matched. This option can be
+            used multiple times in order to specify several
+            patterns. It can also be used as a way of specifying a
+            single pattern that starts with a hyphen. When
+            <code class="option">−e</code> is used, no
+            argument pattern is taken from the command line; all
+            arguments are treated as file names. There is no limit
+            to the number of patterns. They are applied to each
+            line in the order in which they are defined until one
+            matches.</p>
+
+            <p>If <code class="option">−f</code> is used with
+            <code class="option">−e</code>, the command line
+            patterns are matched first, followed by the patterns
+            from the file(s), independent of the order in which
+            these options are specified. Note that multiple use of
+            <code class="option">−e</code> is not the same as
+            a single pattern with alternatives. For example, X|Y
+            finds the first character in a line that is X or Y,
+            whereas if the two patterns are given separately, with
+            X first, <span class="command"><strong>pcre2grep</strong></span> finds X if
+            it is present, even if it follows Y in the line. It
+            finds Y only if there is no X in the line. This matters
+            only if you are using <code class="option">−o</code> or <code class="option">−−colo(u)r</code> to show the
+            part(s) of the line that matched.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−exclude</code>=<span class="command"><strong>pattern</strong></span></span></dt>
+
+          <dd>
+            <p>Files (but not directories) whose names match the
+            pattern are skipped without being processed. This
+            applies to all files, whether listed on the command
+            line, obtained from <code class="option">−−file−list</code>, or by
+            scanning a directory. The pattern is a PCRE2 regular
+            expression, and is matched against the final component
+            of the file name, not the entire path. The <code class="option">−F</code>, <code class="option">−w</code>, and <code class="option">−x</code> options do not apply to this
+            pattern. The option may be given any number of times in
+            order to specify multiple patterns. If a file name
+            matches both an <code class="option">−−include</code> and an
+            <code class="option">−−exclude</code>
+            pattern, it is excluded. There is no short form for
+            this option.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−exclude−from=</code><span class="command"><strong>filename</strong></span></span></dt>
+
+          <dd>
+            <p>Treat each non-empty line of the file as the data
+            for an <code class="option">−−exclude</code> option. What
+            constitutes a newline when reading the file is the
+            operating system's default. The <code class="option">−−newline</code> option has no
+            effect on this option. This option may be given more
+            than once in order to specify a number of files to
+            read.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−exclude−dir</code>=<span class="command"><strong>pattern</strong></span></span></dt>
+
+          <dd>
+            <p>Directories whose names match the pattern are
+            skipped without being processed, whatever the setting
+            of the <code class="option">−−recursive</code> option. This
+            applies to all directories, whether listed on the
+            command line, obtained from <code class="option">−−file−list</code>, or by
+            scanning a parent directory. The pattern is a PCRE2
+            regular expression, and is matched against the final
+            component of the directory name, not the entire path.
+            The <code class="option">−F</code>, <code class="option">−w</code>, and <code class="option">−x</code> options do not apply to this
+            pattern. The option may be given any number of times in
+            order to specify more than one pattern. If a directory
+            matches both <code class="option">−−include−dir</code> and
+            <code class="option">−−exclude−dir</code>, it is
+            excluded. There is no short form for this option.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−F</code>, <code class="option">−−fixed−strings</code></span></dt>
+
+          <dd>
+            <p>Interpret each data-matching pattern as a list of
+            fixed strings, separated by newlines, instead of as a
+            regular expression. What constitutes a newline for this
+            purpose is controlled by the <code class="option">−−newline</code> option. The
+            <code class="option">−w</code> (match as a word)
+            and <code class="option">−x</code> (match whole
+            line) options can be used with <code class="option">−F</code>. They apply to each of the
+            fixed strings. A line is selected if any of the fixed
+            strings are found in it (subject to <code class="option">−w</code> or <code class="option">−x</code>, if present). This option
+            applies only to the patterns that are matched against
+            the contents of files; it does not apply to patterns
+            specified by any of the <code class="option">−−include</code> or <code class="option">−−exclude</code> options.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−f</code> <span class="command"><strong>filename</strong></span>, <code class="option">−−file=</code><span class="command"><strong>filename</strong></span></span></dt>
+
+          <dd>
+            <p>Read patterns from the file, one per line, and match
+            them against each line of input. What constitutes a
+            newline when reading the file is the operating system's
+            default. The <code class="option">−−newline</code> option has no
+            effect on this option. Trailing white space is removed
+            from each line, and blank lines are ignored. An empty
+            file contains no patterns and therefore matches
+            nothing. See also the comments about multiple patterns
+            versus a single pattern with alternatives in the
+            description of <code class="option">−e</code>
+            above.</p>
+
+            <p>If this option is given more than once, all the
+            specified files are read. A data line is output if any
+            of the patterns match it. A file name can be given as
+            "-" to refer to the standard input. When <code class="option">−f</code> is used, patterns specified on
+            the command line using <code class="option">−e</code> may also be present; they are
+            tested before the file's patterns. However, no other
+            pattern is taken from the command line; all arguments
+            are treated as the names of paths to be searched.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−file−list</code>=<span class="command"><strong>filename</strong></span></span></dt>
+
+          <dd>
+            <p>Read a list of files and/or directories that are to
+            be scanned from the given file, one per line. Trailing
+            white space is removed from each line, and blank lines
+            are ignored. These paths are processed before any that
+            are listed on the command line. The file name can be
+            given as "-" to refer to the standard input. If
+            <code class="option">−−file</code> and
+            <code class="option">−−file−list</code> are both
+            specified as "-", patterns are read first. This is
+            useful only when the standard input is a terminal, from
+            which further lines (the list of files) can be read
+            after an end-of-file indication. If this option is
+            given more than once, all the specified files are
+            read.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−file−offsets</code></span></dt>
+
+          <dd>
+            <p>Instead of showing lines or parts of lines that
+            match, show each match as an offset from the start of
+            the file and a length, separated by a comma. In this
+            mode, no context is shown. That is, the <code class="option">−A</code>, <code class="option">−B</code>, and <code class="option">−C</code> options are ignored. If there
+            is more than one match in a line, each of them is shown
+            separately. This option is mutually exclusive with
+            <code class="option">−−line−offsets</code> and
+            <code class="option">−−only−matching</code>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−H</code>, <code class="option">−−with−filename</code></span></dt>
+
+          <dd>
+            <p>Force the inclusion of the file name at the start of
+            output lines when searching a single file. By default,
+            the file name is not shown in this case. For matching
+            lines, the file name is followed by a colon; for
+            context lines, a hyphen separator is used. If a line
+            number is also being output, it follows the file name.
+            When the <code class="option">−M</code> option
+            causes a pattern to match more than one line, only the
+            first is preceded by the file name.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−h</code>, <code class="option">−−no−filename</code></span></dt>
+
+          <dd>
+            <p>Suppress the output file names when searching
+            multiple files. By default, file names are shown when
+            multiple files are searched. For matching lines, the
+            file name is followed by a colon; for context lines, a
+            hyphen separator is used. If a line number is also
+            being output, it follows the file name.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−help</code></span></dt>
+
+          <dd>
+            <p>Output a help message, giving brief details of the
+            command options and file type support, and then exit.
+            Anything else on the command line is ignored.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−I</code></span></dt>
+
+          <dd>
+            <p>Ignore binary files. This is equivalent to
+            <code class="option">−−binary−files</code>=<em class="replaceable"><code>without-match</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−i</code>, <code class="option">−−ignore−case</code></span></dt>
+
+          <dd>
+            <p>Ignore upper/lower case distinctions during
+            comparisons.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−include</code>=<span class="command"><strong>pattern</strong></span></span></dt>
+
+          <dd>
+            <p>If any <code class="option">−−include</code> patterns are
+            specified, the only files that are processed are those
+            that match one of the patterns (and do not match an
+            <code class="option">−−exclude</code>
+            pattern). This option does not affect directories, but
+            it applies to all files, whether listed on the command
+            line, obtained from <code class="option">−−file−list</code>, or by
+            scanning a directory. The pattern is a PCRE2 regular
+            expression, and is matched against the final component
+            of the file name, not the entire path. The <code class="option">−F</code>, <code class="option">−w</code>, and <code class="option">−x</code> options do not apply to this
+            pattern. The option may be given any number of times.
+            If a file name matches both an <code class="option">−−include</code> and an
+            <code class="option">−−exclude</code>
+            pattern, it is excluded. There is no short form for
+            this option.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−include−from=</code><span class="command"><strong>filename</strong></span></span></dt>
+
+          <dd>
+            <p>Treat each non-empty line of the file as the data
+            for an <code class="option">−−include</code> option. What
+            constitutes a newline for this purpose is the operating
+            system's default. The <code class="option">−−newline</code> option has no
+            effect on this option. This option may be given any
+            number of times; all the files are read.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−include−dir</code>=<span class="command"><strong>pattern</strong></span></span></dt>
+
+          <dd>
+            <p>If any <code class="option">−−include−dir</code>
+            patterns are specified, the only directories that are
+            processed are those that match one of the patterns (and
+            do not match an <code class="option">−−exclude−dir</code>
+            pattern). This applies to all directories, whether
+            listed on the command line, obtained from <code class="option">−−file−list</code>, or by
+            scanning a parent directory. The pattern is a PCRE2
+            regular expression, and is matched against the final
+            component of the directory name, not the entire path.
+            The <code class="option">−F</code>, <code class="option">−w</code>, and <code class="option">−x</code> options do not apply to this
+            pattern. The option may be given any number of times.
+            If a directory matches both <code class="option">−−include−dir</code> and
+            <code class="option">−−exclude−dir</code>, it is
+            excluded. There is no short form for this option.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−L</code>, <code class="option">−−files−without−match</code></span></dt>
+
+          <dd>
+            <p>Instead of outputting lines from the files, just
+            output the names of the files that do not contain any
+            lines that would have been output. Each file name is
+            output once, on a separate line.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−l</code>, <code class="option">−−files−with−matches</code></span></dt>
+
+          <dd>
+            <p>Instead of outputting lines from the files, just
+            output the names of the files containing lines that
+            would have been output. Each file name is output once,
+            on a separate line. Searching normally stops as soon as
+            a matching line is found in a file. However, if the
+            <code class="option">−c</code> (count) option is
+            also used, matching continues in order to obtain the
+            correct count, and those files that have at least one
+            match are listed along with their counts. Using this
+            option with <code class="option">−c</code> is a
+            way of suppressing the listing of files with no
+            matches.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−label</code>=<span class="command"><strong>name</strong></span></span></dt>
+
+          <dd>
+            <p>This option supplies a name to be used for the
+            standard input when file names are being output. If not
+            supplied, "(standard input)" is used. There is no short
+            form for this option.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−line−buffered</code></span></dt>
+
+          <dd>
+            <p>When this option is given, input is read and
+            processed line by line, and the output is flushed after
+            each write. By default, input is read in large chunks,
+            unless <span class="command"><strong>pcre2grep</strong></span> can
+            determine that it is reading from a terminal (which is
+            currently possible only in Unix-like environments).
+            Output to terminal is normally automatically flushed by
+            the operating system. This option can be useful when
+            the input or output is attached to a pipe and you do
+            not want <span class="command"><strong>pcre2grep</strong></span> to buffer
+            up large amounts of data. However, its use will affect
+            performance, and the <code class="option">−M</code> (multiline) option ceases to
+            work.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−line−offsets</code></span></dt>
+
+          <dd>
+            <p>Instead of showing lines or parts of lines that
+            match, show each match as a line number, the offset
+            from the start of the line, and a length. The line
+            number is terminated by a colon (as usual; see the
+            <code class="option">−n</code> option), and the
+            offset and length are separated by a comma. In this
+            mode, no context is shown. That is, the <code class="option">−A</code>, <code class="option">−B</code>, and <code class="option">−C</code> options are ignored. If there
+            is more than one match in a line, each of them is shown
+            separately. This option is mutually exclusive with
+            <code class="option">−−file−offsets</code> and
+            <code class="option">−−only−matching</code>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−locale</code>=<em class="replaceable"><code>locale-name</code></em></span></dt>
+
+          <dd>
+            <p>This option specifies a locale to be used for
+            pattern matching. It overrides the value in the
+            <code class="constant">LC_ALL</code> or <code class="constant">LC_CTYPE</code> environment variables. If no
+            locale is specified, the PCRE2 library's default
+            (usually the "C" locale) is used. There is no short
+            form for this option.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−match−limit</code>=<span class="command"><strong>number</strong></span></span></dt>
+
+          <dd>
+            <p>Processing some regular expression patterns can
+            require a very large amount of memory, leading in some
+            cases to a program crash if not enough is available.
+            Other patterns may take a very long time to search for
+            all possible matching strings. The <code class="function">pcre2_match</code>() function that is called
+            by <span class="command"><strong>pcre2grep</strong></span> to do the
+            matching has two parameters that can limit the
+            resources that it uses.</p>
+
+            <p>The <code class="option">−−match−limit</code> option
+            provides a means of limiting resource usage when
+            processing patterns that are not going to match, but
+            which have a very large number of possibilities in
+            their search trees. The classic example is a pattern
+            that uses nested unlimited repeats. Internally, PCRE2
+            uses a function called <code class="function">match</code>() which it calls repeatedly
+            (sometimes recursively). The limit set by <code class="option">−−match−limit</code> is
+            imposed on the number of times this function is called
+            during a match, which has the effect of limiting the
+            amount of backtracking that can take place.</p>
+
+            <p>The <code class="option">−−recursion−limit</code>
+            option is similar to <code class="option">−−match−limit</code>, but
+            instead of limiting the total number of times that
+            <code class="function">match</code>() is called, it
+            limits the depth of recursive calls, which in turn
+            limits the amount of memory that can be used. The
+            recursion depth is a smaller number than the total
+            number of calls, because not all calls to <code class="function">match</code>() are recursive. This limit is
+            of use only if it is set smaller than <code class="option">−−match−limit</code>.</p>
+
+            <p>There are no short forms for these options. The
+            default settings are specified when the PCRE2 library
+            is compiled, with the default default being 10
+            million.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−M</code>, <code class="option">−−multiline</code></span></dt>
+
+          <dd>
+            <p>Allow patterns to match more than one line. When
+            this option is given, patterns may usefully contain
+            literal newline characters and internal occurrences of
+            ^ and $ characters. The output for a successful match
+            may consist of more than one line. The first is the
+            line in which the match started, and the last is the
+            line in which the match ended. If the matched string
+            ends with a newline sequence the output ends at the end
+            of that line.</p>
+
+            <p>When this option is set, the PCRE2 library is called
+            in "multiline" mode. However, <span class="command"><strong>pcre2grep</strong></span> still
+            processes the input line by line. The difference is
+            that a matched string may extend past the end of a line
+            and continue on one or more subsequent lines. The
+            newline sequence must be matched as part of the
+            pattern. For example, to find the phrase "regular
+            expression" in a file where "regular" might be at the
+            end of a line and "expression" at the start of the next
+            line, you could use this command:</p>
+
+            <div class="informalexample">
+              <pre class="programlisting" xml:space="preserve">
+pcre2grep -M 'regular\s+expression' &lt;file&gt;
+</pre>
+            </div>
+
+            <p>The \s escape sequence matches any white space
+            character, including newlines, and is followed by + so
+            as to match trailing white space on the first line as
+            well as possibly handling a two-character newline
+            sequence.</p>
+
+            <p>There is a limit to the number of lines that can be
+            matched, imposed by the way that <span class="command"><strong>pcre2grep</strong></span> buffers the
+            input file as it scans it. However, <span class="command"><strong>pcre2grep</strong></span> ensures
+            that at least 8K characters or the rest of the file
+            (whichever is the shorter) are available for forward
+            matching, and similarly the previous 8K characters (or
+            all the previous characters, if fewer than 8K) are
+            guaranteed to be available for lookbehind assertions.
+            The <code class="option">−M</code> option does
+            not work when input is read line by line (see
+            <code class="option">−−line−buffered</code>.)</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−N</code> <em class="replaceable"><code>newline-type</code></em>,
+          <code class="option">−−newline</code>=<em class="replaceable"><code>newline-type</code></em></span></dt>
+
+          <dd>
+            <p>The PCRE2 library supports five different
+            conventions for indicating the ends of lines. They are
+            the single-character sequences CR (carriage return) and
+            LF (linefeed), the two-character sequence CRLF, an
+            "anycrlf" convention, which recognizes any of the
+            preceding three types, and an "any" convention, in
+            which any Unicode line ending sequence is assumed to
+            end a line. The Unicode sequences are the three just
+            mentioned, plus VT (vertical tab, U+000B), FF (form
+            feed, U+000C), NEL (next line, U+0085), LS (line
+            separator, U+2028), and PS (paragraph separator,
+            U+2029).</p>
+
+            <p>When the PCRE2 library is built, a default
+            line-ending sequence is specified. This is normally the
+            standard sequence for the operating system. Unless
+            otherwise specified by this option, <span class="command"><strong>pcre2grep</strong></span> uses the
+            library's default. The possible values for this option
+            are CR, LF, CRLF, ANYCRLF, or ANY. This makes it
+            possible to use <span class="command"><strong>pcre2grep</strong></span> to scan
+            files that have come from other environments without
+            having to modify their line endings. If the data that
+            is being scanned does not agree with the convention set
+            by this option, <span class="command"><strong>pcre2grep</strong></span> may behave
+            in strange ways. Note that this option does not apply
+            to files specified by the <code class="option">−f</code>, <code class="option">−−exclude−from</code>, or
+            <code class="option">−−include−from</code>
+            options, which are expected to use the operating
+            system's standard newline sequence.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−n</code>, <code class="option">−−line−number</code></span></dt>
+
+          <dd>
+            <p>Precede each output line by its line number in the
+            file, followed by a colon for matching lines or a
+            hyphen for context lines. If the file name is also
+            being output, it precedes the line number. When the
+            <code class="option">−M</code> option causes a
+            pattern to match more than one line, only the first is
+            preceded by its line number. This option is forced if
+            <code class="option">−−line−offsets</code> is
+            used.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−no−jit</code></span></dt>
+
+          <dd>
+            <p>If the PCRE2 library is built with support for
+            just-in-time compiling (which speeds up matching),
+            <span class="command"><strong>pcre2grep</strong></span>
+            automatically makes use of this, unless it was
+            explicitly disabled at build time. This option can be
+            used to disable the use of JIT at run time. It is
+            provided for testing and working round problems. It
+            should never be needed in normal use.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−o</code>, <code class="option">−−only−matching</code></span></dt>
+
+          <dd>
+            <p>Show only the part of the line that matched a
+            pattern instead of the whole line. In this mode, no
+            context is shown. That is, the <code class="option">−A</code>, <code class="option">−B</code>, and <code class="option">−C</code> options are ignored. If there
+            is more than one match in a line, each of them is shown
+            separately. If <code class="option">−o</code> is
+            combined with <code class="option">−v</code>
+            (invert the sense of the match to find non-matching
+            lines), no output is generated, but the return code is
+            set appropriately. If the matched portion of the line
+            is empty, nothing is output unless the file name or
+            line number are being printed, in which case they are
+            shown on an otherwise empty line. This option is
+            mutually exclusive with <code class="option">−−file−offsets</code> and
+            <code class="option">−−line−offsets</code>.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−o</code><span class="command"><strong>number</strong></span>, <code class="option">−−only−matching</code>=<span class="command"><strong>number</strong></span></span></dt>
+
+          <dd>
+            <p>Show only the part of the line that matched the
+            capturing parentheses of the given number. Up to 32
+            capturing parentheses are supported, and -o0 is
+            equivalent to <code class="option">−o</code>
+            without a number. Because these options can be given
+            without an argument (see above), if an argument is
+            present, it must be given in the same shell item, for
+            example, -o3 or --only-matching=2. The comments given
+            for the non-argument case above also apply to this
+            case. If the specified capturing parentheses do not
+            exist in the pattern, or were not set in the match,
+            nothing is output unless the file name or line number
+            are being output.</p>
+
+            <p>If this option is given multiple times, multiple
+            substrings are output, in the order the options are
+            given. For example, -o3 -o1 -o3 causes the substrings
+            matched by capturing parentheses 3 and 1 and then 3
+            again to be output. By default, there is no separator
+            (but see the next option).</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−om−separator</code>=<span class="command"><strong>text</strong></span></span></dt>
+
+          <dd>
+            <p>Specify a separating string for multiple occurrences
+            of <code class="option">−o</code>. The default is
+            an empty string. Separating strings are never
+            coloured.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−q</code>, <code class="option">−−quiet</code></span></dt>
+
+          <dd>
+            <p>Work quietly, that is, display nothing except error
+            messages. The exit status indicates whether or not any
+            matches were found.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−r</code>, <code class="option">−−recursive</code></span></dt>
+
+          <dd>
+            <p>If any given path is a directory, recursively scan
+            the files it contains, taking note of any <code class="option">−−include</code> and <code class="option">−−exclude</code> settings. By
+            default, a directory is read as a normal file; in some
+            operating systems this gives an immediate end-of-file.
+            This option is a shorthand for setting the <code class="option">−d</code> option to "recurse".</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−−recursion−limit</code>=<span class="command"><strong>number</strong></span></span></dt>
+
+          <dd>
+            <p>See <code class="option">−−match−limit</code>
+            above.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−s</code>, <code class="option">−−no−messages</code></span></dt>
+
+          <dd>
+            <p>Suppress error messages about non-existent or
+            unreadable files. Such files are quietly skipped.
+            However, the return code is still 2, even if matches
+            were found in other files.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−u</code>, <code class="option">−−utf−8</code></span></dt>
+
+          <dd>
+            <p>Operate in UTF-8 mode. This option is available only
+            if PCRE2 has been compiled with UTF-8 support. All
+            patterns (including those for any <code class="option">−−exclude</code> and <code class="option">−−include</code> options) and all
+            subject lines that are scanned must be valid strings of
+            UTF-8 characters.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−V</code>, <code class="option">−−version</code></span></dt>
+
+          <dd>
+            <p>Write the version numbers of <span class="command"><strong>pcre2grep</strong></span> and the
+            PCRE2 library to the standard output and then exit.
+            Anything else on the command line is ignored.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−v</code>, <code class="option">−−invert−match</code></span></dt>
+
+          <dd>
+            <p>Invert the sense of the match, so that lines which
+            do not match any of the patterns are the ones that are
+            found.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−w</code>, <code class="option">−−word−regex</code>,
+          <code class="option">−−word−regexp</code></span></dt>
+
+          <dd>
+            <p>Force the patterns to match only whole words. This
+            is equivalent to having \b at the start and end of the
+            pattern. This option applies only to the patterns that
+            are matched against the contents of files; it does not
+            apply to patterns specified by any of the <code class="option">−−include</code> or <code class="option">−−exclude</code> options.</p>
+          </dd>
+
+          <dt><span class="term"><code class="option">−x</code>, <code class="option">−−line−regex</code>,
+          <code class="option">−−line−regexp</code></span></dt>
+
+          <dd>
+            <p>Force the patterns to be anchored (each must start
+            matching at the beginning of a line) and in addition,
+            require them to match entire lines. This is equivalent
+            to having ^ and $ characters at the start and end of
+            each alternative top-level branch in every pattern.
+            This option applies only to the patterns that are
+            matched against the contents of files; it does not
+            apply to patterns specified by any of the <code class="option">−−include</code> or <code class="option">−−exclude</code> options.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2grep-1_sect5" name="pcre2grep-1_sect5" shape="rect"> </a>
+
+      <h2>ENVIRONMENT VARIABLES</h2>
+
+      <p>The environment variables <code class="constant">LC_ALL</code> and <code class="constant">LC_CTYPE</code> are examined, in that order, for a
+      locale. The first one that is set is used. This can be
+      overridden by the <code class="option">−−locale</code> option. If no locale is
+      set, the PCRE2 library's default (usually the "C" locale) is
+      used.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2grep-1_sect6" name="pcre2grep-1_sect6" shape="rect"> </a>
+
+      <h2>NEWLINES</h2>
+
+      <p>The <code class="option">−N</code> (<code class="option">−−newline</code>) option allows
+      <span class="command"><strong>pcre2grep</strong></span> to
+      scan files with different newline conventions from the
+      default. Any parts of the input files that are written to the
+      standard output are copied identically, with whatever newline
+      sequences they have in the input. However, the setting of
+      this option does not affect the interpretation of files
+      specified by the <code class="option">−f</code>,
+      <code class="option">−−exclude−from</code>,
+      or <code class="option">−−include−from</code> options,
+      which are assumed to use the operating system's standard
+      newline sequence, nor does it affect the way in which
+      <span class="command"><strong>pcre2grep</strong></span>
+      writes informational messages to the standard error and
+      output streams. For these it uses the string "\n" to indicate
+      newlines, relying on the C I/O library to convert this to an
+      appropriate sequence.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2grep-1_sect7" name="pcre2grep-1_sect7" shape="rect"> </a>
+
+      <h2>OPTIONS COMPATIBILITY</h2>
+
+      <p>Many of the short and long forms of <span class="command"><strong>pcre2grep</strong></span>'s options are the
+      same as in the GNU <span class="command"><strong>grep</strong></span> program. Any long
+      option of the form <code class="option">−−xxx−regexp</code> (GNU
+      terminology) is also available as <code class="option">−−xxx−regex</code> (PCRE2
+      terminology). However, the <code class="option">−−file−list</code>, <code class="option">−−file−offsets</code>,
+      <code class="option">−−include−dir</code>,
+      <code class="option">−−line−offsets</code>,
+      <code class="option">−−locale</code>,
+      <code class="option">−−match−limit</code>,
+      <code class="option">−M</code>, <code class="option">−−multiline</code>, <code class="option">−N</code>, <code class="option">−−newline</code>, <code class="option">−−om−separator</code>,
+      <code class="option">−−recursion−limit</code>,
+      <code class="option">−u</code>, and <code class="option">−−utf−8</code> options are
+      specific to <span class="command"><strong>pcre2grep</strong></span>, as is the use of
+      the <code class="option">−−only−matching</code> option with
+      a capturing parentheses number.</p>
+
+      <p>Although most of the common options work the same way, a
+      few are different in <span class="command"><strong>pcre2grep</strong></span>. For example, the
+      <code class="option">−−include</code> option's
+      argument is a glob for GNU <span class="command"><strong>grep</strong></span>, but a regular
+      expression for <span class="command"><strong>pcre2grep</strong></span>. If both the
+      <code class="option">−c</code> and <code class="option">−l</code> options are given, GNU grep lists
+      only file names, without counts, but <span class="command"><strong>pcre2grep</strong></span> gives the counts
+      as well.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2grep-1_sect8" name="pcre2grep-1_sect8" shape="rect"> </a>
+
+      <h2>OPTIONS WITH DATA</h2>
+
+      <p>There are four different ways in which an option with data
+      can be specified. If a short form option is used, the data
+      may follow immediately, or (with one exception) in the next
+      command line item. For example:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ -f/some/file
+ -f /some/file
+</pre>
+      </div>
+
+      <p>The exception is the <code class="option">−o</code>
+      option, which may appear with or without data. Because of
+      this, if data is present, it must follow immediately in the
+      same item, for example -o3.</p>
+
+      <p>If a long form option is used, the data may appear in the
+      same command line item, separated by an equals character, or
+      (with two exceptions) it may appear in the next command line
+      item. For example:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+ --file=/some/file
+ --file /some/file
+</pre>
+      </div>
+
+      <p>Note, however, that if you want to supply a file name
+      beginning with ~ as data in a shell command, and have the
+      shell expand ~ to a home directory, you must separate the
+      file name from the option, because the shell does not treat ~
+      specially unless it is at the start of an item.</p>
+
+      <p>The exceptions to the above are the <code class="option">−−colour</code> (or <code class="option">−−color</code>) and <code class="option">−−only−matching</code> options,
+      for which the data is optional. If one of these options does
+      have data, it must be given in the first form, using an
+      equals character. Otherwise <span class="command"><strong>pcre2grep</strong></span> will assume that
+      it has no data.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2grep-1_sect9" name="pcre2grep-1_sect9" shape="rect"> </a>
+
+      <h2>MATCHING ERRORS</h2>
+
+      <p>It is possible to supply a regular expression that takes a
+      very long time to fail to match certain lines. Such patterns
+      normally involve nested indefinite repeats, for example:
+      (a+)*\d when matched against a line of a's with no final
+      digit. The PCRE2 matching function has a resource limit that
+      causes it to abort in these circumstances. If this happens,
+      <span class="command"><strong>pcre2grep</strong></span>
+      outputs an error message and the line that caused the problem
+      to the standard error stream. If there are more than 20 such
+      errors, <span class="command"><strong>pcre2grep</strong></span> gives up.</p>
+
+      <p>The <code class="option">−−match−limit</code> option of
+      <span class="command"><strong>pcre2grep</strong></span> can
+      be used to set the overall resource limit; there is a second
+      option called <code class="option">−−recursion−limit</code> that sets
+      a limit on the amount of memory (usually stack) that is used
+      (see the discussion of these options above).</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2grep-1_sect10" name="pcre2grep-1_sect10" shape="rect"> </a>
+
+      <h2>DIAGNOSTICS</h2>
+
+      <p>Exit status is 0 if any matches were found, 1 if no
+      matches were found, and 2 for syntax errors, overlong lines,
+      non-existent or inaccessible files (even if matches were
+      found in other files) or too many matching errors. Using the
+      <code class="option">−s</code> option to suppress error
+      messages about inaccessible files does not affect the return
+      code.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2grep-1_sect11" name="pcre2grep-1_sect11" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/pcre2pattern.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2pattern</span>(3)</span></a>, <a class="link" href="../htmlman3/pcre2syntax.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pcre2syntax</span>(3)</span></a>.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2grep-1_sect12" name="pcre2grep-1_sect12" shape="rect"> </a>
+
+      <h2>AUTHOR</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+Philip Hazel
+University Computing Service
+Cambridge, England.
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pcre2grep-1_sect13" name="pcre2grep-1_sect13" shape="rect"> </a>
+
+      <h2>REVISION</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+Last updated: 03 January 2015
+Copyright (c) 1997-2015 University of Cambridge.
+</pre>
+      </div>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <thead>
+            <tr>
+              <th style="" rowspan="1" colspan="1">COPYRIGHT</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <p>This manual page is taken from the <a class="ulink" href="http://www.PCRE.org/" target="_top" shape="rect">PCRE library</a>, which is distributed under
+                the BSD license.</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

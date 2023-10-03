@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>iopl(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="iopl(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="iopl.2" name="iopl.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>iopl — change I/O privilege level</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;sys/io.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>iopl</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">level</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="iopl-2_sect1" name="iopl-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">iopl</code>() changes the I/O
+      privilege level of the calling process, as specified by the
+      two least significant bits in <em class="parameter"><code>level</code></em>.</p>
+
+      <p>This call is necessary to allow 8514-compatible X servers
+      to run under Linux. Since these X servers require access to
+      all 65536 I/O ports, the <a class="link" href="../htmlman2/ioperm.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioperm</span>(2)</span></a> call is not
+      sufficient.</p>
+
+      <p>In addition to granting unrestricted I/O port access,
+      running at a higher I/O privilege level also allows the
+      process to disable interrupts. This will probably crash the
+      system, and is not recommended.</p>
+
+      <p>Permissions are inherited by <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> and <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>.</p>
+
+      <p>The I/O privilege level for a normal process is 0.</p>
+
+      <p>This call is mostly for the i386 architecture. On many
+      other architectures it does not exist or will always return
+      an error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="iopl-2_sect2" name="iopl-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, zero is returned. On error, −1 is
+      returned, and <code class="varname">errno</code> is set
+      appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="iopl-2_sect3" name="iopl-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>level</code></em> is
+            greater than 3.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOSYS</span></span></dt>
+
+          <dd>
+            <p>This call is unimplemented.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The calling process has insufficient privilege to
+            call <code class="function">iopl</code>(); the
+            <code class="constant">CAP_SYS_RAWIO</code> capability
+            is required to raise the I/O privilege level above its
+            current value.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="iopl-2_sect4" name="iopl-2_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p><code class="function">iopl</code>() is Linux-specific and
+      should not be used in programs that are intended to be
+      portable.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="iopl-2_sect5" name="iopl-2_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Libc5 treats it as a system call and has a prototype in
+      <code class="literal">&lt;</code><code class="filename">unistd.h</code><code class="literal">&gt;</code>
+      Glibc1 does not have a prototype. Glibc2 has a prototype both
+      in <code class="literal">&lt;</code><code class="filename">sys/io.h</code><code class="literal">&gt;</code>
+      and in <code class="literal">&lt;</code><code class="filename">sys/perm.h</code><code class="literal">&gt;</code>
+      Avoid the latter, it is available on i386 only.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="iopl-2_sect6" name="iopl-2_sect6" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/ioperm.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioperm</span>(2)</span></a>, <a class="link" href="../htmlman2/outb.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">outb</span>(2)</span></a>, <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="iopl-2_sect7" name="iopl-2_sect7" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright 1993 Rickard E. Faith (faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu)<br />
+
+                  Portions extracted from linux/kernel/ioport.c (no copyright notice).<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Modified Tue Aug  1 16:47    1995 by Jochen Karrer<br />
+
+                                               &lt;cip307<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cip.physik.uni-wuerzburg.de&gt;<br />
+
+                  Modified Tue Oct 22 08:11:14 EDT 1996 by Eric S. Raymond &lt;esr<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>thyrsus.com&gt;<br />
+
+                  Modified Fri Nov 27 14:50:36 CET 1998 by Andries Brouwer &lt;aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl&gt;<br />
+
+                  Modified, 27 May 2004, Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                      Added notes on capability requirements<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

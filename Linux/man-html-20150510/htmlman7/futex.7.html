@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>futex(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="futex(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="futex.7" name="futex.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>futex — fast user-space locking</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;linux/futex.h&gt;
+  
+</pre>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="futex-7_sect1" name="futex-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The Linux kernel provides futexes ("Fast user-space
+      mutexes") as a building block for fast user-space locking and
+      semaphores. Futexes are very basic and lend themselves well
+      for building higher level locking abstractions such as POSIX
+      mutexes.</p>
+
+      <p>This page does not set out to document all design
+      decisions but restricts itself to issues relevant for
+      application and library development. Most programmers will in
+      fact not be using futexes directly but instead rely on system
+      libraries built on them, such as the NPTL pthreads
+      implementation.</p>
+
+      <p>A futex is identified by a piece of memory which can be
+      shared between different processes. In these different
+      processes, it need not have identical addresses. In its bare
+      form, a futex has semaphore semantics; it is a counter that
+      can be incremented and decremented atomically; processes can
+      wait for the value to become positive.</p>
+
+      <p>Futex operation is entirely user space for the
+      noncontended case. The kernel is involved only to arbitrate
+      the contended case. As any sane design will strive for
+      noncontention, futexes are also optimized for this
+      situation.</p>
+
+      <p>In its bare form, a futex is an aligned integer which is
+      touched only by atomic assembler instructions. Processes can
+      share this integer using <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>, via shared memory
+      segments or because they share memory space, in which case
+      the application is commonly called multithreaded.</p>
+
+      <div class="refsect2">
+        <a id="futex-7_sect2" name="futex-7_sect2" shape="rect"> </a>
+
+        <h3>Semantics</h3>
+
+        <p>Any futex operation starts in user space, but it may be
+        necessary to communicate with the kernel using the
+        <a class="link" href="../htmlman2/futex.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">futex</span>(2)</span></a> system call.</p>
+
+        <p>To "up" a futex, execute the proper assembler
+        instructions that will cause the host CPU to atomically
+        increment the integer. Afterward, check if it has in fact
+        changed from 0 to 1, in which case there were no waiters
+        and the operation is done. This is the noncontended case
+        which is fast and should be common.</p>
+
+        <p>In the contended case, the atomic increment changed the
+        counter from −1 (or some other negative number). If
+        this is detected, there are waiters. User space should now
+        set the counter to 1 and instruct the kernel to wake up any
+        waiters using the <code class="constant">FUTEX_WAKE</code>
+        operation.</p>
+
+        <p>Waiting on a futex, to "down" it, is the reverse
+        operation. Atomically decrement the counter and check if it
+        changed to 0, in which case the operation is done and the
+        futex was uncontended. In all other circumstances, the
+        process should set the counter to −1 and request that
+        the kernel wait for another process to up the futex. This
+        is done using the <code class="constant">FUTEX_WAIT</code>
+        operation.</p>
+
+        <p>The <a class="link" href="../htmlman2/futex.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">futex</span>(2)</span></a> system call can
+        optionally be passed a timeout specifying how long the
+        kernel should wait for the futex to be upped. In this case,
+        semantics are more complex and the programmer is referred
+        to <a class="link" href="../htmlman2/futex.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">futex</span>(2)</span></a> for more
+        details. The same holds for asynchronous futex waiting.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="futex-7_sect3" name="futex-7_sect3" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p>Initial futex support was merged in Linux 2.5.7 but with
+      different semantics from those described above. Current
+      semantics are available from Linux 2.5.40 onward.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="futex-7_sect4" name="futex-7_sect4" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>To reiterate, bare futexes are not intended as an easy to
+      use abstraction for end-users. Implementors are expected to
+      be assembly literate and to have read the sources of the
+      futex user-space library referenced below.</p>
+
+      <p>This man page illustrates the most common use of the
+      <a class="link" href="../htmlman2/futex.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">futex</span>(2)</span></a> primitives: it is
+      by no means the only one.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="futex-7_sect5" name="futex-7_sect5" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/futex.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">futex</span>(2)</span></a></p>
+
+      <p><span class="emphasis"><em>Fuss, Futexes and Furwocks:
+      Fast Userlevel Locking in Linux</em></span> (proceedings of
+      the Ottawa Linux Symposium 2002), futex example library,
+      futex-*.tar.bz2 <a class="literalurl" href="ftp://ftp.kernel.org/pub/linux/kernel/people/rusty/" target="_top" shape="rect">ftp://ftp.kernel.org/pub/linux/kernel/people/rusty/</a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="futex-7_sect6" name="futex-7_sect6" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    This manpage has been automatically generated by docbook2man<br />
+
+                  from a DocBook document.  This tool can be found at:<br />
+
+                  &lt;<a class="literalurl" href="http://shell.ipoline.com/~elmert/comp/docbook2X/" target="_top" shape="rect">http://shell.ipoline.com/~elmert/comp/docbook2X/</a>&gt;<br />
+
+                  Please send any bug reports, improvements, comments, patches,<br />
+
+                  etc. to Steve Cheng &lt;steve<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>ggi-project.org&gt;.<br />
+
+                  <br />
+                  %%%LICENSE_START(MIT)<br />
+                  This page is made available under the MIT license.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

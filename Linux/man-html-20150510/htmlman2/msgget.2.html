@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>msgget(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="msgget(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="msgget.2" name="msgget.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>msgget — get a System V message queue identifier</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;sys/types.h&gt;
+#include &lt;sys/ipc.h&gt;
+#include &lt;sys/msg.h&gt;
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>msgget</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">key_t <var class="pdparam">key</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">msgflg</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="msgget-2_sect1" name="msgget-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">msgget</code>() system call
+      returns the System V message queue identifier associated with
+      the value of the <em class="parameter"><code>key</code></em>
+      argument. A new message queue is created if <em class="parameter"><code>key</code></em> has the value <code class="constant">IPC_PRIVATE</code> or <em class="parameter"><code>key</code></em> isn't <code class="constant">IPC_PRIVATE</code>, no message queue with the
+      given key <em class="parameter"><code>key</code></em> exists,
+      and <code class="constant">IPC_CREAT</code> is specified in
+      <em class="parameter"><code>msgflg</code></em>.</p>
+
+      <p>If <em class="parameter"><code>msgflg</code></em>
+      specifies both <code class="constant">IPC_CREAT</code> and
+      <code class="constant">IPC_EXCL</code> and a message queue
+      already exists for <em class="parameter"><code>key</code></em>, then <code class="function">msgget</code>() fails with <code class="varname">errno</code> set to <span class="errorname">EEXIST</span>. (This is analogous to the effect
+      of the combination <span class="emphasis"><em>O_CREAT |
+      O_EXCL</em></span> for <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>.)</p>
+
+      <p>Upon creation, the least significant bits of the argument
+      <em class="parameter"><code>msgflg</code></em> define the
+      permissions of the message queue. These permission bits have
+      the same format and semantics as the permissions specified
+      for the <em class="replaceable"><code>mode</code></em>
+      argument of <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>. (The execute
+      permissions are not used.)</p>
+
+      <p>If a new message queue is created, then its associated
+      data structure <em class="replaceable"><code>msqid_ds</code></em> (see <a class="link" href="../htmlman2/msgctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">msgctl</span>(2)</span></a>) is initialized
+      as follows:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p><em class="replaceable"><code>msg_perm.cuid</code></em> and
+            <em class="replaceable"><code>msg_perm.uid</code></em>
+            are set to the effective user ID of the calling
+            process.</p>
+          </li>
+
+          <li class="listitem">
+            <p><em class="replaceable"><code>msg_perm.cgid</code></em> and
+            <em class="replaceable"><code>msg_perm.gid</code></em>
+            are set to the effective group ID of the calling
+            process.</p>
+          </li>
+
+          <li class="listitem">
+            <p>The least significant 9 bits of <em class="replaceable"><code>msg_perm.mode</code></em> are set
+            to the least significant 9 bits of <em class="parameter"><code>msgflg</code></em>.</p>
+          </li>
+
+          <li class="listitem">
+            <p><em class="replaceable"><code>msg_qnum</code></em>,
+            <em class="replaceable"><code>msg_lspid</code></em>,
+            <em class="replaceable"><code>msg_lrpid</code></em>,
+            <em class="replaceable"><code>msg_stime</code></em>,
+            and <em class="replaceable"><code>msg_rtime</code></em>
+            are set to 0.</p>
+          </li>
+
+          <li class="listitem">
+            <p><em class="replaceable"><code>msg_ctime</code></em>
+            is set to the current time.</p>
+          </li>
+
+          <li class="listitem">
+            <p><em class="replaceable"><code>msg_qbytes</code></em>
+            is set to the system limit <code class="constant">MSGMNB</code>.</p>
+          </li>
+        </ul>
+      </div>
+
+      <p>If the message queue already exists the permissions are
+      verified, and a check is made to see if it is marked for
+      destruction.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="msgget-2_sect2" name="msgget-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>If successful, the return value will be the message queue
+      identifier (a nonnegative integer), otherwise −1 with
+      <code class="varname">errno</code> indicating the error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="msgget-2_sect3" name="msgget-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <p>On failure, <code class="varname">errno</code> is set to
+      one of the following values:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EACCES</span></span></dt>
+
+          <dd>
+            <p>A message queue exists for <em class="parameter"><code>key</code></em>, but the calling
+            process does not have permission to access the queue,
+            and does not have the <code class="constant">CAP_IPC_OWNER</code> capability.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EEXIST</span></span></dt>
+
+          <dd>
+            <p><code class="constant">IPC_CREAT</code> and
+            <code class="constant">IPC_EXCL</code> were specified
+            in <em class="parameter"><code>msgflg</code></em>, but
+            a message queue already exists for <em class="parameter"><code>key</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOENT</span></span></dt>
+
+          <dd>
+            <p>No message queue exists for <em class="parameter"><code>key</code></em> and <em class="parameter"><code>msgflg</code></em> did not specify
+            <code class="constant">IPC_CREAT</code>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>A message queue has to be created but the system
+            does not have enough memory for the new data
+            structure.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOSPC</span></span></dt>
+
+          <dd>
+            <p>A message queue has to be created but the system
+            limit for the maximum number of message queues
+            (<code class="constant">MSGMNI</code>) would be
+            exceeded.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="msgget-2_sect4" name="msgget-2_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>SVr4, POSIX.1-2001.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="msgget-2_sect5" name="msgget-2_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>The inclusion of <code class="literal">&lt;</code><code class="filename">sys/types.h</code><code class="literal">&gt;</code> and <code class="literal">&lt;</code><code class="filename">sys/ipc.h</code><code class="literal">&gt;</code>
+      isn't required on Linux or by any version of POSIX. However,
+      some old implementations required the inclusion of these
+      header files, and the SVID also documented their inclusion.
+      Applications intended to be portable to such old systems may
+      need to include these header files.</p>
+
+      <p><code class="constant">IPC_PRIVATE</code> isn't a flag
+      field but a <span class="type">key_t</span> type. If this
+      special value is used for <em class="parameter"><code>key</code></em>, the system call ignores
+      everything but the least significant 9 bits of <em class="parameter"><code>msgflg</code></em> and creates a new
+      message queue (on success).</p>
+
+      <p>The following is a system limit on message queue resources
+      affecting a <code class="function">msgget</code>() call:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">MSGMNI</code></span></dt>
+
+          <dd>
+            <p>System-wide limit on the number of message queues.
+            Before Linux 3.19, the default value for this limit was
+            calculated using a formula based on available system
+            memory. Since Linux 3.19, the default value is 32,000.
+            On Linux, this limit can be read and modified via
+            <code class="filename">/proc/sys/kernel/msgmni</code>.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <div class="refsect2">
+        <a id="msgget-2_sect6" name="msgget-2_sect6" shape="rect"> </a>
+
+        <h3>Linux notes</h3>
+
+        <p>Until version 2.3.20, Linux would return <span class="errorname">EIDRM</span> for a <code class="function">msgget</code>() on a message queue scheduled for
+        deletion.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="msgget-2_sect7" name="msgget-2_sect7" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>The name choice <code class="constant">IPC_PRIVATE</code>
+      was perhaps unfortunate, <code class="constant">IPC_NEW</code> would more clearly show its
+      function.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="msgget-2_sect8" name="msgget-2_sect8" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/msgctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">msgctl</span>(2)</span></a>, <a class="link" href="../htmlman2/msgop.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">msgrcv</span>(2)</span></a>, <a class="link" href="../htmlman2/msgop.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">msgsnd</span>(2)</span></a>, <a class="link" href="../htmlman3/ftok.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ftok</span>(3)</span></a>, <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>, <a class="link" href="../htmlman7/mq_overview.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mq_overview</span>(7)</span></a>, <a class="link" href="../htmlman7/svipc.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">svipc</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="msgget-2_sect9" name="msgget-2_sect9" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright 1993 Giorgio Ciucci &lt;giorgio<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>crcc.it&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Added correction due to Nick Duffek &lt;nsd<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>bbc.com&gt;, aeb, 960426<br />
+
+                  Modified Wed Nov  6 04:00:31 1996 by Eric S. Raymond &lt;esr<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>thyrsus.com&gt;<br />
+
+                  Modified, 8 Jan 2003, Michael Kerrisk, &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  Removed EIDRM from errors - that can't happen...<br />
+
+                  Modified, 27 May 2004, Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                      Added notes on capability requirements<br />
+
+                  Modified, 11 Nov 2004, Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  Language and formatting clean-ups<br />
+
+                  Added notes on /proc files<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

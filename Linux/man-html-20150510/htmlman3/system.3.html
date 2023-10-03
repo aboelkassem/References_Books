@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>system(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="system(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="system.3" name="system.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>system — execute a shell command</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;stdlib.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>system</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">command</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="system-3_sect1" name="system-3_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">system</code>() library
+      function uses <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> to create a child
+      process that executes the shell command specified in
+      <em class="parameter"><code>command</code></em> using
+      <a class="link" href="../htmlman3/exec.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execl</span>(3)</span></a> as follows:</p>
+
+      <p>execl("/bin/sh", "sh", "-c", command, (char *) 0);</p>
+
+      <p><code class="function">system</code>() returns after the
+      command has been completed.</p>
+
+      <p>During execution of the command, <code class="constant">SIGCHLD</code> will be blocked, and <code class="constant">SIGINT</code> and <code class="constant">SIGQUIT</code> will be ignored, in the process
+      that calls <code class="function">system</code>() (these
+      signals will be handled according to their defaults inside
+      the child process that executes <em class="parameter"><code>command</code></em>).</p>
+
+      <p>If <em class="parameter"><code>command</code></em> is
+      NULL, then <code class="function">system</code>() returns a
+      status indicating whether a shell is available on the
+      system</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="system-3_sect2" name="system-3_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>The return value of <code class="function">system</code>()
+      is one of the following:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p>If <em class="parameter"><code>command</code></em>
+            is NULL, then a nonzero value if a shell is available,
+            or 0 if no shell is available.</p>
+          </li>
+
+          <li class="listitem">
+            <p>If a child process could not be created, or its
+            status could not be retrieved, the return value is
+            −1.</p>
+          </li>
+
+          <li class="listitem">
+            <p>If a shell could not be executed in the child
+            process, then the return value is as though the child
+            shell terminated by calling <a class="link" href="../htmlman2/_exit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">_exit</span>(2)</span></a> with the
+            status 127.</p>
+          </li>
+
+          <li class="listitem">
+            <p>If all system calls succeed, then the return value
+            is the termination status of the child shell used to
+            execute <em class="parameter"><code>command</code></em>. (The termination
+            status of a shell is the termination status of the last
+            command it executes.)</p>
+          </li>
+        </ul>
+      </div>
+
+      <p>In the last two cases, the return value is a "wait status"
+      that can be examined using the macros described in <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a>. (i.e.,
+      <code class="function">WIFEXITED</code>() <code class="function">WEXITSTATUS</code>() and so on).</p>
+
+      <p><code class="function">system</code>() does not affect the
+      wait status of any other children.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="system-3_sect3" name="system-3_sect3" shape="rect"> </a>
+
+      <h2>ATTRIBUTES</h2>
+
+      <p>For an explanation of the terms used in this section, see
+      <a class="link" href="../htmlman7/attributes.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">attributes</span>(7)</span></a>.</p>
+
+      <div class="informaltable">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col class="c0" span="1" />
+            <col class="c1" span="1" />
+            <col class="c2" span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1">Interface</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Attribute</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Value</td>
+            </tr>
+
+            <tr>
+              <td style="" align="left" rowspan="1" colspan="1"><code class="literal">system</code>()</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">Thread safety</td>
+
+              <td style="" align="left" rowspan="1" colspan="1">MT-Safe</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="system-3_sect4" name="system-3_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>C89, C99, POSIX.1-2001.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="system-3_sect5" name="system-3_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p><code class="function">system</code>() provides simplicity
+      and convenience: it handles all of the details of calling
+      <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a>, <a class="link" href="../htmlman3/exec.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execl</span>(3)</span></a>, and <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a>, as well as the
+      necessary manipulations of signals; in addition, the shell
+      performs the usual substitutions and I/O redirections for
+      <em class="parameter"><code>command</code></em>. The main
+      cost of <code class="function">system</code>() is
+      inefficiency: additional system calls are required to create
+      the process that runs the shell and to execute the shell.</p>
+
+      <p>If the <code class="constant">_XOPEN_SOURCE</code> feature
+      test macro is defined (before including <code class="function">any</code> header files), then the macros
+      described in <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">waitpid</span>(2)</span></a> (<code class="constant">WEXITSTATUS</code>(), etc.) are made available
+      when including <code class="literal">&lt;</code><code class="filename">stdlib.h</code><code class="literal">&gt;</code></p>
+
+      <p>As mentioned, <code class="function">system</code>()
+      ignores <code class="constant">SIGINT</code> and <code class="constant">SIGQUIT</code>. This may make programs that call
+      it from a loop uninterruptible, unless they take care
+      themselves to check the exit status of the child. For
+      example:</p>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+    while (something) {
+        int ret = system("foo");
+
+        if (WIFSIGNALED(ret) &amp;&amp;
+            (WTERMSIG(ret) == SIGINT || WTERMSIG(ret) == SIGQUIT))
+                break;
+    }
+</pre>
+      </div>
+
+      <p>Do not use <code class="function">system</code>() from a
+      program with set-user-ID or set-group-ID privileges, because
+      strange values for some environment variables might be used
+      to subvert system integrity. Use the <a class="link" href="../htmlman3/exec.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">exec</span>(3)</span></a> family of functions
+      instead, but not <a class="link" href="../htmlman3/exec.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execlp</span>(3)</span></a> or <a class="link" href="../htmlman3/exec.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execvp</span>(3)</span></a>. <code class="function">system</code>() will not, in fact, work properly
+      from programs with set-user-ID or set-group-ID privileges on
+      systems on which <code class="filename">/bin/sh</code> is
+      bash version 2, since bash 2 drops privileges on startup.
+      (Debian uses a modified bash which does not do this when
+      invoked as <span class="command"><strong>sh</strong></span>.)</p>
+
+      <p>In versions of glibc before 2.1.3, the check for the
+      availability of <code class="filename">/bin/sh</code> was not
+      actually performed if <em class="parameter"><code>command</code></em> was NULL; instead it
+      was always assumed to be available, and <code class="function">system</code>() always returned 1 in this case.
+      Since glibc 2.1.3, this check is performed because, even
+      though POSIX.1-2001 requires a conforming implementation to
+      provide a shell, that shell may not be available or
+      executable if the calling program has previously called
+      <a class="link" href="../htmlman2/chroot.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chroot</span>(2)</span></a> (which is not
+      specified by POSIX.1-2001).</p>
+
+      <p>It is possible for the shell command to terminate with a
+      status of 127, which yields a <code class="function">system</code>() return value that is
+      indistinguishable from the case where a shell could not be
+      executed in the child process.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="system-3_sect6" name="system-3_sect6" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><span class="citerefentry"><span class="refentrytitle">sh</span>(1)</span>, <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a>, <a class="link" href="../htmlman2/sigprocmask.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigprocmask</span>(2)</span></a>, <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a>, <a class="link" href="../htmlman2/wait.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">wait</span>(2)</span></a>, <a class="link" href="../htmlman3/exec.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">exec</span>(3)</span></a>, <a class="link" href="../htmlman7/signal.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="system-3_sect7" name="system-3_sect7" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 1993 by Thomas Koenig (ig25<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>rz.uni-karlsruhe.de)<br />
+
+                  and Copyright (c) 2014 by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Modified Sat Jul 24 17:51:15 1993 by Rik Faith (faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu)<br />
+
+                  Modified 11 May 1998 by Joseph S. Myers (jsm28<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cam.ac.uk)<br />
+
+                  Modified 14 May 2001, 23 Sep 2001 by aeb<br />
+
+                  2004-12-20, mtk<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

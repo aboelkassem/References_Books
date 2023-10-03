@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>signal(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="signal(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="signal.2" name="signal.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>signal — ANSI C signal handling</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="informalexample">
+        <pre class="programlisting" xml:space="preserve">
+#include &lt;signal.h&gt;
+
+typedef void (*sighandler_t)(int);
+</pre>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">sighandler_t
+            <strong>signal</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">signum</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">sighandler_t <var class="pdparam">handler</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="signal-2_sect1" name="signal-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The behavior of <code class="function">signal</code>()
+      varies across UNIX versions, and has also varied historically
+      across different versions of Linux. <span class="emphasis"><em>Avoid its use</em></span>: use <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a> instead. See
+      <em class="replaceable"><code>Portability</code></em>
+      below.</p>
+
+      <p><code class="function">signal</code>() sets the
+      disposition of the signal <em class="parameter"><code>signum</code></em> to <em class="parameter"><code>handler</code></em>, which is either
+      <code class="constant">SIG_IGN</code>, <code class="constant">SIG_DFL</code>, or the address of a
+      programmer-defined function (a "signal handler").</p>
+
+      <p>If the signal <em class="parameter"><code>signum</code></em> is delivered to the
+      process, then one of the following happens:</p>
+
+      <div class="itemizedlist">
+        <ul class="itemizedlist" style="list-style-type: disc;">
+          <li class="listitem">
+            <p>If the disposition is set to <code class="constant">SIG_IGN</code>, then the signal is
+            ignored.</p>
+          </li>
+
+          <li class="listitem">
+            <p>If the disposition is set to <code class="constant">SIG_DFL</code>, then the default action
+            associated with the signal (see <a class="link" href="../htmlman7/signal.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(7)</span></a>)
+            occurs.</p>
+          </li>
+
+          <li class="listitem">
+            <p>If the disposition is set to a function, then first
+            either the disposition is reset to <code class="constant">SIG_DFL</code>, or the signal is blocked
+            (see <em class="replaceable"><code>Portability</code></em> below), and
+            then <em class="parameter"><code>handler</code></em> is
+            called with argument <em class="parameter"><code>signum</code></em>. If invocation of
+            the handler caused the signal to be blocked, then the
+            signal is unblocked upon return from the handler.</p>
+          </li>
+        </ul>
+      </div>
+
+      <p>The signals <code class="constant">SIGKILL</code> and
+      <code class="constant">SIGSTOP</code> cannot be caught or
+      ignored.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="signal-2_sect2" name="signal-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p><code class="function">signal</code>() returns the
+      previous value of the signal handler, or <code class="constant">SIG_ERR</code> on error. In the event of an error,
+      <code class="varname">errno</code> is set to indicate the
+      cause.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="signal-2_sect3" name="signal-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p><em class="parameter"><code>signum</code></em> is
+            invalid.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="signal-2_sect4" name="signal-2_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>C89, C99, POSIX.1-2001.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="signal-2_sect5" name="signal-2_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>The effects of <code class="function">signal</code>() in a
+      multithreaded process are unspecified.</p>
+
+      <p>According to POSIX, the behavior of a process is undefined
+      after it ignores a <code class="constant">SIGFPE</code>,
+      <code class="constant">SIGILL</code>, or <code class="constant">SIGSEGV</code> signal that was not generated by
+      <a class="link" href="../htmlman2/kill.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">kill</span>(2)</span></a> or <a class="link" href="../htmlman3/raise.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">raise</span>(3)</span></a>. Integer division
+      by zero has undefined result. On some architectures it will
+      generate a <code class="constant">SIGFPE</code> signal. (Also
+      dividing the most negative integer by −1 may generate
+      <code class="constant">SIGFPE</code>.) Ignoring this signal
+      might lead to an endless loop.</p>
+
+      <p>See <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a> for details on
+      what happens when <code class="constant">SIGCHLD</code> is
+      set to <code class="constant">SIG_IGN</code>.</p>
+
+      <p>See <a class="link" href="../htmlman7/signal.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(7)</span></a> for a list of the
+      async-signal-safe functions that can be safely called from
+      inside a signal handler.</p>
+
+      <p>The use of <span class="type">sighandler_t</span> is a GNU
+      extension, exposed if <code class="constant">_GNU_SOURCE</code> is defined; glibc also defines
+      (the BSD-derived) <span class="type">sig_t</span> if
+      <code class="constant">_BSD_SOURCE</code> is defined. Without
+      use of such a type, the declaration of <code class="function">signal</code>() is the somewhat harder to
+      read:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+  <code class="function">void</code>(<em class="parameter"><code> *signal(int signum</code></em>, <em class="parameter"><code>void (*handler)(int)) ) (int</code></em>);
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <div class="refsect2">
+        <a id="signal-2_sect6" name="signal-2_sect6" shape="rect"> </a>
+
+        <h3>Portability</h3>
+
+        <p>The only portable use of <code class="function">signal</code>() is to set a signal's disposition
+        to <code class="constant">SIG_DFL</code> or <code class="constant">SIG_IGN</code>. The semantics when using
+        <code class="function">signal</code>() to establish a
+        signal handler vary across systems (and POSIX.1 explicitly
+        permits this variation); <span class="emphasis"><em>do not
+        use it for this purpose.</em></span></p>
+
+        <p>POSIX.1 solved the portability mess by specifying
+        <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a>, which
+        provides explicit control of the semantics when a signal
+        handler is invoked; use that interface instead of
+        <code class="function">signal</code>().</p>
+
+        <p>In the original UNIX systems, when a handler that was
+        established using <code class="function">signal</code>()
+        was invoked by the delivery of a signal, the disposition of
+        the signal would be reset to <code class="constant">SIG_DFL</code>, and the system did not block
+        delivery of further instances of the signal. This is
+        equivalent to calling <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a> with the
+        following flags:</p>
+
+        <p>sa.sa_flags = SA_RESETHAND | SA_NODEFER;</p>
+
+        <p>System V also provides these semantics for <code class="function">signal</code>(). This was bad because the signal
+        might be delivered again before the handler had a chance to
+        reestablish itself. Furthermore, rapid deliveries of the
+        same signal could result in recursive invocations of the
+        handler.</p>
+
+        <p>BSD improved on this situation, but unfortunately also
+        changed the semantics of the existing <code class="function">signal</code>() interface while doing so. On
+        BSD, when a signal handler is invoked, the signal
+        disposition is not reset, and further instances of the
+        signal are blocked from being delivered while the handler
+        is executing. Furthermore, certain blocking system calls
+        are automatically restarted if interrupted by a signal
+        handler (see <a class="link" href="../htmlman7/signal.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(7)</span></a>). The BSD
+        semantics are equivalent to calling <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a> with the
+        following flags:</p>
+
+        <p>sa.sa_flags = SA_RESTART;</p>
+
+        <p>The situation on Linux is as follows:</p>
+
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>The kernel's <code class="function">signal</code>() system call provides
+              System V semantics.</p>
+            </li>
+
+            <li class="listitem">
+              <p>By default, in glibc 2 and later, the <code class="function">signal</code>() wrapper function does not
+              invoke the kernel system call. Instead, it calls
+              <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a> using
+              flags that supply BSD semantics. This default
+              behavior is provided as long as the <code class="constant">_BSD_SOURCE</code> feature test macro is
+              defined. By default, <code class="constant">_BSD_SOURCE</code> is defined; it is also
+              implicitly defined if one defines <code class="constant">_GNU_SOURCE</code>, and can of course be
+              explicitly defined.</p>
+            </li>
+
+            <li class="listitem">
+              <p>On glibc 2 and later, if the <code class="constant">_BSD_SOURCE</code> feature test macro is
+              not defined, then <code class="function">signal</code>() provides System V
+              semantics. (The default implicit definition of
+              <code class="constant">_BSD_SOURCE</code> is not
+              provided if one invokes <span class="citerefentry"><span class="refentrytitle">gcc</span>(1)</span> in one of its
+              standard modes (<code class="option">−std=xxx</code> or <code class="option">−ansi</code>) or defines various other
+              feature test macros such as <code class="constant">_POSIX_SOURCE</code>, <code class="constant">_XOPEN_SOURCE</code>, or <code class="constant">_SVID_SOURCE</code>; see <a class="link" href="../htmlman7/feature_test_macros.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">feature_test_macros</span>(7)</span></a>.)</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="signal-2_sect7" name="signal-2_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman1/kill.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">kill</span>(1)</span></a>, <a class="link" href="../htmlman2/alarm.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">alarm</span>(2)</span></a>, <a class="link" href="../htmlman2/kill.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">kill</span>(2)</span></a>, <a class="link" href="../htmlman2/killpg.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">killpg</span>(2)</span></a>, <a class="link" href="../htmlman2/pause.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pause</span>(2)</span></a>, <a class="link" href="../htmlman2/sigaction.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigaction</span>(2)</span></a>, <a class="link" href="../htmlman2/signalfd.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signalfd</span>(2)</span></a>, <a class="link" href="../htmlman2/sigpending.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigpending</span>(2)</span></a>, <a class="link" href="../htmlman2/sigprocmask.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigprocmask</span>(2)</span></a>, <a class="link" href="../htmlman2/sigsuspend.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigsuspend</span>(2)</span></a>, <a class="link" href="../htmlman3/bsd_signal.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">bsd_signal</span>(3)</span></a>, <a class="link" href="../htmlman3/raise.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">raise</span>(3)</span></a>, <a class="link" href="../htmlman3/siginterrupt.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">siginterrupt</span>(3)</span></a>, <a class="link" href="../htmlman3/sigqueue.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigqueue</span>(3)</span></a>, <a class="link" href="../htmlman3/sigsetops.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigsetops</span>(3)</span></a>, <a class="link" href="../htmlman3/sigvec.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigvec</span>(3)</span></a>, <a class="link" href="../htmlman3/sysv_signal.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sysv_signal</span>(3)</span></a>, <a class="link" href="../htmlman7/signal.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">signal</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="signal-2_sect8" name="signal-2_sect8" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 2000 Andries Brouwer &lt;aeb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cwi.nl&gt;<br />
+
+                  and Copyright (c) 2007 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  and Copyright (c) 2008, Linux Foundation, written by Michael Kerrisk<br />
+
+                       &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  based on work by Rik Faith &lt;faith<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>cs.unc.edu&gt;<br />
+
+                  and Mike Battersby &lt;mike<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>starbug.apana.org.au&gt;.<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  Modified 2004-11-19, mtk:<br />
+                  added pointer to sigaction.2 for details of ignoring SIGCHLD<br />
+
+                  2007-06-03, mtk: strengthened portability warning, and rewrote<br />
+
+                      various sections.<br />
+
+                  2008-07-11, mtk: rewrote and expanded portability discussion.<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

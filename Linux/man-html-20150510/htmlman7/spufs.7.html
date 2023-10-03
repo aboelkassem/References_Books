@@ -1,0 +1,1416 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>spufs(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="spufs(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="spufs.7" name="spufs.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>spufs — SPU filesystem</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="spufs-7_sect1" name="spufs-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The SPU filesystem is used on PowerPC machines that
+      implement the Cell Broadband Engine Architecture in order to
+      access Synergistic Processor Units (SPUs).</p>
+
+      <p>The filesystem provides a name space similar to POSIX
+      shared memory or message queues. Users that have write
+      permissions on the filesystem can use <a class="link" href="../htmlman2/spu_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">spu_create</span>(2)</span></a> to establish
+      SPU contexts under the <em class="replaceable"><code>spufs</code></em> root directory.</p>
+
+      <p>Every SPU context is represented by a directory containing
+      a predefined set of files. These files can be used for
+      manipulating the state of the logical SPU. Users can change
+      permissions on the files, but can't add or remove files.</p>
+
+      <div class="refsect2">
+        <a id="spufs-7_sect2" name="spufs-7_sect2" shape="rect"> </a>
+
+        <h3>Mount options</h3>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term">uid=&lt;uid&gt;</span></dt>
+
+            <dd>
+              <p>Set the user owning the mount point; the default
+              is 0 (root).</p>
+            </dd>
+
+            <dt><span class="term">gid=&lt;gid&gt;</span></dt>
+
+            <dd>
+              <p>Set the group owning the mount point; the default
+              is 0 (root).</p>
+            </dd>
+
+            <dt><span class="term">mode=&lt;mode&gt;</span></dt>
+
+            <dd>
+              <p>Set the mode of the top-level directory in
+              <em class="replaceable"><code>spufs</code></em>, as
+              an octal mode string. The default is 0775.</p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="refsect2">
+        <a id="spufs-7_sect3" name="spufs-7_sect3" shape="rect"> </a>
+
+        <h3>Files</h3>
+
+        <p>The files in <em class="replaceable"><code>spufs</code></em> mostly follow the
+        standard behavior for regular system calls like <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> or <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a>, but often
+        support only a subset of the operations supported on
+        regular filesystems. This list details the supported
+        operations and the deviations from the standard behavior
+        described in the respective man pages.</p>
+
+        <p>All files that support the <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> operation also
+        support <a class="link" href="../htmlman2/readv.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">readv</span>(2)</span></a> and all files
+        that support the <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a> operation also
+        support <a class="link" href="../htmlman2/readv.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">writev</span>(2)</span></a>. All files
+        support the <a class="link" href="../htmlman2/access.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">access</span>(2)</span></a> and <a class="link" href="../htmlman2/stat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">stat</span>(2)</span></a> family of
+        operations, but for the latter call, the only fields of the
+        returned <span class="structname">stat</span> structure
+        that contain reliable information are <em class="replaceable"><code>st_mode</code></em>, <em class="replaceable"><code>st_nlink</code></em>, <em class="replaceable"><code>st_uid</code></em>, and <em class="replaceable"><code>st_gid</code></em>.</p>
+
+        <p>All files support the <a class="link" href="../htmlman2/chmod.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chmod</span>(2)</span></a>/<a class="link" href="../htmlman2/chmod.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fchmod</span>(2)</span></a> and <a class="link" href="../htmlman2/chown.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chown</span>(2)</span></a>/<a class="link" href="../htmlman2/chown.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fchown</span>(2)</span></a> operations, but
+        will not be able to grant permissions that contradict the
+        possible operations (e.g., read access on the <em class="replaceable"><code>wbox</code></em> file).</p>
+
+        <p>The current set of files is:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="filename">/capabilities</code></span></dt>
+
+            <dd>
+              <p>Contains a comma-delimited string representing the
+              capabilities of this SPU context. Possible
+              capabilities are:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="variablelist">
+                    <dl class="variablelist">
+                      <dt><span class="term">sched</span></dt>
+
+                      <dd>
+                        <p>This context may be scheduled.</p>
+                      </dd>
+
+                      <dt><span class="term">step</span></dt>
+
+                      <dd>
+                        <p>This context can be run in single-step
+                        mode, for debugging.</p>
+                      </dd>
+                    </dl>
+                  </div>
+
+                  <p>New capabilities flags may be added in the
+                  future.</p>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="filename">/mem</code></span></dt>
+
+            <dd>
+              <p>the contents of the local storage memory of the
+              SPU. This can be accessed like a regular shared
+              memory file and contains both code and data in the
+              address space of the SPU. The possible operations on
+              an open <em class="replaceable"><code>mem</code></em>
+              file are:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="variablelist">
+                    <dl class="variablelist">
+                      <dt><span class="term"><a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>,
+                      <a class="link" href="../htmlman2/pread.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pread</span>(2)</span></a>,
+                      <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a>,
+                      <a class="link" href="../htmlman2/pread.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pwrite</span>(2)</span></a>,
+                      <a class="link" href="../htmlman2/lseek.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">lseek</span>(2)</span></a></span></dt>
+
+                      <dd>
+                        <p>These operate as usual, with the
+                        exception that <a class="link" href="../htmlman2/lseek.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">lseek</span>(2)</span></a>,
+                        <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a>,
+                        and <a class="link" href="../htmlman2/pread.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pwrite</span>(2)</span></a>
+                        are not supported beyond the end of the
+                        file. The file size is the size of the
+                        local storage of the SPU, which is normally
+                        256 kilobytes.</p>
+                      </dd>
+
+                      <dt><span class="term"><a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a></span></dt>
+
+                      <dd>
+                        <p>Mapping <em class="replaceable"><code>mem</code></em> into
+                        the process address space provides access
+                        to the SPU local storage within the process
+                        address space. Only <code class="constant">MAP_SHARED</code> mappings are
+                        allowed.</p>
+                      </dd>
+                    </dl>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="filename">/regs</code></span></dt>
+
+            <dd>
+              <p>Contains the saved general-purpose registers of
+              the SPU context. This file contains the 128-bit
+              values of each register, from register 0 to register
+              127, in order. This allows the general-purpose
+              registers to be inspected for debugging.</p>
+
+              <p>Reading to or writing from this file requires that
+              the context is scheduled out, so use of this file is
+              not recommended in normal program operation.</p>
+
+              <p>The <code class="filename">regs</code> file is not
+              present on contexts that have been created with the
+              <code class="constant">SPU_CREATE_NOSCHED</code>
+              flag.</p>
+            </dd>
+
+            <dt><span class="term"><code class="filename">/mbox</code></span></dt>
+
+            <dd>
+              <p>The first SPU-to-CPU communication mailbox. This
+              file is read-only and can be read in units of 4
+              bytes. The file can be used only in nonblocking mode
+              − even <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a> cannot be
+              used to block on this file. The only possible
+              operation on an open <em class="replaceable"><code>mbox</code></em> file is:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="variablelist">
+                    <dl class="variablelist">
+                      <dt><span class="term"><a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a></span></dt>
+
+                      <dd>
+                        <p>If <em class="replaceable"><code>count</code></em> is
+                        smaller than four, <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>
+                        returns −1 and sets <code class="varname">errno</code> to <span class="errorname">EINVAL</span>. If there is no
+                        data available in the mailbox (i.e., the
+                        SPU has not sent a mailbox message), the
+                        return value is set to −1 and
+                        <code class="varname">errno</code> is set
+                        to <span class="errorname">EAGAIN</span>.
+                        When data has been read successfully, four
+                        bytes are placed in the data buffer and the
+                        value four is returned.</p>
+                      </dd>
+                    </dl>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="filename">/ibox</code></span></dt>
+
+            <dd>
+              <p>The second SPU-to-CPU communication mailbox. This
+              file is similar to the first mailbox file, but can be
+              read in blocking I/O mode, thus calling <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a> on an open
+              <em class="replaceable"><code>ibox</code></em> file
+              will block until the SPU has written data to its
+              interrupt mailbox channel (unless the file has been
+              opened with <code class="constant">O_NONBLOCK</code>,
+              see below). Also, <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a> and similar
+              system calls can be used to monitor for the presence
+              of mailbox data.</p>
+
+              <p>The possible operations on an open <em class="replaceable"><code>ibox</code></em> file are:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="variablelist">
+                    <dl class="variablelist">
+                      <dt><span class="term"><a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a></span></dt>
+
+                      <dd>
+                        <p>If <em class="replaceable"><code>count</code></em> is
+                        smaller than four, <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>
+                        returns −1 and sets <code class="varname">errno</code> to <span class="errorname">EINVAL</span>. If there is no
+                        data available in the mailbox and the file
+                        descriptor has been opened with
+                        <code class="constant">O_NONBLOCK</code>,
+                        the return value is set to −1 and
+                        <code class="varname">errno</code> is set
+                        to <span class="errorname">EAGAIN</span>.</p>
+
+                        <p>If there is no data available in the
+                        mailbox and the file descriptor has been
+                        opened without <code class="constant">O_NONBLOCK</code>, the call will
+                        block until the SPU writes to its interrupt
+                        mailbox channel. When data has been read
+                        successfully, four bytes are placed in the
+                        data buffer and the value four is
+                        returned.</p>
+                      </dd>
+
+                      <dt><span class="term"><a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a></span></dt>
+
+                      <dd>
+                        <p>Poll on the <em class="replaceable"><code>ibox</code></em> file
+                        returns <span class="emphasis"><em>(POLLIN
+                        | POLLRDNORM)</em></span> whenever data is
+                        available for reading.</p>
+                      </dd>
+                    </dl>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="filename">/wbox</code></span></dt>
+
+            <dd>
+              <p>The CPU-to-SPU communication mailbox. It is
+              write-only and can be written in units of four bytes.
+              If the mailbox is full, <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a> will
+              block, and <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a> can be used
+              to block until the mailbox is available for writing
+              again. The possible operations on an open <em class="replaceable"><code>wbox</code></em> file are:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="variablelist">
+                    <dl class="variablelist">
+                      <dt><span class="term"><a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a></span></dt>
+
+                      <dd>
+                        <p>If <em class="replaceable"><code>count</code></em> is
+                        smaller than four, <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a>
+                        returns −1 and sets <code class="varname">errno</code> to <span class="errorname">EINVAL</span>. If there is no
+                        space available in the mailbox and the file
+                        descriptor has been opened with
+                        <code class="constant">O_NONBLOCK</code>,
+                        the return value is set to −1 and
+                        <code class="varname">errno</code> is set
+                        to <span class="errorname">EAGAIN</span>.</p>
+
+                        <p>If there is no space available in the
+                        mailbox and the file descriptor has been
+                        opened without <code class="constant">O_NONBLOCK</code>, the call will
+                        block until the SPU reads from its PPE
+                        (PowerPC Processing Element) mailbox
+                        channel. When data has been written
+                        successfully, the system call returns four
+                        as its function result.</p>
+                      </dd>
+
+                      <dt><span class="term"><a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a></span></dt>
+
+                      <dd>
+                        <p>A poll on the <em class="replaceable"><code>wbox</code></em> file
+                        returns <span class="emphasis"><em>(POLLOUT
+                        | POLLWRNORM)</em></span> whenever space is
+                        available for writing.</p>
+                      </dd>
+                    </dl>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="filename">/mbox_stat, /ibox_stat,
+            /wbox_stat</code></span></dt>
+
+            <dd>
+              <p>These are read-only files that contain the length
+              of the current queue of each mailbox—that is,
+              how many words can be read from <em class="replaceable"><code>mbox</code></em> or <em class="replaceable"><code>ibox</code></em> or how many
+              words can be written to <em class="replaceable"><code>wbox</code></em> without
+              blocking. The files can be read only in four-byte
+              units and return a big-endian binary integer number.
+              The only possible operation on an open <em class="replaceable"><code>*box_stat</code></em> file
+              is:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="variablelist">
+                    <dl class="variablelist">
+                      <dt><span class="term"><a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a></span></dt>
+
+                      <dd>
+                        <p>If <em class="replaceable"><code>count</code></em> is
+                        smaller than four, <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>
+                        returns −1 and sets <code class="varname">errno</code> to <span class="errorname">EINVAL</span>. Otherwise, a
+                        four-byte value is placed in the data
+                        buffer. This value is the number of
+                        elements that can be read from (for
+                        <code class="filename">mbox_stat</code> and
+                        <code class="filename">ibox_stat</code>) or
+                        written to (for <code class="filename">wbox_stat</code>) the respective
+                        mailbox without blocking or returning an
+                        <span class="errorname">EAGAIN</span>
+                        error.</p>
+                      </dd>
+                    </dl>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="filename">/npc,
+            /decr, /decr_status, /spu_tag_mask, /event_mask,
+            /event_status, /srr0, /lslr</code></span></dt>
+
+            <dd>
+              <p>Internal registers of the SPU. These files contain
+              an ASCII string representing the hex value of the
+              specified register. Reads and writes on these files
+              (except for <code class="filename">npc</code>, see
+              below) require that the SPU context be scheduled out,
+              so frequent access to these files is not recommended
+              for normal program operation.</p>
+
+              <p>The contents of these files are:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="variablelist">
+                    <dl class="variablelist">
+                      <dt><span class="term"><code class="filename">npc</code></span></dt>
+
+                      <dd>
+                        <p>Next Program Counter − valid only
+                        when the SPU is in a stopped state.</p>
+                      </dd>
+
+                      <dt><span class="term"><em class="replaceable"><code>decr</code></em></span></dt>
+
+                      <dd>
+                        <p>SPU Decrementer</p>
+                      </dd>
+
+                      <dt><span class="term"><em class="replaceable"><code>decr_status</code></em></span></dt>
+
+                      <dd>
+                        <p>Decrementer Status</p>
+                      </dd>
+
+                      <dt><span class="term"><em class="replaceable"><code>spu_tag_mask</code></em></span></dt>
+
+                      <dd>
+                        <p>MFC tag mask for SPU DMA</p>
+                      </dd>
+
+                      <dt><span class="term"><em class="replaceable"><code>event_mask</code></em></span></dt>
+
+                      <dd>
+                        <p>Event mask for SPU interrupts</p>
+                      </dd>
+
+                      <dt><span class="term"><code class="filename">event_status</code></span></dt>
+
+                      <dd>
+                        <p>Number of SPU events pending
+                        (read-only)</p>
+                      </dd>
+
+                      <dt><span class="term"><em class="replaceable"><code>srr0</code></em></span></dt>
+
+                      <dd>
+                        <p>Interrupt Return address register</p>
+                      </dd>
+
+                      <dt><span class="term"><code class="filename">lslr</code></span></dt>
+
+                      <dd>
+                        <p>Local Store Limit Register</p>
+                      </dd>
+                    </dl>
+                  </div>
+                </blockquote>
+              </div>
+
+              <p>The possible operations on these files are:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="variablelist">
+                    <dl class="variablelist">
+                      <dt><span class="term"><a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a></span></dt>
+
+                      <dd>
+                        <p>Reads the current register value. If the
+                        register value is larger than the buffer
+                        passed to the <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>
+                        system call, subsequent reads will continue
+                        reading from the same buffer, until the end
+                        of the buffer is reached.</p>
+
+                        <p>When a complete string has been read,
+                        all subsequent read operations will return
+                        zero bytes and a new file descriptor needs
+                        to be opened to read a new value.</p>
+                      </dd>
+
+                      <dt><span class="term"><a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a></span></dt>
+
+                      <dd>
+                        <p>A <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a>
+                        operation on the file sets the register to
+                        the value given in the string. The string
+                        is parsed from the beginning until the
+                        first nonnumeric character or the end of
+                        the buffer. Subsequent writes to the same
+                        file descriptor overwrite the previous
+                        setting.</p>
+
+                        <p>Except for the <code class="filename">npc</code> file, these files are
+                        not present on contexts that have been
+                        created with the <code class="constant">SPU_CREATE_NOSCHED</code>
+                        flag.</p>
+                      </dd>
+                    </dl>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="filename">/fpcr</code></span></dt>
+
+            <dd>
+              <p>This file provides access to the Floating Point
+              Status and Control Register (fcpr) as a binary,
+              four-byte file. The operations on the <em class="replaceable"><code>fpcr</code></em> file are:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="variablelist">
+                    <dl class="variablelist">
+                      <dt><span class="term"><a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a></span></dt>
+
+                      <dd>
+                        <p>If <em class="replaceable"><code>count</code></em> is
+                        smaller than four, <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>
+                        returns −1 and sets <code class="varname">errno</code> to <span class="errorname">EINVAL</span>. Otherwise, a
+                        four-byte value is placed in the data
+                        buffer; this is the current value of the
+                        <em class="replaceable"><code>fpcr</code></em>
+                        register.</p>
+                      </dd>
+
+                      <dt><span class="term"><a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a></span></dt>
+
+                      <dd>
+                        <p>If <em class="replaceable"><code>count</code></em> is
+                        smaller than four, <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a>
+                        returns −1 and sets <code class="varname">errno</code> to <span class="errorname">EINVAL</span>. Otherwise, a
+                        four-byte value is copied from the data
+                        buffer, updating the value of the
+                        <em class="replaceable"><code>fpcr</code></em>
+                        register.</p>
+                      </dd>
+                    </dl>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="filename">/signal1,
+            /signal2</code></span></dt>
+
+            <dd>
+              <p>The files provide access to the two signal
+              notification channels of an SPU. These are read-write
+              files that operate on four-byte words. Writing to one
+              of these files triggers an interrupt on the SPU. The
+              value written to the signal files can be read from
+              the SPU through a channel read or from host user
+              space through the file. After the value has been read
+              by the SPU, it is reset to zero. The possible
+              operations on an open <em class="replaceable"><code>signal1</code></em> or <em class="replaceable"><code>signal2</code></em> file are:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="variablelist">
+                    <dl class="variablelist">
+                      <dt><span class="term"><a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a></span></dt>
+
+                      <dd>
+                        <p>If <em class="replaceable"><code>count</code></em> is
+                        smaller than four, <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>
+                        returns −1 and sets <code class="varname">errno</code> to <span class="errorname">EINVAL</span>. Otherwise, a
+                        four-byte value is placed in the data
+                        buffer; this is the current value of the
+                        specified signal notification register.</p>
+                      </dd>
+
+                      <dt><span class="term"><a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a></span></dt>
+
+                      <dd>
+                        <p>If <em class="replaceable"><code>count</code></em> is
+                        smaller than four, <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a>
+                        returns −1 and sets <code class="varname">errno</code> to <span class="errorname">EINVAL</span>. Otherwise, a
+                        four-byte value is copied from the data
+                        buffer, updating the value of the specified
+                        signal notification register. The signal
+                        notification register will either be
+                        replaced with the input data or will be
+                        updated to the bitwise OR operation of the
+                        old value and the input data, depending on
+                        the contents of the <em class="replaceable"><code>signal1_type</code></em>
+                        or <em class="replaceable"><code>signal2_type</code></em>
+                        files respectively.</p>
+                      </dd>
+                    </dl>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="filename">/signal1_type,
+            /signal2_type</code></span></dt>
+
+            <dd>
+              <p>These two files change the behavior of the
+              <em class="replaceable"><code>signal1</code></em> and
+              <em class="replaceable"><code>signal2</code></em>
+              notification files. They contain a numeric ASCII
+              string which is read as either "1" or "0". In mode 0
+              (overwrite), the hardware replaces the contents of
+              the signal channel with the data that is written to
+              it. In mode 1 (logical OR), the hardware accumulates
+              the bits that are subsequently written to it. The
+              possible operations on an open <em class="replaceable"><code>signal1_type</code></em> or
+              <em class="replaceable"><code>signal2_type</code></em> file
+              are:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="variablelist">
+                    <dl class="variablelist">
+                      <dt><span class="term"><a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a></span></dt>
+
+                      <dd>
+                        <p>When the count supplied to the <a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a>
+                        call is shorter than the required length
+                        for the digit (plus a newline character),
+                        subsequent reads from the same file
+                        descriptor will complete the string. When a
+                        complete string has been read, all
+                        subsequent read operations will return zero
+                        bytes and a new file descriptor needs to be
+                        opened to read the value again.</p>
+                      </dd>
+
+                      <dt><span class="term"><a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a></span></dt>
+
+                      <dd>
+                        <p>A <a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a>
+                        operation on the file sets the register to
+                        the value given in the string. The string
+                        is parsed from the beginning until the
+                        first nonnumeric character or the end of
+                        the buffer. Subsequent writes to the same
+                        file descriptor overwrite the previous
+                        setting.</p>
+                      </dd>
+                    </dl>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="filename">/mbox_info, /ibox_info, /wbox_info,
+            /dma_into, /proxydma_info</code></span></dt>
+
+            <dd>
+              <p>Read-only files that contain the saved state of
+              the SPU mailboxes and DMA queues. This allows the SPU
+              status to be inspected, mainly for debugging. The
+              <code class="filename">mbox_info</code> and
+              <code class="filename">ibox_info</code> files each
+              contain the four-byte mailbox message that has been
+              written by the SPU. If no message has been written to
+              these mailboxes, then contents of these files is
+              undefined. The <code class="filename">mbox_stat</code>, <code class="filename">ibox_stat</code> and <code class="filename">wbox_stat</code> files contain the
+              available message count.</p>
+
+              <p>The <code class="filename">wbox_info</code> file
+              contains an array of four-byte mailbox messages,
+              which have been sent to the SPU. With current CBEA
+              machines, the array is four items in length, so up to
+              4 * 4 = 16 bytes can be read from this file. If any
+              mailbox queue entry is empty, then the bytes read at
+              the corresponding location are undefined.</p>
+
+              <p>The <code class="filename">dma_info</code> file
+              contains the contents of the SPU MFC DMA queue,
+              represented as the following structure:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="structdef">
+                    <table style="border-collapse: collapse;">
+                      <colgroup span="1">
+                        <col class="c1" span="1" />
+                        <col class="c2" span="1" />
+                        <col class="c3" span="1" />
+                        <col class="c4" span="1" />
+                        <col class="c5" span="1" />
+                      </colgroup>
+
+                      <tbody>
+                        <tr>
+                          <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                          <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">spu_dma_info</span> {</td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>dma_info_type</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>dma_info_mask</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>dma_info_status</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>dma_info_stall_and_notify</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>dma_info_atomic_command_status</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">struct mfc_cq_sr</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>dma_info_command_data</code></em>[16];</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </blockquote>
+              </div>
+
+              <p>The last member of this data structure is the
+              actual DMA queue, containing 16 entries. The
+              <span class="structname">mfc_cq_sr</span> structure
+              is defined as:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="structdef">
+                    <table style="border-collapse: collapse;">
+                      <colgroup span="1">
+                        <col class="c1" span="1" />
+                        <col class="c2" span="1" />
+                        <col class="c3" span="1" />
+                        <col class="c4" span="1" />
+                        <col class="c5" span="1" />
+                      </colgroup>
+
+                      <tbody>
+                        <tr>
+                          <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                          <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">mfc_cq_sr</span> {</td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>mfc_cq_data0_RW</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>mfc_cq_data1_RW</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>mfc_cq_data2_RW</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>mfc_cq_data3_RW</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </blockquote>
+              </div>
+
+              <p>The <code class="filename">proxydma_info</code>
+              file contains similar information, but describes the
+              proxy DMA queue (i.e., DMAs initiated by entities
+              outside the SPU) instead. The file is in the
+              following format:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="structdef">
+                    <table style="border-collapse: collapse;">
+                      <colgroup span="1">
+                        <col class="c1" span="1" />
+                        <col class="c2" span="1" />
+                        <col class="c3" span="1" />
+                        <col class="c4" span="1" />
+                        <col class="c5" span="1" />
+                      </colgroup>
+
+                      <tbody>
+                        <tr>
+                          <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                          <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1"><span class="structname">spu_proxydma_info</span> {</td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>proxydma_info_type</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>proxydma_info_mask</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">uint64_t</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>proxydma_info_status</code></em>;</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td style="" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><span class="type">struct mfc_cq_sr</span></td>
+
+                          <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"><em class="structfield"><code>proxydma_info_command_data</code></em>[8];</td>
+
+                          <td style="" align="left" rowspan="1" colspan="1"> </td>
+                        </tr>
+
+                        <tr>
+                          <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">};</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </blockquote>
+              </div>
+
+              <p>Accessing these files requires that the SPU
+              context is scheduled out - frequent use can be
+              inefficient. These files should not be used for
+              normal program operation.</p>
+
+              <p>These files are not present on contexts that have
+              been created with the <code class="constant">SPU_CREATE_NOSCHED</code> flag.</p>
+            </dd>
+
+            <dt><span class="term"><code class="filename">/cntl</code></span></dt>
+
+            <dd>
+              <p>This file provides access to the SPU Run Control
+              and SPU status registers, as an ASCII string. The
+              following operations are supported:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="variablelist">
+                    <dl class="variablelist">
+                      <dt><span class="term"><a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a></span></dt>
+
+                      <dd>
+                        <p>Reads from the <code class="filename">cntl</code> file will return an
+                        ASCII string with the hex value of the SPU
+                        Status register.</p>
+                      </dd>
+
+                      <dt><span class="term"><a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a></span></dt>
+
+                      <dd>
+                        <p>Writes to the <code class="filename">cntl</code> file will set the
+                        context's SPU Run Control register.</p>
+                      </dd>
+                    </dl>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="filename">/mfc</code></span></dt>
+
+            <dd>
+              <p>Provides access to the Memory Flow Controller of
+              the SPU. Reading from the file returns the contents
+              of the SPU's MFC Tag Status register, and writing to
+              the file initiates a DMA from the MFC. The following
+              operations are supported:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="variablelist">
+                    <dl class="variablelist">
+                      <dt><span class="term"><a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a></span></dt>
+
+                      <dd>
+                        <p>Writes to this file need to be in the
+                        format of a MFC DMA command, defined as
+                        follows:</p>
+
+                        <div class="blockquote">
+                          <blockquote class="blockquote">
+                            <div class="structdef">
+                              <table style="border-collapse: collapse;">
+                                <colgroup span="1">
+                                  <col class="c1" span="1" />
+                                  <col class="c2" span="1" />
+                                  <col class="c3" span="1" />
+                                  <col class="c4" span="1" />
+                                  <col class="c5" span="1" />
+                                </colgroup>
+
+                                <tbody>
+                                  <tr>
+                                    <td class="structdefhdr" style="" align="left" rowspan="1" colspan="1">struct</td>
+
+                                    <td class="structdefhdr" style="" colspan="4" align="left" rowspan="1">
+                                    <span class="structname">mfc_dma_command</span> {</td>
+                                  </tr>
+
+                                  <tr>
+                                    <td style="" rowspan="1" colspan="1"> </td>
+
+                                    <td style="" align="left" rowspan="1" colspan="1">
+                                    <span class="type">int32_t</span></td>
+
+                                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                                    <td style="" align="left" rowspan="1" colspan="1">
+                                    <em class="structfield"><code>pad</code></em>;</td>
+
+                                    <td style="" align="left" rowspan="1" colspan="1">
+                                      <div class="literallayout">
+                                        
+                                        /* reserved */
+                                      </div>
+                                    </td>
+                                  </tr>
+
+                                  <tr>
+                                    <td style="" rowspan="1" colspan="1"> </td>
+
+                                    <td style="" align="left" rowspan="1" colspan="1">
+                                    <span class="type">uint32_t</span></td>
+
+                                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                                    <td style="" align="left" rowspan="1" colspan="1">
+                                    <em class="structfield"><code>lsa</code></em>;</td>
+
+                                    <td style="" align="left" rowspan="1" colspan="1">
+                                      <div class="literallayout">
+                                        
+                                        /* local storage address */
+                                      </div>
+                                    </td>
+                                  </tr>
+
+                                  <tr>
+                                    <td style="" rowspan="1" colspan="1"> </td>
+
+                                    <td style="" align="left" rowspan="1" colspan="1">
+                                    <span class="type">uint64_t</span></td>
+
+                                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                                    <td style="" align="left" rowspan="1" colspan="1">
+                                    <em class="structfield"><code>ea</code></em>;</td>
+
+                                    <td style="" align="left" rowspan="1" colspan="1">
+                                      <div class="literallayout">
+                                        
+                                        /* effective address */
+                                      </div>
+                                    </td>
+                                  </tr>
+
+                                  <tr>
+                                    <td style="" rowspan="1" colspan="1"> </td>
+
+                                    <td style="" align="left" rowspan="1" colspan="1">
+                                    <span class="type">uint16_t</span></td>
+
+                                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                                    <td style="" align="left" rowspan="1" colspan="1">
+                                    <em class="structfield"><code>size</code></em>;</td>
+
+                                    <td style="" align="left" rowspan="1" colspan="1">
+                                      <div class="literallayout">
+                                        
+                                        /* transfer size */
+                                      </div>
+                                    </td>
+                                  </tr>
+
+                                  <tr>
+                                    <td style="" rowspan="1" colspan="1"> </td>
+
+                                    <td style="" align="left" rowspan="1" colspan="1">
+                                    <span class="type">uint16_t</span></td>
+
+                                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                                    <td style="" align="left" rowspan="1" colspan="1">
+                                    <em class="structfield"><code>tag</code></em>;</td>
+
+                                    <td style="" align="left" rowspan="1" colspan="1">
+                                      <div class="literallayout">
+                                        
+                                        /* command tag */
+                                      </div>
+                                    </td>
+                                  </tr>
+
+                                  <tr>
+                                    <td style="" rowspan="1" colspan="1"> </td>
+
+                                    <td style="" align="left" rowspan="1" colspan="1">
+                                    <span class="type">uint16_t</span></td>
+
+                                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                                    <td style="" align="left" rowspan="1" colspan="1">
+                                    <em class="structfield"><code>class</code></em>;</td>
+
+                                    <td style="" align="left" rowspan="1" colspan="1">
+                                      <div class="literallayout">
+                                        
+                                        /* class ID */
+                                      </div>
+                                    </td>
+                                  </tr>
+
+                                  <tr>
+                                    <td style="" rowspan="1" colspan="1"> </td>
+
+                                    <td style="" align="left" rowspan="1" colspan="1">
+                                    <span class="type">uint16_t</span></td>
+
+                                    <td class="norightpad" style="" align="right" rowspan="1" colspan="1"> </td>
+
+                                    <td style="" align="left" rowspan="1" colspan="1">
+                                    <em class="structfield"><code>cmd</code></em>;</td>
+
+                                    <td style="" align="left" rowspan="1" colspan="1">
+                                      <div class="literallayout">
+                                        
+                                        /* command opcode */
+                                      </div>
+                                    </td>
+                                  </tr>
+
+                                  <tr>
+                                    <td class="structdefftr" style="" colspan="5" align="left" rowspan="1">
+                                    };</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </blockquote>
+                        </div>
+
+                        <p>Writes are required to be exactly
+                        <span class="emphasis"><em>sizeof(struct
+                        mfc_dma_command)</em></span> bytes in size.
+                        The command will be sent to the SPU's MFC
+                        proxy queue, and the tag stored in the
+                        kernel (see below).</p>
+                      </dd>
+
+                      <dt><span class="term"><a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a></span></dt>
+
+                      <dd>
+                        <p>Reads the contents of the tag status
+                        register. If the file is opened in blocking
+                        mode (i.e., without <code class="constant">O_NONBLOCK</code>), then the
+                        read will block until a DMA tag (as
+                        performed by a previous write) is complete.
+                        In nonblocking mode, the MFC tag status
+                        register will be returned without
+                        waiting.</p>
+                      </dd>
+
+                      <dt><span class="term"><a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a></span></dt>
+
+                      <dd>
+                        <p>Calling <a class="link" href="../htmlman2/poll.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">poll</span>(2)</span></a>
+                        on the <code class="filename">mfc</code>
+                        file will block until a new DMA can be
+                        started (by checking for <code class="constant">POLLOUT</code>) or until a
+                        previously started DMA (by checking for
+                        <code class="constant">POLLIN</code>) has
+                        been completed.</p>
+
+                        <p><code class="filename">/mss</code>
+                        Provides access to the MFC MultiSource
+                        Synchronization (MSS) facility. By
+                        <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>-ing
+                        this file, processes can access the MSS
+                        area of the SPU.</p>
+
+                        <p>The following operations are
+                        supported:</p>
+                      </dd>
+
+                      <dt><span class="term"><a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a></span></dt>
+
+                      <dd>
+                        <p>Mapping <code class="filename">mss</code> into the process
+                        address space gives access to the SPU MSS
+                        area within the process address space. Only
+                        <code class="constant">MAP_SHARED</code>
+                        mappings are allowed.</p>
+                      </dd>
+                    </dl>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="filename">/psmap</code></span></dt>
+
+            <dd>
+              <p>Provides access to the whole problem-state mapping
+              of the SPU. Applications can use this area to
+              interface to the SPU, rather than writing to
+              individual register files in <em class="replaceable"><code>spufs</code></em>.</p>
+
+              <p>The following operations are supported:</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="variablelist">
+                    <dl class="variablelist">
+                      <dt><span class="term"><a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a></span></dt>
+
+                      <dd>
+                        <p>Mapping <code class="filename">psmap</code> gives a process a
+                        direct map of the SPU problem state area.
+                        Only <code class="constant">MAP_SHARED</code> mappings are
+                        supported.</p>
+                      </dd>
+                    </dl>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+
+            <dt><span class="term"><code class="filename">/phys-id</code></span></dt>
+
+            <dd>
+              <p>Read-only file containing the physical SPU number
+              that the SPU context is running on. When the context
+              is not running, this file contains the string
+              "−1".</p>
+
+              <p>The physical SPU number is given by an ASCII hex
+              string.</p>
+            </dd>
+
+            <dt><span class="term"><code class="filename">/object-id</code></span></dt>
+
+            <dd>
+              <p>Allows applications to store (or retrieve) a
+              single 64-bit ID into the context. This ID is later
+              used by profiling tools to uniquely identify the
+              context.</p>
+
+              <div class="blockquote">
+                <blockquote class="blockquote">
+                  <div class="variablelist">
+                    <dl class="variablelist">
+                      <dt><span class="term"><a class="link" href="../htmlman2/write.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">write</span>(2)</span></a></span></dt>
+
+                      <dd>
+                        <p>By writing an ASCII hex value into this
+                        file, applications can set the object ID of
+                        the SPU context. Any previous value of the
+                        object ID is overwritten.</p>
+                      </dd>
+
+                      <dt><span class="term"><a class="link" href="../htmlman2/read.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">read</span>(2)</span></a></span></dt>
+
+                      <dd>
+                        <p>Reading this file gives an ASCII hex
+                        string representing the object ID for this
+                        SPU context.</p>
+                      </dd>
+                    </dl>
+                  </div>
+                </blockquote>
+              </div>
+            </dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="spufs-7_sect4" name="spufs-7_sect4" shape="rect"> </a>
+
+      <h2>EXAMPLE</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="filename">/etc/fstab
+          entry</code></span></dt>
+
+          <dd>
+            <p>none /spu spufs gid=spu 0 0</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="spufs-7_sect5" name="spufs-7_sect5" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/close.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">close</span>(2)</span></a>, <a class="link" href="../htmlman2/spu_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">spu_create</span>(2)</span></a>, <a class="link" href="../htmlman2/spu_run.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">spu_run</span>(2)</span></a>, <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a></p>
+
+      <p><span class="emphasis"><em>The Cell Broadband Engine
+      Architecture (CBEA) specification</em></span></p>
+    </div>
+
+    <div class="colophon">
+      <a id="spufs-7_sect6" name="spufs-7_sect6" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) International Business Machines Corp., 2006<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_SW_3_PARA)<br />
+                  This program is free software; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License as<br />
+
+                  published by the Free Software Foundation; either version 2 of<br />
+
+                  the License, or (at your option) any later version.<br />
+
+                  <br />
+                  This program is distributed in the hope that it will be useful,<br />
+
+                  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See<br />
+
+                  the GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  HISTORY:<br />
+                  2005-09-28, created by Arnd Bergmann &lt;arndb<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>de.ibm.com&gt;,<br />
+
+                    Mark Nutter &lt;mnutter<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>us.ibm.com&gt; and<br />
+
+                    Ulrich Weigand &lt;Ulrich.Weigand<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>de.ibm.com&gt;<br />
+
+                  2006-06-16, revised by Eduardo M. Fleury &lt;efleury<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>br.ibm.com&gt;<br />
+
+                  2007-07-10, quite a lot of polishing by mtk<br />
+
+                  2007-09-28, updates for newer kernels by Jeremy Kerr &lt;jk<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>ozlabs.org&gt;<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

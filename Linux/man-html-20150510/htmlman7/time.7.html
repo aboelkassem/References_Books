@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>time(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="time(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="time.7" name="time.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>time — overview of time and timers</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="time-7_sect1" name="time-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <div class="refsect2">
+        <a id="time-7_sect2" name="time-7_sect2" shape="rect"> </a>
+
+        <h3>Real time and process time</h3>
+
+        <p><span class="emphasis"><em>Real time</em></span> is
+        defined as time measured from some fixed point, either from
+        a standard point in the past (see the description of the
+        Epoch and calendar time below), or from some point (e.g.,
+        the start) in the life of a process (<span class="emphasis"><em>elapsed time</em></span>).</p>
+
+        <p><span class="emphasis"><em>Process time</em></span> is
+        defined as the amount of CPU time used by a process. This
+        is sometimes divided into <em class="replaceable"><code>user</code></em> and <em class="replaceable"><code>system</code></em> components. User CPU
+        time is the time spent executing code in user mode. System
+        CPU time is the time spent by the kernel executing in
+        system mode on behalf of the process (e.g., executing
+        system calls). The <span class="citerefentry"><span class="refentrytitle">time</span>(1)</span> command can be used
+        to determine the amount of CPU time consumed during the
+        execution of a program. A program can determine the amount
+        of CPU time it has consumed using <a class="link" href="../htmlman2/times.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">times</span>(2)</span></a>, <a class="link" href="../htmlman2/getrusage.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getrusage</span>(2)</span></a>, or
+        <a class="link" href="../htmlman3/clock.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clock</span>(3)</span></a>.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="time-7_sect3" name="time-7_sect3" shape="rect"> </a>
+
+        <h3>The hardware clock</h3>
+
+        <p>Most computers have a (battery-powered) hardware clock
+        which the kernel reads at boot time in order to initialize
+        the software clock. For further details, see <a class="link" href="../htmlman4/rtc.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rtc</span>(4)</span></a> and <a class="link" href="../htmlman8/hwclock.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">hwclock</span>(8)</span></a>.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="time-7_sect4" name="time-7_sect4" shape="rect"> </a>
+
+        <h3>The software clock, HZ, and jiffies</h3>
+
+        <p>The accuracy of various system calls that set timeouts,
+        (e.g., <a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a>, <a class="link" href="../htmlman2/sigwaitinfo.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sigtimedwait</span>(2)</span></a>) and
+        measure CPU time (e.g., <a class="link" href="../htmlman2/getrusage.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getrusage</span>(2)</span></a>) is limited
+        by the resolution of the <span class="emphasis"><em>software clock</em></span>, a clock
+        maintained by the kernel which measures time in <em class="replaceable"><code>jiffies</code></em>. The size of a
+        jiffy is determined by the value of the kernel constant
+        <code class="constant">HZ</code>.</p>
+
+        <p>The value of <code class="constant">HZ</code> varies
+        across kernel versions and hardware platforms. On i386 the
+        situation is as follows: on kernels up to and including
+        2.4.x, HZ was 100, giving a jiffy value of 0.01 seconds;
+        starting with 2.6.0, HZ was raised to 1000, giving a jiffy
+        of 0.001 seconds. Since kernel 2.6.13, the HZ value is a
+        kernel configuration parameter and can be 100, 250 (the
+        default) or 1000, yielding a jiffies value of,
+        respectively, 0.01, 0.004, or 0.001 seconds. Since kernel
+        2.6.20, a further frequency is available: 300, a number
+        that divides evenly for the common video frame rates (PAL,
+        25 HZ; NTSC, 30 HZ).</p>
+
+        <p>The <a class="link" href="../htmlman2/times.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">times</span>(2)</span></a> system call is a
+        special case. It reports times with a granularity defined
+        by the kernel constant <code class="constant">USER_HZ</code>. User-space applications can
+        determine the value of this constant using <em class="replaceable"><code>sysconf(_SC_CLK_TCK)</code></em>.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="time-7_sect5" name="time-7_sect5" shape="rect"> </a>
+
+        <h3>High-resolution timers</h3>
+
+        <p>Before Linux 2.6.21, the accuracy of timer and sleep
+        system calls (see below) was also limited by the size of
+        the jiffy.</p>
+
+        <p>Since Linux 2.6.21, Linux supports high-resolution
+        timers (HRTs), optionally configurable via <code class="constant">CONFIG_HIGH_RES_TIMERS</code>. On a system that
+        supports HRTs, the accuracy of sleep and timer system calls
+        is no longer constrained by the jiffy, but instead can be
+        as accurate as the hardware allows (microsecond accuracy is
+        typical of modern hardware). You can determine whether
+        high-resolution timers are supported by checking the
+        resolution returned by a call to <a class="link" href="../htmlman2/clock_getres.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clock_getres</span>(2)</span></a> or
+        looking at the "resolution" entries in <code class="filename">/proc/timer_list</code>.</p>
+
+        <p>HRTs are not supported on all hardware architectures.
+        (Support is provided on x86, arm, and powerpc, among
+        others.)</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="time-7_sect6" name="time-7_sect6" shape="rect"> </a>
+
+        <h3>The Epoch</h3>
+
+        <p>UNIX systems represent time in seconds since the
+        <em class="replaceable"><code>Epoch</code></em>, 1970-01-01
+        00:00:00 +0000 (UTC).</p>
+
+        <p>A program can determine the <span class="emphasis"><em>calendar time</em></span> using <a class="link" href="../htmlman2/gettimeofday.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gettimeofday</span>(2)</span></a>, which
+        returns time (in seconds and microseconds) that have
+        elapsed since the Epoch; <a class="link" href="../htmlman2/time.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">time</span>(2)</span></a> provides similar
+        information, but only with accuracy to the nearest second.
+        The system time can be changed using <a class="link" href="../htmlman2/gettimeofday.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">settimeofday</span>(2)</span></a>.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="time-7_sect7" name="time-7_sect7" shape="rect"> </a>
+
+        <h3>Broken-down time</h3>
+
+        <p>Certain library functions use a structure of type
+        <em class="replaceable"><code>tm</code></em> to represent
+        <span class="emphasis"><em>broken-down time</em></span>,
+        which stores time value separated out into distinct
+        components (year, month, day, hour, minute, second, etc.).
+        This structure is described in <a class="link" href="../htmlman3/ctime.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ctime</span>(3)</span></a>, which also
+        describes functions that convert between calendar time and
+        broken-down time. Functions for converting between
+        broken-down time and printable string representations of
+        the time are described in <a class="link" href="../htmlman3/ctime.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ctime</span>(3)</span></a>, <a class="link" href="../htmlman3/strftime.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">strftime</span>(3)</span></a>, and
+        <a class="link" href="../htmlman3/strptime.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">strptime</span>(3)</span></a>.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="time-7_sect8" name="time-7_sect8" shape="rect"> </a>
+
+        <h3>Sleeping and setting timers</h3>
+
+        <p>Various system calls and functions allow a program to
+        sleep (suspend execution) for a specified period of time;
+        see <a class="link" href="../htmlman2/nanosleep.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">nanosleep</span>(2)</span></a>, <a class="link" href="../htmlman2/clock_nanosleep.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clock_nanosleep</span>(2)</span></a>, and
+        <a class="link" href="../htmlman3/sleep.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sleep</span>(3)</span></a>.</p>
+
+        <p>Various system calls allow a process to set a timer that
+        expires at some point in the future, and optionally at
+        repeated intervals; see <a class="link" href="../htmlman2/alarm.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">alarm</span>(2)</span></a>, <a class="link" href="../htmlman2/getitimer.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getitimer</span>(2)</span></a>, <a class="link" href="../htmlman2/timerfd_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">timerfd_create</span>(2)</span></a>, and
+        <a class="link" href="../htmlman2/timer_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">timer_create</span>(2)</span></a>.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="time-7_sect9" name="time-7_sect9" shape="rect"> </a>
+
+        <h3>Timer slack</h3>
+
+        <p>Since Linux 2.6.28, it is possible to control the "timer
+        slack" value for a thread. The timer slack is the length of
+        time by which the kernel may delay the wake-up of certain
+        system calls that block with a timeout. Permitting this
+        delay allows the kernel to coalesce wake-up events, thus
+        possibly reducing the number of system wake-ups and saving
+        power. For more details, see the description of
+        <code class="constant">PR_SET_TIMERSLACK</code> in
+        <a class="link" href="../htmlman2/prctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">prctl</span>(2)</span></a>.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="time-7_sect10" name="time-7_sect10" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman1/date.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">date</span>(1)</span></a>, <span class="citerefentry"><span class="refentrytitle">time</span>(1)</span>, <a class="link" href="../htmlman2/adjtimex.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">adjtimex</span>(2)</span></a>, <a class="link" href="../htmlman2/alarm.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">alarm</span>(2)</span></a>, <a class="link" href="../htmlman2/clock_getres.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clock_gettime</span>(2)</span></a>, <a class="link" href="../htmlman2/clock_nanosleep.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clock_nanosleep</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/getitimer.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getitimer</span>(2)</span></a>, <a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getrlimit</span>(2)</span></a>, <a class="link" href="../htmlman2/getrusage.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getrusage</span>(2)</span></a>, <a class="link" href="../htmlman2/gettimeofday.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gettimeofday</span>(2)</span></a>, <a class="link" href="../htmlman2/nanosleep.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">nanosleep</span>(2)</span></a>, <a class="link" href="../htmlman2/stat.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">stat</span>(2)</span></a>, <a class="link" href="../htmlman2/time.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">time</span>(2)</span></a>, <a class="link" href="../htmlman2/timer_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">timer_create</span>(2)</span></a>, <a class="link" href="../htmlman2/timerfd_create.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">timerfd_create</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/times.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">times</span>(2)</span></a>, <a class="link" href="../htmlman2/utime.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">utime</span>(2)</span></a>, <a class="link" href="../htmlman3/adjtime.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">adjtime</span>(3)</span></a>, <a class="link" href="../htmlman3/clock.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clock</span>(3)</span></a>, <a class="link" href="../htmlman3/clock_getcpuclockid.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">clock_getcpuclockid</span>(3)</span></a>,
+      <a class="link" href="../htmlman3/ctime.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ctime</span>(3)</span></a>, <a class="link" href="../htmlman3/pthread_getcpuclockid.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_getcpuclockid</span>(3)</span></a>,
+      <a class="link" href="../htmlman3/sleep.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sleep</span>(3)</span></a>, <a class="link" href="../htmlman3/strftime.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">strftime</span>(3)</span></a>, <a class="link" href="../htmlman3/strptime.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">strptime</span>(3)</span></a>, <a class="link" href="../htmlman3/timeradd.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">timeradd</span>(3)</span></a>, <a class="link" href="../htmlman3/usleep.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">usleep</span>(3)</span></a>, <a class="link" href="../htmlman4/rtc.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">rtc</span>(4)</span></a>, <a class="link" href="../htmlman8/hwclock.8.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">hwclock</span>(8)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="time-7_sect11" name="time-7_sect11" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (c) 2006 by Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  2008-06-24, mtk: added some details about where jiffies come into<br />
+
+                      play; added section on high-resolution timers.<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

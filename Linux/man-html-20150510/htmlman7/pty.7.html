@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>pty(7) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="pty(7) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index7.html" shape="rect">Section 7</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="pty.7" name="pty.7" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>pty — pseudoterminal interfaces</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pty-7_sect1" name="pty-7_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>A pseudoterminal (sometimes abbreviated "pty") is a pair
+      of virtual character devices that provide a bidirectional
+      communication channel. One end of the channel is called the
+      <em class="replaceable"><code>master</code></em>; the other
+      end is called the <em class="replaceable"><code>slave</code></em>. The slave end of the
+      pseudoterminal provides an interface that behaves exactly
+      like a classical terminal. A process that expects to be
+      connected to a terminal, can open the slave end of a
+      pseudoterminal and then be driven by a program that has
+      opened the master end. Anything that is written on the master
+      end is provided to the process on the slave end as though it
+      was input typed on a terminal. For example, writing the
+      interrupt character (usually control-C) to the master device
+      would cause an interrupt signal (<code class="constant">SIGINT</code>) to be generated for the foreground
+      process group that is connected to the slave. Conversely,
+      anything that is written to the slave end of the
+      pseudoterminal can be read by the process that is connected
+      to the master end. Pseudoterminals are used by applications
+      such as network login services (<span class="citerefentry"><span class="refentrytitle">ssh</span>(1)</span>, <span class="citerefentry"><span class="refentrytitle">rlogin</span>(1)</span>, <span class="citerefentry"><span class="refentrytitle">telnet</span>(1)</span>), terminal emulators,
+      <a class="link" href="../htmlman1/script.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">script</span>(1)</span></a>, <span class="citerefentry"><span class="refentrytitle">screen</span>(1)</span>, and <span class="citerefentry"><span class="refentrytitle">expect</span>(1)</span>.</p>
+
+      <p>Historically, two pseudoterminal APIs have evolved: BSD
+      and System V. SUSv1 standardized a pseudoterminal API based
+      on the System V API, and this API should be employed in all
+      new programs that use pseudoterminals.</p>
+
+      <p>Linux provides both BSD-style and (standardized) System
+      V-style pseudoterminals. System V-style terminals are
+      commonly called UNIX 98 pseudoterminals on Linux systems.
+      Since kernel 2.6.4, BSD-style pseudoterminals are considered
+      deprecated (they can be disabled when configuring the
+      kernel); UNIX 98 pseudoterminals should be used in new
+      applications.</p>
+
+      <div class="refsect2">
+        <a id="pty-7_sect2" name="pty-7_sect2" shape="rect"> </a>
+
+        <h3>UNIX 98 pseudoterminals</h3>
+
+        <p>An unused UNIX 98 pseudoterminal master is opened by
+        calling <a class="link" href="../htmlman3/posix_openpt.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">posix_openpt</span>(3)</span></a>. (This
+        function opens the master clone device, <code class="filename">/dev/ptmx</code>; see <a class="link" href="../htmlman4/pts.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pts</span>(4)</span></a>.) After performing
+        any program-specific initializations, changing the
+        ownership and permissions of the slave device using
+        <a class="link" href="../htmlman3/grantpt.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">grantpt</span>(3)</span></a>, and unlocking
+        the slave using <a class="link" href="../htmlman3/unlockpt.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">unlockpt</span>(3)</span></a>), the
+        corresponding slave device can be opened by passing the
+        name returned by <a class="link" href="../htmlman3/ptsname.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ptsname</span>(3)</span></a> in a call to
+        <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a>.</p>
+
+        <p>The Linux kernel imposes a limit on the number of
+        available UNIX 98 pseudoterminals. In kernels up to and
+        including 2.6.3, this limit is configured at kernel
+        compilation time (<code class="constant">CONFIG_UNIX98_PTYS</code>), and the permitted
+        number of pseudoterminals can be up to 2048, with a default
+        setting of 256. Since kernel 2.6.4, the limit is
+        dynamically adjustable via <code class="filename">/proc/sys/kernel/pty/max</code>, and a
+        corresponding file, <code class="filename">/proc/sys/kernel/pty/nr</code>, indicates how
+        many pseudoterminals are currently in use. For further
+        details on these two files, see <a class="link" href="../htmlman5/proc.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">proc</span>(5)</span></a>.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="pty-7_sect3" name="pty-7_sect3" shape="rect"> </a>
+
+        <h3>BSD pseudoterminals</h3>
+
+        <p>BSD-style pseudoterminals are provided as precreated
+        pairs, with names of the form <code class="filename">/dev/ptyXY</code> (master) and <code class="filename">/dev/ttyXY</code> (slave), where X is a letter
+        from the 16-character set [p-za-e], and Y is a letter from
+        the 16-character set [0-9a-f]. (The precise range of
+        letters in these two sets varies across UNIX
+        implementations.) For example, <code class="filename">/dev/ptyp1</code> and <code class="filename">/dev/ttyp1</code> constitute a BSD
+        pseudoterminal pair. A process finds an unused
+        pseudoterminal pair by trying to <a class="link" href="../htmlman2/open.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">open</span>(2)</span></a> each
+        pseudoterminal master until an open succeeds. The
+        corresponding pseudoterminal slave (substitute "tty" for
+        "pty" in the name of the master) can then be opened.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="pty-7_sect4" name="pty-7_sect4" shape="rect"> </a>
+
+      <h2>FILES</h2>
+
+      <p><code class="filename">/dev/ptmx</code> (UNIX 98 master
+      clone device)</p>
+
+      <p><code class="filename">/dev/pts/*</code> (UNIX 98 slave
+      devices)</p>
+
+      <p><code class="filename">/dev/pty[p-za-e][0-9a-f]</code>
+      (BSD master devices)</p>
+
+      <p><code class="filename">/dev/tty[p-za-e][0-9a-f]</code>
+      (BSD slave devices)</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pty-7_sect5" name="pty-7_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>A description of the <code class="constant">TIOCPKT</code>
+      <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a>, which controls
+      packet mode operation, can be found in <a class="link" href="../htmlman4/tty_ioctl.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tty_ioctl</span>(4)</span></a>.</p>
+
+      <p>The BSD <a class="link" href="../htmlman2/ioctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">ioctl</span>(2)</span></a> operations
+      <code class="constant">TIOCSTOP</code>, <code class="constant">TIOCSTART</code>, <code class="constant">TIOCUCNTL</code>, and <code class="constant">TIOCREMOTE</code> have not been implemented under
+      Linux.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="pty-7_sect6" name="pty-7_sect6" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/select.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">select</span>(2)</span></a>, <a class="link" href="../htmlman2/setsid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setsid</span>(2)</span></a>, <a class="link" href="../htmlman3/openpty.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">forkpty</span>(3)</span></a>, <a class="link" href="../htmlman3/openpty.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">openpty</span>(3)</span></a>, <a class="link" href="../htmlman3/termios.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">termios</span>(3)</span></a>, <a class="link" href="../htmlman4/pts.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pts</span>(4)</span></a>, <a class="link" href="../htmlman4/tty.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tty</span>(4)</span></a>, <a class="link" href="../htmlman4/tty_ioctl.4.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">tty_ioctl</span>(4)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="pty-7_sect7" name="pty-7_sect7" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 3.72 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2005 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

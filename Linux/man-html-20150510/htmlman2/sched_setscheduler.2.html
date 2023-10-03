@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>sched_setscheduler(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="sched_setscheduler(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="sched-setscheduler.2" name="sched-setscheduler.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>sched_setscheduler, sched_getscheduler — set and get
+      scheduling policy/parameters</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;sched.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>sched_setscheduler</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">pid_t <var class="pdparam">pid</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">policy</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const struct sched_param *<var class="pdparam">param</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>sched_getscheduler</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">pid_t <var class="pdparam">pid</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sched-setscheduler-2_sect1" name="sched-setscheduler-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">sched_setscheduler</code>()
+      system call sets both the scheduling policy and parameters
+      for the thread whose ID is specified in <em class="parameter"><code>pid</code></em>. If <em class="parameter"><code>pid</code></em> equals zero, the scheduling
+      policy and parameters of the calling thread will be set.</p>
+
+      <p>The scheduling parameters are specified in the <em class="parameter"><code>param</code></em> argument, which is a
+      pointer to a structure of the following form:</p>
+
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <div class="informalexample">
+            <pre class="programlisting" xml:space="preserve">
+struct sched_param {
+    ...
+    int sched_priority;
+    ...
+};
+</pre>
+          </div>
+        </blockquote>
+      </div>
+
+      <p>In the current implementation, the structure contains only
+      one field, <em class="replaceable"><code>sched_priority</code></em>. The
+      interpretation of <em class="parameter"><code>param</code></em> depends on the selected
+      policy.</p>
+
+      <p>Currently, Linux supports the following "normal" (i.e.,
+      non-real-time) scheduling policies as values that may be
+      specified in <em class="parameter"><code>policy</code></em>:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">SCHED_OTHER</code></span></dt>
+
+          <dd>
+            <p>the standard round-robin time-sharing policy;</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">SCHED_BATCH</code></span></dt>
+
+          <dd>
+            <p>for "batch" style execution of processes; and</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">SCHED_IDLE</code></span></dt>
+
+          <dd>
+            <p>for running <em class="replaceable"><code>very</code></em> low priority
+            background jobs.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>For each of the above policies, <em class="replaceable"><code>param−&gt;sched_priority</code></em>
+      must be 0.</p>
+
+      <p>Various "real-time" policies are also supported, for
+      special time-critical applications that need precise control
+      over the way in which runnable threads are selected for
+      execution. For the rules governing when a process may use
+      these policies, see <a class="link" href="../htmlman7/sched.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched</span>(7)</span></a>. The real-time
+      policies that may be specified in <em class="parameter"><code>policy</code></em> are:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">SCHED_FIFO</code></span></dt>
+
+          <dd>
+            <p>a first-in, first-out policy; and</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">SCHED_RR</code></span></dt>
+
+          <dd>
+            <p>a round-robin policy.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>For each of the above policies, <em class="replaceable"><code>param−&gt;sched_priority</code></em>
+      specifies a scheduling priority for the thread. This is a
+      number in the range returned by calling <a class="link" href="../htmlman2/sched_get_priority_max.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_get_priority_min</span>(2)</span></a>
+      and <a class="link" href="../htmlman2/sched_get_priority_max.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_get_priority_max</span>(2)</span></a>
+      with the specified <em class="parameter"><code>policy</code></em>. On Linux, these system
+      calls return, respectively, 1 and 99.</p>
+
+      <p>Since Linux 2.6.32, the <code class="constant">SCHED_RESET_ON_FORK</code> flag can be ORed in
+      <em class="parameter"><code>policy</code></em> when calling
+      <code class="function">sched_setscheduler</code>(). As a
+      result of including this flag, children created by <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> do not inherit
+      privileged scheduling policies. See <a class="link" href="../htmlman7/sched.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched</span>(7)</span></a> for details.</p>
+
+      <p><code class="function">sched_getscheduler</code>() returns
+      the current scheduling policy of the thread identified by
+      <em class="parameter"><code>pid</code></em>. If <em class="parameter"><code>pid</code></em> equals zero, the policy of
+      the calling thread will be retrieved.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sched-setscheduler-2_sect2" name="sched-setscheduler-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">sched_setscheduler</code>() returns zero. On
+      success, <code class="function">sched_getscheduler</code>()
+      returns the policy for the thread (a nonnegative integer). On
+      error, both calls return −1, and <code class="varname">errno</code> is set appropriately.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sched-setscheduler-2_sect3" name="sched-setscheduler-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>Invalid arguments: <em class="parameter"><code>pid</code></em> is negative or
+            <em class="parameter"><code>param</code></em> is
+            NULL.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>(<code class="function">sched_setscheduler</code>())
+            <em class="parameter"><code>policy</code></em> is not
+            one of the recognized policies.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>(<code class="function">sched_setscheduler</code>())
+            <em class="parameter"><code>param</code></em> does not
+            make sense for the specified <em class="parameter"><code>policy</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The calling thread does not have appropriate
+            privileges.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ESRCH</span></span></dt>
+
+          <dd>
+            <p>The thread whose ID is <em class="parameter"><code>pid</code></em> could not be
+            found.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="sched-setscheduler-2_sect4" name="sched-setscheduler-2_sect4" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>POSIX.1-2001 (but see BUGS below). The <code class="constant">SCHED_BATCH</code> and <code class="constant">SCHED_IDLE</code> policies are Linux-specific.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sched-setscheduler-2_sect5" name="sched-setscheduler-2_sect5" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Further details of the semantics of all of the above
+      "normal" and "real-time" scheduling policies can be found in
+      <a class="link" href="../htmlman7/sched.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched</span>(7)</span></a>.</p>
+
+      <p>POSIX systems on which <code class="function">sched_setscheduler</code>() and <code class="function">sched_getscheduler</code>() are available define
+      <code class="constant">_POSIX_PRIORITY_SCHEDULING</code> in
+      <code class="literal">&lt;</code><code class="filename">unistd.h</code><code class="literal">&gt;</code></p>
+
+      <p>POSIX.1 does not detail the permissions that an
+      unprivileged thread requires in order to call <code class="function">sched_setscheduler</code>(), and details vary
+      across systems. For example, the Solaris 7 manual page says
+      that the real or effective user ID of the caller must match
+      the real user ID or the save set-user-ID of the target.</p>
+
+      <p>The scheduling policy and parameters are in fact
+      per-thread attributes on Linux. The value returned from a
+      call to <a class="link" href="../htmlman2/gettid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">gettid</span>(2)</span></a> can be passed in
+      the argument <em class="parameter"><code>pid</code></em>.
+      Specifying <em class="parameter"><code>pid</code></em> as 0
+      will operate on the attributes of the calling thread, and
+      passing the value returned from a call to <a class="link" href="../htmlman2/getpid.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getpid</span>(2)</span></a> will operate on
+      the attributes of the main thread of the thread group. (If
+      you are using the POSIX threads API, then use <a class="link" href="../htmlman3/pthread_setschedparam.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_setschedparam</span>(3)</span></a>,
+      <a class="link" href="../htmlman3/pthread_setschedparam.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_getschedparam</span>(3)</span></a>,
+      and <a class="link" href="../htmlman3/pthread_setschedprio.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pthread_setschedprio</span>(3)</span></a>,
+      instead of the <span class="citerefentry"><span class="refentrytitle">sched_*</span>(2)</span> system calls.)</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sched-setscheduler-2_sect6" name="sched-setscheduler-2_sect6" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>POSIX says that on success, <code class="function">sched_setscheduler</code>() should return the
+      previous scheduling policy. Linux <code class="function">sched_setscheduler</code>() does not conform to
+      this requirement, since it always returns 0 on success.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="sched-setscheduler-2_sect7" name="sched-setscheduler-2_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman1/chrt.1.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">chrt</span>(1)</span></a>, <a class="link" href="../htmlman2/nice.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">nice</span>(2)</span></a>, <a class="link" href="../htmlman2/sched_get_priority_max.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_get_priority_max</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/sched_get_priority_max.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_get_priority_min</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/sched_setaffinity.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_getaffinity</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/sched_setattr.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_getattr</span>(2)</span></a>, <a class="link" href="../htmlman2/sched_setparam.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_getparam</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/sched_rr_get_interval.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_rr_get_interval</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/sched_setaffinity.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_setaffinity</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/sched_setattr.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_setattr</span>(2)</span></a>, <a class="link" href="../htmlman2/sched_setparam.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_setparam</span>(2)</span></a>,
+      <a class="link" href="../htmlman2/sched_yield.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_yield</span>(2)</span></a>, <a class="link" href="../htmlman2/getpriority.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setpriority</span>(2)</span></a>, <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a>, <a class="link" href="../htmlman7/cpuset.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">cpuset</span>(7)</span></a>, <a class="link" href="../htmlman7/sched.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="sched-setscheduler-2_sect8" name="sched-setscheduler-2_sect8" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) 2014 Michael Kerrisk &lt;mtk.manpages<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>gmail.com&gt;<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.  The author(s) may not<br />
+
+                  have taken the same level of care in the production of this manual,<br />
+
+                  which is licensed free of charge, as they might when working<br />
+
+                  professionally.<br />
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>pam_start(3) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="pam_start(3) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index3.html" shape="rect">Section 3</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry" title="pam_start(3) — Linux manual pages">
+    <a id="pam-start.3" name="pam-start.3" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <a id="pam_start-name" name="pam_start-name" shape="rect"> </a>
+
+      <h2>Name</h2>
+
+      <p>pam_start — initialization of PAM transaction</p>
+    </div>
+
+    <div class="refsynopsisdiv" title="Synopsis">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <a id="pam_start-synopsis" name="pam_start-synopsis" shape="rect"> </a>
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;security/pam_appl.h&gt;
+</pre>
+
+        <table border="0" summary="Function synopsis" cellspacing="0" cellpadding="0" class="funcprototype-table">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>pam_start</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">service_name</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const char *<var class="pdparam">user</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const struct pam_conv *<var class="pdparam">pam_conversation</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">pam_handle_t **<var class="pdparam">pamh</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1" title="DESCRIPTION">
+      <a id="pam_start-description" name="pam_start-description" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p>The <code class="function">pam_start</code> function
+      creates the PAM context and initiates the PAM transaction. It
+      is the first of the PAM functions that needs to be called by
+      an application. The transaction state is contained entirely
+      within the structure identified by this handle, so it is
+      possible to have multiple transactions in parallel. But it is
+      not possible to use the same handle for different
+      transactions, a new one is needed for every new context.</p>
+
+      <p>The <span class="emphasis"><em>service_name</em></span>
+      argument specifies the name of the service to apply and will
+      be stored as PAM_SERVICE item in the new context. The policy
+      for the service will be read from the file <code class="filename">/etc/pam.d/service_name</code> or, if that file
+      does not exist, from <code class="filename">/etc/pam.conf</code>.</p>
+
+      <p>The <span class="emphasis"><em>user</em></span> argument
+      can specify the name of the target user and will be stored as
+      PAM_USER item. If the argument is NULL, the module has to ask
+      for this item if necessary.</p>
+
+      <p>The <span class="emphasis"><em>pam_conversation</em></span> argument points
+      to a <span class="emphasis"><em>struct pam_conv</em></span>
+      describing the conversation function to use. An application
+      must provide this for direct communication between a loaded
+      module and the application.</p>
+
+      <p>Following a successful return (PAM_SUCCESS) the contents
+      of <span class="emphasis"><em>pamh</em></span> is a handle
+      that contains the PAM context for successive calls to the PAM
+      functions. In an error case is the content of <span class="emphasis"><em>pamh</em></span> undefined.</p>
+
+      <p>The <span class="emphasis"><em>pam_handle_t</em></span> is
+      a blind structure and the application should not attempt to
+      probe it directly for information. Instead the PAM library
+      provides the functions <a class="link" href="../htmlman3/pam_set_item.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_set_item</span>(3)</span></a> and
+      <a class="link" href="../htmlman3/pam_get_item.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_get_item</span>(3)</span></a>. The PAM
+      handle cannot be used for mulitiple authentications at the
+      same time as long as <code class="function">pam_end</code>
+      was not called on it before.</p>
+    </div>
+
+    <div class="refsect1" title="RETURN VALUES">
+      <a id="pam_start-return_values" name="pam_start-return_values" shape="rect"> </a>
+
+      <h2>RETURN VALUES</h2>
+
+      <div class="variablelist">
+        <dl>
+          <dt><span class="term">PAM_ABORT</span></dt>
+
+          <dd>
+            <p>General failure.</p>
+          </dd>
+
+          <dt><span class="term">PAM_BUF_ERR</span></dt>
+
+          <dd>
+            <p>Memory buffer error.</p>
+          </dd>
+
+          <dt><span class="term">PAM_SUCCESS</span></dt>
+
+          <dd>
+            <p>Transaction was successful created.</p>
+          </dd>
+
+          <dt><span class="term">PAM_SYSTEM_ERR</span></dt>
+
+          <dd>
+            <p>System error, for example a NULL pointer was
+            submitted instead of a pointer to data.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1" title="SEE ALSO">
+      <a id="pam_start-see_also" name="pam_start-see_also" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman3/pam_get_data.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_get_data</span>(3)</span></a>, <a class="link" href="../htmlman3/pam_set_data.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_set_data</span>(3)</span></a>, <a class="link" href="../htmlman3/pam_end.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_end</span>(3)</span></a>, <a class="link" href="../htmlman3/pam_strerror.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">pam_strerror</span>(3)</span></a></p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  See <a class="ulink" href="../linuxpam-copyright.html" target="_top" shape="rect">Linux-PAM copyright notice</a> for more information.
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

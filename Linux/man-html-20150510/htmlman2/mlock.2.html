@@ -1,0 +1,530 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>mlock(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="mlock(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="mlock.2" name="mlock.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>mlock, munlock, mlockall, munlockall — lock and
+      unlock memory</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;sys/mman.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>mlock</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">const void *<var class="pdparam">addr</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">size_t <var class="pdparam">len</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>munlock</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">const void *<var class="pdparam">addr</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">size_t <var class="pdparam">len</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>mlockall</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">flags</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="funcsynopsis">
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">int
+            <strong>munlockall</strong>(</code></td>
+
+            <td rowspan="1" colspan="1"><code>void)</code>;</td>
+
+            <td rowspan="1" colspan="1"> </td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mlock-2_sect1" name="mlock-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">mlock</code>() and <code class="function">mlockall</code>() respectively lock part or all of
+      the calling process's virtual address space into RAM,
+      preventing that memory from being paged to the swap area.
+      <code class="function">munlock</code>() and <code class="function">munlockall</code>() perform the converse
+      operation, respectively unlocking part or all of the calling
+      process's virtual address space, so that pages in the
+      specified virtual address range may once more to be swapped
+      out if required by the kernel memory manager. Memory locking
+      and unlocking are performed in units of whole pages.</p>
+
+      <div class="refsect2">
+        <a id="mlock-2_sect2" name="mlock-2_sect2" shape="rect"> </a>
+
+        <h3>mlock() and munlock()</h3>
+
+        <p><code class="function">mlock</code>() locks pages in the
+        address range starting at <em class="parameter"><code>addr</code></em> and continuing for
+        <em class="parameter"><code>len</code></em> bytes. All
+        pages that contain a part of the specified address range
+        are guaranteed to be resident in RAM when the call returns
+        successfully; the pages are guaranteed to stay in RAM until
+        later unlocked.</p>
+
+        <p><code class="function">munlock</code>() unlocks pages in
+        the address range starting at <em class="parameter"><code>addr</code></em> and continuing for
+        <em class="parameter"><code>len</code></em> bytes. After
+        this call, all pages that contain a part of the specified
+        memory range can be moved to external swap space again by
+        the kernel.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="mlock-2_sect3" name="mlock-2_sect3" shape="rect"> </a>
+
+        <h3>mlockall() and munlockall()</h3>
+
+        <p><code class="function">mlockall</code>() locks all pages
+        mapped into the address space of the calling process. This
+        includes the pages of the code, data and stack segment, as
+        well as shared libraries, user space kernel data, shared
+        memory, and memory-mapped files. All mapped pages are
+        guaranteed to be resident in RAM when the call returns
+        successfully; the pages are guaranteed to stay in RAM until
+        later unlocked.</p>
+
+        <p>The <em class="parameter"><code>flags</code></em>
+        argument is constructed as the bitwise OR of one or more of
+        the following constants:</p>
+
+        <div class="variablelist">
+          <dl class="variablelist">
+            <dt><span class="term"><code class="constant">MCL_CURRENT</code></span></dt>
+
+            <dd>
+              <p>Lock all pages which are currently mapped into the
+              address space of the process.</p>
+            </dd>
+
+            <dt><span class="term"><code class="constant">MCL_FUTURE</code></span></dt>
+
+            <dd>
+              <p>Lock all pages which will become mapped into the
+              address space of the process in the future. These
+              could be for instance new pages required by a growing
+              heap and stack as well as new memory-mapped files or
+              shared memory regions.</p>
+            </dd>
+          </dl>
+        </div>
+
+        <p>If <code class="constant">MCL_FUTURE</code> has been
+        specified, then a later system call (e.g., <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>, <a class="link" href="../htmlman2/brk.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sbrk</span>(2)</span></a>, <a class="link" href="../htmlman3/malloc.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">malloc</span>(3)</span></a>), may fail if
+        it would cause the number of locked bytes to exceed the
+        permitted maximum (see below). In the same circumstances,
+        stack growth may likewise fail: the kernel will deny stack
+        expansion and deliver a <code class="constant">SIGSEGV</code> signal to the process.</p>
+
+        <p><code class="function">munlockall</code>() unlocks all
+        pages mapped into the address space of the calling
+        process.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mlock-2_sect4" name="mlock-2_sect4" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, these system calls return 0. On error,
+      −1 is returned, <code class="varname">errno</code> is
+      set appropriately, and no changes are made to any locks in
+      the address space of the process.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mlock-2_sect5" name="mlock-2_sect5" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>(Linux 2.6.9 and later) the caller had a nonzero
+            <code class="constant">RLIMIT_MEMLOCK</code> soft
+            resource limit, but tried to lock more memory than the
+            limit permitted. This limit is not enforced if the
+            process is privileged (<code class="constant">CAP_IPC_LOCK</code>).</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>(Linux 2.4 and earlier) the calling process tried to
+            lock more than half of RAM.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The caller is not privileged, but needs privilege
+            (<code class="constant">CAP_IPC_LOCK</code>) to perform
+            the requested operation.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>For <code class="function">mlock</code>() and <code class="function">munlock</code>():</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EAGAIN</span></span></dt>
+
+          <dd>
+            <p>Some or all of the specified address range could not
+            be locked.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>The result of the addition <em class="replaceable"><code>start</code></em>+<em class="parameter"><code>len</code></em> was less than
+            <em class="replaceable"><code>start</code></em> (e.g.,
+            the addition may have resulted in an overflow).</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>(Not on Linux) <em class="parameter"><code>addr</code></em> was not a multiple
+            of the page size.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>Some of the specified address range does not
+            correspond to mapped pages in the address space of the
+            process.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>For <code class="function">mlockall</code>():</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>Unknown <em class="parameter"><code>flags</code></em> were specified.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p>For <code class="function">munlockall</code>():</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>(Linux 2.6.8 and earlier) The caller was not
+            privileged (<code class="constant">CAP_IPC_LOCK</code>).</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mlock-2_sect6" name="mlock-2_sect6" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>POSIX.1-2001, SVr4.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mlock-2_sect7" name="mlock-2_sect7" shape="rect"> </a>
+
+      <h2>AVAILABILITY</h2>
+
+      <p>On POSIX systems on which <code class="function">mlock</code>() and <code class="function">munlock</code>() are available, <code class="constant">_POSIX_MEMLOCK_RANGE</code> is defined in
+      <code class="literal">&lt;</code><code class="filename">unistd.h</code><code class="literal">&gt;</code>
+      and the number of bytes in a page can be determined from the
+      constant <code class="constant">PAGESIZE</code> (if defined)
+      in <code class="literal">&lt;</code><code class="filename">limits.h</code><code class="literal">&gt;</code>
+      or by calling <em class="replaceable"><code>sysconf(_SC_PAGESIZE)</code></em>.</p>
+
+      <p>On POSIX systems on which <code class="function">mlockall</code>() and <code class="function">munlockall</code>() are available, <code class="constant">_POSIX_MEMLOCK</code> is defined in <code class="literal">&lt;</code><code class="filename">unistd.h</code><code class="literal">&gt;</code>
+      to a value greater than 0. (See also <a class="link" href="../htmlman3/sysconf.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sysconf</span>(3)</span></a>.)</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mlock-2_sect8" name="mlock-2_sect8" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>Memory locking has two main applications: real-time
+      algorithms and high-security data processing. Real-time
+      applications require deterministic timing, and, like
+      scheduling, paging is one major cause of unexpected program
+      execution delays. Real-time applications will usually also
+      switch to a real-time scheduler with <a class="link" href="../htmlman2/sched_setscheduler.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sched_setscheduler</span>(2)</span></a>.
+      Cryptographic security software often handles critical bytes
+      like passwords or secret keys as data structures. As a result
+      of paging, these secrets could be transferred onto a
+      persistent swap store medium, where they might be accessible
+      to the enemy long after the security software has erased the
+      secrets in RAM and terminated. (But be aware that the suspend
+      mode on laptops and some desktop computers will save a copy
+      of the system's RAM to disk, regardless of memory locks.)</p>
+
+      <p>Real-time processes that are using <code class="function">mlockall</code>() to prevent delays on page faults
+      should reserve enough locked stack pages before entering the
+      time-critical section, so that no page fault can be caused by
+      function calls. This can be achieved by calling a function
+      that allocates a sufficiently large automatic variable (an
+      array) and writes to the memory occupied by this array in
+      order to touch these stack pages. This way, enough pages will
+      be mapped for the stack and can be locked into RAM. The dummy
+      writes ensure that not even copy-on-write page faults can
+      occur in the critical section.</p>
+
+      <p>Memory locks are not inherited by a child created via
+      <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> and are
+      automatically removed (unlocked) during an <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a> or when the
+      process terminates. The <code class="function">mlockall</code>() <code class="constant">MCL_FUTURE</code> setting is not inherited by a
+      child created via <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a> and is cleared
+      during an <a class="link" href="../htmlman2/execve.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">execve</span>(2)</span></a>.</p>
+
+      <p>The memory lock on an address range is automatically
+      removed if the address range is unmapped via <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">munmap</span>(2)</span></a>.</p>
+
+      <p>Memory locks do not stack, that is, pages which have been
+      locked several times by calls to <code class="function">mlock</code>() or <code class="function">mlockall</code>() will be unlocked by a single
+      call to <code class="function">munlock</code>() for the
+      corresponding range or by <code class="function">munlockall</code>(). Pages which are mapped to
+      several locations or by several processes stay locked into
+      RAM as long as they are locked at least at one location or by
+      at least one process.</p>
+
+      <div class="refsect2">
+        <a id="mlock-2_sect9" name="mlock-2_sect9" shape="rect"> </a>
+
+        <h3>Linux notes</h3>
+
+        <p>Under Linux, <code class="function">mlock</code>() and
+        <code class="function">munlock</code>() automatically round
+        <em class="parameter"><code>addr</code></em> down to the
+        nearest page boundary. However, POSIX.1-2001 allows an
+        implementation to require that <em class="parameter"><code>addr</code></em> is page aligned, so
+        portable applications should ensure this.</p>
+
+        <p>The <em class="replaceable"><code>VmLck</code></em>
+        field of the Linux-specific <code class="filename">/proc/PID/status</code> file shows how many
+        kilobytes of memory the process with ID <code class="constant">PID</code> has locked using <code class="function">mlock</code>(), <code class="function">mlockall</code>(), and <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a> <code class="constant">MAP_LOCKED</code>.</p>
+      </div>
+
+      <div class="refsect2">
+        <a id="mlock-2_sect10" name="mlock-2_sect10" shape="rect"> </a>
+
+        <h3>Limits and permissions</h3>
+
+        <p>In Linux 2.6.8 and earlier, a process must be privileged
+        (<code class="constant">CAP_IPC_LOCK</code>) in order to
+        lock memory and the <code class="constant">RLIMIT_MEMLOCK</code> soft resource limit
+        defines a limit on how much memory the process may
+        lock.</p>
+
+        <p>Since Linux 2.6.9, no limits are placed on the amount of
+        memory that a privileged process can lock and the
+        <code class="constant">RLIMIT_MEMLOCK</code> soft resource
+        limit instead defines a limit on how much memory an
+        unprivileged process may lock.</p>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mlock-2_sect11" name="mlock-2_sect11" shape="rect"> </a>
+
+      <h2>BUGS</h2>
+
+      <p>In the 2.4 series Linux kernels up to and including
+      2.4.17, a bug caused the <code class="function">mlockall</code>() <code class="constant">MCL_FUTURE</code> flag to be inherited across a
+      <a class="link" href="../htmlman2/fork.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">fork</span>(2)</span></a>. This was rectified
+      in kernel 2.4.18.</p>
+
+      <p>Since kernel 2.6.9, if a privileged process calls
+      <em class="replaceable"><code>mlockall(MCL_FUTURE)</code></em> and
+      later drops privileges (loses the <code class="constant">CAP_IPC_LOCK</code> capability by, for example,
+      setting its effective UID to a nonzero value), then
+      subsequent memory allocations (e.g., <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>, <a class="link" href="../htmlman2/brk.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">brk</span>(2)</span></a>) will fail if the
+      <code class="constant">RLIMIT_MEMLOCK</code> resource limit
+      is encountered.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mlock-2_sect12" name="mlock-2_sect12" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>, <a class="link" href="../htmlman2/getrlimit.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">setrlimit</span>(2)</span></a>, <a class="link" href="../htmlman2/shmctl.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">shmctl</span>(2)</span></a>, <a class="link" href="../htmlman3/sysconf.3.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">sysconf</span>(3)</span></a>, <a class="link" href="../htmlman5/proc.5.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">proc</span>(5)</span></a>, <a class="link" href="../htmlman7/capabilities.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">capabilities</span>(7)</span></a></p>
+    </div>
+
+    <div class="colophon">
+      <a id="mlock-2_sect13" name="mlock-2_sect13" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright (C) Michael Kerrisk, 2004<br />
+
+                  using some material drawn from earlier man pages<br />
+
+                  written by Thomas Kuhn, Copyright 1996<br />
+
+                  <br />
+                  %%%LICENSE_START(GPLv2+_DOC_FULL)<br />
+                  This is free documentation; you can redistribute it and/or<br />
+
+                  modify it under the terms of the GNU General Public License as<br />
+
+                  published by the Free Software Foundation; either version 2 of<br />
+
+                  the License, or (at your option) any later version.<br />
+
+                  <br />
+                  The GNU General Public License's references to "object code"<br />
+
+                  and "executables" are to be interpreted as the output of any<br />
+
+                  document formatting or typesetting system, including<br />
+
+                  intermediate and printed output.<br />
+
+                  <br />
+                  This manual is distributed in the hope that it will be useful,<br />
+
+                  but WITHOUT ANY WARRANTY; without even the implied warranty of<br />
+
+                  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br />
+
+                  GNU General Public License for more details.<br />
+
+                  <br />
+                  You should have received a copy of the GNU General Public<br />
+
+                  License along with this manual; if not, see<br />
+
+                  &lt;<a class="literalurl" href="http://www.gnu.org/licenses/" target="_top" shape="rect">http://www.gnu.org/licenses/</a>&gt;.<br />
+
+                  %%%LICENSE_END<br />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

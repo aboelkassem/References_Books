@@ -1,0 +1,530 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+  <title>mbind(2) — Linux manual pages</title>
+  <link rel="stylesheet" type="text/css" href="../stylesheet/manpages.css" />
+  
+  <link rel="home" href="../index.html" title="mbind(2) — Linux manual pages" />
+  <script type="text/javascript" src="../stylesheet/manpages.js" xml:space="preserve">
+</script>
+  <link rel="icon" href="../stylesheet/icon.gif" type="image/gif" />
+</head>
+
+<body onload="javascript:init()">
+  <div class="navheader">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="width: 33%" rowspan="1" colspan="1"><a href="../index.html" shape="rect">Linux
+          manual pages</a></td>
+
+          <th rowspan="1" colspan="1"><a href="../index2.html" shape="rect">Section 2</a></th>
+
+          <td style="width: 33%" rowspan="1" colspan="1"> </td>
+        </tr>
+      </tbody>
+    </table>
+    <hr />
+  </div>
+
+  <div class="refentry">
+    <a id="mbind.2" name="mbind.2" shape="rect"> </a>
+
+    <div class="titlepage"> </div>
+
+    <div class="refnamediv">
+      <h2>Name</h2>
+
+      <p>mbind — set memory policy for a memory range</p>
+    </div>
+
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+
+      <div class="funcsynopsis">
+        <pre class="funcsynopsisinfo" xml:space="preserve">
+#include &lt;numaif.h&gt;
+</pre>
+
+        <table border="0" class="funcprototype-table" summary="Function synopsis" style="cellspacing: 0; cellpadding: 0;">
+          <tr>
+            <td rowspan="1" colspan="1"><code class="funcdef">long
+            <strong>mbind</strong>(</code></td>
+
+            <td rowspan="1" colspan="1">void *<var class="pdparam">addr</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">unsigned long <var class="pdparam">len</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">int <var class="pdparam">mode</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">const unsigned long *<var class="pdparam">nodemask</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">unsigned long <var class="pdparam">maxnode</var>,</td>
+          </tr>
+
+          <tr>
+            <td rowspan="1" colspan="1"> </td>
+
+            <td rowspan="1" colspan="1">unsigned <var class="pdparam">flags</var><code>)</code>;</td>
+          </tr>
+        </table>
+
+        <div class="funcprototype-spacer">
+           
+        </div>
+      </div>
+
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <table border="0" summary="Note">
+          <tr>
+            <td rowspan="2" align="center" valign="top" width="25" colspan="1">
+            <img alt="[Note]" src="../stylesheet/note.png" /></td>
+
+            <th align="left" rowspan="1" colspan="1">Note</th>
+          </tr>
+
+          <tr>
+            <td align="left" valign="top" rowspan="1" colspan="1">
+              <p>Link with <code class="option">−lnuma</code>.</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mbind-2_sect1" name="mbind-2_sect1" shape="rect"> </a>
+
+      <h2>DESCRIPTION</h2>
+
+      <p><code class="function">mbind</code>() sets the NUMA memory
+      policy, which consists of a policy mode and zero or more
+      nodes, for the memory range starting with <em class="parameter"><code>addr</code></em> and continuing for
+      <em class="parameter"><code>len</code></em> bytes. The memory
+      policy defines from which node memory is allocated.</p>
+
+      <p>If the memory range specified by the <em class="parameter"><code>addr</code></em> and <em class="parameter"><code>len</code></em> arguments includes an
+      "anonymous" region of memory—that is a region of memory
+      created using the <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a> system call with
+      the <code class="constant">MAP_ANONYMOUS</code>—or a
+      memory-mapped file, mapped using the <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a> system call with
+      the <code class="constant">MAP_PRIVATE</code> flag, pages
+      will be allocated only according to the specified policy when
+      the application writes [stores] to the page. For anonymous
+      regions, an initial read access will use a shared page in the
+      kernel containing all zeros. For a file mapped with
+      <code class="constant">MAP_PRIVATE</code>, an initial read
+      access will allocate pages according to the process policy of
+      the process that causes the page to be allocated. This may
+      not be the process that called <code class="function">mbind</code>().</p>
+
+      <p>The specified policy will be ignored for any <code class="constant">MAP_SHARED</code> mappings in the specified memory
+      range. Rather the pages will be allocated according to the
+      process policy of the process that caused the page to be
+      allocated. Again, this may not be the process that called
+      <code class="function">mbind</code>().</p>
+
+      <p>If the specified memory range includes a shared memory
+      region created using the <a class="link" href="../htmlman2/shmget.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">shmget</span>(2)</span></a> system call and
+      attached using the <a class="link" href="../htmlman2/shmop.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">shmat</span>(2)</span></a> system call, pages
+      allocated for the anonymous or shared memory region will be
+      allocated according to the policy specified, regardless which
+      process attached to the shared memory segment causes the
+      allocation. If, however, the shared memory region was created
+      with the <code class="constant">SHM_HUGETLB</code> flag, the
+      huge pages will be allocated according to the policy
+      specified only if the page allocation is caused by the
+      process that calls <code class="function">mbind</code>() for
+      that region.</p>
+
+      <p>By default, <code class="function">mbind</code>() has an
+      effect only for new allocations; if the pages inside the
+      range have been already touched before setting the policy,
+      then the policy has no effect. This default behavior may be
+      overridden by the <code class="constant">MPOL_MF_MOVE</code>
+      and <code class="constant">MPOL_MF_MOVE_ALL</code> flags
+      described below.</p>
+
+      <p>The <em class="parameter"><code>mode</code></em> argument
+      must specify one of <code class="constant">MPOL_DEFAULT</code>, <code class="constant">MPOL_BIND</code>, <code class="constant">MPOL_INTERLEAVE</code>, or <code class="constant">MPOL_PREFERRED</code>. All policy modes except
+      <code class="constant">MPOL_DEFAULT</code> require the caller
+      to specify via the <em class="parameter"><code>nodemask</code></em> argument, the node or
+      nodes to which the mode applies.</p>
+
+      <p>The <em class="parameter"><code>mode</code></em> argument
+      may also include an optional <span class="emphasis"><em>mode
+      flag</em></span>. The supported <span class="emphasis"><em>mode flags</em></span> are:</p>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><code class="constant">MPOL_F_STATIC_NODES</code> (since
+          Linux-2.6.26)</span></dt>
+
+          <dd>
+            <p>A nonempty <em class="parameter"><code>nodemask</code></em> specifies
+            physical node ids. Linux does not remap the <em class="parameter"><code>nodemask</code></em> when the process
+            moves to a different cpuset context, nor when the set
+            of nodes allowed by the process's current cpuset
+            context changes.</p>
+          </dd>
+
+          <dt><span class="term"><code class="constant">MPOL_F_RELATIVE_NODES</code> (since
+          Linux-2.6.26)</span></dt>
+
+          <dd>
+            <p>A nonempty <em class="parameter"><code>nodemask</code></em> specifies node
+            ids that are relative to the set of node ids allowed by
+            the process's current cpuset.</p>
+          </dd>
+        </dl>
+      </div>
+
+      <p><em class="parameter"><code>nodemask</code></em> points to
+      a bit mask of nodes containing up to <em class="parameter"><code>maxnode</code></em> bits. The bit mask size
+      is rounded to the next multiple of <span class="emphasis"><em>sizeof(unsigned long)</em></span>, but the
+      kernel will use bits only up to <em class="parameter"><code>maxnode</code></em>. A NULL value of
+      <em class="parameter"><code>nodemask</code></em> or a
+      <em class="parameter"><code>maxnode</code></em> value of zero
+      specifies the empty set of nodes. If the value of <em class="parameter"><code>maxnode</code></em> is zero, the <em class="parameter"><code>nodemask</code></em> argument is ignored.
+      Where a <em class="parameter"><code>nodemask</code></em> is
+      required, it must contain at least one node that is on-line,
+      allowed by the process's current cpuset context [unless the
+      <code class="constant">MPOL_F_STATIC_NODES</code> mode flag
+      is specified], and contains memory.</p>
+
+      <p>The <code class="constant">MPOL_DEFAULT</code> mode
+      requests that any nondefault policy be removed, restoring
+      default behavior. When applied to a range of memory via
+      <code class="function">mbind</code>(), this means to use the
+      process policy, which may have been set with <a class="link" href="../htmlman2/set_mempolicy.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">set_mempolicy</span>(2)</span></a>. If the
+      mode of the process policy is also <code class="constant">MPOL_DEFAULT</code>, the system-wide default
+      policy will be used. The system-wide default policy allocates
+      pages on the node of the CPU that triggers the allocation.
+      For <code class="constant">MPOL_DEFAULT</code>, the
+      <em class="parameter"><code>nodemask</code></em> and
+      <em class="parameter"><code>maxnode</code></em> arguments
+      must be specify the empty set of nodes.</p>
+
+      <p>The <code class="constant">MPOL_BIND</code> mode specifies
+      a strict policy that restricts memory allocation to the nodes
+      specified in <em class="parameter"><code>nodemask</code></em>. If <em class="parameter"><code>nodemask</code></em> specifies more than
+      one node, page allocations will come from the node with the
+      lowest numeric node ID first, until that node contains no
+      free memory. Allocations will then come from the node with
+      the next highest node ID specified in <em class="parameter"><code>nodemask</code></em> and so forth, until
+      none of the specified nodes contain free memory. Pages will
+      not be allocated from any node not specified in the
+      <em class="parameter"><code>nodemask</code></em>.</p>
+
+      <p>The <code class="constant">MPOL_INTERLEAVE</code> mode
+      specifies that page allocations be interleaved across the set
+      of nodes specified in <em class="parameter"><code>nodemask</code></em>. This optimizes for
+      bandwidth instead of latency by spreading out pages and
+      memory accesses to those pages across multiple nodes. To be
+      effective the memory area should be fairly large, at least
+      1MB or bigger with a fairly uniform access pattern. Accesses
+      to a single page of the area will still be limited to the
+      memory bandwidth of a single node.</p>
+
+      <p><code class="constant">MPOL_PREFERRED</code> sets the
+      preferred node for allocation. The kernel will try to
+      allocate pages from this node first and fall back to other
+      nodes if the preferred nodes is low on free memory. If
+      <em class="parameter"><code>nodemask</code></em> specifies
+      more than one node ID, the first node in the mask will be
+      selected as the preferred node. If the <em class="parameter"><code>nodemask</code></em> and <em class="parameter"><code>maxnode</code></em> arguments specify the
+      empty set, then the memory is allocated on the node of the
+      CPU that triggered the allocation. This is the only way to
+      specify "local allocation" for a range of memory via
+      <code class="function">mbind</code>().</p>
+
+      <p>If <code class="constant">MPOL_MF_STRICT</code> is passed
+      in <em class="parameter"><code>flags</code></em> and
+      <em class="parameter"><code>mode</code></em> is not
+      <code class="constant">MPOL_DEFAULT</code>, then the call
+      will fail with the error <span class="errorname">EIO</span>
+      if the existing pages in the memory range don't follow the
+      policy.</p>
+
+      <p>If <code class="constant">MPOL_MF_MOVE</code> is specified
+      in <em class="parameter"><code>flags</code></em>, then the
+      kernel will attempt to move all the existing pages in the
+      memory range so that they follow the policy. Pages that are
+      shared with other processes will not be moved. If
+      <code class="constant">MPOL_MF_STRICT</code> is also
+      specified, then the call will fail with the error
+      <span class="errorname">EIO</span> if some pages could not be
+      moved.</p>
+
+      <p>If <code class="constant">MPOL_MF_MOVE_ALL</code> is
+      passed in <em class="parameter"><code>flags</code></em>, then
+      the kernel will attempt to move all existing pages in the
+      memory range regardless of whether other processes use the
+      pages. The calling process must be privileged (<code class="constant">CAP_SYS_NICE</code>) to use this flag. If
+      <code class="constant">MPOL_MF_STRICT</code> is also
+      specified, then the call will fail with the error
+      <span class="errorname">EIO</span> if some pages could not be
+      moved.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mbind-2_sect2" name="mbind-2_sect2" shape="rect"> </a>
+
+      <h2>RETURN VALUE</h2>
+
+      <p>On success, <code class="function">mbind</code>() returns
+      0; on error, −1 is returned and <code class="varname">errno</code> is set to indicate the error.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mbind-2_sect3" name="mbind-2_sect3" shape="rect"> </a>
+
+      <h2>ERRORS</h2>
+
+      <div class="variablelist">
+        <dl class="variablelist">
+          <dt><span class="term"><span class="errorname">EFAULT</span></span></dt>
+
+          <dd>
+            <p>Part or all of the memory range specified by
+            <em class="parameter"><code>nodemask</code></em> and
+            <em class="parameter"><code>maxnode</code></em> points
+            outside your accessible address space. Or, there was an
+            unmapped hole in the specified memory range specified
+            by <em class="parameter"><code>addr</code></em> and
+            <em class="parameter"><code>len</code></em>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EINVAL</span></span></dt>
+
+          <dd>
+            <p>An invalid value was specified for <em class="parameter"><code>flags</code></em> or <em class="parameter"><code>mode</code></em>; or <span class="emphasis"><em>addr + len</em></span> was less than
+            <em class="parameter"><code>addr</code></em>; or
+            <em class="parameter"><code>addr</code></em> is not a
+            multiple of the system page size. Or, <em class="parameter"><code>mode</code></em> is <code class="constant">MPOL_DEFAULT</code> and <em class="parameter"><code>nodemask</code></em> specified a
+            nonempty set; or <em class="parameter"><code>mode</code></em> is <code class="constant">MPOL_BIND</code> or <code class="constant">MPOL_INTERLEAVE</code> and <em class="parameter"><code>nodemask</code></em> is empty. Or,
+            <em class="parameter"><code>maxnode</code></em> exceeds
+            a kernel-imposed limit. Or, <em class="parameter"><code>nodemask</code></em> specifies one or
+            more node IDs that are greater than the maximum
+            supported node ID. Or, none of the node IDs specified
+            by <em class="parameter"><code>nodemask</code></em> are
+            on-line and allowed by the process's current cpuset
+            context, or none of the specified nodes contain memory.
+            Or, the <em class="parameter"><code>mode</code></em>
+            argument specified both <code class="constant">MPOL_F_STATIC_NODES</code> and <code class="constant">MPOL_F_RELATIVE_NODES</code>.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EIO</span></span></dt>
+
+          <dd>
+            <p><code class="constant">MPOL_MF_STRICT</code> was
+            specified and an existing page was already on a node
+            that does not follow the policy; or <code class="constant">MPOL_MF_MOVE</code> or <code class="constant">MPOL_MF_MOVE_ALL</code> was specified and
+            the kernel was unable to move all existing pages in the
+            range.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">ENOMEM</span></span></dt>
+
+          <dd>
+            <p>Insufficient kernel memory was available.</p>
+          </dd>
+
+          <dt><span class="term"><span class="errorname">EPERM</span></span></dt>
+
+          <dd>
+            <p>The <em class="parameter"><code>flags</code></em>
+            argument included the <code class="constant">MPOL_MF_MOVE_ALL</code> flag and the caller
+            does not have the <code class="constant">CAP_SYS_NICE</code> privilege.</p>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="refsect1">
+      <a id="mbind-2_sect4" name="mbind-2_sect4" shape="rect"> </a>
+
+      <h2>VERSIONS</h2>
+
+      <p>The <code class="function">mbind</code>() system call was
+      added to the Linux kernel in version 2.6.7.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mbind-2_sect5" name="mbind-2_sect5" shape="rect"> </a>
+
+      <h2>CONFORMING TO</h2>
+
+      <p>This system call is Linux-specific.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mbind-2_sect6" name="mbind-2_sect6" shape="rect"> </a>
+
+      <h2>NOTES</h2>
+
+      <p>For information on library support, see <a class="link" href="../htmlman7/numa.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">numa</span>(7)</span></a>.</p>
+
+      <p>NUMA policy is not supported on a memory-mapped file range
+      that was mapped with the <code class="constant">MAP_SHARED</code> flag.</p>
+
+      <p>The <code class="constant">MPOL_DEFAULT</code> mode can
+      have different effects for <code class="function">mbind</code>() and <a class="link" href="../htmlman2/set_mempolicy.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">set_mempolicy</span>(2)</span></a>. When
+      <code class="constant">MPOL_DEFAULT</code> is specified for
+      <a class="link" href="../htmlman2/set_mempolicy.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">set_mempolicy</span>(2)</span></a>, the
+      process's policy reverts to system default policy or local
+      allocation. When <code class="constant">MPOL_DEFAULT</code>
+      is specified for a range of memory using <code class="function">mbind</code>(), any pages subsequently allocated
+      for that range will use the process's policy, as set by
+      <a class="link" href="../htmlman2/set_mempolicy.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">set_mempolicy</span>(2)</span></a>. This
+      effectively removes the explicit policy from the specified
+      range, "falling back" to a possibly nondefault policy. To
+      select explicit "local allocation" for a memory range,
+      specify a <em class="parameter"><code>mode</code></em> of
+      <code class="constant">MPOL_PREFERRED</code> with an empty
+      set of nodes. This method will work for <a class="link" href="../htmlman2/set_mempolicy.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">set_mempolicy</span>(2)</span></a>, as
+      well.</p>
+
+      <p>Support for huge page policy was added with 2.6.16. For
+      interleave policy to be effective on huge page mappings the
+      policied memory needs to be tens of megabytes or larger.</p>
+
+      <p><code class="constant">MPOL_MF_STRICT</code> is ignored on
+      huge page mappings.</p>
+
+      <p><code class="constant">MPOL_MF_MOVE</code> and
+      <code class="constant">MPOL_MF_MOVE_ALL</code> are available
+      only on Linux 2.6.16 and later.</p>
+    </div>
+
+    <div class="refsect1">
+      <a id="mbind-2_sect7" name="mbind-2_sect7" shape="rect"> </a>
+
+      <h2>SEE ALSO</h2>
+
+      <p><a class="link" href="../htmlman2/get_mempolicy.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">get_mempolicy</span>(2)</span></a>, <a class="link" href="../htmlman2/getcpu.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">getcpu</span>(2)</span></a>, <a class="link" href="../htmlman2/mmap.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mmap</span>(2)</span></a>, <a class="link" href="../htmlman2/set_mempolicy.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">set_mempolicy</span>(2)</span></a>, <a class="link" href="../htmlman2/shmop.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">shmat</span>(2)</span></a>, <a class="link" href="../htmlman2/shmget.2.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">shmget</span>(2)</span></a>, <span class="citerefentry"><span class="refentrytitle">numa</span>(3)</span>, <a class="link" href="../htmlman7/cpuset.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">cpuset</span>(7)</span></a>, <a class="link" href="../htmlman7/numa.7.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">numa</span>(7)</span></a>, <span class="citerefentry"><span class="refentrytitle">numactl</span>(8)</span></p>
+    </div>
+
+    <div class="colophon">
+      <a id="mbind-2_sect8" name="mbind-2_sect8" shape="rect"> </a>
+
+      <h2>COLOPHON</h2>
+
+      <p>This page is part of release 4.00 of the Linux <em class="replaceable"><code>man-pages</code></em> project. A
+      description of the project, information about reporting bugs,
+      and the latest version of this page, can be found at
+      http://www.kernel.org/doc/man−pages/.</p>
+
+      <div class="license">
+        <table style="border-collapse: collapse;">
+          <colgroup span="1">
+            <col span="1" />
+          </colgroup>
+
+          <tbody>
+            <tr>
+              <td style="" rowspan="1" colspan="1">
+                <div class="literallayout">
+                  <br />
+                    Copyright 2003,2004 Andi Kleen, SuSE Labs.<br />
+
+                  and Copyright 2007 Lee Schermerhorn, Hewlett Packard<br />
+
+                  <br />
+                  %%%LICENSE_START(VERBATIM_PROF)<br />
+                  Permission is granted to make and distribute verbatim copies of this<br />
+
+                  manual provided the copyright notice and this permission notice are<br />
+
+                  preserved on all copies.<br />
+                  <br />
+                  Permission is granted to copy and distribute modified versions of this<br />
+
+                  manual under the conditions for verbatim copying, provided that the<br />
+
+                  entire resulting derived work is distributed under the terms of a<br />
+
+                  permission notice identical to this one.<br />
+
+                  <br />
+                  Since the Linux kernel and libraries are constantly changing, this<br />
+
+                  manual page may be incorrect or out-of-date.  The author(s) assume no<br />
+
+                  responsibility for errors or omissions, or for damages resulting from<br />
+
+                  the use of the information contained herein.<br />
+
+                  <br />
+                  Formatted or processed versions of this manual, if unaccompanied by<br />
+
+                  the source, must acknowledge the copyright and authors of this work.<br />
+
+                  %%%LICENSE_END<br />
+                  <br />
+                  2006-02-03, mtk, substantial wording changes and other improvements<br />
+
+                  2007-08-27, Lee Schermerhorn &lt;Lee.Schermerhorn<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>hp.com&gt;<br />
+
+                  more precise specification of behavior.<br />
+
+                  <br />
+                  FIXME<br />
+                  Linux 3.8 added the following, which need to be documented.<br />
+
+                  And do they also apply for move_pages()?<br />
+
+                  <br />
+                        MPOL_LOCAL<br />
+
+                                 commit 479e2802d09f1e18a97262c4c6f8f17ae5884bd8<br />
+
+                                 Author: Peter Zijlstra &lt;a.p.zijlstra<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>chello.nl&gt;<br />
+
+                                 Date:   Thu Oct 25 14:16:28 2012 +0200<br />
+
+                  <br />
+                                 commit f2a07f40dbc603c15f8b06e6ec7f768af67b424f<br />
+
+                                 Author: Hugh Dickins &lt;hughd<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>google.com&gt;<br />
+
+                                 Date:   Wed Jan 2 02:01:33 2013 -0800<br />
+
+                  <br />
+                         MPOL_MF_LAZY<br />
+
+                                 commit b24f53a0bea38b266d219ee651b22dba727c44ae<br />
+
+                                 Author: Lee Schermerhorn &lt;lee.schermerhorn<script type="text/javascript">document.write('@');</script><noscript>(@)</noscript>hp.com&gt;<br />
+
+                                 Date:   Thu Oct 25 14:16:32 2012 +0200<br />
+                  
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
